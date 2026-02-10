@@ -23,11 +23,6 @@ public class Enfant {
     @Column(name ="date_de_naissance" , nullable = false)
     private Date date_de_naissance;
 
-    @Column(name ="email" ,unique = true, nullable = false)
-    private String email;
-
-    @Column(name ="password",unique = true, nullable = false)
-    private String password;
 
     @OneToMany(mappedBy = "enfant",cascade = CascadeType.ALL)
     private List<Activity> activities = new ArrayList<>();
@@ -44,11 +39,9 @@ public class Enfant {
     protected Enfant() {
 
     }
-    public Enfant(String nom, String prenom, String email, String password, Date date_de_naissance) {
+    public Enfant(String nom, String prenom, Date date_de_naissance) {
         this.nom = nom;
         this.prenom = prenom;
-        this.email = email;
-        this.password = password;
         this.date_de_naissance = date_de_naissance;
     }
 
@@ -69,19 +62,7 @@ public class Enfant {
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
     public List<Activity> getActivities() {
         return activities;
     }
