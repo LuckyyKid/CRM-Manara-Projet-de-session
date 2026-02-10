@@ -28,8 +28,8 @@ public class Animateur {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @ManyToMany(mappedBy = "animateurs", fetch = FetchType.LAZY)
-    private List<Activity> activities = new ArrayList<>();
+    @OneToMany(mappedBy = "animateur", fetch = FetchType.LAZY)
+    private List<Animation> animations = new ArrayList<>();
 
     protected Animateur() {
 
@@ -78,7 +78,7 @@ public class Animateur {
         this.password = password;
     }
 
-    public List<Activity> getActivities() {
-        return activities;
+    public List<Animation> getAnimations() {
+        return animations;
     }
 }

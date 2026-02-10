@@ -23,12 +23,8 @@ public class Enfant {
     @Column(name ="date_de_naissance" , nullable = false)
     private Date date_de_naissance;
 
-
     @OneToMany(mappedBy = "enfant",cascade = CascadeType.ALL)
-    private List<Activity> activities = new ArrayList<>();
-
-    @OneToMany(mappedBy = "enfant",cascade = CascadeType.ALL)
-    private List<Planing> planings = new ArrayList<>();
+    private List<Inscription> inscriptions = new ArrayList<>();
 
 
 
@@ -62,15 +58,9 @@ public class Enfant {
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
-
-    public List<Activity> getActivities() {
-        return activities;
+    public List<Inscription> getInscriptions() {
+        return inscriptions;
     }
-
-    public List<Planing> getPlanings() {
-        return planings;
-    }
-
     public Parent getParent() {
         return parent;
     }

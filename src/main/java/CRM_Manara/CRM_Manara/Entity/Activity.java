@@ -1,7 +1,7 @@
 package CRM_Manara.CRM_Manara.Entity;
 
-import CRM_Manara.CRM_Manara.status;
-import CRM_Manara.CRM_Manara.typeActivity;
+import CRM_Manara.CRM_Manara.Enum.status;
+import CRM_Manara.CRM_Manara.Enum.typeActivity;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -42,24 +42,6 @@ public class Activity {
         this.dateCreation = new Date();
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "Start",nullable = false)
-    private Date startTime;
-
-    @Column(name = "End",nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date endTime;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "activity_animateur",
-           joinColumns = @JoinColumn(name = "activity_id"),
-           inverseJoinColumns = @JoinColumn(name = "animateur_id")
-   )
-   private List<Animateur> animateurs = new ArrayList<>();
-
-    @Column(name = "Adresse")
-    private String adresse;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private status status;
@@ -72,15 +54,12 @@ public class Activity {
     }
 
     public Activity (String activyName, String description, int ageMin, int ageMax, int capacity,
-                      status status, typeActivity type, String adresse, Date startTime, Date endTime ) {
+                      status status, typeActivity type ) {
     this.activyName = activyName;
     this.description = description;
     this.ageMin = ageMin;
     this.ageMax = ageMax;
     this.capacity = capacity;
-    this.startTime = startTime;
-    this.endTime = endTime;
-    this.adresse = adresse;
     this.type = type;
     this.status = status;
 
@@ -124,23 +103,4 @@ public class Activity {
         return dateCreation;
     }
 
-    public Date getStartTime() {
-        return startTime;
-    }
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-    public Date getEndTime() {
-        return endTime;
-    }
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-    public List<Animateur> getAnimateurs() {
-        return animateurs;
-    }
-    public void addAnimateur(Animateur animateur) {
-        animateurs.add(animateur);
-        animateur.getActivities().add(this);
-    }
 }

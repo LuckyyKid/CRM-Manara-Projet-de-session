@@ -1,4 +1,4 @@
-package CRM_Manara.CRM_Manara;
+package CRM_Manara.CRM_Manara.Enum;
 
 public enum status {
     OUVERTE,
