@@ -17,6 +17,9 @@ public interface ParentRepo extends CrudRepository<User,Integer> {
     @Query ("SELECT P FROM Parent P JOIN p.enfants e WHERE e.nom = : nom ")
     public  User getParentByEnfant(@Param("nom") String nom);
 
+    @Query("SELECT E FROM Enfant  E WHERE e.nom = : nom  ")
+    public  User getEnfantByNom(@Param("nom") String nom);
+
 
 
 

@@ -1,12 +1,11 @@
 package CRM_Manara.CRM_Manara.Entity;
 
 import CRM_Manara.CRM_Manara.Enum.AnimationRole;
+import CRM_Manara.CRM_Manara.Enum.SecurityRole;
 import CRM_Manara.CRM_Manara.Enum.animationStatus;
-import CRM_Manara.CRM_Manara.Enum.status;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "Animation")

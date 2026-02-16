@@ -4,5 +4,5 @@ public enum AnimationRole {
     PRINCIPAL,
     ASSISTANT,
     TUTEUR,
-    COACH
+    COACH,
 }

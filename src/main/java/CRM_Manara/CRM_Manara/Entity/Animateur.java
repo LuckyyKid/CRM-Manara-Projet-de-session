@@ -22,11 +22,9 @@ public class Animateur {
     @Column(name = "prenom", nullable = false)
     private String prenom;
 
-    @Column(name = "email", unique = true, nullable = false)
-    private String email;
-
-    @Column(name = "password", nullable = false)
-    private String password;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToMany(mappedBy = "animateur", fetch = FetchType.LAZY)
     private List<Animation> animations = new ArrayList<>();
@@ -35,11 +33,10 @@ public class Animateur {
 
     }
 
-    public Animateur(String nom, String prenom, String email, String password) {
+    public Animateur(String nom, String prenom) {
         this.nom = nom;
         this.prenom = prenom;
-        this.email = email;
-        this.password = password;
+
     }
 
     public Long getId() {
@@ -60,22 +57,6 @@ public class Animateur {
 
     public void setPrenom(String prenom) {
         this.prenom = prenom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public List<Animation> getAnimations() {

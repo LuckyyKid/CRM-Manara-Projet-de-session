@@ -1,7 +1,7 @@
 package CRM_Manara.CRM_Manara.Entity;
 
 import CRM_Manara.CRM_Manara.Enum.AccountStatus;
-import CRM_Manara.CRM_Manara.Enum.AdminRole;
+import CRM_Manara.CRM_Manara.Enum.SecurityRole;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -21,15 +21,13 @@ public class Administrateurs {
         @Column(nullable = false)
         private String prenom;
 
-        @Column(unique = true, nullable = false)
-        private String email;
-
-        @Column(nullable = false)
-        private String password;
+        @OneToOne
+        @JoinColumn(name = "user_id")
+        private User user;
 
         @Enumerated(EnumType.STRING)
         @Column(nullable = false)
-        private AdminRole role;
+        private SecurityRole role;
 
         @Enumerated(EnumType.STRING)
         @Column(nullable = false)
@@ -46,18 +44,15 @@ public class Administrateurs {
         private void onCreate() {
             this.dateCreation = new Date();
             this.status = AccountStatus.ACTIF;
-            this.role = AdminRole.ADMIN;
         }
 
        protected Administrateurs() {
 
        }
 
-       public Administrateurs(String nom, String prenom, String email, String password) {
+       public Administrateurs(String nom, String prenom) {
             this.nom = nom;
             this.prenom = prenom;
-            this.email = email;
-            this.password = password;
        }
        public Long getId() {
             return id;
@@ -76,23 +71,11 @@ public class Administrateurs {
        public void setPrenom(String prenom) {
             this.prenom = prenom;
        }
-       public String getEmail() {
-          return email;
-       }
-       public void setEmail(String email) {
-            this.email = email;
-       }
-       public String getPassword() {
-            return password;
-       }
 
-       public void setPassword(String password) {
-            this.password = password;
-       }
-       public AdminRole getRole() {
+       public SecurityRole getRole() {
             return role;
        }
-       public void setRole(AdminRole role) {
+       public void setRole(SecurityRole role) {
             this.role = role;
        }
        public AccountStatus getStatus() {

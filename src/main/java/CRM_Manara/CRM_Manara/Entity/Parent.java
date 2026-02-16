@@ -23,11 +23,9 @@ public class Parent {
     @Column(name = "prenom")
     private String prenom;
 
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "password")
-    private String password;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 
     @Column(name= "adresse")
@@ -43,12 +41,11 @@ public class Parent {
 
     }
 
-    public Parent( String nom, String prenom, String email, String adresse, String password) {
+    public Parent( String nom, String prenom, String adresse) {
         this.nom = nom;
         this.prenom = prenom;
-        this.email = email;
         this.adresse = adresse;
-        this.password = password;
+
     }
 
     public String getNom() {
@@ -63,12 +60,7 @@ public class Parent {
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
+
 
 
     public List<Enfant> getEnfants() {

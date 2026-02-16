@@ -1,11 +1,7 @@
 package CRM_Manara.CRM_Manara.Entity;
 
-import CRM_Manara.CRM_Manara.Enum.AnimationRole;
-import CRM_Manara.CRM_Manara.Enum.animationStatus;
 import CRM_Manara.CRM_Manara.Enum.statusInscription;
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Inscription",uniqueConstraints = {
