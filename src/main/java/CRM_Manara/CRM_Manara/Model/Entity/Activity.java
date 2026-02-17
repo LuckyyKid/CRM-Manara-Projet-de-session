@@ -1,12 +1,10 @@
-package CRM_Manara.CRM_Manara.Entity;
+package CRM_Manara.CRM_Manara.Model.Entity;
 
-import CRM_Manara.CRM_Manara.Enum.status;
-import CRM_Manara.CRM_Manara.Enum.typeActivity;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.status;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "Activity")

@@ -1,9 +1,8 @@
-package CRM_Manara.CRM_Manara.Entity;
+package CRM_Manara.CRM_Manara.Model.Entity;
 
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity

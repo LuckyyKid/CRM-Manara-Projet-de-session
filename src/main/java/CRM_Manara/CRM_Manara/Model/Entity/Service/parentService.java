@@ -1,4 +1,4 @@
-package CRM_Manara.CRM_Manara.Service;
+package CRM_Manara.CRM_Manara.Model.Entity.Service;
 
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
 
@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 
 public class parentService {
-    @Autowired
-
-    private ParentRepo parentrepo;
 
 
 

@@ -1,4 +1,4 @@
-package CRM_Manara.CRM_Manara.Enum;
+package CRM_Manara.CRM_Manara.Model.Entity.Enum;
 
 public enum AnimationRole {
     PRINCIPAL,

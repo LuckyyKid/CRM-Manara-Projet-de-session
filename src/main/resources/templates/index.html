@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>CRM Manara — Programmes & Activités</title>
+</head>
+
+<body>
+
+<header>
+    <h1>Nos programmes</h1>
+    <p>Découvrez les activités offertes par le centre Manara et inscrivez vos enfants facilement.</p>
+</header>
+
+<nav>
+    <a th:href ="@{login}">Connexion</a> |
+    <a href="/parent/activites">Activités</a> |
+    <a href="/parent/planning">Planning</a> |
+    <a th:href ="@{signUp}"> Créer un compte </a>
+</nav>
+
+<hr>
+
+<section>
+    <h2>Activités disponibles</h2>
+
+    <!-- Activité 1 -->
+    <div>
+        <h3>Soccer</h3>
+        <p>
+            Activité sportive favorisant l’esprit d’équipe et la coordination.
+        </p>
+
+        <p><strong>Âge :</strong> 8 - 12 ans</p>
+        <p><strong>Horaire :</strong> Mardi & Jeudi — 17h à 18h</p>
+        <p><strong>Places restantes :</strong> 5</p>
+
+        <form action="/parent/inscription" method="post">
+            <input type="hidden" name="activiteId" value="1">
+            <button type="submit">Inscrire mon enfant</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- Activité 2 -->
+    <div>
+        <h3>Dessin créatif</h3>
+        <p>
+            Atelier artistique pour développer la créativité et la motricité fine.
+        </p>
+
+        <p><strong>Âge :</strong> 6 - 10 ans</p>
+        <p><strong>Horaire :</strong> Mercredi — 16h à 17h30</p>
+        <p><strong>Places restantes :</strong> 8</p>
+
+        <form action="/parent/inscription" method="post">
+            <input type="hidden" name="activiteId" value="2">
+            <button type="submit">Inscrire mon enfant</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <!-- Activité 3 -->
+    <div>
+        <h3>Aide aux devoirs</h3>
+        <p>
+            Soutien scolaire pour accompagner les enfants dans leurs devoirs.
+        </p>
+
+        <p><strong>Âge :</strong> 7 - 12 ans</p>
+        <p><strong>Horaire :</strong> Lundi & Mercredi — 17h à 18h</p>
+        <p><strong>Places restantes :</strong> 3</p>
+
+        <form action="/parent/inscription" method="post">
+            <input type="hidden" name="activiteId" value="3">
+            <button type="submit">Inscrire mon enfant</button>
+        </form>
+    </div>
+
+</section>
+
+<hr>
+
+<section>
+    <h2>Planning des activités</h2>
+
+    <table border="1">
+        <tr>
+            <th>Activité</th>
+            <th>Jour</th>
+            <th>Heure</th>
+            <th>Animateur</th>
+        </tr>
+
+        <tr>
+            <td>Soccer</td>
+            <td>Mardi / Jeudi</td>
+            <td>17h - 18h</td>
+            <td>Karim</td>
+        </tr>
+
+        <tr>
+            <td>Dessin</td>
+            <td>Mercredi</td>
+            <td>16h - 17h30</td>
+            <td>Sarah</td>
+        </tr>
+
+        <tr>
+            <td>Aide aux devoirs</td>
+            <td>Lundi / Mercredi</td>
+            <td>17h - 18h</td>
+            <td>Fatima</td>
+        </tr>
+    </table>
+</section>
+
+<hr>
+
+<footer>
+    <p>Centre Manara — Portail parents</p>
+</footer>
+
+</body>
+</html>

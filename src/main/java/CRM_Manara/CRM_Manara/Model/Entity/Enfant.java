@@ -1,4 +1,4 @@
-package CRM_Manara.CRM_Manara.Entity;
+package CRM_Manara.CRM_Manara.Model.Entity;
 
 import jakarta.persistence.*;
 

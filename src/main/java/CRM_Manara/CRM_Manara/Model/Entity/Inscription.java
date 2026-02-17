@@ -1,6 +1,6 @@
-package CRM_Manara.CRM_Manara.Entity;
+package CRM_Manara.CRM_Manara.Model.Entity;
 
-import CRM_Manara.CRM_Manara.Enum.statusInscription;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.statusInscription;
 import jakarta.persistence.*;
 
 @Entity

@@ -1,8 +1,7 @@
-package CRM_Manara.CRM_Manara.Entity;
+package CRM_Manara.CRM_Manara.Model.Entity;
 
-import CRM_Manara.CRM_Manara.Enum.AnimationRole;
-import CRM_Manara.CRM_Manara.Enum.SecurityRole;
-import CRM_Manara.CRM_Manara.Enum.animationStatus;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.AnimationRole;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.animationStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

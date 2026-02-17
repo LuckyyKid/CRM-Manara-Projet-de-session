@@ -1,6 +1,7 @@
 package CRM_Manara.CRM_Manara.Repository;
 
-import org.apache.catalina.User;
+
+import CRM_Manara.CRM_Manara.Model.Entity.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

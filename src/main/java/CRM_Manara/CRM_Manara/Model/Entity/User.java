@@ -1,7 +1,7 @@
-package CRM_Manara.CRM_Manara.Entity;
+package CRM_Manara.CRM_Manara.Model.Entity;
 
 
-import CRM_Manara.CRM_Manara.Enum.SecurityRole;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.SecurityRole;
 import jakarta.persistence.*;
 
 import java.util.Date;
