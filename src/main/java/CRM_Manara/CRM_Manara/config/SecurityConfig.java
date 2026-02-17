@@ -31,6 +31,10 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(successHandler)
+                        .failureHandler((request, response, exception) -> {
+                            System.out.println("ÉCHEC AUTHENTIFICATION : " + exception.getMessage());
+                            response.sendRedirect("/login?error");
+                        })
                         .permitAll()
                 )
                 .logout(logout -> logout

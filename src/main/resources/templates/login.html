@@ -12,7 +12,7 @@
     <p style="color:red">Mot de passe ou courriel invalide </p>
 </div>
 
-<form method="POST" action="/login">
+<form method="POST" th:action = "@{/login}">
 
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 

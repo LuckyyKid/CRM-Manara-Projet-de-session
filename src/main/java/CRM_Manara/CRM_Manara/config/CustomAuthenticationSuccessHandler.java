@@ -21,7 +21,9 @@ import java.io.IOException;
             for (var authority : authentication.getAuthorities()) {
 
                 if (authority.getAuthority().equals("ROLE_ADMIN")) {
-                    response.sendRedirect("/admin/dashboard");
+
+                    System.out.println("REDIRECTION VERS ADMIN LANCÉE !");
+                    response.sendRedirect("/admin/adminDashboard");
                     return;
                 }
 
