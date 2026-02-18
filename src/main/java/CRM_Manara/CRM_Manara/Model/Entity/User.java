@@ -29,6 +29,11 @@ import java.util.Date;
 
         protected User() {}
 
+        public User(String email, String password) {
+            this.email = email;
+            this.password = password;
+        }
+
         public User(String email, String password, SecurityRole role) {
             this.email = email;
             this.password = password;
@@ -56,6 +61,9 @@ import java.util.Date;
 
         public SecurityRole getRole() {
             return role;
+        }
+        public void setRole(SecurityRole role) {
+            this.role = role;
         }
     }
 

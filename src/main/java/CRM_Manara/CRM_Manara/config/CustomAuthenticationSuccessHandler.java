@@ -28,6 +28,7 @@ import java.io.IOException;
                 }
 
                 if (authority.getAuthority().equals("ROLE_PARENT")) {
+                    System.out.println("REDIRECTION VERS PARENT LANCÉE !");
                     response.sendRedirect("/parent/dashboard");
                     return;
                 }
