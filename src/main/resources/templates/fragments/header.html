@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<body>
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/}">Manara</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/parent/dashboard">Tableau de bord</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/parent/activites">Activités</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/parent/planning">Planning</a></li>
+                </ul>
+
+                <div class="d-flex gap-2">
+                    <!-- Si pas connecté: bouton connexion -->
+                    <a class="btn btn-outline-primary" sec:authorize="isAnonymous()" th:href="@{/login}">
+                        Connexion
+                    </a>
+                    <!-- Si connecté: bouton déconnexion -->
+                    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
+                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-primary">Déconnexion</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+</body>
+</html>
+
