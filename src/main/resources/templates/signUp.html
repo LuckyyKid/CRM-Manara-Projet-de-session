@@ -15,7 +15,10 @@
 <hr>
 
 <section>
-    <form action="/signUp" method="post">
+    <div th:if = "${message}">
+        <p style="color: greenyellow" th:text = "${message}"></p>
+    </div>
+    <form th:action ="@{/signUp}" method="post">
 
         <h2>Informations du parent</h2>
 
@@ -25,33 +28,22 @@
         <label>Prénom :</label><br>
         <input type="text" name="prenom" required><br><br>
 
-        <label>Email :</label><br>
-        <input type="email" name="email" required><br><br>
 
-        <label>Téléphone :</label><br>
-        <input type="tel" name="telephone"><br><br>
 
         <h2>Informations de connexion</h2>
 
-        <label>Nom d'utilisateur :</label><br>
-        <input type="text" name="username" required><br><br>
+        <label> Email :</label><br>
+        <input type="email" name="email" required><br><br>
 
         <label>Mot de passe :</label><br>
         <input type="password" name="password" required><br><br>
 
-        <label>Confirmer mot de passe :</label><br>
-        <input type="password" name="confirmPassword" required><br><br>
 
         <h2>Adresse</h2>
 
         <label>Adresse :</label><br>
         <input type="text" name="adresse"><br><br>
 
-        <label>Ville :</label><br>
-        <input type="text" name="ville"><br><br>
-
-        <label>Code postal :</label><br>
-        <input type="text" name="codePostal"><br><br>
 
         <button type="submit">Créer mon compte</button>
 

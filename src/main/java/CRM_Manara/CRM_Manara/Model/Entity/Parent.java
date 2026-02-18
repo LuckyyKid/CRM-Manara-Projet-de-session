@@ -9,7 +9,7 @@ import java.util.List;
 
 @Table(name = "Parent")
 
-public class Parent {
+public class Parent  {
 
     @Id
     @Column(name= "ID")
@@ -45,6 +45,7 @@ public class Parent {
         this.prenom = prenom;
         this.adresse = adresse;
 
+
     }
 
     public String getNom() {
@@ -59,6 +60,8 @@ public class Parent {
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
+
+
 
 
 
@@ -78,6 +81,13 @@ public class Parent {
     }
     public Long getId() {
         return id;
+    }
+
+    public void SetUser(User user) {
+        this.user = user;
+    }
+    public User getUser() {
+        return user;
     }
 
 
