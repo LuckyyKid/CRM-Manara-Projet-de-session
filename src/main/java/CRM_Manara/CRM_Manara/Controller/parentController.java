@@ -31,7 +31,11 @@ public class parentController {
     private parentService parentService;
 
     @GetMapping("/dashboard")
-    public String parentpage() {
+    public String parentpage(Model model, Principal principal) {
+        String email = principal.getName();
+        model.addAttribute("countEnfants", parentService.countEnfantsForParent(email));
+        model.addAttribute("countInscriptions", parentService.countInscriptionsForParent(email));
+        model.addAttribute("upcomingInscriptions", parentService.getUpcomingInscriptionsForParent(email, 5));
         return "parent/parentDashboard";
     }
 
