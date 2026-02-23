@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#FFA47F"/>
+  <rect x="30" y="20" width="1140" height="70" fill="#FFFFFF" stroke="#B500B2"/>
+  <text x="60" y="65" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#000000">Créer animateur</text>
+
+  <rect x="200" y="150" width="800" height="520" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
+  <text x="240" y="200" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Nom</text>
+  <rect x="240" y="215" width="700" height="36" fill="#FFF" stroke="#B500B2"/>
+  <text x="240" y="265" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Prénom</text>
+  <rect x="240" y="280" width="700" height="36" fill="#FFF" stroke="#B500B2"/>
+  <text x="240" y="330" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Email</text>
+  <rect x="240" y="345" width="700" height="36" fill="#FFF" stroke="#B500B2"/>
+  <text x="240" y="395" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Mot de passe</text>
+  <rect x="240" y="410" width="700" height="36" fill="#FFF" stroke="#B500B2"/>
+  <rect x="240" y="480" width="180" height="44" rx="22" fill="#FF52A0" stroke="#B500B2"/>
+  <text x="270" y="508" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Créer</text>
+</svg>
