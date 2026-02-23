@@ -1,4 +1,5 @@
 package CRM_Manara.CRM_Manara.config;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,7 @@ public class SecurityConfig {
                 authenticationProvider(authenticationProvider());
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/signUp", "/css/**", "/", "/index").permitAll()
+                        .requestMatchers("/login", "/register", "/css/**","/", "/index","/signUp").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/parent/**").hasRole("PARENT")
                         .requestMatchers("/animateur/**").hasRole("ANIMATEUR")
