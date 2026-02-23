@@ -1,0 +1,34 @@
+@startuml
+autonumber
+skinparam shadowing false
+title Sequence - Ajouter un enfant pour un parent (logique service)
+
+actor "Parent connecte" as P
+participant "parentController\n(endpoint a exposer)" as PC
+participant "parentService" as S
+participant "ParentRepo" as PRepo
+participant "Enfant (entity)" as Enf
+database "MySQL" as DB
+
+P -> PC : POST /parent/enfants\n(nom, prenom, dateNaissance)
+PC -> S : createEnfantForParent(emailSession, nom, prenom, dateNaissance)
+S -> PRepo : findByUserEmail(emailSession)
+PRepo -> DB : SELECT parent JOIN user by email
+DB --> PRepo : Parent
+PRepo --> S : Parent
+S -> Enf : new Enfant(...)
+S -> S : parent.AddEnfant(enfant)
+S -> PRepo : save(parent)\n(cascade enfant)
+PRepo -> DB : UPDATE/INSERT Parent + Enfant
+DB --> PRepo : persisted
+PRepo --> S : Parent
+S --> PC : Enfant
+PC --> P : 201/redirect success
+
+alt parent introuvable
+  PRepo --> S : empty
+  S --> PC : IllegalArgumentException
+  PC --> P : erreur metier
+end
+
+@enduml

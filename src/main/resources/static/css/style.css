@@ -1,0 +1,97 @@
+/* CRM Manara — Sprint 1 (Bootstrap 5 simple + petites modifs) */
+
+:root{
+  --mm-primary: #1e40af;
+  --mm-accent: #f59e0b;
+  --mm-bg: #f9fafb;
+  --mm-text: #1f2937;
+
+  /* Surcharge du thème Bootstrap (chargé APRÈS Bootstrap) */
+  --bs-primary: var(--mm-primary);
+  --bs-primary-rgb: 30, 64, 175;
+  --bs-body-bg: var(--mm-bg);
+  --bs-body-color: var(--mm-text);
+  --bs-link-color: var(--mm-primary);
+  --bs-link-hover-color: #1d4ed8;
+}
+
+body{
+  background: var(--mm-bg);
+  color: var(--mm-text);
+}
+
+.navbar{
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.mm-page{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.mm-main{
+  flex: 1;
+}
+
+/* Petite touche “projet d'école” */
+.card{
+  border-radius: 0.9rem;
+}
+
+.mm-card-shadow{
+  box-shadow: 0 0.5rem 1.25rem rgba(17, 24, 39, 0.08);
+}
+
+.mm-section-title{
+  font-weight: 700;
+}
+
+.mm-footer{
+  background: #f3f4f6;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.mm-calendar{
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.mm-cal-head{
+  font-weight: 600;
+  text-align: center;
+  color: #6b7280;
+}
+
+.mm-cal-cell{
+  min-height: 110px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+}
+
+.mm-cal-empty{
+  background: transparent;
+  border: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.mm-cal-day{
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.mm-cal-event{
+  font-size: 0.75rem;
+  background: rgba(30, 64, 175, 0.1);
+  color: #1e40af;
+  border-radius: 0.4rem;
+  padding: 0.2rem 0.35rem;
+  margin-bottom: 0.2rem;
+  text-decoration: none;
+}
+.mm-cal-event:hover{
+  background: rgba(30, 64, 175, 0.18);
+}

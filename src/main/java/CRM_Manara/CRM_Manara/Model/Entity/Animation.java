@@ -5,6 +5,8 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.animationStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Animation")
@@ -34,6 +36,9 @@ public class Animation {
 
     @Column(name = "End",nullable = false)
     private LocalDateTime endTime;
+
+    @OneToMany(mappedBy = "animation", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Inscription> inscriptions = new ArrayList<>();
 
     protected Animation() {
 
@@ -83,6 +88,14 @@ public class Animation {
     }
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    public void setAnimateur(Animateur animateur) {
+        this.animateur = animateur;
     }
 
 }

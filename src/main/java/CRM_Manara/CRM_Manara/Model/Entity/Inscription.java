@@ -1,6 +1,7 @@
 package CRM_Manara.CRM_Manara.Model.Entity;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.statusInscription;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.PresenceStatus;
 import jakarta.persistence.*;
 
 @Entity
@@ -18,6 +19,13 @@ public class Inscription {
     @Column(name= "StatusInscription")
     private statusInscription statusInscription;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "PresenceStatus", nullable = false)
+    private PresenceStatus presenceStatus;
+
+    @Column(name = "IncidentNote", length = 1000)
+    private String incidentNote;
+
     @ManyToOne(optional = false)
     private Enfant enfant;
 
@@ -34,6 +42,7 @@ public class Inscription {
         this.enfant = enfant;
         this.animation = animation;
         this.statusInscription = statusInscription.ACTIF;
+        this.presenceStatus = PresenceStatus.NON_SIGNEE;
     }
 
 
@@ -45,6 +54,21 @@ public class Inscription {
     }
     public Enfant getEnfant() {
         return enfant;
+    }
+    public statusInscription getStatusInscription() {
+        return statusInscription;
+    }
+    public PresenceStatus getPresenceStatus() {
+        return presenceStatus;
+    }
+    public void setPresenceStatus(PresenceStatus presenceStatus) {
+        this.presenceStatus = presenceStatus;
+    }
+    public String getIncidentNote() {
+        return incidentNote;
+    }
+    public void setIncidentNote(String incidentNote) {
+        this.incidentNote = incidentNote;
     }
 
 

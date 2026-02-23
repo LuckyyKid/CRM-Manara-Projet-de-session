@@ -1,0 +1,37 @@
+@startuml
+autonumber
+skinparam shadowing false
+title Sequence - Consultation activites et planning (Sprint 1)
+
+actor "Parent connecte" as P
+participant "parentController\n(endpoint a exposer)" as PC
+participant "parentService" as S
+participant "ActivityRepo" as ActRepo
+participant "AnimationRepo" as AniRepo
+database "MySQL" as DB
+
+P -> PC : GET /parent/activites
+PC -> S : getAllActivities()
+S -> ActRepo : findAll()
+ActRepo -> DB : SELECT * FROM Activity
+DB --> ActRepo : List<Activity>
+ActRepo --> S : List<Activity>
+S --> PC : List<Activity>
+PC --> P : page activites
+
+P -> PC : GET /parent/planning?activityId=X
+PC -> S : getAnimationsForActivity(X)
+S -> AniRepo : findByActivityId(X)
+AniRepo -> DB : SELECT Animation WHERE activity_id = X
+DB --> AniRepo : List<Animation>
+AniRepo --> S : List<Animation>
+S --> PC : List<Animation>
+PC --> P : page planning
+
+note bottom
+  Les methodes de service et repositories existent deja.
+  Les routes /parent/activites et /parent/planning sont referencees
+  dans les templates mais pas encore implementees dans parentController.
+end note
+
+@enduml

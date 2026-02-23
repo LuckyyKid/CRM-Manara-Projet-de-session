@@ -1,0 +1,102 @@
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+title Schema relationnel (inference JPA) - Sprint 1
+
+entity "users" as users {
+  * id : BIGINT <<PK>>
+  --
+  email : VARCHAR <<UK>>
+  password : VARCHAR
+  role : VARCHAR
+  date_creation : DATETIME
+}
+
+entity "Parent" as parent {
+  * id : BIGINT <<PK>>
+  --
+  nom : VARCHAR
+  prenom : VARCHAR
+  adresse : VARCHAR
+  user_id : BIGINT <<FK, UK>>
+}
+
+entity "Administrateurs" as admins {
+  * id : BIGINT <<PK>>
+  --
+  nom : VARCHAR
+  prenom : VARCHAR
+  user_id : BIGINT <<FK, UK>>
+  role : VARCHAR
+  status : VARCHAR
+  date_creation : DATETIME
+  last_login : DATETIME
+}
+
+entity "Animateurs" as animateurs {
+  * id : BIGINT <<PK>>
+  --
+  nom : VARCHAR
+  prenom : VARCHAR
+  user_id : BIGINT <<FK, UK>>
+}
+
+entity "Enfant" as enfant {
+  * id : BIGINT <<PK>>
+  --
+  nom : VARCHAR
+  prenom : VARCHAR
+  date_de_naissance : DATE
+  Parent_id : BIGINT <<FK>>
+}
+
+entity "Activity" as activity {
+  * ID : BIGINT <<PK>>
+  --
+  ActivyName : VARCHAR
+  Description : VARCHAR
+  AgeMin : INT
+  AgeMax : INT
+  Capacity : INT
+  dateCreation : DATE
+  status : VARCHAR
+  typeActivity : VARCHAR
+}
+
+entity "Animation" as animation {
+  * ID : BIGINT <<PK>>
+  --
+  animateur_id : BIGINT <<FK>>
+  activity_id : BIGINT <<FK>>
+  Role : VARCHAR
+  Status : VARCHAR
+  Start : DATETIME
+  End : DATETIME
+}
+
+entity "Inscription" as inscription {
+  * ID : BIGINT <<PK>>
+  --
+  StatusInscription : VARCHAR
+  enfant_id : BIGINT <<FK>>
+  animation_id : BIGINT <<FK>>
+  --
+  UNIQUE(enfant_id, animation_id)
+}
+
+users ||--o| parent : "user_id"
+users ||--o| admins : "user_id"
+users ||--o| animateurs : "user_id"
+parent ||--o{ enfant : "Parent_id"
+enfant ||--o{ inscription : "enfant_id"
+animation ||--o{ inscription : "animation_id"
+animateurs ||--o{ animation : "animateur_id"
+activity ||--o{ animation : "activity_id"
+
+note bottom
+  Noms de colonnes/tables sans @Column/@JoinColumn explicites
+  sont indiques comme inference Hibernate/JPA par defaut.
+end note
+
+@enduml
