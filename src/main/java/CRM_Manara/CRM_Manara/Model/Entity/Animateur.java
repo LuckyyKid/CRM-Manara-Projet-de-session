@@ -62,4 +62,8 @@ public class Animateur {
     public List<Animation> getAnimations() {
         return animations;
     }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
