@@ -23,7 +23,7 @@ public class Enfant {
     @Column(name ="date_de_naissance" , nullable = false)
     private Date date_de_naissance;
 
-    @OneToMany(mappedBy = "enfant",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "enfant",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Inscription> inscriptions = new ArrayList<>();
 
 
