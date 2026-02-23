@@ -16,9 +16,39 @@
                     <li class="nav-item"><a class="nav-link" th:href="@{/}">Accueil</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/about}">A propos</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/about#faq}">FAQ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/parent/dashboard">Tableau de bord</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/parent/activities">Activités</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/parent/planning">Planning</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('PARENT')">
+                        <a class="nav-link" href="/parent/dashboard">Tableau de bord</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('PARENT')">
+                        <a class="nav-link" href="/parent/enfants">Enfants</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('PARENT')">
+                        <a class="nav-link" href="/parent/activities">Activités</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('PARENT')">
+                        <a class="nav-link" href="/parent/planning">Planning</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/adminDashboard">Admin</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/activities">Activités</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/animations">Animations</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/animateurs">Animateurs</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/inscriptions">Inscriptions</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ANIMATEUR')">
+                        <a class="nav-link" href="/animateur/dashboard">Animateur</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('ANIMATEUR')">
+                        <a class="nav-link" href="/animateur/inscriptions">Inscriptions</a>
+                    </li>
                 </ul>
 
                 <div class="d-flex gap-2">
