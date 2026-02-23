@@ -67,10 +67,26 @@ public class parentService {
                 .orElseThrow(() -> new IllegalArgumentException("Parent introuvable pour cet email"));
     }
 
+    @Transactional
+    public Parent updateParentProfile(String email, String nom, String prenom, String adresse) {
+        Parent parent = getParentByEmail(email);
+        parent.setNom(nom);
+        parent.setPrenom(prenom);
+        parent.setAdresse(adresse);
+        return parentRepo.save(parent);
+    }
+
     @Transactional(readOnly = true)
     public List<Enfant> getEnfantsForParent(String email) {
         Parent parent = getParentByEmail(email);
         return enfantRepo.findByParentId(parent.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public Enfant getEnfantForParent(Long enfantId, String email) {
+        Parent parent = getParentByEmail(email);
+        return enfantRepo.findByIdAndParentId(enfantId, parent.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Enfant introuvable"));
     }
 
     @Transactional
@@ -82,9 +98,29 @@ public class parentService {
         return enfant;
     }
 
+    @Transactional
+    public Enfant updateEnfantForParent(Long enfantId, String email, String nom, String prenom, Date dateNaissance) {
+        Enfant enfant = getEnfantForParent(enfantId, email);
+        enfant.setNom(nom);
+        enfant.setPrenom(prenom);
+        return enfantRepo.save(enfant);
+    }
+
+    @Transactional
+    public void deleteEnfantForParent(Long enfantId, String email) {
+        Enfant enfant = getEnfantForParent(enfantId, email);
+        enfantRepo.delete(enfant);
+    }
+
     @Transactional(readOnly = true)
     public List<Activity> getAllActivities() {
         return activityRepo.findAll();
+    }
+
+
+    @Transactional(readOnly = true)
+    public long countInscriptionsForEnfant(Long enfantId) {
+        return inscriptionRepo.countByEnfantId(enfantId);
     }
 
     @Transactional(readOnly = true)
