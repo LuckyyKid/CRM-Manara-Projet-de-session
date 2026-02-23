@@ -3,77 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Activités — CRM Manara</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <title>Activités — CRM Manara</title>
 </head>
 <body>
+<div class="mm-page">
 
-<header>
-    <h1>Activités disponibles</h1>
-    <p>Choisissez une activité et inscrivez un enfant à une animation.</p>
-</header>
+    <div th:replace="~{fragments/header :: header}"></div>
 
-<nav>
-    <a href="/parent/dashboard">Retour dashboard</a> |
-    <a href="/parent/planning">Voir planning</a>
-</nav>
-
-<section>
-    <div th:if="${#lists.isEmpty(activities)}">
-        <p>Aucune activité disponible pour le moment.</p>
-    </div>
-
-    <div th:each="activity : ${activities}">
-        <h2 th:text="${activity.activyName}"></h2>
-        <p th:text="${activity.description}"></p>
-        <p>
-            <strong>Âge :</strong>
-            <span th:text="${activity.ageMin}"></span> -
-            <span th:text="${activity.ageMax}"></span>
-        </p>
-        <p>
-            <strong>Capacité :</strong>
-            <span th:text="${activity.capacity}"></span>
-        </p>
-
-        <h3>Animations</h3>
-        <div th:with="animations=${animationsByActivity[activity.id]}">
-            <div th:if="${#lists.isEmpty(animations)}">
-                <p>Aucune animation planifiée.</p>
+    <main class="mm-main">
+        <div class="container py-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h1 class="h4 mb-1">Activités disponibles</h1>
+                    <p class="text-secondary mb-0">Choisissez une activité et inscrivez un enfant.</p>
+                </div>
+                <a class="btn btn-outline-primary" href="/parent/planning">Voir planning</a>
             </div>
-            <table th:if="${!#lists.isEmpty(animations)}" border="1">
-                <thead>
-                <tr>
-                    <th>ID Animation</th>
-                    <th>Début</th>
-                    <th>Fin</th>
-                    <th>Inscrire un enfant</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="animation : ${animations}">
-                    <td th:text="${animation.id}"></td>
-                    <td th:text="${animation.startTime}"></td>
-                    <td th:text="${animation.endTime}"></td>
-                    <td>
-                        <form th:action="@{/parent/inscriptions}" method="post">
-                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                            <input type="hidden" name="animationId" th:value="${animation.id}"/>
-                            <label>Enfant :</label>
-                            <select name="enfantId" required>
-                                <option th:each="e : ${enfants}" th:value="${e.id}" th:text="${e.prenom + ' ' + e.nom}"></option>
-                            </select>
-                            <button type="submit">Inscrire</button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</section>
 
+            <div th:if="${#lists.isEmpty(activities)}" class="alert alert-light border">
+                Aucune activité disponible pour le moment.
+            </div>
+
+            <div class="vstack gap-3">
+                <div th:each="activity : ${activities}" class="card mm-card-shadow">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                            <div>
+                                <h2 class="h6 mb-1" th:text="${activity.activyName}"></h2>
+                                <p class="text-secondary small mb-0" th:text="${activity.description}"></p>
+                            </div>
+                            <div class="small text-secondary">
+                                Âge: <span th:text="${activity.ageMin}"></span> - <span th:text="${activity.ageMax}"></span>
+                                • Capacité: <span th:text="${activity.capacity}"></span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3" th:with="animations=${animationsByActivity[activity.id]}">
+                            <div th:if="${#lists.isEmpty(animations)}" class="text-secondary small">
+                                Aucune animation planifiée.
+                            </div>
+                            <div class="table-responsive" th:if="${!#lists.isEmpty(animations)}">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Début</th>
+                                        <th>Fin</th>
+                                        <th>Inscription</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="animation : ${animations}">
+                                        <td th:text="${animation.id}"></td>
+                                        <td th:text="${animation.startTime}"></td>
+                                        <td th:text="${animation.endTime}"></td>
+                                        <td>
+                                            <form th:action="@{/parent/inscriptions}" method="post" class="d-flex gap-2 align-items-center">
+                                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                                <input type="hidden" name="animationId" th:value="${animation.id}"/>
+                                                <select name="enfantId" class="form-select form-select-sm" required>
+                                                    <option th:each="e : ${enfants}" th:value="${e.id}" th:text="${e.prenom + ' ' + e.nom}"></option>
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-primary">Inscrire</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
