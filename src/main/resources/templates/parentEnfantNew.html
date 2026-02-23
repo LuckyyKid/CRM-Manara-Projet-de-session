@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un enfant — CRM Manara</title>
+</head>
+<body>
+
+<header>
+    <h1>Ajouter un enfant</h1>
+</header>
+
+<nav>
+    <a href="/parent/enfants">Retour liste</a>
+</nav>
+
+<section>
+    <form th:action="@{/parent/enfants}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <label>Nom :</label><br>
+        <input type="text" name="nom" required><br><br>
+
+        <label>Prénom :</label><br>
+        <input type="text" name="prenom" required><br><br>
+
+        <label>Date de naissance :</label><br>
+        <input type="date" name="dateNaissance" required><br><br>
+
+        <button type="submit">Créer</button>
+    </form>
+</section>
+
+</body>
+</html>
