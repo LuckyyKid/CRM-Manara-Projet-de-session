@@ -30,7 +30,7 @@ public class parentController {
 
     @GetMapping("/dashboard")
     public String parentpage() {
-        return "parentDashboard";
+        return "parent/parentDashboard";
     }
 
     @GetMapping("/enfants")
@@ -38,12 +38,12 @@ public class parentController {
         String email = principal.getName();
         List<Enfant> enfants = parentService.getEnfantsForParent(email);
         model.addAttribute("enfants", enfants);
-        return "parentEnfants";
+        return "parent/parentEnfants";
     }
 
     @GetMapping("/enfants/new")
     public String newEnfantForm() {
-        return "parentEnfantNew";
+        return "parent/parentEnfantNew";
     }
 
     @PostMapping("/enfants")
@@ -70,7 +70,7 @@ public class parentController {
         model.addAttribute("activities", activities);
         model.addAttribute("animationsByActivity", animationsByActivity);
         model.addAttribute("enfants", enfants);
-        return "parentActivities";
+        return "parent/parentActivities";
     }
 
     @PostMapping("/inscriptions")
@@ -89,6 +89,6 @@ public class parentController {
         String email = principal.getName();
         List<Inscription> inscriptions = parentService.getInscriptionsForParent(email);
         model.addAttribute("inscriptions", inscriptions);
-        return "parentPlanning";
+        return "parent/parentPlanning";
     }
 }
