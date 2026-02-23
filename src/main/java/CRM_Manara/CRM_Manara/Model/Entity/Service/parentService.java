@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Service
 public class parentService {
@@ -44,6 +47,9 @@ public class parentService {
 
     @Autowired
     InscriptionRepo inscriptionRepo;
+
+    @Autowired
+    EmailService emailService;
 
     @Transactional
     public void createNewParent(String nom, String prenom, String adresse, String email, String password)
@@ -103,6 +109,7 @@ public class parentService {
         Enfant enfant = getEnfantForParent(enfantId, email);
         enfant.setNom(nom);
         enfant.setPrenom(prenom);
+        enfant.setDate_de_naissance(dateNaissance);
         return enfantRepo.save(enfant);
     }
 
@@ -136,12 +143,39 @@ public class parentService {
         Animation animation = animationRepo.findById(animationId)
                 .orElseThrow(() -> new IllegalArgumentException("Animation introuvable"));
         Inscription inscription = new Inscription(enfant, animation);
-        return inscriptionRepo.save(inscription);
+        Inscription saved = inscriptionRepo.save(inscription);
+        if (parent.getUser() != null) {
+            emailService.sendInscriptionConfirmation(parent.getUser().getEmail(), saved);
+        }
+        return saved;
     }
 
     @Transactional(readOnly = true)
     public List<Inscription> getInscriptionsForParent(String email) {
         Parent parent = getParentByEmail(email);
         return inscriptionRepo.findByParentId(parent.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public long countEnfantsForParent(String email) {
+        Parent parent = getParentByEmail(email);
+        return enfantRepo.findByParentId(parent.getId()).size();
+    }
+
+    @Transactional(readOnly = true)
+    public long countInscriptionsForParent(String email) {
+        Parent parent = getParentByEmail(email);
+        return inscriptionRepo.findByParentId(parent.getId()).size();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Inscription> getUpcomingInscriptionsForParent(String email, int limit) {
+        Parent parent = getParentByEmail(email);
+        LocalDateTime now = LocalDateTime.now();
+        return inscriptionRepo.findByParentId(parent.getId()).stream()
+                .filter(i -> i.getAnimation().getStartTime().isAfter(now))
+                .sorted(Comparator.comparing(i -> i.getAnimation().getStartTime()))
+                .limit(limit)
+                .collect(Collectors.toList());
     }
 }
