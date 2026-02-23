@@ -18,6 +18,12 @@ public interface InscriptionRepo extends JpaRepository<Inscription, Long> {
     @Query("SELECT i FROM Inscription i WHERE i.animation.id = :animationId")
     List<Inscription> findByAnimationId(@Param("animationId") Long animationId);
 
+    @Query("SELECT i FROM Inscription i WHERE i.animation.animateur.id = :animateurId")
+    List<Inscription> findByAnimateurId(@Param("animateurId") Long animateurId);
+
+    @Query("SELECT i FROM Inscription i WHERE i.id = :id AND i.animation.animateur.id = :animateurId")
+    Inscription findByIdAndAnimateurId(@Param("id") Long id, @Param("animateurId") Long animateurId);
+
     long countByAnimationId(Long animationId);
 
     long countByEnfantId(Long enfantId);
