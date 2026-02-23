@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Animateurs — Admin</title>
+</head>
+<body>
+
+<header>
+    <h1>Animateurs</h1>
+</header>
+
+<div th:if="${message}">
+    <p style="color: greenyellow" th:text="${message}"></p>
+</div>
+
+<nav>
+    <a href="/admin/adminDashboard">Dashboard</a> |
+    <a href="/admin/animateurs/new">Créer un animateur</a>
+</nav>
+
+<section>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(animateurs)}">
+            <td colspan="3">Aucun animateur.</td>
+        </tr>
+        <tr th:each="an : ${animateurs}">
+            <td th:text="${an.id}"></td>
+            <td th:text="${an.nom}"></td>
+            <td th:text="${an.prenom}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>
