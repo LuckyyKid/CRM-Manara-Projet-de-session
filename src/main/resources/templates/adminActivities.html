@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Activités — Admin</title>
+</head>
+<body>
+
+<header>
+    <h1>Activités</h1>
+</header>
+
+<div th:if="${message}">
+    <p style="color: greenyellow" th:text="${message}"></p>
+</div>
+
+<nav>
+    <a href="/admin/adminDashboard">Dashboard</a> |
+    <a href="/admin/activities/new">Créer une activité</a>
+</nav>
+
+<section>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Âge</th>
+            <th>Capacité</th>
+            <th>Statut</th>
+            <th>Type</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(activities)}">
+            <td colspan="7">Aucune activité.</td>
+        </tr>
+        <tr th:each="activity : ${activities}">
+            <td th:text="${activity.id}"></td>
+            <td th:text="${activity.activyName}"></td>
+            <td th:text="${activity.description}"></td>
+            <td>
+                <span th:text="${activity.ageMin}"></span> -
+                <span th:text="${activity.ageMax}"></span>
+            </td>
+            <td th:text="${activity.capacity}"></td>
+            <td th:text="${activity.status}"></td>
+            <td th:text="${activity.type}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>
