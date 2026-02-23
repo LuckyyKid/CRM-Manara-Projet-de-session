@@ -53,3 +53,45 @@ body{
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+.mm-calendar{
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.mm-cal-head{
+  font-weight: 600;
+  text-align: center;
+  color: #6b7280;
+}
+
+.mm-cal-cell{
+  min-height: 110px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+}
+
+.mm-cal-empty{
+  background: transparent;
+  border: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.mm-cal-day{
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.mm-cal-event{
+  font-size: 0.75rem;
+  background: rgba(30, 64, 175, 0.1);
+  color: #1e40af;
+  border-radius: 0.4rem;
+  padding: 0.2rem 0.35rem;
+  margin-bottom: 0.2rem;
+  text-decoration: none;
+}
+.mm-cal-event:hover{
+  background: rgba(30, 64, 175, 0.18);
+}
