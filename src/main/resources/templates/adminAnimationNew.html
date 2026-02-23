@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle animation — Admin</title>
+</head>
+<body>
+
+<header>
+    <h1>Créer une animation</h1>
+</header>
+
+<nav>
+    <a href="/admin/animations">Retour liste</a>
+</nav>
+
+<section>
+    <form th:action="@{/admin/animations}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <label>Activité :</label><br>
+        <select name="activityId" required>
+            <option th:each="a : ${activities}" th:value="${a.id}" th:text="${a.activyName}"></option>
+        </select><br><br>
+
+        <label>Animateur :</label><br>
+        <select name="animateurId" required>
+            <option th:each="an : ${animateurs}" th:value="${an.id}" th:text="${an.prenom + ' ' + an.nom}"></option>
+        </select><br><br>
+
+        <label>Rôle :</label><br>
+        <select name="role" required>
+            <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option>
+        </select><br><br>
+
+        <label>Statut :</label><br>
+        <select name="status" required>
+            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"></option>
+        </select><br><br>
+
+        <label>Début :</label><br>
+        <input type="datetime-local" name="start" required><br><br>
+
+        <label>Fin :</label><br>
+        <input type="datetime-local" name="end" required><br><br>
+
+        <button type="submit">Créer</button>
+    </form>
+</section>
+
+</body>
+</html>
