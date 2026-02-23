@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <div class="mm-page">
     <main class="mm-main">
         <div class="container py-4">
@@ -40,13 +41,6 @@
                             <tbody>
                             <tr th:if="${#lists.isEmpty(enfants)}">
                                 <td colspan="5" class="text-secondary">Aucun enfant pour le moment.</td>
-                                <td>
-                                    <a class="btn btn-sm btn-outline-secondary" th:href="@{'/parent/enfants/' + ${enfant.id} + '/edit'}">Modifier</a>
-                                    <form th:action="@{'/parent/enfants/' + ${enfant.id} + '/delete'}" method="post" class="d-inline" onsubmit="return confirm('Supprimer cet enfant ?');">
-                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
-                                    </form>
-                                </td>
                             </tr>
                             <tr th:each="enfant : ${enfants}">
                                 <td th:text="${enfant.id}"></td>
