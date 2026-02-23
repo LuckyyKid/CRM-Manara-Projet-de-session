@@ -100,5 +100,11 @@ public class Activity {
     public Date getDateCreation() {
         return dateCreation;
     }
+    public status getStatus() {
+        return status;
+    }
+    public typeActivity getType() {
+        return type;
+    }
 
 }
