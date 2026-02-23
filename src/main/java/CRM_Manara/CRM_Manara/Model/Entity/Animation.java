@@ -85,4 +85,12 @@ public class Animation {
         this.endTime = endTime;
     }
 
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
+    public void setAnimateur(Animateur animateur) {
+        this.animateur = animateur;
+    }
+
 }
