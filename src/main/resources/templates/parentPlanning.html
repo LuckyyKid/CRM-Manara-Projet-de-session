@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Planning — CRM Manara</title>
+</head>
+<body>
+
+<header>
+    <h1>Planning des activités</h1>
+</header>
+
+<div th:if="${message}">
+    <p style="color: greenyellow" th:text="${message}"></p>
+</div>
+
+<nav>
+    <a href="/parent/dashboard">Retour dashboard</a> |
+    <a href="/parent/activities">Voir activités</a>
+</nav>
+
+<section>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID Inscription</th>
+            <th>Enfant</th>
+            <th>Activité</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Statut</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(inscriptions)}">
+            <td colspan="6">Aucune inscription pour le moment.</td>
+        </tr>
+        <tr th:each="inscription : ${inscriptions}">
+            <td th:text="${inscription.id}"></td>
+            <td th:text="${inscription.enfant.prenom + ' ' + inscription.enfant.nom}"></td>
+            <td th:text="${inscription.animation.activity.activyName}"></td>
+            <td th:text="${inscription.animation.startTime}"></td>
+            <td th:text="${inscription.animation.endTime}"></td>
+            <td th:text="${inscription.statusInscription}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>
