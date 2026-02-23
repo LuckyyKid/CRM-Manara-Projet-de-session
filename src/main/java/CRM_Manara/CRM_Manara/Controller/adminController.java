@@ -30,21 +30,21 @@ public class adminController {
 
     @GetMapping("/adminDashboard")
     public String adminDashboard() {
-        return "adminDashboard";
+        return "admin/adminDashboard";
     }
 
     @GetMapping("/activities")
     public String activities(Model model) {
         List<Activity> activities = adminService.getAllActivities();
         model.addAttribute("activities", activities);
-        return "adminActivities";
+        return "admin/adminActivities";
     }
 
     @GetMapping("/activities/new")
     public String newActivity(Model model) {
         model.addAttribute("statuses", status.values());
         model.addAttribute("types", typeActivity.values());
-        return "adminActivityNew";
+        return "admin/adminActivityNew";
     }
 
     @PostMapping("/activities")
@@ -65,7 +65,7 @@ public class adminController {
     public String animations(Model model) {
         List<Animation> animations = adminService.getAllAnimations();
         model.addAttribute("animations", animations);
-        return "adminAnimations";
+        return "admin/adminAnimations";
     }
 
     @GetMapping("/animations/new")
@@ -74,7 +74,7 @@ public class adminController {
         model.addAttribute("animateurs", adminService.getAllAnimateurs());
         model.addAttribute("roles", AnimationRole.values());
         model.addAttribute("statuses", animationStatus.values());
-        return "adminAnimationNew";
+        return "admin/adminAnimationNew";
     }
 
     @PostMapping("/animations")
@@ -94,12 +94,12 @@ public class adminController {
     public String animateurs(Model model) {
         List<Animateur> animateurs = adminService.getAllAnimateurs();
         model.addAttribute("animateurs", animateurs);
-        return "adminAnimateurs";
+        return "admin/adminAnimateurs";
     }
 
     @GetMapping("/animateurs/new")
     public String newAnimateur() {
-        return "adminAnimateurNew";
+        return "admin/adminAnimateurNew";
     }
 
     @PostMapping("/animateurs")
