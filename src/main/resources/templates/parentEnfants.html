@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Enfants — CRM Manara</title>
+</head>
+<body>
+
+<header>
+    <h1>Mes Enfants</h1>
+    <p>Liste des profils enfants associés à votre compte.</p>
+</header>
+
+<div th:if="${message}">
+    <p style="color: greenyellow" th:text="${message}"></p>
+</div>
+
+<nav>
+    <a href="/parent/dashboard">Retour dashboard</a> |
+    <a href="/parent/enfants/new">Ajouter un enfant</a>
+</nav>
+
+<section>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Date de naissance</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(enfants)}">
+            <td colspan="4">Aucun enfant pour le moment.</td>
+        </tr>
+        <tr th:each="enfant : ${enfants}">
+            <td th:text="${enfant.id}"></td>
+            <td th:text="${enfant.nom}"></td>
+            <td th:text="${enfant.prenom}"></td>
+            <td th:text="${enfant.date_de_naissance}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>
