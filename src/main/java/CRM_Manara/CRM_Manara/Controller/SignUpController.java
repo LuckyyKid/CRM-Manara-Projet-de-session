@@ -14,14 +14,10 @@ public class SignUpController {
     @Autowired
     private parentService parentService;
 
-
-
     @GetMapping("/signUp")
     public String signUp(){
-
         return "auth/signUp";
     }
-
 
     @PostMapping("/signUp")
     public String signUp(@RequestParam(name = "nom") String nom,
@@ -34,7 +30,5 @@ public class SignUpController {
         redirectAttributes.addFlashAttribute("message","Inscription réussie ! Connectez-vous.");
         //Plus tard gérer l'affichage si email existant !
         return "redirect:/login";
-
     }
-
 }
