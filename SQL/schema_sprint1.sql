@@ -120,6 +120,8 @@ CREATE TABLE `Animation` (
 CREATE TABLE `Inscription` (
   `ID` BIGINT NOT NULL AUTO_INCREMENT,
   `StatusInscription` VARCHAR(50) NULL,
+  `PresenceStatus` VARCHAR(50) NOT NULL,
+  `IncidentNote` VARCHAR(1000) NULL,
   `enfant_id` BIGINT NOT NULL,
   `animation_id` BIGINT NOT NULL,
   PRIMARY KEY (`ID`),
