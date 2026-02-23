@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
-  <rect width="1200" height="800" fill="#FFA47F"/>
-  <rect x="30" y="20" width="1140" height="70" fill="#FFFFFF" stroke="#B500B2"/>
-  <text x="60" y="65" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#000000">Ajouter un enfant</text>
+  <rect width="1200" height="800" fill="#F9FAFB"/>
+  <rect x="30" y="20" width="1140" height="70" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="60" y="65" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#1F2937">Ajouter un enfant</text>
 
-  <rect x="250" y="160" width="700" height="420" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <text x="290" y="210" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Nom</text>
-  <rect x="290" y="225" width="580" height="36" fill="#FFF" stroke="#B500B2"/>
-  <text x="290" y="285" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Prénom</text>
-  <rect x="290" y="300" width="580" height="36" fill="#FFF" stroke="#B500B2"/>
-  <text x="290" y="360" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Date de naissance</text>
-  <rect x="290" y="375" width="580" height="36" fill="#FFF" stroke="#B500B2"/>
+  <rect x="250" y="160" width="700" height="420" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="290" y="210" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Nom</text>
+  <rect x="290" y="225" width="580" height="36" fill="#FFF" stroke="#E5E7EB"/>
+  <text x="290" y="285" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Prénom</text>
+  <rect x="290" y="300" width="580" height="36" fill="#FFF" stroke="#E5E7EB"/>
+  <text x="290" y="360" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Date de naissance</text>
+  <rect x="290" y="375" width="580" height="36" fill="#FFF" stroke="#E5E7EB"/>
 
-  <rect x="290" y="440" width="180" height="44" rx="22" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="320" y="468" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Créer</text>
+  <rect x="290" y="440" width="180" height="44" rx="22" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="320" y="468" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Créer</text>
 </svg>
