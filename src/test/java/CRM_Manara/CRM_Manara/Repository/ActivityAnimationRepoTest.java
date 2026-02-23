@@ -49,4 +49,24 @@ class ActivityAnimationRepoTest {
         assertThat(found).hasSize(1);
         assertThat(found.get(0).getActivity().getActivyName()).isEqualTo("Soccer");
     }
+
+    @Test
+    void findByAnimateurId_returnsAnimations() {
+        Activity activity = new Activity("Yoga", "Relax", 8, 14, 10, status.OUVERTE, typeActivity.SPORT);
+        entityManager.persist(activity);
+
+        Animateur animateur = new Animateur("Coach", "Kim");
+        entityManager.persist(animateur);
+
+        Animation animation = new Animation(AnimationRole.PRINCIPAL, animationStatus.ACTIF,
+                LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(3).plusHours(2));
+        animation.setActivity(activity);
+        animation.setAnimateur(animateur);
+        entityManager.persist(animation);
+        entityManager.flush();
+
+        var found = animationRepo.findByAnimateurId(animateur.getId());
+        assertThat(found).hasSize(1);
+        assertThat(found.get(0).getAnimateur().getNom()).isEqualTo("Coach");
+    }
 }
