@@ -10,7 +10,7 @@ public class authController {
 
     @GetMapping("/login")
     public String loginPage(){
-        return "login";
+        return "auth/login";
     }
 
 
