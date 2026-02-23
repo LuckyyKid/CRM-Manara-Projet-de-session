@@ -1,116 +1,116 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1200" viewBox="0 0 1400 1200">
-  <rect width="1400" height="1200" fill="#FFA47F"/>
+  <rect width="1400" height="1200" fill="#F9FAFB"/>
 
   <!-- Header -->
-  <rect x="60" y="40" width="1280" height="80" fill="#FFFFFF" stroke="#B500B2"/>
-  <text x="90" y="92" font-family="Helvetica, Arial, sans-serif" font-size="26" fill="#000000">Centre communautaire Manara</text>
-  <text x="900" y="92" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#000000">Accueil   Programmes   À propos   Contact</text>
+  <rect x="60" y="40" width="1280" height="80" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="90" y="92" font-family="Helvetica, Arial, sans-serif" font-size="26" fill="#1F2937">Centre communautaire Manara</text>
+  <text x="900" y="92" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#1F2937">Accueil   Programmes   À propos   Contact</text>
 
   <!-- Title -->
-  <text x="60" y="180" font-family="Helvetica, Arial, sans-serif" font-size="36" fill="#000000">Nos programmes</text>
-  <text x="60" y="212" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#000000">Des activités adaptées à chaque âge pour apprendre, grandir et s’épanouir.</text>
+  <text x="60" y="180" font-family="Helvetica, Arial, sans-serif" font-size="36" fill="#1F2937">Nos programmes</text>
+  <text x="60" y="212" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#1F2937">Des activités adaptées à chaque âge pour apprendre, grandir et s’épanouir.</text>
 
   <!-- Tabs -->
-  <rect x="60" y="240" width="420" height="44" rx="22" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="85" y="268" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Tout voir</text>
-  <rect x="220" y="240" width="160" height="44" rx="22" fill="#FFFFFF" stroke="#B500B2"/>
-  <text x="245" y="268" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">6 à 12 ans</text>
-  <rect x="390" y="240" width="160" height="44" rx="22" fill="#FFFFFF" stroke="#B500B2"/>
-  <text x="415" y="268" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">12 à 17 ans</text>
-  <rect x="560" y="240" width="160" height="44" rx="22" fill="#FFFFFF" stroke="#B500B2"/>
-  <text x="585" y="268" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">17 à 29 ans</text>
+  <rect x="60" y="240" width="420" height="44" rx="22" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="85" y="268" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Tout voir</text>
+  <rect x="220" y="240" width="160" height="44" rx="22" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="245" y="268" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">6 à 12 ans</text>
+  <rect x="390" y="240" width="160" height="44" rx="22" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="415" y="268" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">12 à 17 ans</text>
+  <rect x="560" y="240" width="160" height="44" rx="22" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="585" y="268" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">17 à 29 ans</text>
 
   <!-- Section: 6-12 -->
-  <text x="60" y="330" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#000000">6 à 12 ans</text>
-  <text x="60" y="355" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Découverte, créativité et socialisation</text>
+  <text x="60" y="330" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#1F2937">6 à 12 ans</text>
+  <text x="60" y="355" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Découverte, créativité et socialisation</text>
 
   <!-- Cards row 1 -->
-  <rect x="60" y="380" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <circle cx="95" cy="415" r="18" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="125" y="418" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">6-12 ans</text>
-  <text x="95" y="450" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000">Atelier Arts &amp; Couleurs</text>
-  <text x="95" y="475" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000000">Peinture, collage et expression libre.</text>
-  <rect x="95" y="505" width="140" height="36" rx="18" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="112" y="528" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">En savoir plus</text>
+  <rect x="60" y="380" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <circle cx="95" cy="415" r="18" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="125" y="418" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">6-12 ans</text>
+  <text x="95" y="450" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Atelier Arts &amp; Couleurs</text>
+  <text x="95" y="475" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1F2937">Peinture, collage et expression libre.</text>
+  <rect x="95" y="505" width="140" height="36" rx="18" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="112" y="528" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">En savoir plus</text>
 
-  <rect x="505" y="380" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <circle cx="540" cy="415" r="18" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="570" y="418" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">6-12 ans</text>
-  <text x="540" y="450" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000">Club Lecture &amp; Histoires</text>
-  <text x="540" y="475" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000000">Découvrir des livres et raconter.</text>
-  <rect x="540" y="505" width="140" height="36" rx="18" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="557" y="528" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">En savoir plus</text>
+  <rect x="505" y="380" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <circle cx="540" cy="415" r="18" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="570" y="418" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">6-12 ans</text>
+  <text x="540" y="450" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Club Lecture &amp; Histoires</text>
+  <text x="540" y="475" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1F2937">Découvrir des livres et raconter.</text>
+  <rect x="540" y="505" width="140" height="36" rx="18" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="557" y="528" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">En savoir plus</text>
 
-  <rect x="950" y="380" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <circle cx="985" cy="415" r="18" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="1015" y="418" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">6-12 ans</text>
-  <text x="985" y="450" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000">Jeux Coopératifs</text>
-  <text x="985" y="475" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000000">Sport, entraide et esprit d’équipe.</text>
-  <rect x="985" y="505" width="140" height="36" rx="18" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="1002" y="528" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">En savoir plus</text>
+  <rect x="950" y="380" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <circle cx="985" cy="415" r="18" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="1015" y="418" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">6-12 ans</text>
+  <text x="985" y="450" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Jeux Coopératifs</text>
+  <text x="985" y="475" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1F2937">Sport, entraide et esprit d’équipe.</text>
+  <rect x="985" y="505" width="140" height="36" rx="18" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="1002" y="528" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">En savoir plus</text>
 
   <!-- Section: 12-17 -->
-  <text x="60" y="640" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#000000">12 à 17 ans</text>
-  <text x="60" y="665" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Autonomie, créativité et engagement</text>
+  <text x="60" y="640" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#1F2937">12 à 17 ans</text>
+  <text x="60" y="665" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Autonomie, créativité et engagement</text>
 
-  <rect x="60" y="690" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <circle cx="95" cy="725" r="18" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="125" y="728" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">12-17 ans</text>
-  <text x="95" y="760" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000">Studio M&#233;dia</text>
-  <text x="95" y="785" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000000">Photo, vidéo et création numérique.</text>
-  <rect x="95" y="815" width="140" height="36" rx="18" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="112" y="838" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">En savoir plus</text>
+  <rect x="60" y="690" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <circle cx="95" cy="725" r="18" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="125" y="728" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">12-17 ans</text>
+  <text x="95" y="760" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Studio M&#233;dia</text>
+  <text x="95" y="785" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1F2937">Photo, vidéo et création numérique.</text>
+  <rect x="95" y="815" width="140" height="36" rx="18" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="112" y="838" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">En savoir plus</text>
 
-  <rect x="505" y="690" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <circle cx="540" cy="725" r="18" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="570" y="728" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">12-17 ans</text>
-  <text x="540" y="760" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000">Projet Science</text>
-  <text x="540" y="785" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000000">Expériences et ateliers interactifs.</text>
-  <rect x="540" y="815" width="140" height="36" rx="18" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="557" y="838" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">En savoir plus</text>
+  <rect x="505" y="690" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <circle cx="540" cy="725" r="18" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="570" y="728" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">12-17 ans</text>
+  <text x="540" y="760" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Projet Science</text>
+  <text x="540" y="785" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1F2937">Expériences et ateliers interactifs.</text>
+  <rect x="540" y="815" width="140" height="36" rx="18" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="557" y="838" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">En savoir plus</text>
 
-  <rect x="950" y="690" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <circle cx="985" cy="725" r="18" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="1015" y="728" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">12-17 ans</text>
-  <text x="985" y="760" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000">Leadership Jeunes</text>
-  <text x="985" y="785" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000000">Débats, projets et bénévolat.</text>
-  <rect x="985" y="815" width="140" height="36" rx="18" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="1002" y="838" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">En savoir plus</text>
+  <rect x="950" y="690" width="390" height="190" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <circle cx="985" cy="725" r="18" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="1015" y="728" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">12-17 ans</text>
+  <text x="985" y="760" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Leadership Jeunes</text>
+  <text x="985" y="785" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1F2937">Débats, projets et bénévolat.</text>
+  <rect x="985" y="815" width="140" height="36" rx="18" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="1002" y="838" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">En savoir plus</text>
 
   <!-- Section: 17-29 -->
-  <text x="60" y="950" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#000000">17 à 29 ans</text>
-  <text x="60" y="975" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Insertion, formation et réseau</text>
+  <text x="60" y="950" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#1F2937">17 à 29 ans</text>
+  <text x="60" y="975" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Insertion, formation et réseau</text>
 
-  <rect x="60" y="1000" width="390" height="160" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <circle cx="95" cy="1035" r="18" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="125" y="1038" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">17-29 ans</text>
-  <text x="95" y="1070" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000">Mentorat &amp; Emploi</text>
-  <text x="95" y="1095" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000000">CV, entretiens et accompagnement.</text>
-  <rect x="95" y="1120" width="140" height="30" rx="15" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="112" y="1140" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">En savoir plus</text>
+  <rect x="60" y="1000" width="390" height="160" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <circle cx="95" cy="1035" r="18" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="125" y="1038" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">17-29 ans</text>
+  <text x="95" y="1070" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Mentorat &amp; Emploi</text>
+  <text x="95" y="1095" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1F2937">CV, entretiens et accompagnement.</text>
+  <rect x="95" y="1120" width="140" height="30" rx="15" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="112" y="1140" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">En savoir plus</text>
 
-  <rect x="505" y="1000" width="390" height="160" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <circle cx="540" cy="1035" r="18" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="570" y="1038" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">17-29 ans</text>
-  <text x="540" y="1070" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000">Atelier Entrepreneurs</text>
-  <text x="540" y="1095" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000000">Idées, projets et réseau local.</text>
-  <rect x="540" y="1120" width="140" height="30" rx="15" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="557" y="1140" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">En savoir plus</text>
+  <rect x="505" y="1000" width="390" height="160" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <circle cx="540" cy="1035" r="18" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="570" y="1038" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">17-29 ans</text>
+  <text x="540" y="1070" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Atelier Entrepreneurs</text>
+  <text x="540" y="1095" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1F2937">Idées, projets et réseau local.</text>
+  <rect x="540" y="1120" width="140" height="30" rx="15" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="557" y="1140" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">En savoir plus</text>
 
-  <rect x="950" y="1000" width="390" height="160" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <circle cx="985" cy="1035" r="18" fill="#FFE9D6" stroke="#B500B2"/>
-  <text x="1015" y="1038" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">17-29 ans</text>
-  <text x="985" y="1070" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#000000">Bien‑&#234;tre &amp; Sport</text>
-  <text x="985" y="1095" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#000000">Activité physique et équilibre.</text>
-  <rect x="985" y="1120" width="140" height="30" rx="15" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="1002" y="1140" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">En savoir plus</text>
+  <rect x="950" y="1000" width="390" height="160" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <circle cx="985" cy="1035" r="18" fill="#FFE9D6" stroke="#E5E7EB"/>
+  <text x="1015" y="1038" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">17-29 ans</text>
+  <text x="985" y="1070" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="bold" fill="#1F2937">Bien‑&#234;tre &amp; Sport</text>
+  <text x="985" y="1095" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1F2937">Activité physique et équilibre.</text>
+  <rect x="985" y="1120" width="140" height="30" rx="15" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="1002" y="1140" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">En savoir plus</text>
 
   <!-- Footer -->
-  <rect x="0" y="1180" width="1400" height="200" fill="#FFFFFF" stroke="#B500B2"/>
-  <rect x="60" y="1185" width="1280" height="150" fill="#FFFFFF" stroke="#B500B2"/>
-  <text x="90" y="1235" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">À propos   Programmes   Inscription   Contact</text>
-  <text x="90" y="1265" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">Abonnez‑vous &#224; notre infolettre</text>
-  <rect x="90" y="1280" width="260" height="30" fill="#fff" stroke="#B500B2"/>
-  <rect x="360" y="1280" width="120" height="30" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="382" y="1300" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#000000">S'inscrire</text>
+  <rect x="0" y="1180" width="1400" height="200" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <rect x="60" y="1185" width="1280" height="150" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="90" y="1235" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">À propos   Programmes   Inscription   Contact</text>
+  <text x="90" y="1265" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">Abonnez‑vous &#224; notre infolettre</text>
+  <rect x="90" y="1280" width="260" height="30" fill="#fff" stroke="#E5E7EB"/>
+  <rect x="360" y="1280" width="120" height="30" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="382" y="1300" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1F2937">S'inscrire</text>
 </svg>
