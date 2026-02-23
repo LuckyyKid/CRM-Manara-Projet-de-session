@@ -27,6 +27,8 @@
                                 Mot de passe ou courriel invalide.
                             </div>
 
+                            <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+
                             <!-- Formulaire de login Spring Security -->
                             <form method="post" th:action="@{/login}">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

@@ -1,25 +1,44 @@
 package CRM_Manara.CRM_Manara.config;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Autowired
+    private UserDetailsService userService;
 
-    private final CustomAuthenticationSuccessHandler successHandler;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public SecurityConfig(CustomAuthenticationSuccessHandler successHandler) {
-        this.successHandler = successHandler;
+    @Autowired
+    private  CustomAuthenticationSuccessHandler successHandler;
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        // On instancie la classe spécifique du package DAO
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userService);
+
+        authProvider.setPasswordEncoder(bCryptPasswordEncoder);
+
+        return authProvider;
     }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+        http.
+                authenticationProvider(authenticationProvider());
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/register", "/signUp", "/css/**", "/", "/index").permitAll()
@@ -45,8 +64,4 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }

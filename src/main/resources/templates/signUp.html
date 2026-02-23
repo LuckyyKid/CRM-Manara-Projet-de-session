@@ -25,7 +25,6 @@
                         <p class="mm-subtitle mb-0">Inscrivez-vous pour accéder au portail CRM Manara.</p>
                     </section>
 
-                    <!-- Formulaire d'inscription (parent + infos de connexion) -->
                     <form th:action="@{/signUp}" method="post" class="mm-card p-4 p-lg-5">
                         <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
@@ -43,14 +42,9 @@
                                     <input class="form-control" type="text" name="prenom" autocomplete="given-name" required>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Courriel</label>
-                                    <input class="form-control" type="email" name="email" autocomplete="email" required>
-                                </div>
-
                                 <div class="mb-0">
-                                    <label class="form-label">Téléphone</label>
-                                    <input class="form-control" type="tel" name="telephone" autocomplete="tel">
+                                    <label class="form-label">Adresse</label>
+                                    <input class="form-control" type="text" name="adresse" autocomplete="street-address">
                                 </div>
                             </div>
 
@@ -58,38 +52,14 @@
                                 <h2 class="h5 fw-bold mb-3">Informations de connexion</h2>
 
                                 <div class="mb-3">
-                                    <label class="form-label">Nom d'utilisateur</label>
-                                    <input class="form-control" type="text" name="username" autocomplete="username" required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Mot de passe</label>
-                                    <input class="form-control" type="password" name="password" autocomplete="new-password" required>
+                                    <label class="form-label">Courriel</label>
+                                    <input class="form-control" type="email" name="email" autocomplete="email" required>
                                 </div>
 
                                 <div class="mb-0">
-                                    <label class="form-label">Confirmer mot de passe</label>
-                                    <input class="form-control" type="password" name="confirmPassword" autocomplete="new-password" required>
+                                    <label class="form-label">Mot de passe</label>
+                                    <input class="form-control" type="password" name="password" autocomplete="new-password" required>
                                 </div>
-                            </div>
-                        </div>
-
-                        <hr class="mm-divider my-4">
-
-                        <!-- Section adresse (optionnel selon le formulaire) -->
-                        <h2 class="h5 fw-bold mb-3">Adresse</h2>
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label">Adresse</label>
-                                <input class="form-control" type="text" name="adresse" autocomplete="street-address">
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label class="form-label">Ville</label>
-                                <input class="form-control" type="text" name="ville" autocomplete="address-level2">
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label class="form-label">Code postal</label>
-                                <input class="form-control" type="text" name="codePostal" autocomplete="postal-code">
                             </div>
                         </div>
 
