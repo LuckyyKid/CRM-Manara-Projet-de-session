@@ -11,4 +11,7 @@ public interface AnimationRepo extends JpaRepository<Animation, Long> {
 
     @Query("SELECT a FROM Animation a WHERE a.activity.id = :activityId")
     List<Animation> findByActivityId(@Param("activityId") Long activityId);
+
+    @Query("SELECT a FROM Animation a WHERE a.animateur.id = :animateurId")
+    List<Animation> findByAnimateurId(@Param("animateurId") Long animateurId);
 }
