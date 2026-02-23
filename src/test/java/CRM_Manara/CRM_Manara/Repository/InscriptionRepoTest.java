@@ -102,4 +102,73 @@ class InscriptionRepoTest {
         assertThat(found).hasSize(1);
         assertThat(found.get(0).getAnimation().getActivity().getActivyName()).isEqualTo("Music");
     }
+
+    @Test
+    void countByAnimationId_and_countByActivityId() {
+        User user = new User("p5@test.com", "hash");
+        user.setRole(SecurityRole.ROLE_PARENT);
+        entityManager.persist(user);
+
+        Parent parent = new Parent("Doe", "Sam", "addr");
+        parent.SetUser(user);
+        entityManager.persist(parent);
+
+        Enfant enfant = new Enfant("Kid", "Three", Date.valueOf("2012-01-01"));
+        enfant.setParent(parent);
+        entityManager.persist(enfant);
+
+        Activity activity = new Activity("Dance", "Hip-hop", 8, 14, 12, status.OUVERTE, typeActivity.ART);
+        entityManager.persist(activity);
+
+        Animateur animateur = new Animateur("Coach", "Mo");
+        entityManager.persist(animateur);
+
+        Animation animation = new Animation(AnimationRole.PRINCIPAL, animationStatus.ACTIF,
+                LocalDateTime.now().plusDays(5), LocalDateTime.now().plusDays(5).plusHours(1));
+        animation.setActivity(activity);
+        animation.setAnimateur(animateur);
+        entityManager.persist(animation);
+
+        Inscription inscription = new Inscription(enfant, animation);
+        entityManager.persist(inscription);
+        entityManager.flush();
+
+        assertThat(inscriptionRepo.countByAnimationId(animation.getId())).isEqualTo(1);
+        assertThat(inscriptionRepo.countByActivityId(activity.getId())).isEqualTo(1);
+    }
+
+    @Test
+    void findByAnimateurId_returnsInscriptions() {
+        User user = new User("p6@test.com", "hash");
+        user.setRole(SecurityRole.ROLE_PARENT);
+        entityManager.persist(user);
+
+        Parent parent = new Parent("Doe", "Lia", "addr");
+        parent.SetUser(user);
+        entityManager.persist(parent);
+
+        Enfant enfant = new Enfant("Kid", "Four", Date.valueOf("2011-01-01"));
+        enfant.setParent(parent);
+        entityManager.persist(enfant);
+
+        Activity activity = new Activity("Photo", "Studio", 8, 16, 10, status.OUVERTE, typeActivity.ART);
+        entityManager.persist(activity);
+
+        Animateur animateur = new Animateur("Coach", "Zo");
+        entityManager.persist(animateur);
+
+        Animation animation = new Animation(AnimationRole.PRINCIPAL, animationStatus.ACTIF,
+                LocalDateTime.now().plusDays(7), LocalDateTime.now().plusDays(7).plusHours(2));
+        animation.setActivity(activity);
+        animation.setAnimateur(animateur);
+        entityManager.persist(animation);
+
+        Inscription inscription = new Inscription(enfant, animation);
+        entityManager.persist(inscription);
+        entityManager.flush();
+
+        var found = inscriptionRepo.findByAnimateurId(animateur.getId());
+        assertThat(found).hasSize(1);
+        assertThat(found.get(0).getEnfant().getNom()).isEqualTo("Kid");
+    }
 }
