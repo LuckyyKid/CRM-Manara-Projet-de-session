@@ -3,6 +3,7 @@ package CRM_Manara.CRM_Manara.Controller;
 import CRM_Manara.CRM_Manara.Model.Entity.Activity;
 import CRM_Manara.CRM_Manara.Model.Entity.Animateur;
 import CRM_Manara.CRM_Manara.Model.Entity.Animation;
+import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.AnimationRole;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.animationStatus;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.status;
@@ -30,7 +31,14 @@ public class adminController {
     private AdminService adminService;
 
     @GetMapping("/adminDashboard")
-    public String adminDashboard() {
+    public String adminDashboard(Model model) {
+        model.addAttribute("countActivities", adminService.countActivities());
+        model.addAttribute("countAnimations", adminService.countAnimations());
+        model.addAttribute("countAnimateurs", adminService.countAnimateurs());
+        model.addAttribute("countInscriptions", adminService.countInscriptions());
+        model.addAttribute("countOpenActivities", adminService.countOpenActivities());
+        model.addAttribute("recentInscriptions", adminService.getRecentInscriptions(5));
+        model.addAttribute("upcomingAnimations", adminService.getUpcomingAnimations(5));
         return "admin/adminDashboard";
     }
 
@@ -169,6 +177,13 @@ public class adminController {
         List<Animateur> animateurs = adminService.getAllAnimateurs();
         model.addAttribute("animateurs", animateurs);
         return "admin/adminAnimateurs";
+    }
+
+    @GetMapping("/inscriptions")
+    public String inscriptions(Model model) {
+        List<Inscription> inscriptions = adminService.getAllInscriptions();
+        model.addAttribute("inscriptions", inscriptions);
+        return "admin/adminInscriptions";
     }
 
     @GetMapping("/animateurs/new")
