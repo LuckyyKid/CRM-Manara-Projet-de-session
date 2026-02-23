@@ -1,55 +1,139 @@
-/* CRM Manara — Sprint 1 (Bootstrap 5 simple + petites modifs) */
+/* CRM Manara — UI léger (Bootstrap 5 + petites surcharges) */
 
 :root{
   --mm-primary: #1e40af;
+  --mm-primary-2: #2563eb;
   --mm-accent: #f59e0b;
-  --mm-bg: #f9fafb;
-  --mm-text: #1f2937;
+  --mm-bg: #f8fafc;
+  --mm-surface: #ffffff;
+  --mm-text: #0f172a;
+  --mm-muted: #64748b;
+  --mm-border: rgba(15, 23, 42, 0.10);
 
-  /* Surcharge du thème Bootstrap (chargé APRÈS Bootstrap) */
-  --bs-primary: var(--mm-primary);
-  --bs-primary-rgb: 30, 64, 175;
+  /* Thème Bootstrap (chargé APRÈS Bootstrap) */
+  --bs-primary: var(--mm-primary-2);
+  --bs-primary-rgb: 37, 99, 235;
   --bs-body-bg: var(--mm-bg);
   --bs-body-color: var(--mm-text);
-  --bs-link-color: var(--mm-primary);
-  --bs-link-hover-color: #1d4ed8;
+  --bs-border-color: var(--mm-border);
+  --bs-link-color: var(--mm-primary-2);
+  --bs-link-hover-color: var(--mm-primary);
 }
 
 body{
-  background: var(--mm-bg);
+  background: radial-gradient(1200px 700px at 10% -10%, rgba(37, 99, 235, 0.08), transparent 60%),
+              radial-gradient(900px 600px at 90% 0%, rgba(245, 158, 11, 0.10), transparent 55%),
+              var(--mm-bg);
   color: var(--mm-text);
 }
 
-.navbar{
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+.mm-page{ min-height: 100vh; display: flex; flex-direction: column; }
+.mm-main{ flex: 1; }
+
+/* Header */
+.mm-navbar{
+  background: rgba(255,255,255,0.86);
+  border-bottom: 1px solid var(--mm-border);
+  backdrop-filter: blur(10px);
+}
+.navbar .nav-link{ color: rgba(15, 23, 42, 0.75); font-weight: 500; }
+.navbar .nav-link:hover{ color: var(--mm-text); }
+.navbar .nav-link.active{ color: var(--mm-primary-2); }
+.navbar-brand{ letter-spacing: 0.2px; }
+.navbar-toggler{ border-color: rgba(15, 23, 42, 0.15); }
+
+/* Surfaces */
+.card{ border-radius: 1rem; border-color: var(--mm-border); }
+.mm-card, .mm-hero{
+  background: var(--mm-surface);
+  border: 1px solid var(--mm-border);
+  border-radius: 1rem;
+}
+.mm-card-shadow{ box-shadow: 0 0.75rem 1.75rem rgba(2, 6, 23, 0.08); }
+.mm-hero{
+  box-shadow: 0 1rem 2rem rgba(2, 6, 23, 0.08);
+  background:
+    radial-gradient(900px 500px at 0% 0%, rgba(37, 99, 235, 0.12), transparent 55%),
+    radial-gradient(700px 450px at 100% 0%, rgba(245, 158, 11, 0.14), transparent 55%),
+    var(--mm-surface);
+}
+.mm-subtitle{ color: var(--mm-muted); }
+.mm-muted{ color: var(--mm-muted); }
+.mm-section-title{ font-weight: 800; letter-spacing: 0.2px; }
+.mm-divider{ border-top: 1px dashed rgba(15, 23, 42, 0.20); }
+
+/* Boutons custom (utilisés dans adminDashboard/signUp) */
+.btn-primary-custom{
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--mm-primary-2);
+  --bs-btn-border-color: var(--mm-primary-2);
+  --bs-btn-hover-bg: var(--mm-primary);
+  --bs-btn-hover-border-color: var(--mm-primary);
+  --bs-btn-focus-shadow-rgb: 37, 99, 235;
+  border-radius: 999px;
+}
+.btn-outline-custom{
+  --bs-btn-color: var(--mm-primary-2);
+  --bs-btn-border-color: rgba(37, 99, 235, 0.35);
+  --bs-btn-hover-bg: rgba(37, 99, 235, 0.08);
+  --bs-btn-hover-border-color: rgba(37, 99, 235, 0.55);
+  border-radius: 999px;
 }
 
-.mm-page{
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* Petits éléments */
+.mm-icon-badge{
+  width: 2.25rem; height: 2.25rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 0.75rem;
+  background: rgba(37, 99, 235, 0.10);
+  color: var(--mm-primary-2);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+}
+.mm-icon-badge--primary{ background: rgba(37, 99, 235, 0.12); }
+.mm-icon-badge--accent{
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+  border-color: rgba(245, 158, 11, 0.25);
+}
+.mm-kpi{ letter-spacing: -0.02em; }
+
+/* Badges (admin table) */
+.mm-badge{ display: inline-block; padding: .28rem .55rem; border-radius: 999px; font-weight: 700; font-size: .75rem; }
+.mm-badge--active{ background: rgba(34, 197, 94, 0.14); color: #166534; border: 1px solid rgba(34, 197, 94, 0.25); }
+.mm-badge--warning{ background: rgba(245, 158, 11, 0.16); color: #92400e; border: 1px solid rgba(245, 158, 11, 0.26); }
+.mm-badge--danger{ background: rgba(239, 68, 68, 0.14); color: #991b1b; border: 1px solid rgba(239, 68, 68, 0.22); }
+
+/* Layout dashboard (admin) */
+.mm-dashboard{ display: flex; gap: 1rem; }
+.mm-sidebar{
+  width: 280px;
+  padding: 1rem;
+  position: sticky;
+  top: 72px;
+  align-self: flex-start;
+  border-radius: 1rem;
+  background: rgba(255,255,255,0.78);
+  border: 1px solid var(--mm-border);
+  box-shadow: 0 0.75rem 1.75rem rgba(2, 6, 23, 0.06);
+}
+.mm-sidebar-title{ font-weight: 800; letter-spacing: 0.2px; margin-bottom: .5rem; }
+.mm-sidebar .nav-link{
+  border-radius: .85rem;
+  padding: .55rem .7rem;
+  color: rgba(15, 23, 42, 0.78);
+}
+.mm-sidebar .nav-link:hover{ background: rgba(37, 99, 235, 0.08); color: var(--mm-text); }
+.mm-sidebar .nav-link.active{ background: rgba(37, 99, 235, 0.12); color: var(--mm-primary-2); }
+.mm-content{ flex: 1; min-width: 0; }
+
+@media (max-width: 991.98px){
+  .mm-dashboard{ flex-direction: column; }
+  .mm-sidebar{ width: 100%; position: static; top: auto; }
 }
 
-.mm-main{
-  flex: 1;
-}
-
-/* Petite touche “projet d'école” */
-.card{
-  border-radius: 0.9rem;
-}
-
-.mm-card-shadow{
-  box-shadow: 0 0.5rem 1.25rem rgba(17, 24, 39, 0.08);
-}
-
-.mm-section-title{
-  font-weight: 700;
-}
-
+/* Footer */
 .mm-footer{
-  background: #f3f4f6;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255,255,255,0.65);
+  border-top: 1px solid var(--mm-border);
 }
 

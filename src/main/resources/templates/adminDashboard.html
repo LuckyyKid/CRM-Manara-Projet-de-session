@@ -1,117 +1,215 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Panneau d'Administration - CRM Manara</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Panneau d'Administration — CRM Manara</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-<header>
-    <h1>CRM Manara - Administration</h1>
-    <nav>
-        <ul>
-            <li><a href="#">Tableau de bord</a></li>
-            <li><a href="#">Utilisateurs</a></li>
-            <li><a href="#">Administrateurs</a></li>
-            <li><a href="#">Paramètres</a></li>
-            <li><a href="#">Déconnexion</a></li>
-        </ul>
-    </nav>
-</header>
+<div class="mm-page">
+    <div th:replace="~{fragments/header :: header}"></div>
 
-<hr>
+    <main class="mm-main">
+        <div class="mm-dashboard">
+            <!-- Menu à gauche (navigation admin) -->
+            <aside class="mm-sidebar">
+                <div class="mm-sidebar-title">Administration</div>
+                <nav class="nav flex-column gap-1">
+                    <a class="nav-link active" href="/admin/adminDashboard"><i class="bi bi-speedometer2 me-2"></i>Tableau de bord</a>
+                    <a class="nav-link" href="#"><i class="bi bi-people me-2"></i>Utilisateurs</a>
+                    <a class="nav-link" href="#"><i class="bi bi-shield-lock me-2"></i>Administrateurs</a>
+                    <a class="nav-link" href="#"><i class="bi bi-gear me-2"></i>Paramètres</a>
+                    <form th:action="@{/logout}" method="post" class="mt-2">
+                        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button class="nav-link w-100 text-start" type="submit">
+                            <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
+                        </button>
+                    </form>
+                </nav>
+            </aside>
 
-<section>
-    <h2>Résumé de l'activité</h2>
-    <ul>
-        <li><strong>Total Utilisateurs :</strong> 150</li>
-        <li><strong>Administrateurs Actifs :</strong> 5</li>
-        <li><strong>Nouveaux inscrits (aujourd'hui) :</strong> 12</li>
-    </ul>
-</section>
+            <section class="mm-content">
+                <div class="container-fluid px-0">
+                    <section class="mm-hero p-4 p-lg-5">
+                        <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
+                            <div>
+                                <h1 class="h3 mb-1 fw-bold">CRM Manara — Administration</h1>
+                                <div class="mm-subtitle">Suivi des utilisateurs, activités et gestion des accès.</div>
+                            </div>
+                            <a class="btn btn-primary-custom" href="#ajouter-admin">
+                                <i class="bi bi-person-plus me-1"></i>
+                                Ajouter un administrateur
+                            </a>
+                        </div>
+                    </section>
 
-<hr>
+                    <!-- Petits indicateurs (KPI) juste pour le visuel -->
+                    <div class="row g-3 g-lg-4 mt-1">
+                        <div class="col-12 col-md-4">
+                            <div class="mm-card p-3 h-100">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="mm-icon-badge mm-icon-badge--primary"><i class="bi bi-people"></i></div>
+                                    <div>
+                                        <div class="mm-muted small">Total utilisateurs</div>
+                                        <div class="mm-kpi h3 mb-0">150</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="mm-card p-3 h-100">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="mm-icon-badge"><i class="bi bi-shield-check"></i></div>
+                                    <div>
+                                        <div class="mm-muted small">Administrateurs actifs</div>
+                                        <div class="mm-kpi h3 mb-0">5</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="mm-card p-3 h-100">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="mm-icon-badge mm-icon-badge--accent"><i class="bi bi-graph-up"></i></div>
+                                    <div>
+                                        <div class="mm-muted small">Nouveaux inscrits (aujourd'hui)</div>
+                                        <div class="mm-kpi h3 mb-0">12</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-<section>
-    <h2>Ajouter un nouvel Administrateur</h2>
-    <form action="/admin/add" method="POST">
-        <p>
-            <label for="nom">Nom :</label><br>
-            <input type="text" id="nom" name="nom" required>
-        </p>
-        <p>
-            <label for="prenom">Prénom :</label><br>
-            <input type="text" id="prenom" name="prenom" required>
-        </p>
-        <p>
-            <label for="email">Email :</label><br>
-            <input type="email" id="email" name="email" required>
-        </p>
-        <p>
-            <label for="role">Rôle Sécurité :</label><br>
-            <select id="role" name="role">
-                <option value="ADMIN">ADMIN</option>
-                <option value="SUPER_ADMIN">SUPER_ADMIN</option>
-                <option value="MODERATEUR">MODÉRATEUR</option>
-            </select>
-        </p>
-        <p>
-            <button type="submit">Créer le compte</button>
-            <button type="reset">Annuler</button>
-        </p>
-    </form>
-</section>
+                    <div class="row g-3 g-lg-4 mt-1">
+                        <div class="col-12 col-xl-5">
+                            <section id="ajouter-admin" class="mm-card p-4">
+                                <h2 class="h5 fw-bold mb-3">Ajouter un nouvel Administrateur</h2>
+                                <!-- Form pour ajouter un admin (démo) -->
+                                <form action="/admin/add" method="POST" class="mb-0">
+                                    <div class="mb-3">
+                                        <label for="nom" class="form-label">Nom</label>
+                                        <input type="text" id="nom" name="nom" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="prenom" class="form-label">Prénom</label>
+                                        <input type="text" id="prenom" name="prenom" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Courriel</label>
+                                        <input type="email" id="email" name="email" class="form-control" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="role" class="form-label">Rôle Sécurité</label>
+                                        <select id="role" name="role" class="form-select">
+                                            <option value="ADMIN">ADMIN</option>
+                                            <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                                            <option value="MODERATEUR">MODÉRATEUR</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                                        <button type="reset" class="btn btn-outline-custom">Annuler</button>
+                                        <button type="submit" class="btn btn-primary-custom">
+                                            <i class="bi bi-check2-circle me-1"></i>
+                                            Créer le compte
+                                        </button>
+                                    </div>
+                                </form>
+                            </section>
+                        </div>
 
-<hr>
+                        <div class="col-12 col-xl-7">
+                            <section class="mm-card p-4">
+                                <div class="d-flex align-items-end justify-content-between flex-wrap gap-2 mb-3">
+                                    <div>
+                                        <h2 class="h5 fw-bold mb-1">Liste des Administrateurs</h2>
+                                        <div class="mm-muted">Gestion des comptes et statuts.</div>
+                                    </div>
+                                </div>
 
-<section>
-    <h2>Liste des Administrateurs</h2>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Prénom</th>
-            <th>Nom</th>
-            <th>Rôle</th>
-            <th>Statut</th>
-            <th>Date Création</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>1</td>
-            <td>Kevin</td>
-            <td>Lafleur</td>
-            <td>ADMIN</td>
-            <td>ACTIF</td>
-            <td>2026-02-17</td>
-            <td>
-                <a href="#">Modifier</a> |
-                <a href="#">Supprimer</a>
-            </td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>Admin</td>
-            <td>Test</td>
-            <td>SUPER_ADMIN</td>
-            <td>ACTIF</td>
-            <td>2026-02-10</td>
-            <td>
-                <a href="#">Modifier</a> |
-                <a href="#">Supprimer</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</section>
+                                <!-- Tableau des admins (exemples statiques pour l'instant) -->
+                                <div class="mm-table">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0 align-middle">
+                                            <thead class="table-light">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Prénom</th>
+                                                <th>Nom</th>
+                                                <th>Rôle</th>
+                                                <th>Statut</th>
+                                                <th>Date de création</th>
+                                                <th class="text-end">Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td class="fw-semibold">1</td>
+                                                <td>Kevin</td>
+                                                <td>Lafleur</td>
+                                                <td><span class="badge text-bg-light">ADMIN</span></td>
+                                                <td><span class="mm-badge mm-badge--active">Actif</span></td>
+                                                <td>2026-02-17</td>
+                                                <td class="text-end">
+                                                    <a class="btn btn-sm btn-outline-custom" href="#">Modifier</a>
+                                                    <a class="btn btn-sm btn-outline-custom" href="#">Supprimer</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-semibold">2</td>
+                                                <td>Admin</td>
+                                                <td>Test</td>
+                                                <td><span class="badge text-bg-light">SUPER_ADMIN</span></td>
+                                                <td><span class="mm-badge mm-badge--active">Actif</span></td>
+                                                <td>2026-02-10</td>
+                                                <td class="text-end">
+                                                    <a class="btn btn-sm btn-outline-custom" href="#">Modifier</a>
+                                                    <a class="btn btn-sm btn-outline-custom" href="#">Supprimer</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-semibold">3</td>
+                                                <td>Marie</td>
+                                                <td>Dubois</td>
+                                                <td><span class="badge text-bg-light">ADMIN</span></td>
+                                                <td><span class="mm-badge mm-badge--warning">Complet</span></td>
+                                                <td>2026-02-02</td>
+                                                <td class="text-end">
+                                                    <a class="btn btn-sm btn-outline-custom" href="#">Modifier</a>
+                                                    <a class="btn btn-sm btn-outline-custom" href="#">Supprimer</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-semibold">4</td>
+                                                <td>Omar</td>
+                                                <td>Haddad</td>
+                                                <td><span class="badge text-bg-light">MODÉRATEUR</span></td>
+                                                <td><span class="mm-badge mm-badge--danger">Annulé</span></td>
+                                                <td>2026-01-15</td>
+                                                <td class="text-end">
+                                                    <a class="btn btn-sm btn-outline-custom" href="#">Modifier</a>
+                                                    <a class="btn btn-sm btn-outline-custom" href="#">Supprimer</a>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
 
-<hr>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
 
-<footer>
-    <p>&copy; 2026 CRM Manara - Système de gestion interne</p>
-</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

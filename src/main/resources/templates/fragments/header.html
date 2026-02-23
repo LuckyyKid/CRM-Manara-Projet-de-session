@@ -2,9 +2,12 @@
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <body>
 <header th:fragment="header">
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg mm-navbar sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" th:href="@{/}">Manara</a>
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" th:href="@{/}">
+                <span class="mm-icon-badge"><i class="bi bi-building"></i></span>
+                <span>Manara</span>
+            </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                     aria-controls="mainNavbar" aria-expanded="false" aria-label="Menu">
@@ -23,6 +26,9 @@
                     <!-- Si pas connecté: bouton connexion -->
                     <a class="btn btn-outline-primary" sec:authorize="isAnonymous()" th:href="@{/login}">
                         Connexion
+                    </a>
+                    <a class="btn btn-primary-custom" sec:authorize="isAnonymous()" th:href="@{/signUp}">
+                        Inscription
                     </a>
                     <!-- Si connecté: bouton déconnexion -->
                     <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
