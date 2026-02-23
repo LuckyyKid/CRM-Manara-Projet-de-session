@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvel animateur — Admin</title>
+</head>
+<body>
+
+<header>
+    <h1>Créer un animateur</h1>
+</header>
+
+<nav>
+    <a href="/admin/animateurs">Retour liste</a>
+</nav>
+
+<section>
+    <form th:action="@{/admin/animateurs}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <label>Nom :</label><br>
+        <input type="text" name="nom" required><br><br>
+
+        <label>Prénom :</label><br>
+        <input type="text" name="prenom" required><br><br>
+
+        <label>Email :</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>Mot de passe :</label><br>
+        <input type="password" name="password" required><br><br>
+
+        <button type="submit">Créer</button>
+    </form>
+</section>
+
+</body>
+</html>
