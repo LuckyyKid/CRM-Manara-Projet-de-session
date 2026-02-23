@@ -1,21 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
-  <rect width="1200" height="800" fill="#FFA47F"/>
-  <rect x="30" y="20" width="1140" height="70" fill="#FFFFFF" stroke="#B500B2"/>
-  <text x="60" y="65" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#000000">Créer activité</text>
+  <rect width="1200" height="800" fill="#F9FAFB"/>
+  <rect x="30" y="20" width="1140" height="70" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="60" y="65" font-family="Helvetica, Arial, sans-serif" font-size="22" fill="#1F2937">Créer activité</text>
 
-  <rect x="200" y="140" width="800" height="560" rx="16" fill="#FFFFFF" stroke="#B500B2"/>
-  <text x="240" y="190" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Nom</text>
-  <rect x="240" y="205" width="700" height="36" fill="#FFF" stroke="#B500B2"/>
-  <text x="240" y="255" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Description</text>
-  <rect x="240" y="270" width="700" height="80" fill="#FFF" stroke="#B500B2"/>
-  <text x="240" y="370" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Âge min / Âge max</text>
-  <rect x="240" y="385" width="320" height="36" fill="#FFF" stroke="#B500B2"/>
-  <rect x="620" y="385" width="320" height="36" fill="#FFF" stroke="#B500B2"/>
-  <text x="240" y="435" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Capacité</text>
-  <rect x="240" y="450" width="700" height="36" fill="#FFF" stroke="#B500B2"/>
-  <text x="240" y="500" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Statut / Type</text>
-  <rect x="240" y="515" width="320" height="36" fill="#FFF" stroke="#B500B2"/>
-  <rect x="620" y="515" width="320" height="36" fill="#FFF" stroke="#B500B2"/>
-  <rect x="240" y="580" width="180" height="44" rx="22" fill="#FF52A0" stroke="#B500B2"/>
-  <text x="270" y="608" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#000000">Créer</text>
+  <rect x="200" y="140" width="800" height="560" rx="16" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="240" y="190" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Nom</text>
+  <rect x="240" y="205" width="700" height="36" fill="#FFF" stroke="#E5E7EB"/>
+  <text x="240" y="255" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Description</text>
+  <rect x="240" y="270" width="700" height="80" fill="#FFF" stroke="#E5E7EB"/>
+  <text x="240" y="370" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Âge min / Âge max</text>
+  <rect x="240" y="385" width="320" height="36" fill="#FFF" stroke="#E5E7EB"/>
+  <rect x="620" y="385" width="320" height="36" fill="#FFF" stroke="#E5E7EB"/>
+  <text x="240" y="435" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Capacité</text>
+  <rect x="240" y="450" width="700" height="36" fill="#FFF" stroke="#E5E7EB"/>
+  <text x="240" y="500" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Statut / Type</text>
+  <rect x="240" y="515" width="320" height="36" fill="#FFF" stroke="#E5E7EB"/>
+  <rect x="620" y="515" width="320" height="36" fill="#FFF" stroke="#E5E7EB"/>
+  <rect x="240" y="580" width="180" height="44" rx="22" fill="#1E40AF" stroke="#E5E7EB"/>
+  <text x="270" y="608" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#1F2937">Créer</text>
 </svg>
