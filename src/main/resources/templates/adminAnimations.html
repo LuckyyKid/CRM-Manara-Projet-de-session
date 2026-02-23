@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Animations — Admin</title>
+</head>
+<body>
+
+<header>
+    <h1>Animations</h1>
+</header>
+
+<div th:if="${message}">
+    <p style="color: greenyellow" th:text="${message}"></p>
+</div>
+
+<nav>
+    <a href="/admin/adminDashboard">Dashboard</a> |
+    <a href="/admin/animations/new">Créer une animation</a>
+</nav>
+
+<section>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Activité</th>
+            <th>Animateur</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Statut</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(animations)}">
+            <td colspan="6">Aucune animation.</td>
+        </tr>
+        <tr th:each="animation : ${animations}">
+            <td th:text="${animation.id}"></td>
+            <td th:text="${animation.activity.activyName}"></td>
+            <td th:text="${animation.animateur.prenom + ' ' + animation.animateur.nom}"></td>
+            <td th:text="${animation.startTime}"></td>
+            <td th:text="${animation.endTime}"></td>
+            <td th:text="${animation.statusAnimation}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+</body>
+</html>
