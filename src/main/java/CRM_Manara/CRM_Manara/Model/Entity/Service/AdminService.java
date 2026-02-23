@@ -23,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -52,6 +54,11 @@ public class AdminService {
     @Transactional(readOnly = true)
     public List<Activity> getAllActivities() {
         return activityRepo.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public long countActivities() {
+        return activityRepo.count();
     }
 
     @Transactional(readOnly = true)
@@ -88,6 +95,11 @@ public class AdminService {
     @Transactional(readOnly = true)
     public List<Animation> getAllAnimations() {
         return animationRepo.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public long countAnimations() {
+        return animationRepo.count();
     }
 
     @Transactional(readOnly = true)
@@ -140,6 +152,16 @@ public class AdminService {
         return animateurRepo.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public long countAnimateurs() {
+        return animateurRepo.count();
+    }
+
+    @Transactional(readOnly = true)
+    public long countInscriptions() {
+        return inscriptionRepo.count();
+    }
+
 
     @Transactional(readOnly = true)
     public long countInscriptionsForAnimation(Long animationId) {
@@ -185,5 +207,35 @@ public class AdminService {
     @Transactional(readOnly = true)
     public List<Administrateurs> getAllAdmins() {
         return adminRepo.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Inscription> getAllInscriptions() {
+        return inscriptionRepo.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Inscription> getRecentInscriptions(int limit) {
+        return inscriptionRepo.findAll().stream()
+                .sorted(Comparator.comparing(Inscription::getId).reversed())
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Animation> getUpcomingAnimations(int limit) {
+        LocalDateTime now = LocalDateTime.now();
+        return animationRepo.findAll().stream()
+                .filter(a -> a.getStartTime().isAfter(now))
+                .sorted(Comparator.comparing(Animation::getStartTime))
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public long countOpenActivities() {
+        return activityRepo.findAll().stream()
+                .filter(a -> a.getStatus() == status.OUVERTE)
+                .count();
     }
 }
