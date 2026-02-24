@@ -1,0 +1,86 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+package "Controllers" {
+  class SignUpController {
+    + signUp() : String
+    + signUp(nom, prenom, adresse, email, password, redirectAttributes) : String
+  }
+  class authController {
+    + loginPage() : String
+  }
+  class indexController {
+    + index() : String
+  }
+  class parentController {
+    + parentpage() : String
+  }
+  class adminController {
+    + adminDashboard() : String
+  }
+}
+
+package "Services" {
+  class parentService {
+    + createNewParent(...)
+    + getParentByEmail(email) : Parent
+    + getEnfantsForParent(email) : List<Enfant>
+    + createEnfantForParent(email, nom, prenom, dateNaissance) : Enfant
+    + getAllActivities() : List<Activity>
+    + getAnimationsForActivity(activityId) : List<Animation>
+    + inscrireEnfant(enfantId, animationId, email) : Inscription
+    + getInscriptionsForParent(email) : List<Inscription>
+  }
+  class ActivityService {
+    + getAllActivities() : List<Activity>
+    + getActivityById(id) : Activity
+    + getAnimationsForActivity(activityId) : List<Animation>
+  }
+  class userService {
+    + loadUserByUsername(email) : UserDetails
+  }
+  class AdminService
+}
+
+package "Repositories" {
+  interface UserRepo
+  interface ParentRepo
+  interface EnfantRepo
+  interface ActivityRepo
+  interface AnimationRepo
+  interface InscriptionRepo
+  interface AdminRepo
+}
+
+package "Security / Config" {
+  class SecurityConfig
+  class CustomAuthenticationSuccessHandler
+  class PasswordEncoderConfig
+}
+
+SignUpController --> parentService
+parentController --> parentService
+adminController --> AdminService
+SecurityConfig --> userService
+SecurityConfig --> CustomAuthenticationSuccessHandler
+SecurityConfig --> PasswordEncoderConfig
+
+parentService --> ParentRepo
+parentService --> UserRepo
+parentService --> EnfantRepo
+parentService --> ActivityRepo
+parentService --> AnimationRepo
+parentService --> InscriptionRepo
+ActivityService --> ActivityRepo
+ActivityService --> AnimationRepo
+userService --> UserRepo
+AdminService --> AdminRepo
+
+note bottom of parentController
+  Le controller expose seulement /parent/dashboard
+  dans l'etat actuel; plusieurs cas d'usage Sprint 1
+  sont prepares dans parentService mais pas encore routes.
+end note
+
+@enduml

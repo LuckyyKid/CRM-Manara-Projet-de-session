@@ -23,7 +23,7 @@ public class Enfant {
     @Column(name ="date_de_naissance" , nullable = false)
     private Date date_de_naissance;
 
-    @OneToMany(mappedBy = "enfant",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "enfant",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Inscription> inscriptions = new ArrayList<>();
 
 
@@ -70,6 +70,9 @@ public class Enfant {
 
     public Date getDate_de_naissance() {
         return date_de_naissance;
+    }
+    public void setDate_de_naissance(Date date_de_naissance) {
+        this.date_de_naissance = date_de_naissance;
     }
 
 }

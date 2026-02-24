@@ -34,6 +34,7 @@ import java.io.IOException;
                 }
 
                 if (authority.getAuthority().equals("ROLE_ANIMATEUR")) {
+                    System.out.println("REDIRECTION VERS ANIMATEUR LANCÉE !");
                     response.sendRedirect("/animateur/dashboard");
                     return;
                 }
