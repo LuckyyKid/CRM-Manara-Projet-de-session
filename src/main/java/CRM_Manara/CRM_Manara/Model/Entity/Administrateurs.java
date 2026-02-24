@@ -34,7 +34,7 @@ public class Administrateurs {
         private AccountStatus status;
 
         @Temporal(TemporalType.TIMESTAMP)
-        @Column(nullable = false, updatable = false)
+        @Column(name = "dateCreation", nullable = false, updatable = false)
         private Date dateCreation;
 
         @Temporal(TemporalType.TIMESTAMP)
@@ -54,6 +54,12 @@ public class Administrateurs {
             this.nom = nom;
             this.prenom = prenom;
        }
+    public Administrateurs(String nom, String prenom,Date dateCreation) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.dateCreation = dateCreation;
+        this.status = AccountStatus.ACTIF;
+    }
        public Long getId() {
             return id;
        }
@@ -84,6 +90,9 @@ public class Administrateurs {
        public void setStatus(AccountStatus status) {
             this.status = status;
        }
+       public void setDateCreation(Date dateCreation) {
+            this.dateCreation = dateCreation;
+       }
        public Date getDateCreation() {
             return dateCreation;
        }
@@ -91,6 +100,13 @@ public class Administrateurs {
        public Date getLastLogin() {
             return lastLogin;
        }
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
 
 

@@ -61,4 +61,5 @@ public class animateurController {
         redirectAttributes.addFlashAttribute("message", "Présence mise à jour.");
         return "redirect:/animateur/inscriptions";
     }
+
 }

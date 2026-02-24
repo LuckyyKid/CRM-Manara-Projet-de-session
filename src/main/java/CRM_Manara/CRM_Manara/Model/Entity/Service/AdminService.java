@@ -51,6 +51,7 @@ public class AdminService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+
     @Transactional(readOnly = true)
     public List<Activity> getAllActivities() {
         return activityRepo.findAll();

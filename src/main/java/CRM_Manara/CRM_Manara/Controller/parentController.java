@@ -6,6 +6,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enfant;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.parentService;
+import CRM_Manara.CRM_Manara.Repository.ParentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,8 @@ public class parentController {
 
     @Autowired
     private parentService parentService;
+    @Autowired
+    ParentRepo parentRepo;
 
     @GetMapping("/dashboard")
     public String parentpage(Model model, Principal principal) {
