@@ -1,97 +1,597 @@
-/* CRM Manara — Sprint 1 (Bootstrap 5 simple + petites modifs) */
+/* ============================================================
+   CRM Manara — style.css
+   Inspiré de Go Jeunesse : cartes colorées, typo bold, propre
+   Compatible Bootstrap 5 + Thymeleaf
+   ============================================================ */
 
-:root{
-  --mm-primary: #1e40af;
-  --mm-accent: #f59e0b;
-  --mm-bg: #f9fafb;
-  --mm-text: #1f2937;
+/* ── Google Font import (Sora + Inter) ───────────────────── */
+/* (déjà chargé via <link> dans index.html,
+    mais le @import sert de fallback pour les autres pages) */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500&display=swap');
 
-  /* Surcharge du thème Bootstrap (chargé APRÈS Bootstrap) */
-  --bs-primary: var(--mm-primary);
-  --bs-primary-rgb: 30, 64, 175;
-  --bs-body-bg: var(--mm-bg);
-  --bs-body-color: var(--mm-text);
-  --bs-link-color: var(--mm-primary);
-  --bs-link-hover-color: #1d4ed8;
+/* ── Variables ───────────────────────────────────────────── */
+:root {
+    /* Palette principale */
+    --mm-primary:      #1e40af;
+    --mm-primary-light:#eff6ff;
+    --mm-primary-dark: #1d4ed8;
+
+    --mm-amber:        #f59e0b;
+    --mm-amber-light:  #fffbeb;
+
+    --mm-green:        #059669;
+    --mm-green-light:  #ecfdf5;
+
+    --mm-rose:         #e11d48;
+    --mm-rose-light:   #fff1f2;
+
+    --mm-bg:           #f8fafc;
+    --mm-text:         #1f2937;
+    --mm-text-muted:   #6b7280;
+    --mm-border:       rgba(0, 0, 0, 0.07);
+
+    /* Bootstrap overrides */
+    --bs-primary:          var(--mm-primary);
+    --bs-primary-rgb:      30, 64, 175;
+    --bs-body-bg:          var(--mm-bg);
+    --bs-body-color:       var(--mm-text);
+    --bs-link-color:       var(--mm-primary);
+    --bs-link-hover-color: var(--mm-primary-dark);
+    --bs-border-radius:    0.75rem;
+    --bs-border-radius-sm: 0.5rem;
+    --bs-border-radius-lg: 1rem;
 }
 
-body{
-  background: var(--mm-bg);
-  color: var(--mm-text);
+/* ── Base ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', 'Helvetica Neue', sans-serif;
+    background: var(--mm-bg);
+    color: var(--mm-text);
+    font-size: 0.9375rem;
+    line-height: 1.6;
 }
 
-.navbar{
-  background: #fff;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    color: var(--mm-text);
 }
 
-.mm-page{
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* ── Layout shell ────────────────────────────────────────── */
+.mm-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.mm-main{
-  flex: 1;
+.mm-main {
+    flex: 1;
+    padding-bottom: 3rem;
 }
 
-/* Petite touche “projet d'école” */
-.card{
-  border-radius: 0.9rem;
+/* ── Navbar ──────────────────────────────────────────────── */
+.navbar {
+    background: #fff;
+    border-bottom: 1px solid var(--mm-border);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
 }
 
-.mm-card-shadow{
-  box-shadow: 0 0.5rem 1.25rem rgba(17, 24, 39, 0.08);
+.navbar-brand {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--mm-primary) !important;
+    letter-spacing: -0.02em;
 }
 
-.mm-section-title{
-  font-weight: 700;
+.navbar-nav .nav-link {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--mm-text);
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.5rem;
+    transition: background 0.15s, color 0.15s;
 }
 
-.mm-footer{
-  background: #f3f4f6;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    background: var(--mm-primary-light);
+    color: var(--mm-primary);
 }
 
-.mm-calendar{
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0.5rem;
+/* ── Hero ────────────────────────────────────────────────── */
+.mm-hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--mm-primary) 0%, #1d4ed8 60%, #2563eb 100%);
+    padding: 3.5rem 0 4rem;
+    overflow: hidden;
+    color: #fff;
 }
 
-.mm-cal-head{
-  font-weight: 600;
-  text-align: center;
-  color: #6b7280;
+.mm-hero-shape {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--mm-bg);
+    clip-path: ellipse(55% 100% at 50% 100%);
 }
 
-.mm-cal-cell{
-  min-height: 110px;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 0.75rem;
-  padding: 0.5rem;
+.mm-hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
 }
 
-.mm-cal-empty{
-  background: transparent;
-  border: 1px dashed rgba(0, 0, 0, 0.08);
+.mm-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.3rem 0.85rem;
+    border-radius: 99px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
 }
 
-.mm-cal-day{
-  font-weight: 600;
-  margin-bottom: 0.35rem;
+.mm-hero-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 1rem;
 }
 
-.mm-cal-event{
-  font-size: 0.75rem;
-  background: rgba(30, 64, 175, 0.1);
-  color: #1e40af;
-  border-radius: 0.4rem;
-  padding: 0.2rem 0.35rem;
-  margin-bottom: 0.2rem;
-  text-decoration: none;
+.mm-hero-highlight {
+    color: var(--mm-amber);
 }
-.mm-cal-event:hover{
-  background: rgba(30, 64, 175, 0.18);
+
+.mm-hero-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.82);
+    max-width: 500px;
+    margin-bottom: 2rem;
+}
+
+/* Stats dans le hero */
+.mm-hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.mm-stat-num {
+    display: block;
+    font-family: 'Sora', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+}
+
+.mm-stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    margin-top: 0.2rem;
+}
+
+.mm-stat-divider {
+    width: 1px;
+    height: 2.5rem;
+    background: rgba(255,255,255,0.25);
+}
+
+/* ── Content area ────────────────────────────────────────── */
+.mm-content-area {
+    padding-top: 2.5rem;
+}
+
+/* ── Section header ──────────────────────────────────────── */
+.mm-section-header {
+    margin-bottom: 1.5rem;
+}
+
+.mm-section-title {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--mm-text);
+    margin-bottom: 0.15rem;
+}
+
+.mm-section-sub {
+    color: var(--mm-text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+/* ── Shortcut cards (page accueil) ───────────────────────── */
+.mm-shortcut-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: #fff;
+    border: 1px solid var(--mm-border);
+    border-radius: 1.1rem;
+    padding: 1.4rem 1.25rem;
+    height: 100%;
+    color: var(--mm-text);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.mm-shortcut-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 1.1rem 1.1rem 0 0;
+    opacity: 0;
+    transition: opacity 0.18s;
+}
+
+.mm-shortcut-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(17, 24, 39, 0.1);
+    text-decoration: none;
+    color: var(--mm-text);
+}
+
+.mm-shortcut-card:hover::before { opacity: 1; }
+
+.mm-sc-blue::before    { background: var(--mm-primary); }
+.mm-sc-amber::before   { background: var(--mm-amber); }
+.mm-sc-green::before   { background: var(--mm-green); }
+.mm-sc-rose::before    { background: var(--mm-rose); }
+
+/* Icône colorée */
+.mm-sc-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.mm-sc-blue  .mm-sc-icon { background: var(--mm-primary-light); color: var(--mm-primary); }
+.mm-sc-amber .mm-sc-icon { background: var(--mm-amber-light);   color: var(--mm-amber); }
+.mm-sc-green .mm-sc-icon { background: var(--mm-green-light);   color: var(--mm-green); }
+.mm-sc-rose  .mm-sc-icon { background: var(--mm-rose-light);    color: var(--mm-rose); }
+
+.mm-sc-body { flex: 1; }
+
+.mm-sc-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    color: var(--mm-text);
+}
+
+.mm-sc-desc {
+    font-size: 0.8125rem;
+    color: var(--mm-text-muted);
+    margin-bottom: 0;
+    line-height: 1.45;
+}
+
+.mm-sc-arrow {
+    align-self: flex-end;
+    font-size: 1rem;
+    color: var(--mm-text-muted);
+    transition: transform 0.15s, color 0.15s;
+}
+
+.mm-shortcut-card:hover .mm-sc-arrow {
+    transform: translateX(4px);
+    color: var(--mm-primary);
+}
+
+/* ── Info band ───────────────────────────────────────────── */
+.mm-info-band {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--mm-primary-light);
+    border: 1px solid rgba(30, 64, 175, 0.15);
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    font-size: 0.875rem;
+    color: var(--mm-text);
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.mm-info-icon {
+    color: var(--mm-primary);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.mm-info-text { flex: 1; min-width: 200px; }
+
+.mm-btn-outline-light {
+    border: 1px solid rgba(30, 64, 175, 0.3);
+    color: var(--mm-primary);
+    background: #fff;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border-radius: 0.5rem;
+}
+
+.mm-btn-outline-light:hover {
+    background: var(--mm-primary);
+    border-color: var(--mm-primary);
+    color: #fff;
+}
+
+/* ── Cartes génériques (autres pages) ───────────────────── */
+.card {
+    border: 1px solid var(--mm-border);
+    border-radius: 1rem;
+    box-shadow: none;
+}
+
+.mm-card-shadow {
+    box-shadow: 0 4px 20px rgba(17, 24, 39, 0.07);
+}
+
+/* ── Tableaux ────────────────────────────────────────────── */
+.table {
+    font-size: 0.875rem;
+}
+
+.table thead th {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--mm-text-muted);
+    border-bottom-width: 1px;
+    padding: 0.65rem 0.85rem;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    padding: 0.7rem 0.85rem;
+    color: var(--mm-text);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--mm-primary-light);
+}
+
+/* ── Badges ──────────────────────────────────────────────── */
+.badge {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    padding: 0.3em 0.65em;
+    border-radius: 99px;
+}
+
+.mm-badge-blue  { background: var(--mm-primary-light); color: var(--mm-primary); }
+.mm-badge-amber { background: var(--mm-amber-light);   color: #92400e; }
+.mm-badge-green { background: var(--mm-green-light);   color: var(--mm-green); }
+.mm-badge-rose  { background: var(--mm-rose-light);    color: var(--mm-rose); }
+
+/* ── Formulaires ─────────────────────────────────────────── */
+.form-label {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: var(--mm-text);
+    margin-bottom: 0.35rem;
+}
+
+.form-control, .form-select {
+    border: 1.5px solid rgba(0,0,0,0.12);
+    border-radius: 0.65rem;
+    font-size: 0.875rem;
+    padding: 0.55rem 0.85rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--mm-primary);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+/* ── Boutons ─────────────────────────────────────────────── */
+.btn {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 0.8375rem;
+    border-radius: 0.6rem;
+    transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn-primary {
+    background: var(--mm-primary);
+    border-color: var(--mm-primary);
+}
+
+.btn-primary:hover {
+    background: var(--mm-primary-dark);
+    border-color: var(--mm-primary-dark);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+}
+
+.btn-outline-primary {
+    color: var(--mm-primary);
+    border-color: var(--mm-primary);
+}
+
+.btn-outline-primary:hover {
+    background: var(--mm-primary);
+    border-color: var(--mm-primary);
+}
+
+/* ── Alertes ─────────────────────────────────────────────── */
+.alert {
+    border: none;
+    border-radius: 0.85rem;
+    font-size: 0.875rem;
+    border-left: 4px solid transparent;
+}
+
+.alert-success { border-left-color: var(--mm-green); background: var(--mm-green-light); color: #065f46; }
+.alert-warning { border-left-color: var(--mm-amber); background: var(--mm-amber-light); color: #92400e; }
+.alert-danger  { border-left-color: var(--mm-rose);  background: var(--mm-rose-light);  color: #9f1239; }
+.alert-info    { border-left-color: var(--mm-primary); background: var(--mm-primary-light); color: var(--mm-primary); }
+
+/* ── Pagination ──────────────────────────────────────────── */
+.page-link {
+    color: var(--mm-primary);
+    border-radius: 0.5rem !important;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 0.8125rem;
+}
+
+.page-item.active .page-link {
+    background: var(--mm-primary);
+    border-color: var(--mm-primary);
+}
+
+/* ── Calendrier ──────────────────────────────────────────── */
+.mm-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.mm-cal-head {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--mm-text-muted);
+    padding: 0.4rem 0;
+}
+
+.mm-cal-cell {
+    min-height: 110px;
+    background: #fff;
+    border: 1px solid var(--mm-border);
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+    transition: border-color 0.15s;
+}
+
+.mm-cal-cell:hover { border-color: rgba(30, 64, 175, 0.25); }
+
+.mm-cal-empty {
+    background: transparent;
+    border: 1px dashed rgba(0, 0, 0, 0.07);
+}
+
+.mm-cal-day {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    margin-bottom: 0.35rem;
+    color: var(--mm-text);
+}
+
+.mm-cal-event {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: var(--mm-primary-light);
+    color: var(--mm-primary);
+    border-radius: 0.4rem;
+    padding: 0.2rem 0.4rem;
+    margin-bottom: 0.2rem;
+    text-decoration: none;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background 0.12s;
+}
+
+.mm-cal-event:hover { background: rgba(30, 64, 175, 0.18); color: var(--mm-primary); }
+
+/* ── Footer ──────────────────────────────────────────────── */
+.mm-footer {
+    background: #fff;
+    border-top: 1px solid var(--mm-border);
+    padding: 1.25rem 0;
+    font-size: 0.8125rem;
+    color: var(--mm-text-muted);
+}
+
+/* ── Page titles (sous-pages) ────────────────────────────── */
+.mm-page-header {
+    background: #fff;
+    border-bottom: 1px solid var(--mm-border);
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+}
+
+.mm-page-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--mm-text);
+    margin-bottom: 0.1rem;
+}
+
+.mm-page-breadcrumb {
+    font-size: 0.8125rem;
+    color: var(--mm-text-muted);
+}
+
+.mm-page-breadcrumb a {
+    color: var(--mm-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* ── Utilitaires ─────────────────────────────────────────── */
+.text-primary { color: var(--mm-primary) !important; }
+.bg-primary   { background: var(--mm-primary) !important; }
+
+.mm-divider {
+    border: none;
+    border-top: 1px solid var(--mm-border);
+    margin: 1.5rem 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 576px) {
+    .mm-hero { padding: 2.5rem 0 3rem; }
+    .mm-hero-title { font-size: 1.75rem; }
+    .mm-hero-stats { gap: 1rem; }
+    .mm-stat-num { font-size: 1.35rem; }
+    .mm-stat-divider { display: none; }
+    .mm-info-band { flex-direction: column; align-items: flex-start; }
+    .mm-btn-outline-light { width: 100%; text-align: center; }
 }

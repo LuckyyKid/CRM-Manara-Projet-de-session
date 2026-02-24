@@ -3,88 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CRM Manara — Accueil</title>
+    <title>CRM Manara Accueil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
 <div class="mm-page">
 
-<!-- Header commun (menu + connexion/déconnexion) -->
-<div th:replace="~{fragments/header :: header}"></div>
 
-<main class="mm-main">
-    <div class="container py-4">
-        <div class="bg-white border rounded-3 p-4 mb-4">
-            <h1 class="h3 mb-2">Bienvenue sur le portail Manara</h1>
-            <p class="text-secondary mb-0">
-                Ce portail permet aux parents et à l’administration de consulter les activités, gérer les inscriptions et suivre le planning.
-            </p>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="mm-main">
+
+
+        <div class="mm-hero">
+            <div class="container">
+                <div class="mm-hero-inner">
+                    <div class="mm-hero-badge">
+                        <i class="bi bi-stars"></i> Portail famille &amp; administration
+                    </div>
+                    <h1 class="mm-hero-title">Bienvenue sur<br><span class="mm-hero-highlight">Manara</span></h1>
+                    <p class="mm-hero-sub">
+                        Consultez les activités, gérez les inscriptions et suivez le planning de vos enfants en toute simplicité.
+                    </p>
+                    <div class="mm-hero-stats">
+                        <div class="mm-stat">
+                            <span class="mm-stat-num" th:text="${totalEnfants ?: '10 000'}">—</span>
+                            <span class="mm-stat-label">Enfants activement inscrits</span>
+                        </div>
+                        <div class="mm-stat-divider"></div>
+                        <div class="mm-stat">
+                            <span class="mm-stat-num" th:text="${totalActivites ?: '20'}">—</span>
+                            <span class="mm-stat-label">Activités actives</span>
+                        </div>
+                        <div class="mm-stat-divider"></div>
+                        <div class="mm-stat">
+                            <span class="mm-stat-num" th:text="${totalInscriptions ?: '20 000'}">—</span>
+                            <span class="mm-stat-label">Inscriptions unique</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mm-hero-shape"></div>
         </div>
 
-        <!-- Petites cartes de raccourcis pour aller vite -->
-        <h2 class="h5 mm-section-title mb-3">Accès rapide</h2>
-        <div class="row g-3">
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card mm-card-shadow h-100">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <i class="bi bi-people text-primary"></i>
-                            <h3 class="h6 mb-0">Gérer mes enfants</h3>
-                        </div>
-                        <p class="card-text text-secondary small mb-3">Accéder aux dossiers et informations.</p>
-                        <a class="btn btn-sm btn-outline-primary" href="/parent/enfants">Ouvrir</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card mm-card-shadow h-100">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <i class="bi bi-grid-3x3-gap text-primary"></i>
-                            <h3 class="h6 mb-0">Inscrire à une activité</h3>
-                        </div>
-                        <p class="card-text text-secondary small mb-3">Choisir une activité disponible.</p>
-                        <a class="btn btn-sm btn-outline-primary" href="/parent/activities">Voir les activités</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card mm-card-shadow h-100">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <i class="bi bi-calendar3 text-primary"></i>
-                            <h3 class="h6 mb-0">Voir le planning</h3>
-                        </div>
-                        <p class="card-text text-secondary small mb-3">Consulter les horaires.</p>
-                        <a class="btn btn-sm btn-outline-primary" href="/parent/planning">Consulter</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-6 col-lg-3">
-                <div class="card mm-card-shadow h-100">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <i class="bi bi-journal-check text-primary"></i>
-                            <h3 class="h6 mb-0">Consulter mes inscriptions</h3>
-                        </div>
-                        <p class="card-text text-secondary small mb-3">Suivi des inscriptions et statuts.</p>
-                        <a class="btn btn-sm btn-outline-primary" href="/parent/planning">Consulter</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
+        <div class="container mm-content-area">
 
-<!-- Footer commun -->
-<div th:replace="~{fragments/footer :: footer}"></div>
+
+            <div class="mm-section-header">
+                <h2 class="mm-section-title">Accès rapide</h2>
+                <p class="mm-section-sub">Retrouvez toutes vos actions en un clic</p>
+            </div>
+
+            <div class="row g-4 mb-5">
+
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <a th:href="@{/template/parent/enfants}"  class="mm-shortcut-card mm-sc-blue text-decoration-none">
+                        <div class="mm-sc-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div class="mm-sc-body">
+                            <h3 class="mm-sc-title">Mes enfants</h3>
+                            <p class="mm-sc-desc">Accéder aux dossiers et informations.</p>
+                        </div>
+                        <div class="mm-sc-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <a th:href="@{/parent/activities}"  class="mm-shortcut-card mm-sc-amber text-decoration-none">
+                        <div class="mm-sc-icon">
+                            <i class="bi bi-grid-3x3-gap-fill"></i>
+                        </div>
+                        <div class="mm-sc-body">
+                            <h3 class="mm-sc-title">Activités</h3>
+                            <p class="mm-sc-desc">Choisir une activité disponible.</p>
+                        </div>
+                        <div class="mm-sc-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <a th:href="@{/parent/planning}"  class="mm-shortcut-card mm-sc-green text-decoration-none">
+                        <div class="mm-sc-icon">
+                            <i class="bi bi-calendar3-fill"></i>
+                        </div>
+                        <div class="mm-sc-body">
+                            <h3 class="mm-sc-title">Planning</h3>
+                            <p class="mm-sc-desc">Consulter les horaires et séances.</p>
+                        </div>
+                        <div class="mm-sc-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <a th:href="@{/parent/planning}"  class="mm-shortcut-card mm-sc-rose text-decoration-none">
+                        <div class="mm-sc-icon">
+                            <i class="bi bi-journal-check"></i>
+                        </div>
+                        <div class="mm-sc-body">
+                            <h3 class="mm-sc-title">Mes inscriptions</h3>
+                            <p class="mm-sc-desc">Suivi des inscriptions et statuts.</p>
+                        </div>
+                        <div class="mm-sc-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+
+
+            <div class="mm-info-band">
+                <div class="mm-info-icon">
+                    <i class="bi bi-info-circle-fill"></i>
+                </div>
+                <div class="mm-info-text">
+                    <strong>Besoin d'aide ?</strong> Contactez l'équipe Manara par courriel ou consultez la documentation disponible dans votre espace membre.
+                </div>
+                <a href="/contact" class="btn mm-btn-outline-light btn-sm ms-auto flex-shrink-0">Nous contacter</a>
+            </div>
+
+        </div>
+    </main>
+
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
