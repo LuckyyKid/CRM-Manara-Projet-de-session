@@ -5,7 +5,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.PresenceStatus;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Inscription",uniqueConstraints = {
+@Table(name = "inscription",uniqueConstraints = {
 @UniqueConstraint(columnNames = {"enfant_id", "animation_id"})
     })
 
@@ -43,6 +43,14 @@ public class Inscription {
         this.animation = animation;
         this.statusInscription = statusInscription.ACTIF;
         this.presenceStatus = PresenceStatus.NON_SIGNEE;
+
+    }
+    public Inscription(Enfant enfant, Animation animation,String incidentNote) {
+        this.enfant = enfant;
+        this.animation = animation;
+        this.statusInscription = statusInscription.ACTIF;
+        this.presenceStatus = PresenceStatus.NON_SIGNEE;
+        this.incidentNote = incidentNote;
     }
 
 

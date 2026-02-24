@@ -27,7 +27,6 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        // On instancie la classe spécifique du package DAO
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userService);
 
         authProvider.setPasswordEncoder(bCryptPasswordEncoder);
