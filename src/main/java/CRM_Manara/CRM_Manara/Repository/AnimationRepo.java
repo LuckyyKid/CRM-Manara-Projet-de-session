@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface AnimationRepo extends JpaRepository<Animation, Long> {
 
+    @Override
+    List<Animation> findAllById(Iterable<Long> longs);
+
     @Query("SELECT a FROM Animation a WHERE a.activity.id = :activityId")
     List<Animation> findByActivityId(@Param("activityId") Long activityId);
 

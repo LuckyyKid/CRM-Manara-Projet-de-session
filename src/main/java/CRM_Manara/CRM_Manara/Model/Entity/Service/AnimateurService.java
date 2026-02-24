@@ -49,6 +49,7 @@ public class AnimateurService {
                 .collect(Collectors.toList());
     }
 
+
     @Transactional(readOnly = true)
     public long countInscriptionsForAnimation(Long animationId) {
         return inscriptionRepo.countByAnimationId(animationId);

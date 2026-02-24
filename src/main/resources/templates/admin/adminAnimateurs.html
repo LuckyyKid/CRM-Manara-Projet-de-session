@@ -40,13 +40,6 @@
                             <tbody>
                             <tr th:if="${#lists.isEmpty(animateurs)}">
                                 <td colspan="4" class="text-secondary">Aucun animateur.</td>
-                                <td>
-                                    <a class="btn btn-sm btn-outline-secondary" th:href="@{'/admin/animateurs/' + ${an.id} + '/edit'}">Modifier</a>
-                                    <form th:action="@{'/admin/animateurs/' + ${an.id} + '/delete'}" method="post" class="d-inline" onsubmit="return confirm('Supprimer cet animateur ?');">
-                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
-                                    </form>
-                                </td>
                             </tr>
                             <tr th:each="an : ${animateurs}">
                                 <td th:text="${an.id}"></td>
