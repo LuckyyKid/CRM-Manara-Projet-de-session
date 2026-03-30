@@ -12,16 +12,40 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendInscriptionConfirmation(String to, Inscription inscription) {
+    // ADDED
+    public void sendEmail(String to, String subject, String text) {
+        // ADDED
+        System.out.println("STEP 11 REACHED - EmailService.sendEmail()");
+        System.out.println("JavaMailSender injected: " + (mailSender != null));
+        System.out.println("Preparing email to: " + to);
+        System.out.println("Email subject: " + subject);
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setSubject("Confirmation d'inscription - CRM Manara");
-        message.setText(buildInscriptionBody(inscription));
+        message.setSubject(subject);
+        message.setText(text);
         try {
+            // ADDED
+            System.out.println("Sending email...");
+            // ADDED
+            System.out.println("STEP 12 REACHED - Calling JavaMailSender.send()");
             mailSender.send(message);
+            // ADDED
+            System.out.println("EMAIL SENT SUCCESS");
+            // ADDED
+            System.out.println("STEP 13 REACHED - JavaMailSender.send() completed successfully for: " + to);
         } catch (Exception ex) {
-            System.out.println("EMAIL NON ENVOYE: " + ex.getMessage());
+            // ADDED
+            System.out.println("STEP 13 FAILED - EMAIL NON ENVOYE");
+            System.out.println("Email destination: " + to);
+            System.out.println("Email error message: " + ex.getMessage());
+            ex.printStackTrace();
         }
+    }
+
+    // MODIFIED
+    public void sendInscriptionConfirmation(String to, Inscription inscription) {
+        sendEmail(to, "Confirmation d'inscription - CRM Manara", buildInscriptionBody(inscription));
     }
 
     private String buildInscriptionBody(Inscription inscription) {
