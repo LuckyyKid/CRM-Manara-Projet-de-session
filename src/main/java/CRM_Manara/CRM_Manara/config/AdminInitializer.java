@@ -8,12 +8,14 @@ import CRM_Manara.CRM_Manara.Repository.AdminRepo;
 import CRM_Manara.CRM_Manara.Repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
+@Order(2)
 public class AdminInitializer implements CommandLineRunner {
 
     @Autowired
@@ -32,7 +34,8 @@ public class AdminInitializer implements CommandLineRunner {
                     User newUser = new User(
                             "admin@manara.com",
                             passwordEncoder.encode("Admin123!"),
-                            SecurityRole.ROLE_ADMIN
+                            SecurityRole.ROLE_ADMIN,
+                            true
                     );
 
                     return userRepository.save(newUser);
