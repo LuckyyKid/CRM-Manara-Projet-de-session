@@ -1,0 +1,47 @@
+@startuml
+autonumber
+skinparam shadowing false
+title Sequence - Connexion et redirection selon le role
+
+actor "Utilisateur" as U
+participant "authController" as AuthC
+participant "Spring Security FilterChain" as Filter
+participant "DaoAuthenticationProvider" as DaoAuth
+participant "userService" as UserSvc
+participant "UserRepo" as UserRepo
+participant "BCryptPasswordEncoder" as BCrypt
+participant "CustomAuthenticationSuccessHandler" as Success
+database "MySQL" as DB
+
+U -> AuthC : GET /login
+AuthC --> U : login.html
+
+U -> Filter : POST /login\n(username=email, password)
+Filter -> DaoAuth : authenticate(credentials)
+DaoAuth -> UserSvc : loadUserByUsername(email)
+UserSvc -> UserRepo : findByEmail(email.trim())
+UserRepo -> DB : SELECT user by email
+DB --> UserRepo : user row
+UserRepo --> UserSvc : User
+UserSvc --> DaoAuth : UserDetails(authorities=ROLE_*)
+DaoAuth -> BCrypt : matches(raw, hash)
+BCrypt --> DaoAuth : true/false
+
+alt Auth OK
+  DaoAuth --> Filter : Authentication
+  Filter -> Success : onAuthenticationSuccess(...)
+  alt ROLE_ADMIN
+    Success --> U : redirect /admin/adminDashboard
+  else ROLE_PARENT
+    Success --> U : redirect /parent/dashboard
+  else ROLE_ANIMATEUR
+    Success --> U : redirect /animateur/dashboard
+  else autre role
+    Success --> U : redirect /
+  end
+else Auth KO
+  DaoAuth --> Filter : exception
+  Filter --> U : redirect /login?error
+end
+
+@enduml

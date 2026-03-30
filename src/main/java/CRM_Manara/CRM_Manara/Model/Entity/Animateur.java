@@ -1,0 +1,76 @@
+package CRM_Manara.CRM_Manara.Model.Entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "Animateurs")
+
+public class Animateur {
+
+    @Id
+    @Column(name= "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+
+    @Column(name = "nom", nullable = false)
+    @NotBlank(message = "Champ obligatoire")
+    private String nom;
+
+    @Column(name = "prenom", nullable = false)
+    @NotBlank(message = "Champ obligatoire")
+    private String prenom;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "animateur", fetch = FetchType.LAZY)
+    private List<Animation> animations = new ArrayList<>();
+
+    public Animateur() {
+
+    }
+
+    public Animateur(String nom, String prenom) {
+        this.nom = nom;
+        this.prenom = prenom;
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public List<Animation> getAnimations() {
+        return animations;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+}

@@ -1,0 +1,108 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam shadowing false
+title Architecture multicouche - CRM Manara (Sprint 1)
+
+actor "Navigateur Web" as Browser
+
+package "Presentation" {
+  [indexController]
+  [authController]
+  [SignUpController]
+  [parentController]
+  [adminController]
+  [Templates Thymeleaf\n(index/login/signUp/\nparentDashboard/adminDashboard)]
+}
+
+package "Metier / Services" {
+  [parentService]
+  [ActivityService]
+  [userService\n(UserDetailsService)]
+  [AdminService]
+}
+
+package "Acces aux donnees / Repositories" {
+  [UserRepo]
+  [ParentRepo]
+  [EnfantRepo]
+  [ActivityRepo]
+  [AnimationRepo]
+  [InscriptionRepo]
+  [AdminRepo]
+}
+
+package "Domaine JPA" {
+  [User]
+  [Parent]
+  [Enfant]
+  [Activity]
+  [Animation]
+  [Inscription]
+  [Administrateurs]
+  [Animateur]
+  [Enums]
+}
+
+package "Infrastructure / Config" {
+  [SecurityConfig]
+  [CustomAuthenticationSuccessHandler]
+  [PasswordEncoderConfig]
+  database "MySQL / MariaDB\nschema manara" as DB
+}
+
+Browser --> [indexController]
+Browser --> [authController]
+Browser --> [SignUpController]
+Browser --> [parentController]
+Browser --> [adminController]
+Browser --> [Templates Thymeleaf\n(index/login/signUp/\nparentDashboard/adminDashboard)]
+
+[indexController] --> [Templates Thymeleaf\n(index/login/signUp/\nparentDashboard/adminDashboard)]
+[authController] --> [Templates Thymeleaf\n(index/login/signUp/\nparentDashboard/adminDashboard)]
+[SignUpController] --> [parentService]
+[parentController] --> [parentService]
+[parentController] --> [ActivityService]
+[adminController] --> [AdminService]
+[adminController] --> [Templates Thymeleaf\n(index/login/signUp/\nparentDashboard/adminDashboard)]
+
+[userService\n(UserDetailsService)] --> [UserRepo]
+[parentService] --> [UserRepo]
+[parentService] --> [ParentRepo]
+[parentService] --> [EnfantRepo]
+[parentService] --> [ActivityRepo]
+[parentService] --> [AnimationRepo]
+[parentService] --> [InscriptionRepo]
+[ActivityService] --> [ActivityRepo]
+[ActivityService] --> [AnimationRepo]
+[AdminService] --> [AdminRepo]
+
+[UserRepo] --> [User]
+[ParentRepo] --> [Parent]
+[EnfantRepo] --> [Enfant]
+[ActivityRepo] --> [Activity]
+[AnimationRepo] --> [Animation]
+[InscriptionRepo] --> [Inscription]
+[AdminRepo] --> [Administrateurs]
+
+[SecurityConfig] --> [userService\n(UserDetailsService)]
+[SecurityConfig] --> [CustomAuthenticationSuccessHandler]
+[SecurityConfig] --> [PasswordEncoderConfig]
+[SecurityConfig] --> Browser : filtre / login
+[CustomAuthenticationSuccessHandler] --> [parentController]
+[CustomAuthenticationSuccessHandler] --> [adminController]
+
+[User] --> [Enums]
+[Activity] --> [Enums]
+[Animation] --> [Enums]
+[Inscription] --> [Enums]
+[Administrateurs] --> [Enums]
+
+[UserRepo] --> DB
+[ParentRepo] --> DB
+[EnfantRepo] --> DB
+[ActivityRepo] --> DB
+[AnimationRepo] --> DB
+[InscriptionRepo] --> DB
+[AdminRepo] --> DB
+
+@enduml

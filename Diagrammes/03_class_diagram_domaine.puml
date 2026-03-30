@@ -1,0 +1,146 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+hide empty methods
+
+package "Entities" {
+  class User {
+    - Long id
+    - String email
+    - String password
+    - SecurityRole role
+    - Date dateCreation
+  }
+
+  class Parent {
+    - Long id
+    - String nom
+    - String prenom
+    - String adresse
+    - User user
+    - List<Enfant> enfants
+    + AddEnfant(enfant)
+  }
+
+  class Enfant {
+    - Long id
+    - String nom
+    - String prenom
+    - Date date_de_naissance
+    - Parent parent
+    - List<Inscription> inscriptions
+  }
+
+  class Activity {
+    - Long id
+    - String activyName
+    - String description
+    - int ageMin
+    - int ageMax
+    - int capacity
+    - Date dateCreation
+    - status status
+    - typeActivity type
+  }
+
+  class Animateur {
+    - Long id
+    - String nom
+    - String prenom
+    - User user
+    - List<Animation> animations
+  }
+
+  class Animation {
+    - Long id
+    - Animateur animateur
+    - Activity activity
+    - AnimationRole role
+    - animationStatus statusAnimation
+    - LocalDateTime startTime
+    - LocalDateTime endTime
+  }
+
+  class Inscription {
+    - Long id
+    - statusInscription statusInscription
+    - Enfant enfant
+    - Animation animation
+  }
+
+  class Administrateurs {
+    - Long id
+    - String nom
+    - String prenom
+    - User user
+    - SecurityRole role
+    - AccountStatus status
+    - Date dateCreation
+    - Date lastLogin
+  }
+}
+
+package "Enums" {
+  enum SecurityRole {
+    ROLE_ADMIN
+    ROLE_PARENT
+    ROLE_ANIMATEUR
+  }
+  enum AccountStatus {
+    ACTIF
+    SUSPENDU
+  }
+  enum status {
+    OUVERTE
+    COMPLETE
+    ANNULEE
+  }
+  enum typeActivity {
+    SPORT
+    MUSIQUE
+    ART
+    LECTURE
+    TUTORAT
+  }
+  enum AnimationRole {
+    PRINCIPAL
+    ASSISTANT
+    TUTEUR
+    COACH
+  }
+  enum animationStatus {
+    ACTIF
+    ANNULE
+    REMPLACE
+  }
+  enum statusInscription {
+    ACTIF
+    ANNULEE
+  }
+}
+
+Parent "1" o-- "0..*" Enfant : enfants
+Enfant "1" --> "0..*" Inscription : inscriptions
+Inscription "*" --> "1" Animation
+Animation "*" --> "1" Activity
+Animation "*" --> "1" Animateur
+
+Parent "1" --> "1" User : user
+Animateur "1" --> "1" User : user
+Administrateurs "1" --> "1" User : user
+
+User --> SecurityRole
+Activity --> status
+Activity --> typeActivity
+Animation --> AnimationRole
+Animation --> animationStatus
+Inscription --> statusInscription
+Administrateurs --> SecurityRole
+Administrateurs --> AccountStatus
+
+note right of Inscription
+  Contrainte JPA:
+  unique(enfant_id, animation_id)
+end note
+
+@enduml

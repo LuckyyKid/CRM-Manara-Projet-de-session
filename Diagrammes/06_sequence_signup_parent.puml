@@ -1,0 +1,31 @@
+@startuml
+autonumber
+skinparam shadowing false
+title Sequence - Inscription d'un parent (SignUp)
+
+actor "Visiteur" as V
+participant "SignUpController" as C
+participant "parentService" as S
+participant "BCryptPasswordEncoder" as Pwd
+participant "UserRepo" as URepo
+participant "ParentRepo" as PRepo
+database "MySQL" as DB
+
+V -> C : POST /signUp\n(nom, prenom, adresse, email, password)
+C -> S : createNewParent(...)
+S -> Pwd : encode(password)
+Pwd --> S : hash
+S -> S : new User(email, hash)\nsetRole(ROLE_PARENT)
+S -> URepo : save(user)
+URepo -> DB : INSERT users
+DB --> URepo : userSaved(id)
+URepo --> S : userSaved
+S -> S : new Parent(...)\nSetUser(userSaved)
+S -> PRepo : save(parent)
+PRepo -> DB : INSERT Parent
+DB --> PRepo : parent persisted
+PRepo --> S : Parent
+S --> C : void
+C --> V : redirect:/login\nflash "Inscription reussie"
+
+@enduml

@@ -1,0 +1,67 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Visiteur" as Visiteur
+actor "Parent" as Parent
+actor "Administrateur" as Admin
+actor "Animateur" as Animateur
+
+Visiteur <|-- Parent
+Visiteur <|-- Admin
+Visiteur <|-- Animateur
+
+rectangle "CRM Manara - Sprint 1" {
+  usecase "Consulter accueil" as UC_Accueil
+  usecase "Creer compte parent\n(SignUp)" as UC_SignUp
+  usecase "Se connecter" as UC_Login
+  usecase "Se deconnecter" as UC_Logout
+
+  usecase "Consulter tableau de bord parent" as UC_ParentDash
+  usecase "Gerer enfants" as UC_GererEnfants
+  usecase "Ajouter enfant" as UC_AjouterEnfant
+  usecase "Consulter activites" as UC_Activites
+  usecase "Consulter planning" as UC_Planning
+  usecase "Inscrire un enfant a une animation" as UC_InscrireEnfant
+  usecase "Consulter inscriptions" as UC_ConsulterInscriptions
+
+  usecase "Consulter tableau de bord admin" as UC_AdminDash
+  usecase "Gerer administrateurs" as UC_GererAdmins
+  usecase "Gerer activites et planning" as UC_GererActivites
+}
+
+Visiteur --> UC_Accueil
+Visiteur --> UC_SignUp
+Visiteur --> UC_Login
+
+Parent --> UC_ParentDash
+Parent --> UC_GererEnfants
+Parent --> UC_Activites
+Parent --> UC_Planning
+Parent --> UC_InscrireEnfant
+Parent --> UC_ConsulterInscriptions
+Parent --> UC_Logout
+
+Admin --> UC_AdminDash
+Admin --> UC_GererAdmins
+Admin --> UC_GererActivites
+Admin --> UC_Logout
+
+UC_GererEnfants .> UC_AjouterEnfant : <<include>>
+UC_InscrireEnfant .> UC_Activites : <<include>>
+UC_InscrireEnfant .> UC_Planning : <<include>>
+
+note bottom of UC_GererEnfants
+  Dans le code actuel, la logique metier existe
+  (parentService.createEnfantForParent),
+  mais les endpoints HTTP/Thymeleaf complets
+  restent a exposer.
+end note
+
+note bottom of UC_InscrireEnfant
+  Logique metier deja presente:
+  parentService.inscrireEnfant(...)
+end note
+
+@enduml

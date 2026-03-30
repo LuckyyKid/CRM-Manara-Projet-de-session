@@ -1,0 +1,53 @@
+@startuml
+autonumber
+skinparam shadowing false
+title Sequence - Inscrire un enfant a une animation (logique service)
+
+actor "Parent connecte" as P
+participant "parentController\n(endpoint a exposer)" as PC
+participant "parentService" as S
+participant "ParentRepo" as PRepo
+participant "EnfantRepo" as ERepo
+participant "AnimationRepo" as ARepo
+participant "InscriptionRepo" as IRepo
+database "MySQL" as DB
+
+P -> PC : POST /parent/inscriptions\n(enfantId, animationId)
+PC -> S : inscrireEnfant(enfantId, animationId, emailSession)
+
+S -> PRepo : findByUserEmail(emailSession)
+PRepo -> DB : SELECT parent by email
+DB --> PRepo : Parent
+PRepo --> S : Parent
+
+S -> ERepo : findByIdAndParentId(enfantId, parent.id)
+ERepo -> DB : SELECT enfant by id + parent_id
+DB --> ERepo : Enfant / empty
+ERepo --> S : Optional<Enfant>
+
+alt enfant valide pour ce parent
+  S -> ARepo : findById(animationId)
+  ARepo -> DB : SELECT animation by id
+  DB --> ARepo : Animation / empty
+  ARepo --> S : Optional<Animation>
+
+  alt animation existe
+    S -> S : new Inscription(enfant, animation)
+    S -> IRepo : save(inscription)
+    IRepo -> DB : INSERT Inscription\n(unique enfant_id, animation_id)
+    DB --> IRepo : Inscription persisted
+    IRepo --> S : Inscription
+    S --> PC : Inscription
+    PC --> P : 201/redirect success
+  else animation introuvable
+    ARepo --> S : empty
+    S --> PC : IllegalArgumentException("Animation introuvable")
+    PC --> P : erreur
+  end
+else enfant introuvable / non autorise
+  ERepo --> S : empty
+  S --> PC : IllegalArgumentException("Enfant introuvable...")
+  PC --> P : erreur
+end
+
+@enduml
