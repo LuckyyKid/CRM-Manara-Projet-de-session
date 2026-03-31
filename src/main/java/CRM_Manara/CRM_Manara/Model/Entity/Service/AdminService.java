@@ -21,7 +21,9 @@ import CRM_Manara.CRM_Manara.Repository.AnimationRepo;
 import CRM_Manara.CRM_Manara.Repository.EnfantRepo;
 import CRM_Manara.CRM_Manara.Repository.InscriptionRepo;
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
+import CRM_Manara.CRM_Manara.Repository.ParentNotificationRepo;
 import CRM_Manara.CRM_Manara.Repository.UserRepo;
+import CRM_Manara.CRM_Manara.Repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -59,6 +61,12 @@ public class AdminService {
     UserRepo userRepo;
 
     @Autowired
+    ParentNotificationRepo parentNotificationRepo;
+
+    @Autowired
+    VerificationTokenRepository verificationTokenRepository;
+
+    @Autowired
     InscriptionRepo inscriptionRepo;
 
     @Autowired
@@ -72,6 +80,12 @@ public class AdminService {
 
     @Autowired
     AvatarService avatarService;
+
+    @Autowired
+    AnimateurNotificationService animateurNotificationService;
+
+    @Autowired
+    AdminNotificationService adminNotificationService;
 
 
     @Transactional(readOnly = true)
@@ -143,13 +157,26 @@ public class AdminService {
         animation.setEndTime(end);
         animation.setActivity(activity);
         animation.setAnimateur(animateur);
-        return animationRepo.save(animation);
+        Animation saved = animationRepo.save(animation);
+        animateurNotificationService.createForAnimateur(
+                animateur,
+                "ANIMATION",
+                "Nouvelle session assignée",
+                "Une nouvelle session vous a été assignée : "
+                        + activity.getActivyName()
+                        + " du " + start + " au " + end + "."
+        );
+        return saved;
     }
 
     @Transactional
     public Animation updateAnimation(Long id, Long activityId, Long animateurId, AnimationRole role,
                                      animationStatus status, LocalDateTime start, LocalDateTime end) {
         Animation animation = getAnimationById(id);
+        Animateur previousAnimateur = animation.getAnimateur();
+        Activity previousActivity = animation.getActivity();
+        LocalDateTime previousStart = animation.getStartTime();
+        LocalDateTime previousEnd = animation.getEndTime();
         Activity activity = getActivityById(activityId);
         Animateur animateur = getAnimateurById(animateurId);
         animation.setActivity(activity);
@@ -158,14 +185,51 @@ public class AdminService {
         animation.setStatusAnimation(status);
         animation.setStartTime(start);
         animation.setEndTime(end);
-        return animationRepo.save(animation);
+        Animation saved = animationRepo.save(animation);
+
+        if (previousAnimateur != null && !previousAnimateur.getId().equals(animateur.getId())) {
+            animateurNotificationService.createForAnimateur(
+                    previousAnimateur,
+                    "ANIMATION",
+                    "Session retirée",
+                    "La session "
+                            + previousActivity.getActivyName()
+                            + " du " + previousStart + " au " + previousEnd
+                            + " ne vous est plus assignée."
+            );
+        }
+
+        animateurNotificationService.createForAnimateur(
+                animateur,
+                "ANIMATION",
+                previousAnimateur != null && previousAnimateur.getId().equals(animateur.getId())
+                        ? "Session mise à jour"
+                        : "Nouvelle session assignée",
+                "La session "
+                        + activity.getActivyName()
+                        + " que vous animez a été mise à jour. Nouveau créneau : "
+                        + start + " à " + end + "."
+        );
+        return saved;
     }
 
     @Transactional
     public void deleteAnimation(Long id) {
+        Animation animation = getAnimationById(id);
         List<Inscription> inscriptions = inscriptionRepo.findByAnimationId(id);
         if (!inscriptions.isEmpty()) {
             inscriptionRepo.deleteAll(inscriptions);
+        }
+        if (animation.getAnimateur() != null && animation.getActivity() != null) {
+            animateurNotificationService.createForAnimateur(
+                    animation.getAnimateur(),
+                    "ANIMATION",
+                    "Session annulée",
+                    "La session "
+                            + animation.getActivity().getActivyName()
+                            + " du " + animation.getStartTime()
+                            + " a été supprimée par l'administration."
+            );
         }
         animationRepo.deleteById(id);
     }
@@ -351,6 +415,11 @@ public class AdminService {
                         ? "Votre compte parent a été approuvé par l'administration."
                         : "Votre compte parent a été désactivé par l'administration."
         );
+        adminNotificationService.create(
+                "ADMIN",
+                "COMPTE",
+                "Statut parent mis à jour: " + parent.getPrenom() + " " + parent.getNom() + " -> " + (enabled ? "actif" : "désactivé") + "."
+        );
         return parent;
     }
 
@@ -378,6 +447,11 @@ public class AdminService {
                         ? saved.getPrenom() + " " + saved.getNom() + " est maintenant actif et peut être inscrit aux activités."
                         : saved.getPrenom() + " " + saved.getNom() + " a été désactivé par l'administration."
         );
+        adminNotificationService.create(
+                "ADMIN",
+                "ENFANT",
+                "Statut enfant mis à jour: " + saved.getPrenom() + " " + saved.getNom() + " -> " + (active ? "actif" : "désactivé") + "."
+        );
         return saved;
     }
 
@@ -398,6 +472,11 @@ public class AdminService {
                             : "Votre compte animateur a été désactivé par l'administration."
             );
         }
+        adminNotificationService.create(
+                "ADMIN",
+                "ANIMATEUR",
+                "Statut animateur mis à jour: " + animateur.getPrenom() + " " + animateur.getNom() + " -> " + (enabled ? "actif" : "désactivé") + "."
+        );
         return animateur;
     }
 
@@ -405,8 +484,10 @@ public class AdminService {
     public void deleteParent(Long id) {
         Parent parent = getParentById(id);
         User user = parent.getUser();
+        parentNotificationRepo.deleteByParentId(parent.getId());
         parentRepo.delete(parent);
         if (user != null) {
+            verificationTokenRepository.deleteByUser(user);
             userRepo.delete(user);
         }
     }

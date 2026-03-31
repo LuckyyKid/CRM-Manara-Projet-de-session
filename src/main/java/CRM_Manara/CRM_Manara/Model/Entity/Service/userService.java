@@ -52,6 +52,9 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
     @Autowired
     private ParentNotificationService parentNotificationService;
 
+    @Autowired
+    private AdminNotificationService adminNotificationService;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
@@ -139,6 +142,11 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
                         + "Compte: " + savedUser.getEmail() + "\n\nMerci,\nCRM Manara"
         );
         emailService.notifyAdminsOfParentSignup(fullName, savedUser.getEmail(), "Google");
+        adminNotificationService.create(
+                "PARENT",
+                "COMPTE",
+                "Nouveau compte parent Google en attente: " + fullName + " (" + savedUser.getEmail() + ")."
+        );
 
         return savedUser;
     }

@@ -71,6 +71,12 @@ public class parentService {
     @Autowired
     AvatarService avatarService;
 
+    @Autowired
+    AnimateurNotificationService animateurNotificationService;
+
+    @Autowired
+    AdminNotificationService adminNotificationService;
+
     @Transactional(readOnly = true)
     public boolean isEmailAvailable(String email) {
         if (email == null) {
@@ -126,6 +132,11 @@ public class parentService {
                 buildPendingApprovalEmail(userSaved.getEmail(), prenom + " " + nom)
         );
         emailService.notifyAdminsOfParentSignup(prenom + " " + nom, userSaved.getEmail(), "Formulaire");
+        adminNotificationService.create(
+                "PARENT",
+                "COMPTE",
+                "Nouveau compte parent créé en attente: " + prenom + " " + nom + " (" + userSaved.getEmail() + ")."
+        );
         parentNotificationService.createForParent(
                 savedParent,
                 "COMPTE",
@@ -171,6 +182,11 @@ public class parentService {
         parent.setPrenom(prenom);
         parent.setAdresse(adresse);
         Parent savedParent = parentRepo.save(parent);
+        adminNotificationService.create(
+                "PARENT",
+                "PROFIL",
+                "Profil parent mis à jour: " + savedParent.getPrenom() + " " + savedParent.getNom() + "."
+        );
         parentNotificationService.createForParent(
                 savedParent,
                 "PROFIL",
@@ -200,6 +216,11 @@ public class parentService {
         enfant.setActive(false);
         parent.AddEnfant(enfant);
         parentRepo.save(parent);
+        adminNotificationService.create(
+                "PARENT",
+                "ENFANT",
+                "Nouvel enfant ajouté: " + prenom + " " + nom + " pour " + parent.getPrenom() + " " + parent.getNom() + "."
+        );
         parentNotificationService.createForParent(
                 parent,
                 "ENFANT",
@@ -223,6 +244,11 @@ public class parentService {
         enfant.setPrenom(prenom);
         enfant.setDate_de_naissance(dateNaissance);
         Enfant savedEnfant = enfantRepo.save(enfant);
+        adminNotificationService.create(
+                "PARENT",
+                "ENFANT",
+                "Profil enfant mis à jour: " + savedEnfant.getPrenom() + " " + savedEnfant.getNom() + "."
+        );
         parentNotificationService.createForParent(
                 savedEnfant.getParent(),
                 "ENFANT",
@@ -238,6 +264,11 @@ public class parentService {
         Parent parent = enfant.getParent();
         String fullName = enfant.getPrenom() + " " + enfant.getNom();
         enfantRepo.delete(enfant);
+        adminNotificationService.create(
+                "PARENT",
+                "ENFANT",
+                "Enfant supprimé: " + fullName + " du compte de " + parent.getPrenom() + " " + parent.getNom() + "."
+        );
         parentNotificationService.createForParent(
                 parent,
                 "ENFANT",
@@ -300,6 +331,24 @@ public class parentService {
                 "Demande d'inscription envoyée",
                 message
         );
+        adminNotificationService.create(
+                "PARENT",
+                "INSCRIPTION",
+                "Demande d'inscription: " + enfant.getPrenom() + " " + enfant.getNom()
+                        + " pour " + animation.getActivity().getActivyName()
+                        + " le " + animation.getStartTime() + "."
+        );
+        if (animation.getAnimateur() != null) {
+            animateurNotificationService.createForAnimateur(
+                    animation.getAnimateur(),
+                    "INSCRIPTION",
+                    "Nouvel enfant ajouté à votre session",
+                    enfant.getPrenom() + " " + enfant.getNom()
+                            + " a fait l'objet d'une nouvelle demande pour "
+                            + animation.getActivity().getActivyName()
+                            + " le " + animation.getStartTime() + "."
+            );
+        }
         emailService.notifyAdminsOfInscriptionRequest(saved);
         return saved;
     }

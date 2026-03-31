@@ -5,7 +5,9 @@
     <nav class="navbar navbar-expand-lg" sec:authorize="isAnonymous()">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
-                <span class="mm-brand-mark"><i class="bi bi-flower1"></i></span>
+                <span class="mm-brand-mark">
+                    <img class="mm-brand-logo" th:src="@{/images/manara-logo.svg(v=20260331)}" src="/images/manara-logo.svg?v=20260331" alt="Logo Manara">
+                </span>
                 <span class="mm-brand-meta">
                     <span>Manara CRM</span>
                     <span class="mm-brand-sub">Digital Sanctuary</span>
@@ -54,6 +56,9 @@
                     <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                         <a class="nav-link" href="/admin/demandes">Demandes</a>
                     </li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link" href="/admin/notifications">Notifications</a>
+                    </li>
                     <li class="nav-item" sec:authorize="hasRole('ANIMATEUR')">
                         <a class="nav-link" href="/animateur/dashboard">Espace animateur</a>
                     </li>
@@ -77,8 +82,10 @@
 
     <aside class="mm-app-sidebar" sec:authorize="isAuthenticated()">
         <div class="mm-app-sidebar-inner">
-            <a class="navbar-brand d-flex align-items-center mb-4" th:href="@{/}">
-                <span class="mm-brand-mark"><i class="bi bi-flower1"></i></span>
+            <a class="navbar-brand d-flex align-items-center mb-4" th:href="${currentUserHomeUrl}">
+                <span class="mm-brand-mark">
+                    <img class="mm-brand-logo" th:src="@{/images/manara-logo.svg(v=20260331)}" src="/images/manara-logo.svg?v=20260331" alt="Logo Manara">
+                </span>
                 <span class="mm-brand-meta">
                     <span>Manara CRM</span>
                     <span class="mm-brand-sub">Digital Sanctuary</span>
@@ -95,6 +102,7 @@
                     <span>Demandes</span>
                     <span class="mm-side-badge" th:if="${sidebarAdminPendingRequests > 0}" th:text="${sidebarAdminPendingRequests}">0</span>
                 </a>
+                <a class="mm-side-link" sec:authorize="hasRole('ADMIN')" href="/admin/notifications">Notifications</a>
 
                 <a class="mm-side-link" sec:authorize="hasRole('PARENT')" href="/parent/dashboard">Espace parent</a>
                 <a class="mm-side-link" sec:authorize="hasRole('PARENT')" href="/parent/enfants">Enfants</a>
@@ -107,6 +115,10 @@
 
                 <a class="mm-side-link" sec:authorize="hasRole('ANIMATEUR')" href="/animateur/dashboard">Espace animateur</a>
                 <a class="mm-side-link" sec:authorize="hasRole('ANIMATEUR')" href="/animateur/inscriptions">Présences</a>
+                <a class="mm-side-link mm-side-link-with-badge" sec:authorize="hasRole('ANIMATEUR')" href="/animateur/notifications">
+                    <span>Notifications</span>
+                    <span class="mm-side-badge" th:if="${sidebarAnimateurUnreadNotifications > 0}" th:text="${sidebarAnimateurUnreadNotifications}">0</span>
+                </a>
             </nav>
 
             <div class="mm-side-nav mm-side-nav-secondary mt-auto">

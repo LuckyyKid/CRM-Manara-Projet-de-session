@@ -23,7 +23,7 @@ import java.util.UUID;
 @Service
 public class AvatarService {
     private static final String DEFAULT_AVATAR_URL = "/images/default-avatar.svg";
-    private static final Path AVATAR_STORAGE = Paths.get("storage", "avatars");
+    private static final Path AVATAR_STORAGE = Paths.get("storage", "avatars").toAbsolutePath().normalize();
 
     private final UserRepo userRepo;
     private final ParentRepo parentRepo;
@@ -86,7 +86,7 @@ public class AvatarService {
     public String resolveAvatarUrl(String email) {
         return userRepo.findByEmail(email)
                 .map(user -> {
-                    if (user.getAvatarUrl() != null && !user.getAvatarUrl().isBlank()) {
+                    if (isStoredAvatarAvailable(user.getAvatarUrl())) {
                         return user.getAvatarUrl();
                     }
                     return DEFAULT_AVATAR_URL;
@@ -172,6 +172,20 @@ public class AvatarService {
             Files.deleteIfExists(AVATAR_STORAGE.resolve(avatarUrl.substring("/avatars/".length())));
         } catch (IOException ignored) {
         }
+    }
+
+    public static Path avatarStoragePath() {
+        return AVATAR_STORAGE;
+    }
+
+    private boolean isStoredAvatarAvailable(String avatarUrl) {
+        if (avatarUrl == null || avatarUrl.isBlank()) {
+            return false;
+        }
+        if (!avatarUrl.startsWith("/avatars/")) {
+            return true;
+        }
+        return Files.exists(AVATAR_STORAGE.resolve(avatarUrl.substring("/avatars/".length())));
     }
 
 }

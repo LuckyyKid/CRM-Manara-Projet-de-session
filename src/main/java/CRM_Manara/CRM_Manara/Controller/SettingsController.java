@@ -2,6 +2,7 @@ package CRM_Manara.CRM_Manara.Controller;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AccountSettingsService;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AccountSettingsView;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AvatarService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +31,7 @@ import java.util.Map;
 @Controller
 @RequestMapping
 public class SettingsController {
-    private static final Path AVATAR_STORAGE = Paths.get("storage", "avatars");
+    private static final Path AVATAR_STORAGE = AvatarService.avatarStoragePath();
 
     private final AccountSettingsService accountSettingsService;
 

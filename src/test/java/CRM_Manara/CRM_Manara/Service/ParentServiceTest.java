@@ -12,6 +12,8 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.ParentNotificationService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminNotificationService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AnimateurNotificationService;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AvatarService;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.parentService;
 import CRM_Manara.CRM_Manara.Model.Entity.User;
@@ -68,6 +70,10 @@ class ParentServiceTest {
     ParentNotificationService parentNotificationService;
     @Mock
     AvatarService avatarService;
+    @Mock
+    AnimateurNotificationService animateurNotificationService;
+    @Mock
+    AdminNotificationService adminNotificationService;
 
     @InjectMocks
     parentService parentService;

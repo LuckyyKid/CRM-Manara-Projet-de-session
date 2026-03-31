@@ -1,13 +1,16 @@
 <!doctype html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <body>
 <div th:fragment="footer">
-    <footer class="mm-footer py-3 mt-5">
+    <footer class="mm-footer py-3 mt-5" sec:authorize="isAnonymous()">
         <div class="container">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 small">
-                <div>
-                    <strong>Centre Manara CRM</strong><br>
-                    <span class="text-secondary">Portail famille, animation et administration</span>
+                <div class="d-flex align-items-center gap-3">
+                    <img class="mm-footer-logo" th:src="@{/images/manara-logo.svg(v=20260331)}" src="/images/manara-logo.svg?v=20260331" alt="Logo Manara">
+                    <div>
+                        <strong>Centre Manara</strong><br>
+                        <span class="text-secondary">Portail famille, animation et administration</span>
+                    </div>
                 </div>
                 <div class="text-md-end">
                     <span class="text-secondary">Projet académique</span><br>

@@ -95,6 +95,33 @@ public class EmailService {
         }
     }
 
+    public void sendAccountUpdatedConfirmation(String to, String displayName, String roleLabel, String changeSummary) {
+        String subject = "Confirmation de modification du compte - CRM Manara";
+        String body = "Bonjour " + displayName + ",\n\n"
+                + "Les paramètres de votre compte ont été modifiés.\n\n"
+                + "Rôle: " + roleLabel + "\n"
+                + "Résumé des changements:\n- " + changeSummary + "\n\n"
+                + "Si vous n'êtes pas à l'origine de cette modification, contactez l'administration.\n\n"
+                + "CRM Manara";
+        sendEmail(to, subject, body);
+    }
+
+    public void notifyAdminsOfAccountUpdate(String displayName, String email, String roleLabel, String changeSummary) {
+        String subject = "Compte modifié - CRM Manara";
+        String body = "Un compte utilisateur a été modifié.\n\n"
+                + "Utilisateur: " + displayName + "\n"
+                + "Courriel: " + email + "\n"
+                + "Rôle: " + roleLabel + "\n"
+                + "Résumé des changements:\n- " + changeSummary + "\n\n"
+                + "Consultez l'application si une vérification est nécessaire.";
+
+        for (Administrateurs admin : adminRepo.findAll()) {
+            if (admin.getUser() != null && admin.getUser().getEmail() != null && !admin.getUser().getEmail().isBlank()) {
+                sendEmail(admin.getUser().getEmail(), subject, body);
+            }
+        }
+    }
+
     private String buildInscriptionBody(Inscription inscription) {
         return "Bonjour,\n\n" +
                 "Votre inscription a ete confirmee.\n" +

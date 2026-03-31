@@ -36,6 +36,9 @@ public class AnimateurService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private AdminNotificationService adminNotificationService;
+
     @Transactional(readOnly = true)
     public Animateur getAnimateurByEmail(String email) {
         return animateurRepo.findByUserEmail(email)
@@ -137,6 +140,15 @@ public class AnimateurService {
                     "Présence mise à jour",
                     message
             );
+            adminNotificationService.create(
+                    "ANIMATEUR",
+                    "PRESENCE",
+                    "Présence mise à jour par " + animateur.getPrenom() + " " + animateur.getNom()
+                            + " pour " + inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom()
+                            + " dans " + inscription.getAnimation().getActivity().getActivyName()
+                            + ": " + presenceStatus
+                            + (hasIncidentNote(inscription) ? " | Note: " + inscription.getIncidentNote() : "") + "."
+            );
 
             boolean hasIncidentNote = inscription.getIncidentNote() != null && !inscription.getIncidentNote().isBlank();
             if ((presenceStatus == PresenceStatus.ABSENT || hasIncidentNote)
@@ -144,5 +156,9 @@ public class AnimateurService {
                 emailService.sendPresenceUpdate(inscription.getEnfant().getParent().getUser().getEmail(), inscription);
             }
         }
+    }
+
+    private boolean hasIncidentNote(Inscription inscription) {
+        return inscription.getIncidentNote() != null && !inscription.getIncidentNote().isBlank();
     }
 }
