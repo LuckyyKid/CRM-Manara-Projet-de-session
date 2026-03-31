@@ -45,14 +45,12 @@
                                 <th>Début</th>
                                 <th>Fin</th>
                                 <th>Remplissage</th>
-                                <th>Attente</th>
-                                <th>Statut</th>
                                 <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:if="${#lists.isEmpty(animations)}">
-                                <td colspan="8" class="text-secondary">Aucune animation.</td>
+                                <td colspan="6" class="text-secondary">Aucune animation.</td>
                             </tr>
                             <tr th:each="animation : ${animations}" th:attr="data-admin-row=${animation.id}">
                                 <td th:text="${animation.activity.activyName}"></td>
@@ -71,11 +69,6 @@
                                         <span th:text="${animationCapacity[animation.id]['fillRate']}">0</span>% confirmé
                                     </div>
                                 </td>
-                                <td>
-                                    <span th:text="${animationCapacity[animation.id]['waitlist']}">0</span>
-                                    <div class="small text-secondary">en liste d'attente</div>
-                                </td>
-                                <td th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).animationStatus(animation.statusAnimation)}"></td>
                                 <td>
                                     <a class="btn btn-sm btn-outline-secondary" th:href="@{'/admin/animations/' + ${animation.id} + '/edit'}">Modifier</a>
                                     <form th:action="@{'/admin/animations/' + ${animation.id} + '/delete'}" method="post" class="d-inline js-admin-delete-form" th:attr="data-delete-url=@{'/admin/api/animations/' + ${animation.id} + '/delete'},data-row-id=${animation.id},data-feedback-target='adminAnimationsFeedback',data-confirm='Supprimer cette animation ?'">
