@@ -23,6 +23,9 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationSuccessHandler successHandler;
 
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userService);
@@ -37,7 +40,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         // MODIFIED
-                        .requestMatchers("/login", "/register", "/css/**", "/", "/index", "/signUp", "/verify", "/oauth2/**").permitAll()
+                        .requestMatchers("/login", "/register", "/css/**", "/", "/index", "/signUp", "/verify", "/oauth2/**", "/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/parent/**").hasRole("PARENT")
                         .requestMatchers("/animateur/**").hasRole("ANIMATEUR")
@@ -57,6 +60,9 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(userService))
                         .successHandler(successHandler)
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(accessDeniedHandler)
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
