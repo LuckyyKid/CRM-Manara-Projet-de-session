@@ -193,6 +193,13 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
+    public long countPendingParents() {
+        return parentRepo.findAll().stream()
+                .filter(parent -> parent.getUser() != null && !parent.getUser().isEnabled())
+                .count();
+    }
+
+    @Transactional(readOnly = true)
     public long countWaitlistEntries() {
         return getAllAnimations().stream()
                 .mapToLong(animation -> ((Number) getAnimationCapacitySnapshot(animation).get("waitlist")).longValue())
@@ -293,6 +300,13 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
+    public List<Parent> getPendingParents() {
+        return getAllParents().stream()
+                .filter(parent -> parent.getUser() != null && !parent.getUser().isEnabled())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public Parent getParentById(Long id) {
         return parentRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Parent introuvable"));
@@ -304,6 +318,14 @@ public class AdminService {
                 .orElseThrow(() -> new IllegalArgumentException("Enfant introuvable"));
     }
 
+    @Transactional(readOnly = true)
+    public List<Enfant> getPendingEnfants() {
+        return enfantRepo.findAll().stream()
+                .filter(enfant -> !enfant.isActive())
+                .sorted(Comparator.comparing(Enfant::getNom).thenComparing(Enfant::getPrenom))
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public Parent updateParentEnabled(Long id, boolean enabled) {
         Parent parent = getParentById(id);
@@ -312,6 +334,15 @@ public class AdminService {
         }
         parent.getUser().setEnabled(enabled);
         userRepo.save(parent.getUser());
+        if (parent.getUser().getEmail() != null && !parent.getUser().getEmail().isBlank()) {
+            emailService.sendNotificationEmail(
+                    parent.getUser().getEmail(),
+                    enabled ? "Compte parent approuvé" : "Compte parent désactivé",
+                    enabled
+                            ? "Votre compte parent a été approuvé par l'administration. Vous pouvez maintenant accéder au portail."
+                            : "Votre compte parent a été désactivé par l'administration."
+            );
+        }
         parentNotificationService.createForParent(
                 parent,
                 "COMPTE",
@@ -328,6 +359,17 @@ public class AdminService {
         Enfant enfant = getEnfantById(id);
         enfant.setActive(active);
         Enfant saved = enfantRepo.save(enfant);
+        if (saved.getParent() != null && saved.getParent().getUser() != null
+                && saved.getParent().getUser().getEmail() != null
+                && !saved.getParent().getUser().getEmail().isBlank()) {
+            emailService.sendNotificationEmail(
+                    saved.getParent().getUser().getEmail(),
+                    active ? "Enfant approuvé" : "Enfant désactivé",
+                    active
+                            ? saved.getPrenom() + " " + saved.getNom() + " est maintenant actif et peut être inscrit aux activités."
+                            : saved.getPrenom() + " " + saved.getNom() + " a été désactivé par l'administration."
+            );
+        }
         parentNotificationService.createForParent(
                 saved.getParent(),
                 "ENFANT",
@@ -337,6 +379,26 @@ public class AdminService {
                         : saved.getPrenom() + " " + saved.getNom() + " a été désactivé par l'administration."
         );
         return saved;
+    }
+
+    @Transactional
+    public Animateur updateAnimateurEnabled(Long id, boolean enabled) {
+        Animateur animateur = getAnimateurById(id);
+        if (animateur.getUser() == null) {
+            throw new IllegalArgumentException("Aucun compte utilisateur lie a cet animateur");
+        }
+        animateur.getUser().setEnabled(enabled);
+        userRepo.save(animateur.getUser());
+        if (animateur.getUser().getEmail() != null && !animateur.getUser().getEmail().isBlank()) {
+            emailService.sendNotificationEmail(
+                    animateur.getUser().getEmail(),
+                    enabled ? "Compte animateur activé" : "Compte animateur désactivé",
+                    enabled
+                            ? "Votre compte animateur a été activé par l'administration. Vous pouvez maintenant accéder au portail animateur."
+                            : "Votre compte animateur a été désactivé par l'administration."
+            );
+        }
+        return animateur;
     }
 
     @Transactional

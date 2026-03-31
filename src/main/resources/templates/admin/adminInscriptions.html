@@ -104,7 +104,10 @@
                                           th:text="${animationCapacity[inscription.animation.id]['waitlist']}">0</span>
                                 </td>
                                 <td><span class="badge text-bg-warning">En attente</span></td>
-                                <td><span class="badge rounded-pill text-bg-light border" th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).presenceStatus(inscription.presenceStatus)}"></span></td>
+                                <td>
+                                    <span class="badge rounded-pill text-bg-light border"
+                                          th:text="${inscription.presenceStatus == null ? '' : (inscription.presenceStatus.name() == 'PRESENT' ? 'Présent' : (inscription.presenceStatus.name() == 'ABSENT' ? 'Absent' : 'Non signée'))}"></span>
+                                </td>
                                 <td>
                                     <span th:if="${inscription.incidentNote != null and !#strings.isEmpty(inscription.incidentNote)}"
                                           th:text="${inscription.incidentNote}"></span>
@@ -167,7 +170,10 @@
                                           th:classappend="${inscription.statusInscription.name() == 'APPROUVEE' or inscription.statusInscription.name() == 'ACTIF'} ? ' text-bg-success' : ' text-bg-secondary'"
                                           th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).inscriptionStatus(inscription.statusInscription)}"></span>
                                 </td>
-                                <td><span class="badge rounded-pill text-bg-light border" th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).presenceStatus(inscription.presenceStatus)}"></span></td>
+                                <td>
+                                    <span class="badge rounded-pill text-bg-light border"
+                                          th:text="${inscription.presenceStatus == null ? '' : (inscription.presenceStatus.name() == 'PRESENT' ? 'Présent' : (inscription.presenceStatus.name() == 'ABSENT' ? 'Absent' : 'Non signée'))}"></span>
+                                </td>
                                 <td>
                                     <span th:if="${inscription.incidentNote != null and !#strings.isEmpty(inscription.incidentNote)}"
                                           th:text="${inscription.incidentNote}"></span>

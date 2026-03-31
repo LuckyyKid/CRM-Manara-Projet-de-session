@@ -12,6 +12,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 @Service
 public class EmailService {
@@ -35,8 +38,10 @@ public class EmailService {
                 return;
             }
 
-            String responseBody = sendWithResend(to, subject, text);
-            log.info("EMAIL ENVOYE via Resend to={} cc={} subject={} response={}", to, DEMO_COPY_EMAIL, subject, responseBody);
+            ResendRecipients recipients = resolveRecipients(to);
+            String responseBody = sendWithResend(recipients, subject, text);
+            log.info("EMAIL ENVOYE via Resend to={} cc={} subject={} response={}",
+                    recipients.to, recipients.cc, subject, responseBody);
         } catch (Exception ex) {
             log.error("EMAIL NON ENVOYE to={} subject={} reason={}", to, subject, ex.getMessage(), ex);
         }
@@ -67,6 +72,21 @@ public class EmailService {
                 "Début: " + inscription.getAnimation().getStartTime() + "\n" +
                 "Fin: " + inscription.getAnimation().getEndTime() + "\n\n" +
                 "Consultez la page admin des demandes pour approuver ou refuser.";
+
+        for (Administrateurs admin : adminRepo.findAll()) {
+            if (admin.getUser() != null && admin.getUser().getEmail() != null && !admin.getUser().getEmail().isBlank()) {
+                sendEmail(admin.getUser().getEmail(), subject, body);
+            }
+        }
+    }
+
+    public void notifyAdminsOfParentSignup(String nomComplet, String email, String provider) {
+        String subject = "Nouveau compte parent en attente - CRM Manara";
+        String body = "Un nouveau compte parent a été créé et attend l'approbation de l'administration.\n\n"
+                + "Parent: " + nomComplet + "\n"
+                + "Courriel: " + email + "\n"
+                + "Méthode d'inscription: " + provider + "\n\n"
+                + "Consultez la page admin des parents pour approuver ou désactiver le compte.";
 
         for (Administrateurs admin : adminRepo.findAll()) {
             if (admin.getUser() != null && admin.getUser().getEmail() != null && !admin.getUser().getEmail().isBlank()) {
@@ -111,11 +131,13 @@ public class EmailService {
         return apiKey != null && !apiKey.isBlank();
     }
 
-    private String sendWithResend(String to, String subject, String text) throws Exception {
+    private String sendWithResend(ResendRecipients recipients, String subject, String text) throws Exception {
+        String toJson = buildJsonArray(recipients.to);
+        String ccJson = buildJsonArray(recipients.cc);
         String payload = "{"
                 + "\"from\":\"" + escapeJson(environment.getProperty("RESEND_FROM_EMAIL", "onboarding@resend.dev")) + "\","
-                + "\"to\":[\"" + escapeJson(to) + "\"],"
-                + "\"cc\":[\"" + escapeJson(DEMO_COPY_EMAIL) + "\"],"
+                + "\"to\":" + toJson + ","
+                + "\"cc\":" + ccJson + ","
                 + "\"subject\":\"" + escapeJson(subject) + "\","
                 + "\"html\":\"" + escapeJson("<div style=\\\"font-family:Arial,sans-serif;line-height:1.6;color:#1f2937;white-space:pre-line;\\\">"
                 + escapeHtml(text)
@@ -136,6 +158,48 @@ public class EmailService {
         return response.body();
     }
 
+    private ResendRecipients resolveRecipients(String requestedTo) {
+        List<String> to = new ArrayList<>();
+        List<String> cc = new ArrayList<>();
+
+        if (isDeliverableEmail(requestedTo)) {
+            to.add(requestedTo.trim());
+            if (!requestedTo.trim().equalsIgnoreCase(DEMO_COPY_EMAIL)) {
+                cc.add(DEMO_COPY_EMAIL);
+            }
+        } else {
+            log.warn("EMAIL REROUTE: destination '{}' invalide ou locale, envoi vers la copie de demo uniquement.", requestedTo);
+            to.add(DEMO_COPY_EMAIL);
+        }
+
+        return new ResendRecipients(to, cc);
+    }
+
+    private boolean isDeliverableEmail(String email) {
+        if (email == null) {
+            return false;
+        }
+        String normalized = email.trim().toLowerCase(Locale.ROOT);
+        int atIndex = normalized.indexOf('@');
+        if (atIndex <= 0 || atIndex == normalized.length() - 1) {
+            return false;
+        }
+        String domain = normalized.substring(atIndex + 1);
+        return domain.contains(".") && !domain.endsWith(".local");
+    }
+
+    private String buildJsonArray(List<String> emails) {
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < emails.size(); i++) {
+            if (i > 0) {
+                json.append(",");
+            }
+            json.append("\"").append(escapeJson(emails.get(i))).append("\"");
+        }
+        json.append("]");
+        return json.toString();
+    }
+
     private String escapeHtml(String value) {
         return value
                 .replace("&", "&amp;")
@@ -151,5 +215,8 @@ public class EmailService {
                 .replace("\"", "\\\"")
                 .replace("\n", "\\n")
                 .replace("\r", "\\r");
+    }
+
+    private record ResendRecipients(List<String> to, List<String> cc) {
     }
 }

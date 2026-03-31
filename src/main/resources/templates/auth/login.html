@@ -40,6 +40,10 @@
                                         Mot de passe, courriel, ou etat du compte invalide.
                                     </div>
 
+                                    <div th:if="${param.pending}" class="alert alert-warning" role="alert">
+                                        Votre compte est en attente d'approbation par l'administration.
+                                    </div>
+
                                     <div th:if="${param.oauthError}" class="alert alert-danger" role="alert">
                                         La connexion Google a echoue. Verifiez la configuration Google OAuth du projet.
                                     </div>

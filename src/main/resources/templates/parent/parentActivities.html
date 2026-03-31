@@ -80,7 +80,7 @@
                                                              data-description=${animation.activity.description},
                                                              data-age-range=${animation.activity.ageMin + ' à ' + animation.activity.ageMax + ' ans'},
                                                              data-capacity=${approved + '/' + capacityValue + ' places confirmées'},
-                                                             data-status=${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).animationStatus(animation.statusAnimation)},
+                                                             data-status=${animation.statusAnimation == null ? '' : (animation.statusAnimation.name() == 'ACTIF' ? 'Active' : (animation.statusAnimation.name() == 'ANNULÉ' ? 'Annulée' : 'Remplacée'))},
                                                              data-start=${#temporals.format(animation.startTime, 'EEEE d MMMM yyyy ''à'' HH:mm')},
                                                              data-end=${#temporals.format(animation.endTime, 'HH:mm')},
                                                              data-animateur=${animation.animateur != null ? animation.animateur.prenom + ' ' + animation.animateur.nom : 'Animateur à confirmer'},

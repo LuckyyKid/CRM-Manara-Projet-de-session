@@ -24,7 +24,7 @@ public class authController {
     public String verifyEmail(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
         try {
             parentService.verifyUser(token);
-            redirectAttributes.addFlashAttribute("message", "Votre compte a ete verifie. Vous pouvez vous connecter.");
+            redirectAttributes.addFlashAttribute("message", "Votre demande a ete prise en compte. Un administrateur doit encore approuver votre compte avant la connexion.");
         } catch (IllegalArgumentException exception) {
             redirectAttributes.addFlashAttribute("error", exception.getMessage());
         }

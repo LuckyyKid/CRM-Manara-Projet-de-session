@@ -113,35 +113,27 @@ public class parentService {
         // ADDED
         System.out.println("STEP 7 REACHED - Parent profile saved for user id: " + userSaved.getId());
 
-        // ADDED
         VerificationToken verificationToken = new VerificationToken(
                 UUID.randomUUID().toString(),
                 userSaved,
                 LocalDateTime.now().plusHours(24)
         );
         verificationTokenRepository.save(verificationToken);
-        // ADDED
-        System.out.println("STEP 8 REACHED - Verification token saved for email: " + userSaved.getEmail());
-        System.out.println("Verification token value: " + verificationToken.getToken());
 
-        // ADDED
-        System.out.println("STEP 9 REACHED - About to call EmailService.sendEmail() for: " + userSaved.getEmail());
         emailService.sendEmail(
                 userSaved.getEmail(),
-                "Verification de votre compte CRM Manara",
-                buildVerificationEmail(userSaved.getEmail(), verificationToken.getToken())
+                "Compte parent en attente d'approbation - CRM Manara",
+                buildPendingApprovalEmail(userSaved.getEmail(), prenom + " " + nom)
         );
+        emailService.notifyAdminsOfParentSignup(prenom + " " + nom, userSaved.getEmail(), "Formulaire");
         parentNotificationService.createForParent(
                 savedParent,
                 "COMPTE",
                 "Compte créé",
-                "Votre compte parent a été créé. Vérifiez votre email pour activer votre accès."
+                "Votre compte parent a été créé. Il est maintenant en attente d'approbation par l'administration."
         );
-        // ADDED
-        System.out.println("STEP 10 REACHED - Returned from EmailService.sendEmail() for: " + userSaved.getEmail());
     }
 
-    // ADDED
     @Transactional
     public void verifyUser(String token) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
@@ -153,19 +145,16 @@ public class parentService {
         }
 
         User user = verificationToken.getUser();
-        user.setEnabled(true);
-        userRepo.save(user);
         verificationTokenRepository.deleteByUser(user);
     }
 
-    // ADDED
-    private String buildVerificationEmail(String email, String token) {
+    private String buildPendingApprovalEmail(String email, String fullName) {
         return "Bonjour,\n\n" +
                 "Merci pour votre inscription sur CRM Manara.\n" +
-                "Veuillez verifier votre adresse courriel en cliquant sur le lien suivant :\n" +
-                "http://localhost:8080/verify?token=" + token + "\n\n" +
+                "Le compte de " + fullName + " a bien été créé.\n" +
+                "Votre demande est maintenant en attente d'approbation par l'administration.\n\n" +
                 "Compte: " + email + "\n\n" +
-                "Ce lien expire dans 24 heures.\n\n" +
+                "Tant que le compte n'est pas approuvé, vous ne pourrez pas vous connecter.\n\n" +
                 "Merci,\nCRM Manara";
     }
 

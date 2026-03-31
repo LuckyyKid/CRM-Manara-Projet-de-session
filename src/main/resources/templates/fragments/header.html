@@ -52,7 +52,7 @@
                         <a class="nav-link" href="/admin/parents">Parents / Enfants</a>
                     </li>
                     <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                        <a class="nav-link" href="/admin/inscriptions">Demandes d'inscription</a>
+                        <a class="nav-link" href="/admin/demandes">Demandes</a>
                     </li>
                     <li class="nav-item" sec:authorize="hasRole('ANIMATEUR')">
                         <a class="nav-link" href="/animateur/dashboard">Espace animateur</a>
@@ -91,8 +91,8 @@
                 <a class="mm-side-link" sec:authorize="hasRole('ADMIN')" href="/admin/animations">Animations</a>
                 <a class="mm-side-link" sec:authorize="hasRole('ADMIN')" href="/admin/animateurs">Animateurs</a>
                 <a class="mm-side-link" sec:authorize="hasRole('ADMIN')" href="/admin/parents">Parents / Enfants</a>
-                <a class="mm-side-link mm-side-link-with-badge" sec:authorize="hasRole('ADMIN')" href="/admin/inscriptions">
-                    <span>Demandes d'inscription</span>
+                <a class="mm-side-link mm-side-link-with-badge" sec:authorize="hasRole('ADMIN')" href="/admin/demandes">
+                    <span>Demandes</span>
                     <span class="mm-side-badge" th:if="${sidebarAdminPendingRequests > 0}" th:text="${sidebarAdminPendingRequests}">0</span>
                 </a>
 

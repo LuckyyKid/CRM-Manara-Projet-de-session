@@ -60,7 +60,7 @@ public class SignUpController {
             parentService.createNewParent(nom, prenom, adresse, email, password);
             // ADDED
             System.out.println("STEP 3 REACHED - parentService.createNewParent() completed successfully for: " + email);
-            redirectAttributes.addFlashAttribute("message", "Inscription reussie. Verifiez votre email avant de vous connecter.");
+            redirectAttributes.addFlashAttribute("message", "Inscription reussie. Votre compte est maintenant en attente d'approbation par l'administration.");
             return "redirect:/login";
         } catch (IllegalArgumentException exception) {
             // ADDED

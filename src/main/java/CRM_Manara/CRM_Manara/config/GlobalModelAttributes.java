@@ -60,7 +60,9 @@ public class GlobalModelAttributes {
         if (!isAuthenticated(authentication) || !hasRole(authentication, "ROLE_ADMIN")) {
             return 0;
         }
-        return adminService.countPendingInscriptions();
+        return adminService.countPendingInscriptions()
+                + adminService.countPendingParents()
+                + adminService.countPendingChildren();
     }
 
     @ModelAttribute("currentUserAvatar")

@@ -138,7 +138,9 @@ public class AnimateurService {
                     message
             );
 
-            if (inscription.getEnfant().getParent().getUser() != null) {
+            boolean hasIncidentNote = inscription.getIncidentNote() != null && !inscription.getIncidentNote().isBlank();
+            if ((presenceStatus == PresenceStatus.ABSENT || hasIncidentNote)
+                    && inscription.getEnfant().getParent().getUser() != null) {
                 emailService.sendPresenceUpdate(inscription.getEnfant().getParent().getUser().getEmail(), inscription);
             }
         }
