@@ -27,6 +27,10 @@ import java.util.Date;
         @Temporal(TemporalType.TIMESTAMP)
         private Date dateCreation;
 
+        // ADDED
+        @Column(nullable = false)
+        private boolean enabled = false;
+
         protected User() {}
 
         public User(String email, String password) {
@@ -38,6 +42,14 @@ import java.util.Date;
             this.email = email;
             this.password = password;
             this.role = role;
+        }
+
+        // ADDED
+        public User(String email, String password, SecurityRole role, boolean enabled) {
+            this.email = email;
+            this.password = password;
+            this.role = role;
+            this.enabled = enabled;
         }
 
         @PrePersist
@@ -64,6 +76,16 @@ import java.util.Date;
         }
         public void setRole(SecurityRole role) {
             this.role = role;
+        }
+
+        // ADDED
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        // ADDED
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
     }
 

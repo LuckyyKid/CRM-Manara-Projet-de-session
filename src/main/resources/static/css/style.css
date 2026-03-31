@@ -451,6 +451,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     border-color: var(--mm-primary);
 }
 
+/* ADDED */
+.mm-google-btn {
+    border-radius: 0.6rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+
 /* ── Alertes ─────────────────────────────────────────────── */
 .alert {
     border: none;
@@ -594,4 +601,154 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     .mm-stat-divider { display: none; }
     .mm-info-band { flex-direction: column; align-items: flex-start; }
     .mm-btn-outline-light { width: 100%; text-align: center; }
+}
+
+/* Erreurs applicatives */
+.mm-error-page {
+    background:
+        radial-gradient(circle at top left, rgba(245, 158, 11, 0.18), transparent 32%),
+        radial-gradient(circle at right 20%, rgba(30, 64, 175, 0.16), transparent 30%),
+        linear-gradient(180deg, #f8fafc 0%, #eef4ff 100%);
+}
+
+.mm-error-hero {
+    padding: 3rem 0 4rem;
+}
+
+.mm-error-shell {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.mm-error-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 1.5rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(30, 64, 175, 0.12);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+    font-family: 'Sora', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--mm-primary);
+}
+
+.mm-error-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--mm-amber), #f97316);
+    box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.15);
+}
+
+.mm-error-card,
+.mm-error-panel {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    border-radius: 1.6rem;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.10);
+}
+
+.mm-error-card {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+.mm-error-code {
+    margin-bottom: 0.5rem;
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(3.5rem, 10vw, 6rem);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.06em;
+    color: var(--mm-primary);
+}
+
+.mm-error-title {
+    font-size: clamp(1.7rem, 3vw, 2.8rem);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+}
+
+.mm-error-text {
+    max-width: 40rem;
+    margin-bottom: 1.5rem;
+    color: var(--mm-text-muted);
+    font-size: 1rem;
+}
+
+.mm-error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+}
+
+.mm-error-panel {
+    min-height: 100%;
+    background: linear-gradient(160deg, #0f172a 0%, #1e3a8a 58%, #2563eb 100%);
+    padding: 1.75rem;
+    color: #fff;
+}
+
+.mm-error-panel-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1rem;
+}
+
+.mm-error-mini-card {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem 1.05rem;
+    border-radius: 1.15rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    font-family: 'Sora', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.mm-error-mini-card i {
+    font-size: 1.2rem;
+    color: #fde68a;
+}
+
+.mm-error-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+}
+
+.mm-error-orb-one {
+    top: -2.5rem;
+    right: -2rem;
+    width: 10rem;
+    height: 10rem;
+    background: rgba(245, 158, 11, 0.25);
+}
+
+.mm-error-orb-two {
+    bottom: -3rem;
+    left: -1.5rem;
+    width: 8rem;
+    height: 8rem;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 576px) {
+    .mm-error-hero { padding-top: 2rem; }
+    .mm-error-card,
+    .mm-error-panel { padding: 1.35rem; border-radius: 1.25rem; }
+    .mm-error-actions .btn { width: 100%; }
 }
