@@ -71,6 +71,8 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(userService))
                         .successHandler(successHandler)
+                        .failureHandler((request, response, exception) ->
+                                response.sendRedirect("/login?oauthError"))
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")

@@ -27,28 +27,66 @@ public class ParentNotificationService {
 
     @Transactional(readOnly = true)
     public List<ParentNotification> getNotificationsForParent(Long parentId, int limit) {
-        return parentNotificationRepo.findByParentIdOrderByCreatedAtDesc(parentId).stream()
+        return parentNotificationRepo.findByParentIdAndArchivedStatusFalseOrderByCreatedAtDesc(parentId).stream()
                 .limit(limit)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public long countUnreadForParent(Long parentId) {
-        return parentNotificationRepo.countByParentIdAndReadStatusFalse(parentId);
+        return parentNotificationRepo.countByParentIdAndReadStatusFalseAndArchivedStatusFalse(parentId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ParentNotification> getArchivedNotificationsForParent(Long parentId, int limit) {
+        return parentNotificationRepo.findByParentIdAndArchivedStatusTrueOrderByCreatedAtDesc(parentId).stream()
+                .limit(limit)
+                .toList();
     }
 
     @Transactional
     public void markAllAsReadForParent(Long parentId) {
-        List<ParentNotification> notifications = parentNotificationRepo.findByParentIdOrderByCreatedAtDesc(parentId);
+        List<ParentNotification> notifications = parentNotificationRepo.findByParentIdAndArchivedStatusFalseOrderByCreatedAtDesc(parentId);
         for (ParentNotification notification : notifications) {
             notification.setReadStatus(true);
         }
         parentNotificationRepo.saveAll(notifications);
     }
 
+    @Transactional
+    public void markAsRead(Long parentId, Long notificationId) {
+        ParentNotification notification = getNotificationForParent(parentId, notificationId);
+        notification.setReadStatus(true);
+        parentNotificationRepo.save(notification);
+    }
+
+    @Transactional
+    public void archive(Long parentId, Long notificationId) {
+        ParentNotification notification = getNotificationForParent(parentId, notificationId);
+        notification.setReadStatus(true);
+        notification.setArchivedStatus(true);
+        parentNotificationRepo.save(notification);
+    }
+
+    @Transactional
+    public void restore(Long parentId, Long notificationId) {
+        ParentNotification notification = getNotificationForParent(parentId, notificationId);
+        notification.setArchivedStatus(false);
+        parentNotificationRepo.save(notification);
+    }
+
     @Transactional(readOnly = true)
     public Parent getParentByUserEmail(String email) {
         return parentRepo.findByUserEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Parent introuvable pour cet email"));
+    }
+
+    private ParentNotification getNotificationForParent(Long parentId, Long notificationId) {
+        ParentNotification notification = parentNotificationRepo.findById(notificationId)
+                .orElseThrow(() -> new IllegalArgumentException("Notification introuvable"));
+        if (notification.getParent() == null || !notification.getParent().getId().equals(parentId)) {
+            throw new IllegalArgumentException("Notification introuvable pour ce parent");
+        }
+        return notification;
     }
 }

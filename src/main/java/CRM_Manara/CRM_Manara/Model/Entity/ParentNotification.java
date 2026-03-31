@@ -31,6 +31,9 @@ public class ParentNotification {
     @Column(name = "read_status", nullable = false)
     private boolean readStatus;
 
+    @Column(name = "archived_status", nullable = false)
+    private boolean archivedStatus;
+
     protected ParentNotification() {
     }
 
@@ -40,6 +43,7 @@ public class ParentNotification {
         this.title = title;
         this.message = message;
         this.readStatus = false;
+        this.archivedStatus = false;
     }
 
     @PrePersist
@@ -77,5 +81,13 @@ public class ParentNotification {
 
     public void setReadStatus(boolean readStatus) {
         this.readStatus = readStatus;
+    }
+
+    public boolean isArchivedStatus() {
+        return archivedStatus;
+    }
+
+    public void setArchivedStatus(boolean archivedStatus) {
+        this.archivedStatus = archivedStatus;
     }
 }
