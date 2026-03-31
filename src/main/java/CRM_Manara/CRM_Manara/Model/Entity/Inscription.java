@@ -41,14 +41,14 @@ public class Inscription {
     public Inscription(Enfant enfant, Animation animation) {
         this.enfant = enfant;
         this.animation = animation;
-        this.statusInscription = statusInscription.ACTIF;
+        this.statusInscription = statusInscription.EN_ATTENTE;
         this.presenceStatus = PresenceStatus.NON_SIGNEE;
 
     }
     public Inscription(Enfant enfant, Animation animation,String incidentNote) {
         this.enfant = enfant;
         this.animation = animation;
-        this.statusInscription = statusInscription.ACTIF;
+        this.statusInscription = statusInscription.EN_ATTENTE;
         this.presenceStatus = PresenceStatus.NON_SIGNEE;
         this.incidentNote = incidentNote;
     }
@@ -65,6 +65,9 @@ public class Inscription {
     }
     public statusInscription getStatusInscription() {
         return statusInscription;
+    }
+    public void setStatusInscription(statusInscription statusInscription) {
+        this.statusInscription = statusInscription;
     }
     public PresenceStatus getPresenceStatus() {
         return presenceStatus;

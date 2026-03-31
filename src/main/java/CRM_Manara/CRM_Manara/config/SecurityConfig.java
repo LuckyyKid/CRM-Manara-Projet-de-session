@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 "/",
                                 "/index",
                                 "/signUp",
+                                "/api/signUp/**",
                                 "/verify",
                                 "/oauth2/**",
                                 "/api/chatbot/**",

@@ -23,6 +23,9 @@ public class Enfant {
     @Column(name ="date_de_naissance" , nullable = false)
     private Date date_de_naissance;
 
+    @Column(name = "active", nullable = false)
+    private boolean active = false;
+
     @OneToMany(mappedBy = "enfant",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Inscription> inscriptions = new ArrayList<>();
 
@@ -73,6 +76,14 @@ public class Enfant {
     }
     public void setDate_de_naissance(Date date_de_naissance) {
         this.date_de_naissance = date_de_naissance;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
 }

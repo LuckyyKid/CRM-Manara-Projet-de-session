@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface InscriptionRepo extends JpaRepository<Inscription, Long> {
 
@@ -23,6 +24,12 @@ public interface InscriptionRepo extends JpaRepository<Inscription, Long> {
 
     @Query("SELECT i FROM Inscription i WHERE i.id = :id AND i.animation.animateur.id = :animateurId")
     Inscription findByIdAndAnimateurId(@Param("id") Long id, @Param("animateurId") Long animateurId);
+
+    @Query("SELECT i FROM Inscription i WHERE i.enfant.id = :enfantId AND i.animation.id = :animationId")
+    Optional<Inscription> findByEnfantIdAndAnimationId(@Param("enfantId") Long enfantId, @Param("animationId") Long animationId);
+
+    @Query("SELECT i FROM Inscription i WHERE i.enfant.id = :enfantId AND i.animation.activity.id = :activityId")
+    List<Inscription> findByEnfantIdAndActivityId(@Param("enfantId") Long enfantId, @Param("activityId") Long activityId);
 
     long countByAnimationId(Long animationId);
 

@@ -3,6 +3,7 @@ package CRM_Manara.CRM_Manara.Model.Entity.Service;
 import CRM_Manara.CRM_Manara.Model.Entity.Activity;
 import CRM_Manara.CRM_Manara.Model.Entity.Animation;
 import CRM_Manara.CRM_Manara.Model.Entity.Enfant;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.statusInscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.SecurityRole;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
@@ -13,6 +14,7 @@ import CRM_Manara.CRM_Manara.Repository.AnimationRepo;
 import CRM_Manara.CRM_Manara.Repository.EnfantRepo;
 import CRM_Manara.CRM_Manara.Repository.InscriptionRepo;
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
+import CRM_Manara.CRM_Manara.Repository.ParentNotificationRepo;
 import CRM_Manara.CRM_Manara.Repository.UserRepo;
 import CRM_Manara.CRM_Manara.Repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -58,6 +62,17 @@ public class parentService {
     @Autowired
     VerificationTokenRepository verificationTokenRepository;
 
+    @Autowired
+    ParentNotificationService parentNotificationService;
+
+    @Transactional(readOnly = true)
+    public boolean isEmailAvailable(String email) {
+        if (email == null) {
+            return false;
+        }
+        return !userRepo.existsByEmail(email.trim());
+    }
+
     @Transactional
     public void createNewParent(String nom, String prenom, String adresse, String email, String password) {
         // ADDED
@@ -87,7 +102,7 @@ public class parentService {
 
         Parent parent = new Parent(nom, prenom, adresse);
         parent.SetUser(userSaved);
-        parentRepo.save(parent);
+        Parent savedParent = parentRepo.save(parent);
         // ADDED
         System.out.println("STEP 7 REACHED - Parent profile saved for user id: " + userSaved.getId());
 
@@ -108,6 +123,12 @@ public class parentService {
                 userSaved.getEmail(),
                 "Verification de votre compte CRM Manara",
                 buildVerificationEmail(userSaved.getEmail(), verificationToken.getToken())
+        );
+        parentNotificationService.createForParent(
+                savedParent,
+                "COMPTE",
+                "Compte créé",
+                "Votre compte parent a été créé. Vérifiez votre email pour activer votre accès."
         );
         // ADDED
         System.out.println("STEP 10 REACHED - Returned from EmailService.sendEmail() for: " + userSaved.getEmail());
@@ -153,7 +174,14 @@ public class parentService {
         parent.setNom(nom);
         parent.setPrenom(prenom);
         parent.setAdresse(adresse);
-        return parentRepo.save(parent);
+        Parent savedParent = parentRepo.save(parent);
+        parentNotificationService.createForParent(
+                savedParent,
+                "PROFIL",
+                "Profil mis à jour",
+                "Vos informations de profil ont été mises à jour avec succès."
+        );
+        return savedParent;
     }
 
     @Transactional(readOnly = true)
@@ -173,9 +201,23 @@ public class parentService {
     public Enfant createEnfantForParent(String email, String nom, String prenom, Date dateNaissance) {
         Parent parent = getParentByEmail(email);
         Enfant enfant = new Enfant(nom, prenom, dateNaissance);
+        enfant.setActive(false);
         parent.AddEnfant(enfant);
         parentRepo.save(parent);
+        parentNotificationService.createForParent(
+                parent,
+                "ENFANT",
+                "Nouvel enfant ajouté",
+                prenom + " " + nom + " a été ajouté. Son profil est en attente d'approbation par l'administration."
+        );
         return enfant;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Enfant> getActiveEnfantsForParent(String email) {
+        return getEnfantsForParent(email).stream()
+                .filter(Enfant::isActive)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -184,13 +226,28 @@ public class parentService {
         enfant.setNom(nom);
         enfant.setPrenom(prenom);
         enfant.setDate_de_naissance(dateNaissance);
-        return enfantRepo.save(enfant);
+        Enfant savedEnfant = enfantRepo.save(enfant);
+        parentNotificationService.createForParent(
+                savedEnfant.getParent(),
+                "ENFANT",
+                "Profil enfant mis à jour",
+                "Le profil de " + savedEnfant.getPrenom() + " " + savedEnfant.getNom() + " a été mis à jour."
+        );
+        return savedEnfant;
     }
 
     @Transactional
     public void deleteEnfantForParent(Long enfantId, String email) {
         Enfant enfant = getEnfantForParent(enfantId, email);
+        Parent parent = enfant.getParent();
+        String fullName = enfant.getPrenom() + " " + enfant.getNom();
         enfantRepo.delete(enfant);
+        parentNotificationService.createForParent(
+                parent,
+                "ENFANT",
+                "Profil enfant supprimé",
+                "Le profil de " + fullName + " a été supprimé de votre compte."
+        );
     }
 
     @Transactional(readOnly = true)
@@ -213,13 +270,39 @@ public class parentService {
         Parent parent = getParentByEmail(email);
         Enfant enfant = enfantRepo.findByIdAndParentId(enfantId, parent.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Enfant introuvable pour ce parent"));
+        if (!enfant.isActive()) {
+            throw new IllegalArgumentException("Cet enfant doit être approuvé par l'administration avant toute inscription.");
+        }
         Animation animation = animationRepo.findById(animationId)
                 .orElseThrow(() -> new IllegalArgumentException("Animation introuvable"));
-        Inscription inscription = new Inscription(enfant, animation);
-        Inscription saved = inscriptionRepo.save(inscription);
-        if (parent.getUser() != null) {
-            emailService.sendInscriptionConfirmation(parent.getUser().getEmail(), saved);
+        boolean alreadyRequestedForActivity = inscriptionRepo.findByEnfantIdAndActivityId(enfantId, animation.getActivity().getId()).stream()
+                .anyMatch(existing -> existing.getStatusInscription() != statusInscription.REFUSEE
+                        && existing.getStatusInscription() != statusInscription.ANNULÉE);
+        if (alreadyRequestedForActivity) {
+            throw new IllegalArgumentException("Une demande existe déjà pour cet enfant sur cette activité.");
         }
+        inscriptionRepo.findByEnfantIdAndAnimationId(enfantId, animationId)
+                .ifPresent(existing -> {
+                    throw new IllegalArgumentException("Une demande existe déjà pour cet enfant sur cette session.");
+                });
+        Inscription inscription = new Inscription(enfant, animation);
+        inscription.setStatusInscription(statusInscription.EN_ATTENTE);
+        Inscription saved = inscriptionRepo.save(inscription);
+        Map<String, Object> capacity = getAnimationCapacitySnapshot(animation);
+        int remaining = (int) capacity.get("remaining");
+        int pending = (int) capacity.get("pending");
+        String message = remaining > 0
+                ? "Votre demande pour " + enfant.getPrenom() + " a été envoyée. Elle sera validée par l'administration."
+                : "Votre demande pour " + enfant.getPrenom() + " a été envoyée. La session est complète pour l'instant et la demande rejoint la liste d'attente.";
+        if (remaining == 0 && pending > 0) {
+            message += " Position estimée en attente: " + capacity.get("waitlistPosition") + ".";
+        }
+        parentNotificationService.createForParent(
+                parent,
+                "INSCRIPTION",
+                "Demande d'inscription envoyée",
+                message
+        );
         return saved;
     }
 
@@ -246,9 +329,66 @@ public class parentService {
         Parent parent = getParentByEmail(email);
         LocalDateTime now = LocalDateTime.now();
         return inscriptionRepo.findByParentId(parent.getId()).stream()
-                .filter(i -> i.getAnimation().getStartTime().isAfter(now))
+                .filter(i -> i.getAnimation() != null
+                        && i.getAnimation().getStartTime() != null
+                        && i.getAnimation().getStartTime().isAfter(now))
                 .sorted(Comparator.comparing(i -> i.getAnimation().getStartTime()))
                 .limit(limit)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CRM_Manara.CRM_Manara.Model.Entity.ParentNotification> getNotificationsForParent(String email, int limit) {
+        Parent parent = getParentByEmail(email);
+        return parentNotificationService.getNotificationsForParent(parent.getId(), limit);
+    }
+
+    @Transactional(readOnly = true)
+    public long countUnreadNotificationsForParent(String email) {
+        Parent parent = getParentByEmail(email);
+        return parentNotificationService.countUnreadForParent(parent.getId());
+    }
+
+    @Transactional
+    public void markNotificationsAsRead(String email) {
+        Parent parent = getParentByEmail(email);
+        parentNotificationService.markAllAsReadForParent(parent.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Map<String, Object>> getAnimationCapacitySnapshotsForActivities(List<Activity> activities) {
+        Map<Long, Map<String, Object>> snapshots = new LinkedHashMap<>();
+        for (Activity activity : activities) {
+            for (Animation animation : getAnimationsForActivity(activity.getId())) {
+                snapshots.put(animation.getId(), getAnimationCapacitySnapshot(animation));
+            }
+        }
+        return snapshots;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> getAnimationCapacitySnapshot(Animation animation) {
+        List<Inscription> inscriptions = inscriptionRepo.findByAnimationId(animation.getId());
+        int approved = (int) inscriptions.stream()
+                .filter(i -> i.getStatusInscription() == statusInscription.APPROUVEE || i.getStatusInscription() == statusInscription.ACTIF)
+                .count();
+        int pending = (int) inscriptions.stream()
+                .filter(i -> i.getStatusInscription() == statusInscription.EN_ATTENTE)
+                .count();
+        int capacity = animation.getActivity() != null ? animation.getActivity().getCapacity() : 0;
+        int remaining = Math.max(0, capacity - approved);
+        int waitlist = Math.max(0, pending - remaining);
+        int fillRate = capacity > 0 ? Math.min(100, (approved * 100) / capacity) : 0;
+
+        Map<String, Object> snapshot = new LinkedHashMap<>();
+        snapshot.put("approved", approved);
+        snapshot.put("pending", pending);
+        snapshot.put("capacity", capacity);
+        snapshot.put("remaining", remaining);
+        snapshot.put("waitlist", waitlist);
+        snapshot.put("fillRate", fillRate);
+        snapshot.put("full", remaining == 0);
+        snapshot.put("waitlistPosition", waitlist > 0 ? waitlist : 0);
+        return snapshot;
     }
 }

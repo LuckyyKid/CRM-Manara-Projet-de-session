@@ -39,6 +39,37 @@ public class AuthSchemaInitializer implements CommandLineRunner {
                         FOREIGN KEY (user_id) REFERENCES users(id)
                 )
                 """);
+
+        jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS parent_notifications (
+                    id BIGINT NOT NULL AUTO_INCREMENT,
+                    parent_id BIGINT NOT NULL,
+                    category VARCHAR(80) NOT NULL,
+                    title VARCHAR(160) NOT NULL,
+                    message VARCHAR(1200) NOT NULL,
+                    created_at DATETIME(6) NOT NULL,
+                    read_status BOOLEAN NOT NULL DEFAULT FALSE,
+                    PRIMARY KEY (id),
+                    KEY idx_parent_notifications_parent_id (parent_id),
+                    CONSTRAINT fk_parent_notifications_parent
+                        FOREIGN KEY (parent_id) REFERENCES parent(id)
+                )
+                """);
+
+        ensureInscriptionStatuses();
+    }
+
+    private void ensureInscriptionStatuses() {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
+            String product = connection.getMetaData().getDatabaseProductName().toLowerCase();
+            if (product.contains("mariadb") || product.contains("mysql")) {
+                jdbcTemplate.execute("""
+                        ALTER TABLE inscription
+                        MODIFY COLUMN status_inscription ENUM('EN_ATTENTE','APPROUVEE','REFUSEE','ACTIF','ANNULÉE') NULL
+                        """);
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     // ADDED
