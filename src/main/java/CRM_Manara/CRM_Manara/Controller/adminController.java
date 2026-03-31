@@ -10,6 +10,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.animationStatus;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.status;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,9 @@ public class adminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private EmailService emailService;
+
     @GetMapping("/adminDashboard")
     public String adminDashboard(Model model) {
         model.addAttribute("countActivities", adminService.countActivities());
@@ -49,6 +53,17 @@ public class adminController {
         model.addAttribute("recentInscriptions", adminService.getRecentInscriptions(5));
         model.addAttribute("upcomingAnimations", adminService.getUpcomingAnimations(5));
         return "admin/adminDashboard";
+    }
+
+    @PostMapping("/email-test")
+    public String sendEmailTest(RedirectAttributes redirectAttributes) {
+        emailService.sendEmail(
+                "ahmedbelm51@gmail.com",
+                "Test email CRM Manara",
+                "Ceci est un test d'envoi via Resend depuis le tableau de bord admin."
+        );
+        redirectAttributes.addFlashAttribute("message", "Test d'email lancé. Vérifiez la console et Resend.");
+        return "redirect:/admin/adminDashboard";
     }
 
     @GetMapping("/activities")

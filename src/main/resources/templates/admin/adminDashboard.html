@@ -20,10 +20,18 @@
                     <p class="mm-page-subtitle">Gestion des activités, des sessions, des animateurs et des demandes d'inscription.</p>
                 </div>
                 <div class="mm-page-actions">
+                    <form th:action="@{/admin/email-test}" method="post" class="d-inline">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-outline-secondary">Tester l'email</button>
+                    </form>
                     <a class="btn btn-outline-primary" th:href="@{/admin/activities}">Catalogue</a>
                     <a class="btn btn-outline-primary" th:href="@{/admin/inscriptions}">Demandes d'inscription</a>
                     <a class="btn btn-primary" th:href="@{/admin/animations/new}">Nouvelle animation</a>
                 </div>
+            </div>
+
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <span th:text="${message}"></span>
             </div>
 
             <div class="row g-3">

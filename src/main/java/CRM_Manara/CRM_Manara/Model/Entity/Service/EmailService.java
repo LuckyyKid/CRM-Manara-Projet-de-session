@@ -3,7 +3,8 @@ package CRM_Manara.CRM_Manara.Model.Entity.Service;
 import CRM_Manara.CRM_Manara.Model.Entity.Administrateurs;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Repository.AdminRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -14,26 +15,30 @@ import java.net.http.HttpResponse;
 
 @Service
 public class EmailService {
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
     private static final String DEMO_COPY_EMAIL = "ahmedbelm51@gmail.com";
 
-    @Autowired
-    private Environment environment;
-
-    @Autowired
-    private AdminRepo adminRepo;
-
+    private final Environment environment;
+    private final AdminRepo adminRepo;
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
+    public EmailService(Environment environment, AdminRepo adminRepo) {
+        this.environment = environment;
+        this.adminRepo = adminRepo;
+    }
+
     public void sendEmail(String to, String subject, String text) {
+        log.info("EMAIL PREPARE to={} subject={}", to, subject);
         try {
             if (!isResendConfigured()) {
-                System.out.println("EMAIL NON ENVOYE : RESEND_API_KEY manquante.");
+                log.error("EMAIL NON ENVOYE: RESEND_API_KEY manquante.");
                 return;
             }
 
-            sendWithResend(to, subject, text);
+            String responseBody = sendWithResend(to, subject, text);
+            log.info("EMAIL ENVOYE via Resend to={} cc={} subject={} response={}", to, DEMO_COPY_EMAIL, subject, responseBody);
         } catch (Exception ex) {
-            System.out.println("EMAIL NON ENVOYE : " + ex.getMessage());
+            log.error("EMAIL NON ENVOYE to={} subject={} reason={}", to, subject, ex.getMessage(), ex);
         }
     }
 
@@ -106,13 +111,13 @@ public class EmailService {
         return apiKey != null && !apiKey.isBlank();
     }
 
-    private void sendWithResend(String to, String subject, String text) throws Exception {
+    private String sendWithResend(String to, String subject, String text) throws Exception {
         String payload = "{"
                 + "\"from\":\"" + escapeJson(environment.getProperty("RESEND_FROM_EMAIL", "onboarding@resend.dev")) + "\","
                 + "\"to\":[\"" + escapeJson(to) + "\"],"
                 + "\"cc\":[\"" + escapeJson(DEMO_COPY_EMAIL) + "\"],"
                 + "\"subject\":\"" + escapeJson(subject) + "\","
-                + "\"html\":\"" + escapeJson("<div style=\"font-family:Arial,sans-serif;line-height:1.6;color:#1f2937;white-space:pre-line;\">"
+                + "\"html\":\"" + escapeJson("<div style=\\\"font-family:Arial,sans-serif;line-height:1.6;color:#1f2937;white-space:pre-line;\\\">"
                 + escapeHtml(text)
                 + "</div>") + "\""
                 + "}";
@@ -128,6 +133,7 @@ public class EmailService {
         if (response.statusCode() >= 300) {
             throw new IllegalStateException("Resend error " + response.statusCode() + ": " + response.body());
         }
+        return response.body();
     }
 
     private String escapeHtml(String value) {
