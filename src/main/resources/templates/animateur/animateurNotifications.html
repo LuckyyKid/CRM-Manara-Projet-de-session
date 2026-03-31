@@ -17,7 +17,7 @@
                 <div>
                     <span class="mm-page-eyebrow">Suivi animateur</span>
                     <h1 class="mm-page-title fs-1">Notifications</h1>
-                    <p class="mm-page-subtitle">Retrouvez les nouvelles sessions, les changements d'activité et les mises à jour d'inscriptions liées à vos animations.</p>
+                    <p class="mm-page-subtitle">Retrouvez les nouvelles sessions, les changements d'activité et les mises à jour d'inscriptions liées à vos sessions.</p>
                 </div>
                 <div class="mm-page-actions">
                     <form th:action="@{/animateur/notifications/read-all}" method="post" class="d-inline">
@@ -44,7 +44,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                             <div>
-                                <div class="mm-page-eyebrow mb-2" th:text="${notification.category}">ANIMATION</div>
+                                <div class="mm-page-eyebrow mb-2" th:text="${notification.category}">SESSION</div>
                                 <h2 class="mm-panel-title mb-1" th:text="${notification.title}">Titre</h2>
                                 <p class="mm-panel-subtitle mb-0" th:text="${notification.message}">Message</p>
                             </div>
@@ -89,7 +89,7 @@
                                 <div th:each="notification : ${archivedNotifications}" class="border rounded-4 p-3 bg-light-subtle">
                                     <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                                         <div>
-                                            <div class="mm-page-eyebrow mb-2" th:text="${notification.category}">ANIMATION</div>
+                                            <div class="mm-page-eyebrow mb-2" th:text="${notification.category}">SESSION</div>
                                             <h3 class="h6 mb-1" th:text="${notification.title}">Titre</h3>
                                             <p class="text-secondary mb-0" th:text="${notification.message}">Message</p>
                                         </div>

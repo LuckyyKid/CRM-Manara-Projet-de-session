@@ -23,7 +23,7 @@
                     <a class="btn btn-outline-primary" th:href="@{/admin/activities}">Catalogue</a>
                     <a class="btn btn-outline-primary" th:href="@{/admin/demandes}">Demandes</a>
                     <a class="btn btn-outline-primary" th:href="@{/admin/notifications}">Notifications</a>
-                    <a class="btn btn-primary" th:href="@{/admin/animations/new}">Nouvelle animation</a>
+                    <a class="btn btn-primary" th:href="@{/admin/animations/new}">Nouvelle session</a>
                 </div>
             </div>
 
@@ -41,9 +41,9 @@
                 </div>
                 <div class="col-12 col-md-3">
                     <div class="mm-kpi-card h-100">
-                        <span class="mm-kpi-label">Animations</span>
+                        <span class="mm-kpi-label">Sessions</span>
                         <span class="mm-kpi-value" th:text="${countAnimations}">0</span>
-                        <span class="mm-kpi-meta">Sessions planifiees</span>
+                        <span class="mm-kpi-meta">Sessions planifiées</span>
                     </div>
                 </div>
                 <div class="col-12 col-md-3">
@@ -120,7 +120,7 @@
                 <div class="col-12 col-lg-6">
                     <div class="card mm-card-shadow h-100">
                         <div class="card-body">
-                            <h2 class="mm-panel-title mb-3">Animations à venir</h2>
+                            <h2 class="mm-panel-title mb-3">Sessions à venir</h2>
                             <div class="table-responsive">
                                 <table class="table table-sm align-middle">
                                     <thead>
@@ -132,7 +132,7 @@
                                     </thead>
                                     <tbody>
                                     <tr th:if="${#lists.isEmpty(upcomingAnimations)}">
-                                        <td colspan="3" class="text-secondary">Aucune animation à venir.</td>
+                                        <td colspan="3" class="text-secondary">Aucune session à venir.</td>
                                     </tr>
                                     <tr th:each="animation : ${upcomingAnimations}">
                                         <td th:text="${animation.activity.activyName}"></td>
