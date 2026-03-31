@@ -34,30 +34,6 @@
             <div id="adminParentsFeedback" class="alert d-none" role="alert"></div>
             <div id="adminInscriptionsFeedback" class="alert d-none" role="alert"></div>
 
-            <div class="row g-3 mb-3">
-                <div class="col-12 col-md-4">
-                    <div class="mm-kpi-card h-100">
-                        <span class="mm-kpi-label">Parents en attente</span>
-                        <span class="mm-kpi-value" th:text="${#lists.size(pendingParents)}">0</span>
-                        <span class="mm-kpi-meta">Comptes à approuver</span>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4">
-                    <div class="mm-kpi-card h-100">
-                        <span class="mm-kpi-label">Enfants en attente</span>
-                        <span class="mm-kpi-value" th:text="${#lists.size(pendingEnfants)}">0</span>
-                        <span class="mm-kpi-meta">Profils à activer</span>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4">
-                    <div class="mm-kpi-card h-100">
-                        <span class="mm-kpi-label">Inscriptions en attente</span>
-                        <span class="mm-kpi-value" th:text="${#lists.size(pendingInscriptions)}">0</span>
-                        <span class="mm-kpi-meta">Demandes d'activités à traiter</span>
-                    </div>
-                </div>
-            </div>
-
             <div class="card mm-card-shadow mb-3">
                 <div class="card-body">
                     <div class="mb-3">
