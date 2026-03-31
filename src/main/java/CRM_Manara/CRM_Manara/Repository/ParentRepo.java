@@ -12,6 +12,8 @@ import java.util.Optional;
 @Repository
 public interface ParentRepo extends JpaRepository<Parent, Long> {
 
+    Optional<Parent> findByUser(CRM_Manara.CRM_Manara.Model.Entity.User user);
+
     @Query("SELECT p FROM Parent p WHERE p.user.email = :email")
     Optional<Parent> findByUserEmail(@Param("email") String email);
 }

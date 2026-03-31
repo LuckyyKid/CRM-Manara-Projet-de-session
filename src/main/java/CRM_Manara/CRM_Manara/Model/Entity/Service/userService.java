@@ -43,6 +43,9 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
     @Autowired
     private VerificationTokenRepository verificationTokenRepository;
 
+    @Autowired
+    private AvatarService avatarService;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
@@ -90,6 +93,12 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
         User user = userRepo.findByEmail(email.trim())
                 .orElseGet(() -> createGoogleParent(email.trim(), name));
 
+        avatarService.assignOAuthAvatar(
+                user,
+                name,
+                oAuth2User.getAttribute("picture")
+        );
+
         // ADDED
         if (!user.isEnabled()) {
             user.setEnabled(true);
@@ -109,6 +118,7 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
 
         User user = new User(email, passwordEncoder.encode(UUID.randomUUID().toString()), SecurityRole.ROLE_PARENT, true);
         User savedUser = userRepo.save(user);
+        avatarService.assignDefaultAvatar(savedUser, fullName);
 
         Parent parent = new Parent(nameParts[1], nameParts[0], "");
         parent.SetUser(savedUser);

@@ -1,6 +1,7 @@
 package CRM_Manara.CRM_Manara.config;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AvatarService;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.ParentNotificationService;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,13 +16,16 @@ public class GlobalModelAttributes {
     private final Environment environment;
     private final ParentNotificationService parentNotificationService;
     private final AdminService adminService;
+    private final AvatarService avatarService;
 
     public GlobalModelAttributes(Environment environment,
                                  ParentNotificationService parentNotificationService,
-                                 AdminService adminService) {
+                                 AdminService adminService,
+                                 AvatarService avatarService) {
         this.environment = environment;
         this.parentNotificationService = parentNotificationService;
         this.adminService = adminService;
+        this.avatarService = avatarService;
     }
 
     @ModelAttribute("googleOAuthEnabled")
@@ -57,6 +61,24 @@ public class GlobalModelAttributes {
             return 0;
         }
         return adminService.countPendingInscriptions();
+    }
+
+    @ModelAttribute("currentUserAvatar")
+    public String currentUserAvatar() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!isAuthenticated(authentication)) {
+            return null;
+        }
+        return avatarService.resolveAvatarUrl(authentication.getName());
+    }
+
+    @ModelAttribute("currentUserDisplayName")
+    public String currentUserDisplayName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!isAuthenticated(authentication)) {
+            return null;
+        }
+        return avatarService.resolveDisplayName(authentication.getName());
     }
 
     private boolean isAuthenticated(Authentication authentication) {

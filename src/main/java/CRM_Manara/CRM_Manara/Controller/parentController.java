@@ -54,12 +54,8 @@ public class parentController {
     }
 
     @GetMapping("/profil")
-    public String profil(Model model, Principal principal) {
-        String email = principal.getName();
-        Parent parent = parentService.getParentByEmail(email);
-        model.addAttribute("parent", parent);
-        model.addAttribute("unreadNotifications", parentService.countUnreadNotificationsForParent(email));
-        return "parent/parentProfil";
+    public String profil() {
+        return "redirect:/settings";
     }
 
     @GetMapping("/notifications")
@@ -112,10 +108,8 @@ public class parentController {
                                @RequestParam("adresse") String adresse,
                                Principal principal,
                                RedirectAttributes redirectAttributes) {
-        String email = principal.getName();
-        parentService.updateParentProfile(email, nom, prenom, adresse);
-        redirectAttributes.addFlashAttribute("message", "Profil mis à jour.");
-        return "redirect:/parent/profil";
+        redirectAttributes.addFlashAttribute("message", "Utilisez désormais la page Paramètres.");
+        return "redirect:/settings";
     }
 
     @GetMapping("/enfants")

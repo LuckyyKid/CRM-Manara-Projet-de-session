@@ -68,6 +68,9 @@ public class parentService {
     @Autowired
     ParentNotificationService parentNotificationService;
 
+    @Autowired
+    AvatarService avatarService;
+
     @Transactional(readOnly = true)
     public boolean isEmailAvailable(String email) {
         if (email == null) {
@@ -100,6 +103,7 @@ public class parentService {
         user1.setEnabled(false);
 
         User userSaved = userRepo.save(user1);
+        avatarService.assignDefaultAvatar(userSaved, prenom + " " + nom);
         // ADDED
         System.out.println("STEP 6 REACHED - User saved with id: " + userSaved.getId());
 

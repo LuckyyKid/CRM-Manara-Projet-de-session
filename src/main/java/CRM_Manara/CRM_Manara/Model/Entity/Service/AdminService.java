@@ -70,6 +70,9 @@ public class AdminService {
     @Autowired
     ParentNotificationService parentNotificationService;
 
+    @Autowired
+    AvatarService avatarService;
+
 
     @Transactional(readOnly = true)
     public List<Activity> getAllActivities() {
@@ -257,6 +260,7 @@ public class AdminService {
         // ADDED
         user.setEnabled(true);
         User savedUser = userRepo.save(user);
+        avatarService.assignDefaultAvatar(savedUser, prenom + " " + nom);
         Animateur animateur = new Animateur(nom, prenom);
         animateur.setUser(savedUser);
         return animateurRepo.save(animateur);

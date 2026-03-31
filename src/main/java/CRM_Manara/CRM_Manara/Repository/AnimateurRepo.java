@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface AnimateurRepo extends JpaRepository<Animateur, Long> {
+    Optional<Animateur> findByUser(CRM_Manara.CRM_Manara.Model.Entity.User user);
     Optional<Animateur> findByUserEmail(String email);
 }

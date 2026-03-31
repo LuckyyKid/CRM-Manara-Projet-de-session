@@ -25,6 +25,10 @@ public class AuthSchemaInitializer implements CommandLineRunner {
             jdbcTemplate.execute("ALTER TABLE users ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT TRUE");
         }
 
+        if (!columnExists("users", "avatar_url")) {
+            jdbcTemplate.execute("ALTER TABLE users ADD COLUMN avatar_url VARCHAR(4096) NULL");
+        }
+
         // ADDED
         jdbcTemplate.execute("""
                 CREATE TABLE IF NOT EXISTS verification_tokens (
