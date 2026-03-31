@@ -1,11 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const triggers = document.querySelectorAll(".js-activity-detail-trigger");
-
-    if (triggers.length === 0) {
-        return;
-    }
-
     function fillModal(trigger, prefix) {
+        if (!trigger) {
+            return;
+        }
+
         const title = document.getElementById(`${prefix}Title`);
         const description = document.getElementById(`${prefix}Description`);
         const time = document.getElementById(`${prefix}Time`);
@@ -20,7 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         title.textContent = trigger.dataset.title || "Activité";
         description.textContent = trigger.dataset.description || "";
-        time.textContent = `${trigger.dataset.start || ""} à ${trigger.dataset.end || ""}`.trim();
+
+        const start = trigger.dataset.start || "";
+        const end = trigger.dataset.end || "";
+        time.textContent = start && end ? `${start} à ${end}` : (start || end);
+
         age.textContent = trigger.dataset.ageRange || "";
         status.textContent = trigger.dataset.status || "";
         animateur.textContent = trigger.dataset.animateur || "Animateur à confirmer";
@@ -40,14 +42,25 @@ document.addEventListener("DOMContentLoaded", () => {
         children.appendChild(list);
     }
 
-    triggers.forEach((trigger) => {
-        trigger.addEventListener("click", () => {
-            const modalTarget = trigger.getAttribute("data-bs-target");
-            if (modalTarget === "#parentActivityDetailModal") {
-                fillModal(trigger, "parentActivityDetail");
-            }
-            if (modalTarget === "#planningActivityDetailModal") {
-                fillModal(trigger, "planningActivityDetail");
+    function bindModal(modalId, prefix) {
+        const modal = document.querySelector(modalId);
+        if (!modal) {
+            return;
+        }
+
+        modal.addEventListener("show.bs.modal", (event) => {
+            fillModal(event.relatedTarget, prefix);
+        });
+    }
+
+    bindModal("#parentActivityDetailModal", "parentActivityDetail");
+    bindModal("#planningActivityDetailModal", "planningActivityDetail");
+
+    document.querySelectorAll(".js-activity-detail-trigger").forEach((trigger) => {
+        trigger.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                trigger.click();
             }
         });
     });

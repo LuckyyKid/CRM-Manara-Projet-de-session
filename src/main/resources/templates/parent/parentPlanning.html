@@ -113,19 +113,20 @@
                                 <div th:if="${#lists.isEmpty(inscriptions)}" class="mm-planning-list-empty">
                                     Aucune inscription cette semaine.
                                 </div>
-                                <button type="button"
-                                        th:each="inscription : ${inscriptions}"
-                                        class="mm-planning-item js-activity-detail-trigger"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#planningActivityDetailModal"
-                                        th:attr="data-title=${inscription.animation.activity.activyName},
-                                                 data-description=${inscription.animation.activity.description},
-                                                 data-age-range=${inscription.animation.activity.ageMin + ' à ' + inscription.animation.activity.ageMax + ' ans'},
-                                                 data-status=${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).inscriptionStatus(inscription.statusInscription)},
-                                                 data-start=${#temporals.format(inscription.animation.startTime, 'EEEE d MMMM yyyy ''à'' HH:mm')},
-                                                 data-end=${#temporals.format(inscription.animation.endTime, 'HH:mm')},
-                                                 data-animateur=${inscription.animation.animateur != null ? inscription.animation.animateur.prenom + ' ' + inscription.animation.animateur.nom : 'Animateur à confirmer'},
-                                                 data-children=${#lists.isEmpty(animationChildren[inscription.animation.id]) ? 'Aucun enfant inscrit pour le moment.' : #strings.listJoin(animationChildren[inscription.animation.id].![name + ' (' + status + ')'], ' | ')}">
+                                <article th:each="inscription : ${inscriptions}"
+                                         class="mm-planning-item js-activity-detail-trigger"
+                                         role="button"
+                                         tabindex="0"
+                                         data-bs-toggle="modal"
+                                         data-bs-target="#planningActivityDetailModal"
+                                         th:attr="data-title=${inscription.animation.activity.activyName},
+                                                  data-description=${inscription.animation.activity.description},
+                                                  data-age-range=${inscription.animation.activity.ageMin + ' à ' + inscription.animation.activity.ageMax + ' ans'},
+                                                  data-status=${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).inscriptionStatus(inscription.statusInscription)},
+                                                  data-start=${#temporals.format(inscription.animation.startTime, 'EEEE d MMMM yyyy ''à'' HH:mm')},
+                                                  data-end=${#temporals.format(inscription.animation.endTime, 'HH:mm')},
+                                                  data-animateur=${inscription.animation.animateur != null ? inscription.animation.animateur.prenom + ' ' + inscription.animation.animateur.nom : 'Animateur à confirmer'},
+                                                  data-children=${#lists.isEmpty(animationChildren[inscription.animation.id]) ? 'Aucun enfant inscrit pour le moment.' : #strings.listJoin(animationChildren[inscription.animation.id].![name + ' (' + status + ')'], ' | ')}">
                                     <div class="mm-planning-item-top">
                                         <span class="mm-planning-item-child"
                                               th:text="${inscription.enfant.prenom + ' ' + inscription.enfant.nom}">Enfant</span>
@@ -136,7 +137,8 @@
                                          th:text="${inscription.animation.activity.activyName}">Activité</div>
                                     <div class="mm-planning-item-time"
                                          th:text="${#temporals.format(inscription.animation.startTime, 'EEEE d MMMM') + ' de ' + #temporals.format(inscription.animation.startTime, 'HH:mm') + ' à ' + #temporals.format(inscription.animation.endTime, 'HH:mm')}">Horaire</div>
-                                </button>
+                                    <div class="mm-planning-item-action">Voir le détail</div>
+                                </article>
                             </div>
                         </div>
                     </div>

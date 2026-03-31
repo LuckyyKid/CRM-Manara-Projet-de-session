@@ -51,14 +51,26 @@
                             </div>
                             <div class="vstack gap-3" th:if="${!#lists.isEmpty(animations)}">
                                 <div th:each="animation : ${animations}" class="mm-panel">
-                                    <div class="d-flex gap-2 flex-wrap mb-3" th:with="capacity=${animationCapacity[animation.id]}">
-                                        <span class="badge text-bg-light">Places confirmées: <span th:text="${capacity['approved']}">0</span>/<span th:text="${capacity['capacity']}">0</span></span>
-                                        <span class="badge text-bg-light">Places restantes: <span th:text="${capacity['remaining']}">0</span></span>
-                                        <span class="badge text-bg-light">Demandes en attente: <span th:text="${capacity['pending']}">0</span></span>
-                                        <span class="badge text-bg-warning" th:if="${capacity['waitlist'] > 0}">Liste d'attente: <span th:text="${capacity['waitlist']}">0</span></span>
-                                        <span class="badge text-bg-primary">Remplissage: <span th:text="${capacity['fillRate']}">0</span>%</span>
+                                    <div class="d-flex gap-2 flex-wrap mb-3"
+                                         th:with="capacity=${animationCapacity[animation.id]},
+                                                  approved=${capacity != null ? capacity['approved'] : 0},
+                                                  capacityValue=${capacity != null ? capacity['capacity'] : 0},
+                                                  remaining=${capacity != null ? capacity['remaining'] : 0},
+                                                  pending=${capacity != null ? capacity['pending'] : 0},
+                                                  waitlist=${capacity != null ? capacity['waitlist'] : 0},
+                                                  fillRate=${capacity != null ? capacity['fillRate'] : 0},
+                                                  full=${capacity != null ? capacity['full'] : false}">
+                                        <span class="badge text-bg-light">Places confirmées: <span th:text="${approved}">0</span>/<span th:text="${capacityValue}">0</span></span>
+                                        <span class="badge text-bg-light">Places restantes: <span th:text="${remaining}">0</span></span>
+                                        <span class="badge text-bg-light">Demandes en attente: <span th:text="${pending}">0</span></span>
+                                        <span class="badge text-bg-warning" th:if="${waitlist > 0}">Liste d'attente: <span th:text="${waitlist}">0</span></span>
+                                        <span class="badge text-bg-primary">Remplissage: <span th:text="${fillRate}">0</span>%</span>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3"
+                                         th:with="capacity=${animationCapacity[animation.id]},
+                                                  approved=${capacity != null ? capacity['approved'] : 0},
+                                                  capacityValue=${capacity != null ? capacity['capacity'] : 0},
+                                                  full=${capacity != null ? capacity['full'] : false}">
                                         <div>
                                             <button type="button"
                                                     class="btn btn-link p-0 text-decoration-none text-start js-activity-detail-trigger"
@@ -67,7 +79,7 @@
                                                     th:attr="data-title=${animation.activity.activyName},
                                                              data-description=${animation.activity.description},
                                                              data-age-range=${animation.activity.ageMin + ' à ' + animation.activity.ageMax + ' ans'},
-                                                             data-capacity=${capacity['approved'] + '/' + capacity['capacity'] + ' places confirmées'},
+                                                             data-capacity=${approved + '/' + capacityValue + ' places confirmées'},
                                                              data-status=${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).animationStatus(animation.statusAnimation)},
                                                              data-start=${#temporals.format(animation.startTime, 'EEEE d MMMM yyyy ''à'' HH:mm')},
                                                              data-end=${#temporals.format(animation.endTime, 'HH:mm')},
@@ -85,7 +97,7 @@
                                                           th:attr="data-value=${#temporals.format(animation.endTime, 'yyyy-MM-dd''T''HH:mm')}"></span>
                                                 </div>
                                             </button>
-                                            <div class="small mt-2 text-warning" th:if="${animationCapacity[animation.id]['full']}">
+                                            <div class="small mt-2 text-warning" th:if="${full}">
                                                 Session complète pour l'instant. Toute nouvelle demande ira en liste d'attente.
                                             </div>
                                         </div>
