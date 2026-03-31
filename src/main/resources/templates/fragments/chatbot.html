@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Fragment du chatbot - à inclure dans les pages -->
+<div th:fragment="chatbot">
+    
+    <!-- Bouton flottant pour ouvrir le chat -->
+    <button id="chatbot-toggle" class="chatbot-toggle" onclick="toggleChatbot()">
+        <i class="bi bi-chat-dots-fill"></i>
+        <span class="chatbot-badge" id="chatbot-badge" style="display: none;">!</span>
+    </button>
+
+    <!-- Fenêtre du chatbot -->
+    <div id="chatbot-window" class="chatbot-window" style="display: none;">
+        
+        <!-- Header du chat -->
+        <div class="chatbot-header">
+            <div class="chatbot-header-info">
+                <div class="chatbot-avatar">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div>
+                    <div class="chatbot-title">Assistant Manara</div>
+                    <div class="chatbot-status">
+                        <span class="status-dot"></span> En ligne
+                    </div>
+                </div>
+            </div>
+            <button class="chatbot-close" onclick="toggleChatbot()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Zone des messages -->
+        <div id="chatbot-messages" class="chatbot-messages">
+            <!-- Les messages seront ajoutés ici par JavaScript -->
+        </div>
+
+        <!-- Suggestions rapides -->
+        <div id="chatbot-suggestions" class="chatbot-suggestions">
+            <!-- Les suggestions seront ajoutées ici -->
+        </div>
+
+        <!-- Zone de saisie -->
+        <div class="chatbot-input-area">
+            <input 
+                type="text" 
+                id="chatbot-input" 
+                class="chatbot-input" 
+                placeholder="Écrivez votre message..."
+                onkeypress="handleKeyPress(event)"
+            >
+            <button class="chatbot-send" onclick="envoyerMessage()">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Script du chatbot -->
+    <script>
+        var chatbotOuvert = false;
+        var premierOuverture = true;
+
+        function toggleChatbot() {
+            var fenetre = document.getElementById('chatbot-window');
+            var badge = document.getElementById('chatbot-badge');
+            
+            chatbotOuvert = !chatbotOuvert;
+            fenetre.style.display = chatbotOuvert ? 'flex' : 'none';
+            badge.style.display = 'none';
+            
+            if (chatbotOuvert && premierOuverture) {
+                premierOuverture = false;
+                initialiserChatbot();
+            }
+            
+            if (chatbotOuvert) {
+                document.getElementById('chatbot-input').focus();
+            }
+        }
+
+        function initialiserChatbot() {
+            fetch('/api/chatbot/init')
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        ajouterMessageBot(data.messageBienvenue);
+                        afficherSuggestions(data.suggestions);
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Erreur init:', error);
+                    ajouterMessageBot("Bonjour! Comment puis-je vous aider?");
+                    afficherSuggestions(["Inscriptions", "Activités", "Horaires", "Contact"]);
+                });
+        }
+
+        function envoyerMessage(messageForce) {
+            var input = document.getElementById('chatbot-input');
+            var message = messageForce || input.value.trim();
+            
+            if (!message) return;
+            
+            ajouterMessageUtilisateur(message);
+            input.value = '';
+            
+            document.getElementById('chatbot-suggestions').style.display = 'none';
+            
+            var loadingId = ajouterMessageLoading();
+            
+            fetch('/api/chatbot/message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                supprimerMessage(loadingId);
+                if (data.success) {
+                    ajouterMessageBot(data.reponse);
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        afficherSuggestions(data.suggestions);
+                    }
+                } else {
+                    ajouterMessageBot("Désolé, une erreur s'est produite.");
+                }
+            })
+            .catch(function(error) {
+                console.error('Erreur:', error);
+                supprimerMessage(loadingId);
+                ajouterMessageBot("Désolé, je ne peux pas répondre pour le moment.");
+                afficherSuggestions(["Réessayer", "Nous contacter"]);
+            });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                envoyerMessage();
+            }
+        }
+
+        function ajouterMessageUtilisateur(texte) {
+            var container = document.getElementById('chatbot-messages');
+            var messageDiv = document.createElement('div');
+            messageDiv.className = 'chatbot-message user-message';
+            messageDiv.innerHTML = '<div class="message-content">' + escapeHtml(texte) + '</div>';
+            container.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function ajouterMessageBot(texte) {
+            var container = document.getElementById('chatbot-messages');
+            var messageDiv = document.createElement('div');
+            messageDiv.className = 'chatbot-message bot-message';
+            var texteFormate = escapeHtml(texte).replace(/\n/g, '<br>');
+            messageDiv.innerHTML = '<div class="bot-avatar"><i class="bi bi-robot"></i></div><div class="message-content">' + texteFormate + '</div>';
+            container.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function ajouterMessageLoading() {
+            var container = document.getElementById('chatbot-messages');
+            var messageDiv = document.createElement('div');
+            var id = 'loading-' + Date.now();
+            messageDiv.id = id;
+            messageDiv.className = 'chatbot-message bot-message';
+            messageDiv.innerHTML = '<div class="bot-avatar"><i class="bi bi-robot"></i></div><div class="message-content loading-dots"><span></span><span></span><span></span></div>';
+            container.appendChild(messageDiv);
+            scrollToBottom();
+            return id;
+        }
+
+        function supprimerMessage(id) {
+            var element = document.getElementById(id);
+            if (element) element.remove();
+        }
+
+        function afficherSuggestions(suggestions) {
+            var container = document.getElementById('chatbot-suggestions');
+            container.innerHTML = '';
+            container.style.display = 'flex';
+            
+            for (var i = 0; i < suggestions.length; i++) {
+                var btn = document.createElement('button');
+                btn.className = 'suggestion-btn';
+                btn.textContent = suggestions[i];
+                btn.setAttribute('data-message', suggestions[i]);
+                btn.onclick = function() { 
+                    envoyerMessage(this.getAttribute('data-message')); 
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        function scrollToBottom() {
+            var container = document.getElementById('chatbot-messages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</div>
+
+</body>
+</html>

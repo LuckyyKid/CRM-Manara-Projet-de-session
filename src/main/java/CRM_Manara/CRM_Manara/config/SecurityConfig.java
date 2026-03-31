@@ -40,8 +40,11 @@ public class SecurityConfig {
         http.
                 authenticationProvider(authenticationProvider());
         http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/chatbot/**")
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/css/**","/", "/index","/signUp").permitAll()
+                        .requestMatchers("/login", "/register", "/css/**","/", "/index","/signUp", "/api/chatbot/**", "/about").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/parent/**").hasRole("PARENT")
                         .requestMatchers("/animateur/**").hasRole("ANIMATEUR")
