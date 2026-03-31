@@ -31,10 +31,10 @@ public class Animation {
     @Column(name="Status")
     private animationStatus statusAnimation;
 
-    @Column(name = "Start",nullable = false)
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(name = "End",nullable = false)
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
     @OneToMany(mappedBy = "animation", cascade = CascadeType.REMOVE, orphanRemoval = true)
