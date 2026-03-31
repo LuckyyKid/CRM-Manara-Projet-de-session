@@ -132,13 +132,12 @@
                                 <th>Activité</th>
                                 <th>Animation</th>
                                 <th>Places</th>
-                                <th>Attente</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:if="${#lists.isEmpty(pendingInscriptions)}">
-                                <td colspan="7" class="text-secondary">Aucune demande d'inscription en attente.</td>
+                                <td colspan="6" class="text-secondary">Aucune demande d'inscription en attente.</td>
                             </tr>
                             <tr th:each="inscription : ${pendingInscriptions}" th:attr="data-admin-inscription-row=${inscription.id}">
                                 <td th:text="${inscription.enfant.parent.prenom + ' ' + inscription.enfant.parent.nom}"></td>
@@ -155,10 +154,6 @@
                                     <div class="small text-secondary">
                                         <span th:text="${animationCapacity[inscription.animation.id]['remaining']}">0</span> restante(s)
                                     </div>
-                                </td>
-                                <td>
-                                    <span class="badge rounded-pill text-bg-light border"
-                                          th:text="${animationCapacity[inscription.animation.id]['waitlist']}">0</span>
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2 flex-wrap">
