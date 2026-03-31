@@ -17,13 +17,18 @@
                 <div>
                     <span class="mm-page-eyebrow">Administration</span>
                     <h1 class="mm-page-title">Tableau de bord administrateur</h1>
-                    <p class="mm-page-subtitle">Gestion des activités, des sessions, des animateurs et des demandes d'inscription.</p>
+                    <p class="mm-page-subtitle">Gestion des activités, des animations, des animateurs et des demandes d'inscription.</p>
                 </div>
                 <div class="mm-page-actions">
                     <a class="btn btn-outline-primary" th:href="@{/admin/activities}">Catalogue</a>
-                    <a class="btn btn-outline-primary" th:href="@{/admin/inscriptions}">Demandes d'inscription</a>
+                    <a class="btn btn-outline-primary" th:href="@{/admin/demandes}">Demandes</a>
+                    <a class="btn btn-outline-primary" th:href="@{/admin/notifications}">Notifications</a>
                     <a class="btn btn-primary" th:href="@{/admin/animations/new}">Nouvelle animation</a>
                 </div>
+            </div>
+
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <span th:text="${message}"></span>
             </div>
 
             <div class="row g-3">
@@ -38,7 +43,7 @@
                     <div class="mm-kpi-card h-100">
                         <span class="mm-kpi-label">Animations</span>
                         <span class="mm-kpi-value" th:text="${countAnimations}">0</span>
-                        <span class="mm-kpi-meta">Sessions planifiees</span>
+                        <span class="mm-kpi-meta">Animations planifiées</span>
                     </div>
                 </div>
                 <div class="col-12 col-md-3">
@@ -66,7 +71,7 @@
                     <div class="mm-kpi-card h-100">
                         <span class="mm-kpi-label">Remplissage moyen</span>
                         <span class="mm-kpi-value"><span th:text="${averageFillRate}">0</span>%</span>
-                        <span class="mm-kpi-meta">Taux confirmé des sessions</span>
+                        <span class="mm-kpi-meta">Taux confirmé des animations</span>
                     </div>
                 </div>
                 <div class="col-12 col-md-3">
@@ -139,6 +144,30 @@
                                     </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card mm-card-shadow">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="mm-panel-title mb-0">Notifications récentes</h2>
+                                <a class="btn btn-outline-primary btn-sm" th:href="@{/admin/notifications}">Tout voir</a>
+                            </div>
+                            <div th:if="${#lists.isEmpty(recentAdminNotifications)}" class="text-secondary">Aucune notification.</div>
+                            <div class="vstack gap-2" th:if="${!#lists.isEmpty(recentAdminNotifications)}">
+                                <div th:each="notification : ${recentAdminNotifications}" class="border rounded-3 p-3">
+                                    <div class="d-flex justify-content-between gap-3 flex-wrap">
+                                        <div>
+                                            <div class="mm-page-eyebrow mb-1" th:text="${notification.source + ' • ' + notification.type}">SOURCE</div>
+                                            <div th:text="${notification.message}">Message</div>
+                                        </div>
+                                        <div class="text-secondary small">
+                                            <span data-format="datetime" th:attr="data-value=${#temporals.format(notification.createdAt, 'yyyy-MM-dd''T''HH:mm')}"></span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -10,6 +10,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.animationStatus;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.status;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,9 @@ public class adminController {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private AdminNotificationService adminNotificationService;
+
     @GetMapping("/adminDashboard")
     public String adminDashboard(Model model) {
         model.addAttribute("countActivities", adminService.countActivities());
@@ -48,6 +52,7 @@ public class adminController {
         model.addAttribute("averageFillRate", adminService.getAverageFillRate());
         model.addAttribute("recentInscriptions", adminService.getRecentInscriptions(5));
         model.addAttribute("upcomingAnimations", adminService.getUpcomingAnimations(5));
+        model.addAttribute("recentAdminNotifications", adminNotificationService.getRecent(5));
         return "admin/adminDashboard";
     }
 
@@ -253,10 +258,23 @@ public class adminController {
 
     @GetMapping("/inscriptions")
     public String inscriptions(Model model) {
+        return "redirect:/admin/demandes";
+    }
+
+    @GetMapping("/demandes")
+    public String demandes(Model model) {
+        model.addAttribute("pendingParents", adminService.getPendingParents());
+        model.addAttribute("pendingEnfants", adminService.getPendingEnfants());
         model.addAttribute("pendingInscriptions", adminService.getPendingInscriptions());
         model.addAttribute("processedInscriptions", adminService.getProcessedInscriptions());
         model.addAttribute("animationCapacity", adminService.getAnimationCapacitySnapshots());
-        return "admin/adminInscriptions";
+        return "admin/adminDemandes";
+    }
+
+    @GetMapping("/notifications")
+    public String notifications(Model model) {
+        model.addAttribute("notifications", adminNotificationService.getAll());
+        return "admin/adminNotifications";
     }
 
     @PostMapping("/parents/{id}/status")
@@ -299,14 +317,14 @@ public class adminController {
         } catch (IllegalStateException exception) {
             redirectAttributes.addFlashAttribute("error", exception.getMessage());
         }
-        return "redirect:/admin/inscriptions";
+        return "redirect:/admin/demandes";
     }
 
     @PostMapping("/inscriptions/{id}/reject")
     public String rejectInscription(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         adminService.rejectInscription(id);
         redirectAttributes.addFlashAttribute("message", "Demande refusee.");
-        return "redirect:/admin/inscriptions";
+        return "redirect:/admin/demandes";
     }
 
     @PostMapping("/api/parents/{id}/status")
@@ -375,6 +393,26 @@ public class adminController {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("success", true);
         response.put("message", "Demande refusée.");
+        return response;
+    }
+
+    @PostMapping("/animateurs/{id}/status")
+    public String updateAnimateurStatus(@PathVariable("id") Long id,
+                                        @RequestParam("enabled") boolean enabled,
+                                        RedirectAttributes redirectAttributes) {
+        adminService.updateAnimateurEnabled(id, enabled);
+        redirectAttributes.addFlashAttribute("message", enabled ? "Compte animateur activé." : "Compte animateur désactivé.");
+        return "redirect:/admin/animateurs";
+    }
+
+    @PostMapping("/api/animateurs/{id}/status")
+    @ResponseBody
+    public Map<String, Object> updateAnimateurStatusAjax(@PathVariable("id") Long id,
+                                                         @RequestParam("enabled") boolean enabled) {
+        adminService.updateAnimateurEnabled(id, enabled);
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("success", true);
+        response.put("message", enabled ? "Compte animateur activé." : "Compte animateur désactivé.");
         return response;
     }
 
