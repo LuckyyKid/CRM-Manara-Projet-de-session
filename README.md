@@ -11,10 +11,15 @@ Le MVP Sprint 2 couvre:
 - validation serveur des formulaires
 - interactions Ajax sur plusieurs écrans
 - demandes d'inscription parent avec approbation admin
+- comptes parent en attente d'approbation admin
+- profils enfant en attente d'approbation admin
 - suivi des présences côté animateur
-- notifications parent et reçus email
+- notifications admin, parent et animateur
+- reçus et courriels métier via Resend
 - suivi du remplissage et de la liste d'attente
 - tableaux de bord admin, parent et animateur
+- paramètres de compte avec avatar persistant
+- page d'erreur utilisateur dédiée
 
 ## Lancement
 
@@ -40,15 +45,18 @@ Application locale:
   - `/parent/activities`
   - `/parent/planning`
   - `/parent/notifications`
+  - `/settings`
 - Admin:
   - `/admin/adminDashboard`
   - `/admin/activities`
   - `/admin/animations`
   - `/admin/animateurs`
   - `/admin/parents`
-  - `/admin/inscriptions`
+  - `/admin/demandes`
+  - `/admin/notifications`
 - Animateur:
   - `/animateur/dashboard`
+  - `/animateur/notifications`
   - `/animateur/inscriptions`
 
 ## Base de données

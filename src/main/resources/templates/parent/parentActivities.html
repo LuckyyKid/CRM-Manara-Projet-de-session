@@ -85,7 +85,7 @@
                                                              data-end=${#temporals.format(animation.endTime, 'HH:mm')},
                                                              data-animateur=${animation.animateur != null ? animation.animateur.prenom + ' ' + animation.animateur.nom : 'Animateur à confirmer'},
                                                              data-children=${#lists.isEmpty(animationChildren[animation.id]) ? 'Aucun enfant inscrit pour le moment.' : #strings.listJoin(animationChildren[animation.id].![name + ' (' + status + ')'], ' | ')}">
-                                                <div class="mm-page-eyebrow mb-2">Session</div>
+                                                <div class="mm-page-eyebrow mb-2">Animation</div>
                                                 <div class="fw-semibold text-dark mb-1">
                                                     Début:
                                                     <span data-format="datetime"
@@ -98,7 +98,7 @@
                                                 </div>
                                             </button>
                                             <div class="small mt-2 text-warning" th:if="${full}">
-                                                Session complète pour l'instant. Toute nouvelle demande ira en liste d'attente.
+                                                Animation complète pour l'instant. Toute nouvelle demande ira en liste d'attente.
                                             </div>
                                         </div>
                                         <form th:action="@{/parent/inscriptions}" method="post" class="d-flex gap-2 align-items-center flex-wrap js-parent-inscription-form">

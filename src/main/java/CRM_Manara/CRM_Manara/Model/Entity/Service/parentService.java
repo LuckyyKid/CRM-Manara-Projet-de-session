@@ -87,37 +87,21 @@ public class parentService {
 
     @Transactional
     public void createNewParent(String nom, String prenom, String adresse, String email, String password) {
-        // ADDED
-        System.out.println("STEP 4 REACHED - parentService.createNewParent()");
-        System.out.println("Preparing parent signup for email: " + email);
-
-        // ADDED
         if (userRepo.existsByEmail(email.trim())) {
-            // ADDED
-            System.out.println("STEP 4.1 REACHED - Email already exists: " + email);
             throw new IllegalArgumentException("Un compte existe deja avec cet email.");
         }
 
         String hash = passwordEncoder.encode(password);
-        // ADDED
-        System.out.println("STEP 5 REACHED - Password encoded for email: " + email);
-
-        // MODIFIED
         User user1 = new User(email.trim(), hash);
         user1.setRole(SecurityRole.ROLE_PARENT);
-        // ADDED
         user1.setEnabled(false);
 
         User userSaved = userRepo.save(user1);
         avatarService.assignDefaultAvatar(userSaved, prenom + " " + nom);
-        // ADDED
-        System.out.println("STEP 6 REACHED - User saved with id: " + userSaved.getId());
 
         Parent parent = new Parent(nom, prenom, adresse);
         parent.SetUser(userSaved);
         Parent savedParent = parentRepo.save(parent);
-        // ADDED
-        System.out.println("STEP 7 REACHED - Parent profile saved for user id: " + userSaved.getId());
 
         VerificationToken verificationToken = new VerificationToken(
                 UUID.randomUUID().toString(),
@@ -311,7 +295,7 @@ public class parentService {
         }
         inscriptionRepo.findByEnfantIdAndAnimationId(enfantId, animationId)
                 .ifPresent(existing -> {
-                    throw new IllegalArgumentException("Une demande existe déjà pour cet enfant sur cette session.");
+                    throw new IllegalArgumentException("Une demande existe déjà pour cet enfant sur cette animation.");
                 });
         Inscription inscription = new Inscription(enfant, animation);
         inscription.setStatusInscription(statusInscription.EN_ATTENTE);
@@ -321,7 +305,7 @@ public class parentService {
         int pending = (int) capacity.get("pending");
         String message = remaining > 0
                 ? "Votre demande pour " + enfant.getPrenom() + " a été envoyée. Elle sera validée par l'administration."
-                : "Votre demande pour " + enfant.getPrenom() + " a été envoyée. La session est complète pour l'instant et la demande rejoint la liste d'attente.";
+                : "Votre demande pour " + enfant.getPrenom() + " a été envoyée. L'animation est complète pour l'instant et la demande rejoint la liste d'attente.";
         if (remaining == 0 && pending > 0) {
             message += " Position estimée en attente: " + capacity.get("waitlistPosition") + ".";
         }
@@ -342,7 +326,7 @@ public class parentService {
             animateurNotificationService.createForAnimateur(
                     animation.getAnimateur(),
                     "INSCRIPTION",
-                    "Nouvel enfant ajouté à votre session",
+                    "Nouvel enfant ajouté à votre animation",
                     enfant.getPrenom() + " " + enfant.getNom()
                             + " a fait l'objet d'une nouvelle demande pour "
                             + animation.getActivity().getActivyName()

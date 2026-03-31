@@ -161,8 +161,8 @@ public class AdminService {
         animateurNotificationService.createForAnimateur(
                 animateur,
                 "ANIMATION",
-                "Nouvelle session assignée",
-                "Une nouvelle session vous a été assignée : "
+                "Nouvelle animation assignée",
+                "Une nouvelle animation vous a été assignée : "
                         + activity.getActivyName()
                         + " du " + start + " au " + end + "."
         );
@@ -191,8 +191,8 @@ public class AdminService {
             animateurNotificationService.createForAnimateur(
                     previousAnimateur,
                     "ANIMATION",
-                    "Session retirée",
-                    "La session "
+                    "Animation retirée",
+                    "L'animation "
                             + previousActivity.getActivyName()
                             + " du " + previousStart + " au " + previousEnd
                             + " ne vous est plus assignée."
@@ -203,9 +203,9 @@ public class AdminService {
                 animateur,
                 "ANIMATION",
                 previousAnimateur != null && previousAnimateur.getId().equals(animateur.getId())
-                        ? "Session mise à jour"
-                        : "Nouvelle session assignée",
-                "La session "
+                        ? "Animation mise à jour"
+                        : "Nouvelle animation assignée",
+                "L'animation "
                         + activity.getActivyName()
                         + " que vous animez a été mise à jour. Nouveau créneau : "
                         + start + " à " + end + "."
@@ -224,8 +224,8 @@ public class AdminService {
             animateurNotificationService.createForAnimateur(
                     animation.getAnimateur(),
                     "ANIMATION",
-                    "Session annulée",
-                    "La session "
+                    "Animation annulée",
+                    "L'animation "
                             + animation.getActivity().getActivyName()
                             + " du " + animation.getStartTime()
                             + " a été supprimée par l'administration."
@@ -534,7 +534,7 @@ public class AdminService {
         Map<String, Object> snapshot = getAnimationCapacitySnapshot(inscription.getAnimation());
         int remaining = ((Number) snapshot.get("remaining")).intValue();
         if (remaining <= 0 && inscription.getStatusInscription() == statusInscription.EN_ATTENTE) {
-            throw new IllegalStateException("Plus de places disponibles sur cette session. La demande reste en attente.");
+            throw new IllegalStateException("Plus de places disponibles sur cette animation. La demande reste en attente.");
         }
         inscription.setStatusInscription(statusInscription.APPROUVEE);
         Inscription saved = inscriptionRepo.save(inscription);

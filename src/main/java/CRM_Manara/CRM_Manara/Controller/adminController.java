@@ -187,7 +187,7 @@ public class adminController {
                                   @RequestParam("end") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime end,
                                   RedirectAttributes redirectAttributes) {
         adminService.createAnimation(activityId, animateurId, role, status, start, end);
-        redirectAttributes.addFlashAttribute("message", "Session créée.");
+        redirectAttributes.addFlashAttribute("message", "Animation créée.");
         return "redirect:/admin/animations";
     }
 
@@ -212,7 +212,7 @@ public class adminController {
                                   @RequestParam("end") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime end,
                                   RedirectAttributes redirectAttributes) {
         adminService.updateAnimation(id, activityId, animateurId, role, status, start, end);
-        redirectAttributes.addFlashAttribute("message", "Session mise à jour.");
+        redirectAttributes.addFlashAttribute("message", "Animation mise à jour.");
         return "redirect:/admin/animations";
     }
 
@@ -221,9 +221,9 @@ public class adminController {
         long count = adminService.countInscriptionsForAnimation(id);
         adminService.deleteAnimation(id);
         if (count > 0) {
-            redirectAttributes.addFlashAttribute("message", "Session supprimée (" + count + " inscriptions supprimées).");
+            redirectAttributes.addFlashAttribute("message", "Animation supprimée (" + count + " inscriptions supprimées).");
         } else {
-            redirectAttributes.addFlashAttribute("message", "Session supprimée.");
+            redirectAttributes.addFlashAttribute("message", "Animation supprimée.");
         }
         return "redirect:/admin/animations";
     }
@@ -237,8 +237,8 @@ public class adminController {
         response.put("success", true);
         response.put("id", id);
         response.put("message", count > 0
-                ? "Session supprimée (" + count + " inscriptions supprimées)."
-                : "Session supprimée.");
+                ? "Animation supprimée (" + count + " inscriptions supprimées)."
+                : "Animation supprimée.");
         return response;
     }
 

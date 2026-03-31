@@ -6,6 +6,8 @@ import CRM_Manara.CRM_Manara.Model.Entity.User;
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
 import CRM_Manara.CRM_Manara.Repository.UserRepo;
 import CRM_Manara.CRM_Manara.Repository.VerificationTokenRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +29,8 @@ import java.util.UUID;
 
 @Service
 public class userService implements UserDetailsService, OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+
+    private static final Logger logger = LoggerFactory.getLogger(userService.class);
 
     @Autowired
     private UserRepo userRepo;
@@ -57,16 +61,10 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        System.out.println("Tentative de connexion pour l'email : " + email);
-
         User user = userRepo.findByEmail(email.trim()).orElseThrow(() -> {
-            System.out.println("ERREUR : Aucun utilisateur trouve en DB pour : " + email);
             return new UsernameNotFoundException("Pas trouve");
         });
-
-        System.out.println("Utilisateur trouve ! Son mot de passe hashe est : " + user.getPassword());
-        System.out.println("Son role est : " + user.getRole());
+        logger.debug("Authentification chargée pour {} avec rôle {}", user.getEmail(), user.getRole());
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())

@@ -99,7 +99,7 @@ class AdminServiceTest {
                 () -> adminService.approveInscription(50L)
         );
 
-        assertEquals("Plus de places disponibles sur cette session. La demande reste en attente.", exception.getMessage());
+        assertEquals("Plus de places disponibles sur cette animation. La demande reste en attente.", exception.getMessage());
         verify(inscriptionRepo, never()).save(any(Inscription.class));
     }
 

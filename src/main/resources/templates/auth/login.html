@@ -27,14 +27,14 @@
                                         <p class="mb-0">Connectez-vous pour suivre les inscriptions, les présences et les plannings dans une interface unifiée.</p>
                                         <ul class="mm-auth-list">
                                             <li><i class="bi bi-shield-check"></i><span>Accès sécurisé parent, admin et animateur</span></li>
-                                            <li><i class="bi bi-calendar-event"></i><span>Suivi des activités et animations</span></li>
+                                            <li><i class="bi bi-calendar-event"></i><span>Suivi des activités et des animations</span></li>
                                             <li><i class="bi bi-people"></i><span>Gestion simple des familles et présences</span></li>
                                         </ul>
                                     </div>
                                 </div>
                                 <div class="col-lg-7 p-4 p-lg-5">
                                     <h1 class="mm-page-title fs-2 mb-2">Connexion</h1>
-                                    <p class="text-secondary mb-4">Accedez a votre espace.</p>
+                                    <p class="text-secondary mb-4">Accédez à votre espace.</p>
 
                                     <div th:if="${param.error}" class="alert alert-danger" role="alert">
                                         Mot de passe, courriel, ou etat du compte invalide.
@@ -79,13 +79,13 @@
                                     </a>
 
                                     <div th:unless="${googleOAuthEnabled}" class="small text-secondary text-center border rounded-3 p-3">
-                                        La connexion Google sera disponible apres configuration de
+                                        La connexion Google sera disponible après configuration de
                                         <code>GOOGLE_CLIENT_ID</code> et <code>GOOGLE_CLIENT_SECRET</code>.
                                     </div>
 
                                     <div class="text-center small mt-3">
                                         <span class="text-secondary">Pas encore de compte ?</span>
-                                        <a th:href="@{/signUp}">Creer un compte</a>
+                                        <a th:href="@{/signUp}">Créer un compte</a>
                                     </div>
                                 </div>
                             </div>

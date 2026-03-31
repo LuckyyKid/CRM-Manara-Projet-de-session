@@ -17,7 +17,7 @@
                 <div>
                     <span class="mm-page-eyebrow">Calendrier</span>
                     <h1 class="mm-page-title fs-1">Calendrier</h1>
-                    <p class="mm-page-subtitle">Vue de la semaine en cours avec toutes les sessions planifiées.</p>
+                    <p class="mm-page-subtitle">Vue de la semaine en cours avec toutes les animations planifiées.</p>
                 </div>
                 <div class="mm-page-actions">
                     <a class="btn btn-outline-primary" href="/parent/activities">Voir activités</a>
@@ -105,7 +105,7 @@
                     <div class="card mm-card-shadow mm-planning-list-card">
                         <div class="card-body">
                             <div class="mb-3">
-                                <h2 class="mm-panel-title">Sessions de la semaine</h2>
+                                <h2 class="mm-panel-title">Animations de la semaine</h2>
                                 <p class="mm-panel-subtitle"
                                    th:text="${#temporals.format(weekStart, 'd MMMM') + ' au ' + #temporals.format(weekEnd, 'd MMMM yyyy')}">Semaine en cours</p>
                             </div>
@@ -152,7 +152,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
-                        <div class="mm-page-eyebrow">Détail de la session</div>
+                        <div class="mm-page-eyebrow">Détail de l'animation</div>
                         <h2 class="modal-title h5 mb-0" id="planningActivityDetailTitle">Activité</h2>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
@@ -165,7 +165,7 @@
                         <div><strong>Statut:</strong> <span id="planningActivityDetailStatus"></span></div>
                         <div><strong>Animateur:</strong> <span id="planningActivityDetailAnimateur"></span></div>
                         <div>
-                            <strong>Enfants inscrits sur cette session:</strong>
+                            <strong>Enfants inscrits sur cette animation:</strong>
                             <div class="text-secondary mt-1" id="planningActivityDetailChildren"></div>
                         </div>
                     </div>

@@ -62,7 +62,6 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .successHandler(successHandler)
                         .failureHandler((request, response, exception) -> {
-                            System.out.println("ECHEC AUTHENTIFICATION : " + exception.getMessage());
                             if (exception instanceof DisabledException) {
                                 response.sendRedirect("/login?pending");
                                 return;
