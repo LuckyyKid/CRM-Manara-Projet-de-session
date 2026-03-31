@@ -14,56 +14,67 @@
     <div th:replace="~{fragments/header :: header}"></div>
 
     <main class="mm-main">
-        <div class="container py-4">
+        <div class="container mm-auth-shell">
             <div class="row justify-content-center">
-                <div class="col-12 col-md-8 col-lg-5">
-                    <div class="card mm-card-shadow">
-                        <div class="card-body p-4">
-                            <h1 class="h5 mb-2">Connexion</h1>
-                            <p class="text-secondary small mb-4">Accedez a votre espace.</p>
-
-                            <!-- MODIFIED -->
-                            <div th:if="${param.error}" class="alert alert-danger" role="alert">
-                                Mot de passe, courriel, ou etat du compte invalide.
-                            </div>
-
-                            <!-- ADDED -->
-                            <div th:if="${message}" class="alert alert-success" role="alert">
-                                <span th:text="${message}"></span>
-                            </div>
-
-                            <!-- ADDED -->
-                            <div th:if="${error}" class="alert alert-danger" role="alert">
-                                <span th:text="${error}"></span>
-                            </div>
-
-                            <form method="post" th:action="@{/login}">
-                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Courriel</label>
-                                    <input class="form-control" type="text" name="username" autocomplete="username" required>
+                <div class="col-12 col-xl-10">
+                    <div class="card mm-auth-card">
+                        <div class="card-body p-0">
+                            <div class="row g-0">
+                                <div class="col-lg-5 p-4 p-lg-5">
+                                    <div class="mm-auth-aside">
+                                        <span class="mm-page-eyebrow text-white">Portail Manara</span>
+                                        <h2 class="mb-3">Un espace calme pour gérer l’activité du centre.</h2>
+                                        <p class="mb-0">Connectez-vous pour suivre les inscriptions, les présences et les plannings dans une interface unifiée.</p>
+                                        <ul class="mm-auth-list">
+                                            <li><i class="bi bi-shield-check"></i><span>Accès sécurisé parent, admin et animateur</span></li>
+                                            <li><i class="bi bi-calendar-event"></i><span>Suivi des activités et animations</span></li>
+                                            <li><i class="bi bi-people"></i><span>Gestion simple des familles et présences</span></li>
+                                        </ul>
+                                    </div>
                                 </div>
+                                <div class="col-lg-7 p-4 p-lg-5">
+                                    <h1 class="mm-page-title fs-2 mb-2">Connexion</h1>
+                                    <p class="text-secondary mb-4">Accedez a votre espace.</p>
 
-                                <div class="mb-3">
-                                    <label class="form-label">Mot de passe</label>
-                                    <input class="form-control" type="password" name="password" autocomplete="current-password" required>
+                                    <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                                        Mot de passe, courriel, ou etat du compte invalide.
+                                    </div>
+
+                                    <div th:if="${message}" class="alert alert-success" role="alert">
+                                        <span th:text="${message}"></span>
+                                    </div>
+
+                                    <div th:if="${error}" class="alert alert-danger" role="alert">
+                                        <span th:text="${error}"></span>
+                                    </div>
+
+                                    <form method="post" th:action="@{/login}">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Courriel</label>
+                                            <input class="form-control" type="text" name="username" autocomplete="username" required>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Mot de passe</label>
+                                            <input class="form-control" type="password" name="password" autocomplete="current-password" required>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                                    </form>
+
+                                    <div class="my-3 text-center text-secondary small">ou</div>
+
+                                    <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline-dark w-100 mm-google-btn">
+                                        <i class="bi bi-google me-2"></i>Sign in with Google
+                                    </a>
+
+                                    <div class="text-center small mt-3">
+                                        <span class="text-secondary">Pas encore de compte ?</span>
+                                        <a th:href="@{/signUp}">Creer un compte</a>
+                                    </div>
                                 </div>
-
-                                <button type="submit" class="btn btn-primary w-100">Se connecter</button>
-                            </form>
-
-                            <!-- ADDED -->
-                            <div class="my-3 text-center text-secondary small">ou</div>
-
-                            <!-- ADDED -->
-                            <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline-dark w-100 mm-google-btn">
-                                <i class="bi bi-google me-2"></i>Sign in with Google
-                            </a>
-
-                            <div class="text-center small mt-3">
-                                <span class="text-secondary">Pas encore de compte ?</span>
-                                <a th:href="@{/signUp}">Creer un compte</a>
                             </div>
                         </div>
                     </div>

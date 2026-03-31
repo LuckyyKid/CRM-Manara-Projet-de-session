@@ -1,24 +1,73 @@
 <!doctype html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <body>
-<footer th:fragment="footer" class="mm-footer py-3 mt-5">
-    <div class="container text-center small text-secondary">
-        Centre Manara CRM - (projet académique)
-    </div>
-</footer>
+<div th:fragment="footer">
+    <footer class="mm-footer py-3 mt-5">
+        <div class="container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 small">
+                <div>
+                    <strong>Centre Manara CRM</strong><br>
+                    <span class="text-secondary">Portail famille, animation et administration</span>
+                </div>
+                <div class="text-md-end">
+                    <span class="text-secondary">Projet académique</span><br>
+                    <a href="/about">A propos et FAQ</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-<!-- Inclure le chatbot sur toutes les pages -->
-<div th:replace="~{fragments/chatbot :: chatbot}"></div>
+    <div th:replace="~{fragments/chatbot :: chatbot}"></div>
 
-<script>
-    // Auto-hide alerts after 5 seconds
-    setTimeout(() => {
-        document.querySelectorAll('.alert').forEach(el => {
-            el.classList.add('fade');
-            el.classList.remove('show');
-            setTimeout(() => el.remove(), 500);
-        });
-    }, 5000);
-</script>
+    <script>
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(el => {
+                el.classList.add('fade');
+                el.classList.remove('show');
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 5000);
+
+        function formatFrenchDateTime(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            const datePart = date.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            const normalizedDate = datePart.charAt(0).toUpperCase() + datePart.slice(1);
+            const timePart = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            return `${normalizedDate} à ${timePart}`;
+        }
+
+        function formatFrenchDate(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return value;
+            const label = date.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            return label.charAt(0).toUpperCase() + label.slice(1);
+        }
+
+        function hydrateDateFormatting() {
+            document.querySelectorAll('[data-format="datetime"]').forEach((element) => {
+                element.textContent = formatFrenchDateTime(element.dataset.value);
+            });
+
+            document.querySelectorAll('[data-format="date"]').forEach((element) => {
+                element.textContent = formatFrenchDate(element.dataset.value);
+            });
+        }
+
+        hydrateDateFormatting();
+    </script>
+</div>
 </body>
 </html>
