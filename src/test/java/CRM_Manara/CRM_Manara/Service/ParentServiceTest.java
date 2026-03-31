@@ -94,6 +94,33 @@ class ParentServiceTest {
     }
 
     @Test
+    void inscrireEnfant_rejectsWhenChildAgeIsOutsideAllowedRange() {
+        Parent parent = buildParent(10L, "parent@test.local");
+        Enfant enfant = buildEnfant(21L, parent, true, "Lina", java.sql.Date.valueOf("2019-04-02"));
+        Activity activity = buildActivity(31L, 8);
+        Animation animation = new Animation(
+                AnimationRole.COACH,
+                animationStatus.ACTIF,
+                LocalDateTime.of(2026, 4, 2, 18, 0),
+                LocalDateTime.of(2026, 4, 2, 19, 0)
+        );
+        animation.setActivity(activity);
+        ReflectionTestUtils.setField(animation, "id", 41L);
+
+        when(parentRepo.findByUserEmail("parent@test.local")).thenReturn(Optional.of(parent));
+        when(enfantRepo.findByIdAndParentId(21L, 10L)).thenReturn(Optional.of(enfant));
+        when(animationRepo.findById(41L)).thenReturn(Optional.of(animation));
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> parentService.inscrireEnfant(21L, 41L, "parent@test.local")
+        );
+
+        assertEquals("L'age de Lina ne correspond pas a cette activite. Age requis: 8 a 12 ans.", exception.getMessage());
+        verify(inscriptionRepo, never()).save(any(Inscription.class));
+    }
+
+    @Test
     void getAnimationCapacitySnapshot_computesWaitlistAndFillRate() {
         Parent parent = buildParent(10L, "parent@test.local");
         Enfant enfant = buildEnfant(21L, parent, true, "Lina");
@@ -127,7 +154,11 @@ class ParentServiceTest {
     }
 
     private Enfant buildEnfant(Long id, Parent parent, boolean active, String prenom) {
-        Enfant enfant = new Enfant("Chenier", prenom, new Date());
+        return buildEnfant(id, parent, active, prenom, java.sql.Date.valueOf("2015-05-10"));
+    }
+
+    private Enfant buildEnfant(Long id, Parent parent, boolean active, String prenom, Date birthDate) {
+        Enfant enfant = new Enfant("Chenier", prenom, birthDate);
         enfant.setParent(parent);
         enfant.setActive(active);
         ReflectionTestUtils.setField(enfant, "id", id);

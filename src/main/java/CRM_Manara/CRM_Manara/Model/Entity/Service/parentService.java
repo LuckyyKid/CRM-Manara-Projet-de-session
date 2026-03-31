@@ -22,7 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -65,6 +68,9 @@ public class parentService {
     @Autowired
     ParentNotificationService parentNotificationService;
 
+    @Autowired
+    AvatarService avatarService;
+
     @Transactional(readOnly = true)
     public boolean isEmailAvailable(String email) {
         if (email == null) {
@@ -97,6 +103,7 @@ public class parentService {
         user1.setEnabled(false);
 
         User userSaved = userRepo.save(user1);
+        avatarService.assignDefaultAvatar(userSaved, prenom + " " + nom);
         // ADDED
         System.out.println("STEP 6 REACHED - User saved with id: " + userSaved.getId());
 
@@ -275,6 +282,7 @@ public class parentService {
         }
         Animation animation = animationRepo.findById(animationId)
                 .orElseThrow(() -> new IllegalArgumentException("Animation introuvable"));
+        validateAgeEligibility(enfant, animation);
         boolean alreadyRequestedForActivity = inscriptionRepo.findByEnfantIdAndActivityId(enfantId, animation.getActivity().getId()).stream()
                 .anyMatch(existing -> existing.getStatusInscription() != statusInscription.REFUSEE
                         && existing.getStatusInscription() != statusInscription.ANNULÉE);
@@ -303,7 +311,28 @@ public class parentService {
                 "Demande d'inscription envoyée",
                 message
         );
+        emailService.notifyAdminsOfInscriptionRequest(saved);
         return saved;
+    }
+
+    private void validateAgeEligibility(Enfant enfant, Animation animation) {
+        if (enfant.getDate_de_naissance() == null || animation.getStartTime() == null || animation.getActivity() == null) {
+            return;
+        }
+
+        Date birthDateValue = enfant.getDate_de_naissance();
+        LocalDate birthDate = birthDateValue instanceof java.sql.Date sqlDate
+                ? sqlDate.toLocalDate()
+                : birthDateValue.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate activityDate = animation.getStartTime().toLocalDate();
+        int ageAtActivity = Period.between(birthDate, activityDate).getYears();
+
+        if (ageAtActivity < animation.getActivity().getAgeMin() || ageAtActivity > animation.getActivity().getAgeMax()) {
+            throw new IllegalArgumentException(
+                    "L'age de " + enfant.getPrenom() + " ne correspond pas a cette activite. " +
+                            "Age requis: " + animation.getActivity().getAgeMin() + " a " + animation.getActivity().getAgeMax() + " ans."
+            );
+        }
     }
 
     @Transactional(readOnly = true)
@@ -349,10 +378,34 @@ public class parentService {
         return parentNotificationService.countUnreadForParent(parent.getId());
     }
 
+    @Transactional(readOnly = true)
+    public List<CRM_Manara.CRM_Manara.Model.Entity.ParentNotification> getArchivedNotificationsForParent(String email, int limit) {
+        Parent parent = getParentByEmail(email);
+        return parentNotificationService.getArchivedNotificationsForParent(parent.getId(), limit);
+    }
+
     @Transactional
     public void markNotificationsAsRead(String email) {
         Parent parent = getParentByEmail(email);
         parentNotificationService.markAllAsReadForParent(parent.getId());
+    }
+
+    @Transactional
+    public void markNotificationAsRead(String email, Long notificationId) {
+        Parent parent = getParentByEmail(email);
+        parentNotificationService.markAsRead(parent.getId(), notificationId);
+    }
+
+    @Transactional
+    public void archiveNotification(String email, Long notificationId) {
+        Parent parent = getParentByEmail(email);
+        parentNotificationService.archive(parent.getId(), notificationId);
+    }
+
+    @Transactional
+    public void restoreNotification(String email, Long notificationId) {
+        Parent parent = getParentByEmail(email);
+        parentNotificationService.restore(parent.getId(), notificationId);
     }
 
     @Transactional(readOnly = true)

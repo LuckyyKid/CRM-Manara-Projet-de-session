@@ -30,6 +30,12 @@ public class AnimateurService {
     @Autowired
     private InscriptionRepo inscriptionRepo;
 
+    @Autowired
+    private ParentNotificationService parentNotificationService;
+
+    @Autowired
+    private EmailService emailService;
+
     @Transactional(readOnly = true)
     public Animateur getAnimateurByEmail(String email) {
         return animateurRepo.findByUserEmail(email)
@@ -116,5 +122,25 @@ public class AnimateurService {
             inscription.setIncidentNote(null);
         }
         inscriptionRepo.save(inscription);
+
+        if (inscription.getEnfant() != null && inscription.getEnfant().getParent() != null) {
+            String message = "La présence de " + inscription.getEnfant().getPrenom() + " pour "
+                    + inscription.getAnimation().getActivity().getActivyName()
+                    + " a été mise à jour à " + presenceStatus + ".";
+            if (inscription.getIncidentNote() != null && !inscription.getIncidentNote().isBlank()) {
+                message += " Note: " + inscription.getIncidentNote();
+            }
+
+            parentNotificationService.createForParent(
+                    inscription.getEnfant().getParent(),
+                    "PRESENCE",
+                    "Présence mise à jour",
+                    message
+            );
+
+            if (inscription.getEnfant().getParent().getUser() != null) {
+                emailService.sendPresenceUpdate(inscription.getEnfant().getParent().getUser().getEmail(), inscription);
+            }
+        }
     }
 }

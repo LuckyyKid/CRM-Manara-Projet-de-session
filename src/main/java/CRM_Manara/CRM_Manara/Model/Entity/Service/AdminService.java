@@ -70,6 +70,9 @@ public class AdminService {
     @Autowired
     ParentNotificationService parentNotificationService;
 
+    @Autowired
+    AvatarService avatarService;
+
 
     @Transactional(readOnly = true)
     public List<Activity> getAllActivities() {
@@ -257,6 +260,7 @@ public class AdminService {
         // ADDED
         user.setEnabled(true);
         User savedUser = userRepo.save(user);
+        avatarService.assignDefaultAvatar(savedUser, prenom + " " + nom);
         Animateur animateur = new Animateur(nom, prenom);
         animateur.setUser(savedUser);
         return animateurRepo.save(animateur);
@@ -417,6 +421,11 @@ public class AdminService {
                 "Demande refusée",
                 "La demande d'inscription pour " + saved.getEnfant().getPrenom() + " a été refusée."
         );
+        if (saved.getEnfant() != null
+                && saved.getEnfant().getParent() != null
+                && saved.getEnfant().getParent().getUser() != null) {
+            emailService.sendInscriptionRejected(saved.getEnfant().getParent().getUser().getEmail(), saved);
+        }
         return saved;
     }
 

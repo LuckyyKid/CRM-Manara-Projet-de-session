@@ -9,5 +9,9 @@ public interface ParentNotificationRepo extends JpaRepository<ParentNotification
 
     List<ParentNotification> findByParentIdOrderByCreatedAtDesc(Long parentId);
 
-    long countByParentIdAndReadStatusFalse(Long parentId);
+    List<ParentNotification> findByParentIdAndArchivedStatusFalseOrderByCreatedAtDesc(Long parentId);
+
+    List<ParentNotification> findByParentIdAndArchivedStatusTrueOrderByCreatedAtDesc(Long parentId);
+
+    long countByParentIdAndReadStatusFalseAndArchivedStatusFalse(Long parentId);
 }

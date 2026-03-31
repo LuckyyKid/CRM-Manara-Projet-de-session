@@ -25,6 +25,10 @@ public class AuthSchemaInitializer implements CommandLineRunner {
             jdbcTemplate.execute("ALTER TABLE users ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT TRUE");
         }
 
+        if (!columnExists("users", "avatar_url")) {
+            jdbcTemplate.execute("ALTER TABLE users ADD COLUMN avatar_url VARCHAR(4096) NULL");
+        }
+
         // ADDED
         jdbcTemplate.execute("""
                 CREATE TABLE IF NOT EXISTS verification_tokens (
@@ -49,12 +53,17 @@ public class AuthSchemaInitializer implements CommandLineRunner {
                     message VARCHAR(1200) NOT NULL,
                     created_at DATETIME(6) NOT NULL,
                     read_status BOOLEAN NOT NULL DEFAULT FALSE,
+                    archived_status BOOLEAN NOT NULL DEFAULT FALSE,
                     PRIMARY KEY (id),
                     KEY idx_parent_notifications_parent_id (parent_id),
                     CONSTRAINT fk_parent_notifications_parent
                         FOREIGN KEY (parent_id) REFERENCES parent(id)
                 )
                 """);
+
+        if (!columnExists("parent_notifications", "archived_status")) {
+            jdbcTemplate.execute("ALTER TABLE parent_notifications ADD COLUMN archived_status BOOLEAN NOT NULL DEFAULT FALSE");
+        }
 
         ensureInscriptionStatuses();
     }

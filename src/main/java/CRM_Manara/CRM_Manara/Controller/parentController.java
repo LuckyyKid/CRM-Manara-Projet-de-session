@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/parent")
@@ -53,18 +54,15 @@ public class parentController {
     }
 
     @GetMapping("/profil")
-    public String profil(Model model, Principal principal) {
-        String email = principal.getName();
-        Parent parent = parentService.getParentByEmail(email);
-        model.addAttribute("parent", parent);
-        model.addAttribute("unreadNotifications", parentService.countUnreadNotificationsForParent(email));
-        return "parent/parentProfil";
+    public String profil() {
+        return "redirect:/settings";
     }
 
     @GetMapping("/notifications")
     public String notifications(Model model, Principal principal) {
         String email = principal.getName();
         model.addAttribute("notifications", parentService.getNotificationsForParent(email, 100));
+        model.addAttribute("archivedNotifications", parentService.getArchivedNotificationsForParent(email, 100));
         model.addAttribute("unreadNotifications", parentService.countUnreadNotificationsForParent(email));
         return "parent/parentNotifications";
     }
@@ -77,16 +75,41 @@ public class parentController {
         return "redirect:/parent/notifications";
     }
 
+    @PostMapping("/notifications/{id}/read")
+    public String readNotification(@PathVariable("id") Long id,
+                                   Principal principal,
+                                   RedirectAttributes redirectAttributes) {
+        parentService.markNotificationAsRead(principal.getName(), id);
+        redirectAttributes.addFlashAttribute("message", "Notification marquée comme lue.");
+        return "redirect:/parent/notifications";
+    }
+
+    @PostMapping("/notifications/{id}/archive")
+    public String archiveNotification(@PathVariable("id") Long id,
+                                      Principal principal,
+                                      RedirectAttributes redirectAttributes) {
+        parentService.archiveNotification(principal.getName(), id);
+        redirectAttributes.addFlashAttribute("message", "Notification archivée.");
+        return "redirect:/parent/notifications";
+    }
+
+    @PostMapping("/notifications/{id}/restore")
+    public String restoreNotification(@PathVariable("id") Long id,
+                                      Principal principal,
+                                      RedirectAttributes redirectAttributes) {
+        parentService.restoreNotification(principal.getName(), id);
+        redirectAttributes.addFlashAttribute("message", "Notification restaurée.");
+        return "redirect:/parent/notifications";
+    }
+
     @PostMapping("/profil")
     public String updateProfil(@RequestParam("nom") String nom,
                                @RequestParam("prenom") String prenom,
                                @RequestParam("adresse") String adresse,
                                Principal principal,
                                RedirectAttributes redirectAttributes) {
-        String email = principal.getName();
-        parentService.updateParentProfile(email, nom, prenom, adresse);
-        redirectAttributes.addFlashAttribute("message", "Profil mis à jour.");
-        return "redirect:/parent/profil";
+        redirectAttributes.addFlashAttribute("message", "Utilisez désormais la page Paramètres.");
+        return "redirect:/settings";
     }
 
     @GetMapping("/enfants")
@@ -239,9 +262,11 @@ public class parentController {
             animationsByActivity.put(activity.getId(), parentService.getAnimationsForActivity(activity.getId()));
         }
         List<Enfant> enfants = parentService.getActiveEnfantsForParent(email);
+        List<Inscription> parentInscriptions = parentService.getInscriptionsForParent(email);
         model.addAttribute("activities", activities);
         model.addAttribute("animationsByActivity", animationsByActivity);
         model.addAttribute("animationCapacity", parentService.getAnimationCapacitySnapshotsForActivities(activities));
+        model.addAttribute("animationChildren", buildAnimationChildren(parentInscriptions));
         model.addAttribute("enfants", enfants);
         return "parent/parentActivities";
     }
@@ -297,6 +322,7 @@ public class parentController {
         model.addAttribute("nextWeek", weekStart.plusWeeks(1));
         model.addAttribute("scheduleHours", buildScheduleHours(scheduleStartHour, scheduleEndHour));
         model.addAttribute("scheduleBodyHeight", (scheduleEndHour - scheduleStartHour) * 88);
+        model.addAttribute("animationChildren", buildAnimationChildren(weekInscriptions));
         model.addAttribute("weekDays", buildPlanningWeek(weekStart, weekInscriptions, scheduleStartHour));
         model.addAttribute("inscriptions", weekInscriptions);
         return "parent/parentPlanning";
@@ -404,6 +430,13 @@ public class parentController {
             block.put("time", String.format("%s - %s",
                     startTime.toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")),
                     endTime.toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))));
+            block.put("animationId", inscription.getAnimation().getId());
+            block.put("description", inscription.getAnimation().getActivity().getDescription());
+            block.put("ageRange", inscription.getAnimation().getActivity().getAgeMin() + " à " + inscription.getAnimation().getActivity().getAgeMax() + " ans");
+            block.put("status", CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService.inscriptionStatus(inscription.getStatusInscription()));
+            block.put("animateur", resolveAnimateurName(inscription.getAnimation()));
+            block.put("startLabel", startTime.format(java.time.format.DateTimeFormatter.ofPattern("EEEE d MMMM yyyy 'à' HH:mm")));
+            block.put("endLabel", endTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
             block.put("top", (minutesFromStart * 88.0) / 60.0);
             block.put("height", Math.max(68.0, (durationMinutes * 88.0) / 60.0));
             block.put("variant", index % 2 == 0 ? "primary" : "secondary");
@@ -435,5 +468,27 @@ public class parentController {
         formData.put("prenom", prenom == null ? "" : prenom);
         formData.put("dateNaissance", dateNaissance == null ? "" : dateNaissance.toString());
         return formData;
+    }
+
+    private Map<Long, List<Map<String, String>>> buildAnimationChildren(List<Inscription> inscriptions) {
+        return inscriptions.stream()
+                .filter(inscription -> inscription.getAnimation() != null && inscription.getAnimation().getId() != null)
+                .collect(Collectors.groupingBy(
+                        inscription -> inscription.getAnimation().getId(),
+                        LinkedHashMap::new,
+                        Collectors.mapping(inscription -> {
+                            Map<String, String> child = new LinkedHashMap<>();
+                            child.put("name", inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom());
+                            child.put("status", CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService.inscriptionStatus(inscription.getStatusInscription()));
+                            return child;
+                        }, Collectors.toList())
+                ));
+    }
+
+    private String resolveAnimateurName(Animation animation) {
+        if (animation.getAnimateur() == null) {
+            return "Animateur à confirmer";
+        }
+        return animation.getAnimateur().getPrenom() + " " + animation.getAnimateur().getNom();
     }
 }

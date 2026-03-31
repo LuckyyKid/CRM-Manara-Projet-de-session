@@ -20,7 +20,6 @@
                     <p class="mm-page-subtitle">Retrouvez ici le suivi des demandes, approbations, refus et mises à jour de votre compte.</p>
                 </div>
                 <div class="mm-page-actions">
-                    <span class="mm-chip">Non lues: <span th:text="${unreadNotifications}">0</span></span>
                     <form th:action="@{/parent/notifications/read-all}" method="post" class="d-inline">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                         <button type="submit" class="btn btn-outline-primary">Tout marquer comme lu</button>
@@ -39,7 +38,9 @@
                     </div>
                 </div>
 
-                <div th:each="notification : ${notifications}" class="card mm-card-shadow">
+                <div th:each="notification : ${notifications}"
+                     class="card mm-card-shadow"
+                     th:classappend="${!notification.readStatus} ? ' mm-notification-card-unread' : ''">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                             <div>
@@ -47,9 +48,63 @@
                                 <h2 class="mm-panel-title mb-1" th:text="${notification.title}">Titre</h2>
                                 <p class="mm-panel-subtitle mb-0" th:text="${notification.message}">Message</p>
                             </div>
-                            <div class="text-secondary small">
-                                <span data-format="datetime"
-                                      th:attr="data-value=${#temporals.format(notification.createdAt, 'yyyy-MM-dd''T''HH:mm')}"></span>
+                            <div class="text-secondary small text-end">
+                                <div>
+                                    <span data-format="datetime"
+                                          th:attr="data-value=${#temporals.format(notification.createdAt, 'yyyy-MM-dd''T''HH:mm')}"></span>
+                                </div>
+                                <div class="d-flex gap-2 mt-3">
+                                    <form th:if="${!notification.readStatus}" th:action="@{/parent/notifications/{id}/read(id=${notification.id})}" method="post">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">Marquer comme lue</button>
+                                    </form>
+                                    <form th:action="@{/parent/notifications/{id}/archive(id=${notification.id})}" method="post">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">Archiver</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mm-card-shadow" th:if="${!#lists.isEmpty(archivedNotifications)}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <div class="mm-page-eyebrow mb-1">Archives</div>
+                                <h2 class="mm-panel-title mb-0">Notifications archivées</h2>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#archivedNotificationsPanel"
+                                    aria-expanded="false"
+                                    aria-controls="archivedNotificationsPanel">
+                                Voir les archives
+                            </button>
+                        </div>
+                        <div id="archivedNotificationsPanel" class="collapse">
+                            <div class="vstack gap-3">
+                            <div th:each="notification : ${archivedNotifications}" class="border rounded-4 p-3 bg-light-subtle">
+                                <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                                    <div>
+                                        <div class="mm-page-eyebrow mb-2" th:text="${notification.category}">INSCRIPTION</div>
+                                        <h3 class="h6 mb-1" th:text="${notification.title}">Titre</h3>
+                                        <p class="text-secondary mb-0" th:text="${notification.message}">Message</p>
+                                    </div>
+                                    <div class="text-secondary small text-end">
+                                        <div>
+                                            <span data-format="datetime"
+                                                  th:attr="data-value=${#temporals.format(notification.createdAt, 'yyyy-MM-dd''T''HH:mm')}"></span>
+                                        </div>
+                                        <form class="mt-3" th:action="@{/parent/notifications/{id}/restore(id=${notification.id})}" method="post">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">Restaurer</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                             </div>
                         </div>
                     </div>

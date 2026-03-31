@@ -91,13 +91,19 @@
                 <a class="mm-side-link" sec:authorize="hasRole('ADMIN')" href="/admin/animations">Animations</a>
                 <a class="mm-side-link" sec:authorize="hasRole('ADMIN')" href="/admin/animateurs">Animateurs</a>
                 <a class="mm-side-link" sec:authorize="hasRole('ADMIN')" href="/admin/parents">Parents / Enfants</a>
-                <a class="mm-side-link" sec:authorize="hasRole('ADMIN')" href="/admin/inscriptions">Demandes d'inscription</a>
+                <a class="mm-side-link mm-side-link-with-badge" sec:authorize="hasRole('ADMIN')" href="/admin/inscriptions">
+                    <span>Demandes d'inscription</span>
+                    <span class="mm-side-badge" th:if="${sidebarAdminPendingRequests > 0}" th:text="${sidebarAdminPendingRequests}">0</span>
+                </a>
 
                 <a class="mm-side-link" sec:authorize="hasRole('PARENT')" href="/parent/dashboard">Espace parent</a>
                 <a class="mm-side-link" sec:authorize="hasRole('PARENT')" href="/parent/enfants">Enfants</a>
-                <a class="mm-side-link" sec:authorize="hasRole('PARENT')" href="/parent/notifications">Notifications</a>
                 <a class="mm-side-link" sec:authorize="hasRole('PARENT')" href="/parent/activities">Activités</a>
                 <a class="mm-side-link" sec:authorize="hasRole('PARENT')" href="/parent/planning">Calendrier</a>
+                <a class="mm-side-link mm-side-link-with-badge" sec:authorize="hasRole('PARENT')" href="/parent/notifications">
+                    <span>Notifications</span>
+                    <span class="mm-side-badge" th:if="${sidebarParentUnreadNotifications > 0}" th:text="${sidebarParentUnreadNotifications}">0</span>
+                </a>
 
                 <a class="mm-side-link" sec:authorize="hasRole('ANIMATEUR')" href="/animateur/dashboard">Espace animateur</a>
                 <a class="mm-side-link" sec:authorize="hasRole('ANIMATEUR')" href="/animateur/inscriptions">Présences</a>
@@ -106,6 +112,16 @@
             <div class="mm-side-nav mm-side-nav-secondary mt-auto">
                 <a class="mm-side-link mm-side-link-muted" th:href="@{/about#faq}">FAQ</a>
             </div>
+
+            <a class="mm-user-card mt-3 text-decoration-none" th:href="@{/settings}">
+                <img th:if="${currentUserAvatar != null}"
+                     th:src="${currentUserAvatar}"
+                     th:alt="${currentUserDisplayName != null ? currentUserDisplayName : 'Profil utilisateur'}"
+                     class="mm-user-avatar">
+                <div class="mm-user-meta">
+                    <span class="mm-user-name" th:text="${currentUserDisplayName != null ? currentUserDisplayName : 'Utilisateur'}">Utilisateur</span>
+                </div>
+            </a>
 
             <form th:action="@{/logout}" method="post" class="mt-3">
                 <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>

@@ -51,27 +51,53 @@
                             </div>
                             <div class="vstack gap-3" th:if="${!#lists.isEmpty(animations)}">
                                 <div th:each="animation : ${animations}" class="mm-panel">
-                                    <div class="d-flex gap-2 flex-wrap mb-3" th:with="capacity=${animationCapacity[animation.id]}">
-                                        <span class="badge text-bg-light">Places confirmées: <span th:text="${capacity['approved']}">0</span>/<span th:text="${capacity['capacity']}">0</span></span>
-                                        <span class="badge text-bg-light">Places restantes: <span th:text="${capacity['remaining']}">0</span></span>
-                                        <span class="badge text-bg-light">Demandes en attente: <span th:text="${capacity['pending']}">0</span></span>
-                                        <span class="badge text-bg-warning" th:if="${capacity['waitlist'] > 0}">Liste d'attente: <span th:text="${capacity['waitlist']}">0</span></span>
-                                        <span class="badge text-bg-primary">Remplissage: <span th:text="${capacity['fillRate']}">0</span>%</span>
+                                    <div class="d-flex gap-2 flex-wrap mb-3"
+                                         th:with="capacity=${animationCapacity[animation.id]},
+                                                  approved=${capacity != null ? capacity['approved'] : 0},
+                                                  capacityValue=${capacity != null ? capacity['capacity'] : 0},
+                                                  remaining=${capacity != null ? capacity['remaining'] : 0},
+                                                  pending=${capacity != null ? capacity['pending'] : 0},
+                                                  waitlist=${capacity != null ? capacity['waitlist'] : 0},
+                                                  fillRate=${capacity != null ? capacity['fillRate'] : 0},
+                                                  full=${capacity != null ? capacity['full'] : false}">
+                                        <span class="badge text-bg-light">Places confirmées: <span th:text="${approved}">0</span>/<span th:text="${capacityValue}">0</span></span>
+                                        <span class="badge text-bg-light">Places restantes: <span th:text="${remaining}">0</span></span>
+                                        <span class="badge text-bg-light">Demandes en attente: <span th:text="${pending}">0</span></span>
+                                        <span class="badge text-bg-warning" th:if="${waitlist > 0}">Liste d'attente: <span th:text="${waitlist}">0</span></span>
+                                        <span class="badge text-bg-primary">Remplissage: <span th:text="${fillRate}">0</span>%</span>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3"
+                                         th:with="capacity=${animationCapacity[animation.id]},
+                                                  approved=${capacity != null ? capacity['approved'] : 0},
+                                                  capacityValue=${capacity != null ? capacity['capacity'] : 0},
+                                                  full=${capacity != null ? capacity['full'] : false}">
                                         <div>
-                                            <div class="mm-page-eyebrow mb-2">Session</div>
-                                            <div class="fw-semibold text-dark mb-1">
-                                                Début:
-                                                <span data-format="datetime"
-                                                      th:attr="data-value=${#temporals.format(animation.startTime, 'yyyy-MM-dd''T''HH:mm')}"></span>
-                                            </div>
-                                            <div class="text-secondary">
-                                                Fin:
-                                                <span data-format="datetime"
-                                                      th:attr="data-value=${#temporals.format(animation.endTime, 'yyyy-MM-dd''T''HH:mm')}"></span>
-                                            </div>
-                                            <div class="small mt-2 text-warning" th:if="${animationCapacity[animation.id]['full']}">
+                                            <button type="button"
+                                                    class="btn btn-link p-0 text-decoration-none text-start js-activity-detail-trigger"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#parentActivityDetailModal"
+                                                    th:attr="data-title=${animation.activity.activyName},
+                                                             data-description=${animation.activity.description},
+                                                             data-age-range=${animation.activity.ageMin + ' à ' + animation.activity.ageMax + ' ans'},
+                                                             data-capacity=${approved + '/' + capacityValue + ' places confirmées'},
+                                                             data-status=${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).animationStatus(animation.statusAnimation)},
+                                                             data-start=${#temporals.format(animation.startTime, 'EEEE d MMMM yyyy ''à'' HH:mm')},
+                                                             data-end=${#temporals.format(animation.endTime, 'HH:mm')},
+                                                             data-animateur=${animation.animateur != null ? animation.animateur.prenom + ' ' + animation.animateur.nom : 'Animateur à confirmer'},
+                                                             data-children=${#lists.isEmpty(animationChildren[animation.id]) ? 'Aucun enfant inscrit pour le moment.' : #strings.listJoin(animationChildren[animation.id].![name + ' (' + status + ')'], ' | ')}">
+                                                <div class="mm-page-eyebrow mb-2">Session</div>
+                                                <div class="fw-semibold text-dark mb-1">
+                                                    Début:
+                                                    <span data-format="datetime"
+                                                          th:attr="data-value=${#temporals.format(animation.startTime, 'yyyy-MM-dd''T''HH:mm')}"></span>
+                                                </div>
+                                                <div class="text-secondary">
+                                                    Fin:
+                                                    <span data-format="datetime"
+                                                          th:attr="data-value=${#temporals.format(animation.endTime, 'yyyy-MM-dd''T''HH:mm')}"></span>
+                                                </div>
+                                            </button>
+                                            <div class="small mt-2 text-warning" th:if="${full}">
                                                 Session complète pour l'instant. Toute nouvelle demande ira en liste d'attente.
                                             </div>
                                         </div>
@@ -94,10 +120,39 @@
         </div>
     </main>
 
+    <div class="modal fade" id="parentActivityDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <div class="mm-page-eyebrow">Détail de l'activité</div>
+                        <h2 class="modal-title h5 mb-0" id="parentActivityDetailTitle">Activité</h2>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-secondary mb-3" id="parentActivityDetailDescription"></p>
+                    <div class="vstack gap-2">
+                        <div><strong>Horaire:</strong> <span id="parentActivityDetailTime"></span></div>
+                        <div><strong>Âge requis:</strong> <span id="parentActivityDetailAge"></span></div>
+                        <div><strong>Capacité:</strong> <span id="parentActivityDetailCapacity"></span></div>
+                        <div><strong>Statut:</strong> <span id="parentActivityDetailStatus"></span></div>
+                        <div><strong>Animateur:</strong> <span id="parentActivityDetailAnimateur"></span></div>
+                        <div>
+                            <strong>Enfants déjà inscrits:</strong>
+                            <div class="text-secondary mt-1" id="parentActivityDetailChildren"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/parent-activities.js}"></script>
+<script th:src="@{/js/parent-planning.js}"></script>
 </body>
 </html>

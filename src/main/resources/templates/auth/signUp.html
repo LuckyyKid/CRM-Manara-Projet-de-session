@@ -88,9 +88,14 @@
 
                                     <div class="my-3 text-center text-secondary small">ou</div>
 
-                                    <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline-dark w-100 mm-google-btn">
+                                    <a th:if="${googleOAuthEnabled}" th:href="@{/oauth2/authorization/google}" class="btn btn-outline-dark w-100 mm-google-btn">
                                         <i class="bi bi-google me-2"></i>Sign up with Google
                                     </a>
+
+                                    <div th:unless="${googleOAuthEnabled}" class="small text-secondary text-center border rounded-3 p-3">
+                                        L'inscription Google sera disponible apres configuration de
+                                        <code>GOOGLE_CLIENT_ID</code> et <code>GOOGLE_CLIENT_SECRET</code>.
+                                    </div>
 
                                     <div class="text-center small mt-3">
                                         <span class="text-secondary">Deja un compte ?</span>

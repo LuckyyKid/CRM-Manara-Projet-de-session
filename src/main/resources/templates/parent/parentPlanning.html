@@ -74,13 +74,24 @@
                                                     Aucun cours
                                                 </div>
                                                 <th:block th:each="block : ${day['blocks']}">
-                                                    <div class="mm-schedule-event"
+                                                    <button type="button"
+                                                         class="mm-schedule-event js-activity-detail-trigger"
                                                          th:classappend="${block['variant'] == 'secondary'} ? ' mm-schedule-event-secondary' : ''"
-                                                         th:style="'top:' + ${block['top']} + 'px; height:' + ${block['height']} + 'px;'">
+                                                         th:style="'top:' + ${block['top']} + 'px; height:' + ${block['height']} + 'px;'"
+                                                         data-bs-toggle="modal"
+                                                         data-bs-target="#planningActivityDetailModal"
+                                                         th:attr="data-title=${block['title']},
+                                                                  data-description=${block['description']},
+                                                                  data-age-range=${block['ageRange']},
+                                                                  data-status=${block['status']},
+                                                                  data-start=${block['startLabel']},
+                                                                  data-end=${block['endLabel']},
+                                                                  data-animateur=${block['animateur']},
+                                                                  data-children=${#lists.isEmpty(animationChildren[block['animationId']]) ? 'Aucun enfant inscrit pour le moment.' : #strings.listJoin(animationChildren[block['animationId']].![name + ' (' + status + ')'], ' | ')}">
                                                         <div class="mm-schedule-event-child" th:text="${block['child']}">Leo</div>
                                                         <div class="mm-schedule-event-title" th:text="${block['title']}">Activity</div>
                                                         <div class="mm-schedule-event-time" th:text="${block['time']}">09:00 - 10:30</div>
-                                                    </div>
+                                                    </button>
                                                 </th:block>
                                             </div>
                                         </th:block>
@@ -102,7 +113,20 @@
                                 <div th:if="${#lists.isEmpty(inscriptions)}" class="mm-planning-list-empty">
                                     Aucune inscription cette semaine.
                                 </div>
-                                <div th:each="inscription : ${inscriptions}" class="mm-planning-item">
+                                <article th:each="inscription : ${inscriptions}"
+                                         class="mm-planning-item js-activity-detail-trigger"
+                                         role="button"
+                                         tabindex="0"
+                                         data-bs-toggle="modal"
+                                         data-bs-target="#planningActivityDetailModal"
+                                         th:attr="data-title=${inscription.animation.activity.activyName},
+                                                  data-description=${inscription.animation.activity.description},
+                                                  data-age-range=${inscription.animation.activity.ageMin + ' à ' + inscription.animation.activity.ageMax + ' ans'},
+                                                  data-status=${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).inscriptionStatus(inscription.statusInscription)},
+                                                  data-start=${#temporals.format(inscription.animation.startTime, 'EEEE d MMMM yyyy ''à'' HH:mm')},
+                                                  data-end=${#temporals.format(inscription.animation.endTime, 'HH:mm')},
+                                                  data-animateur=${inscription.animation.animateur != null ? inscription.animation.animateur.prenom + ' ' + inscription.animation.animateur.nom : 'Animateur à confirmer'},
+                                                  data-children=${#lists.isEmpty(animationChildren[inscription.animation.id]) ? 'Aucun enfant inscrit pour le moment.' : #strings.listJoin(animationChildren[inscription.animation.id].![name + ' (' + status + ')'], ' | ')}">
                                     <div class="mm-planning-item-top">
                                         <span class="mm-planning-item-child"
                                               th:text="${inscription.enfant.prenom + ' ' + inscription.enfant.nom}">Enfant</span>
@@ -113,7 +137,8 @@
                                          th:text="${inscription.animation.activity.activyName}">Activité</div>
                                     <div class="mm-planning-item-time"
                                          th:text="${#temporals.format(inscription.animation.startTime, 'EEEE d MMMM') + ' de ' + #temporals.format(inscription.animation.startTime, 'HH:mm') + ' à ' + #temporals.format(inscription.animation.endTime, 'HH:mm')}">Horaire</div>
-                                </div>
+                                    <div class="mm-planning-item-action">Voir le détail</div>
+                                </article>
                             </div>
                         </div>
                     </div>
@@ -122,9 +147,37 @@
         </div>
     </main>
 
+    <div class="modal fade" id="planningActivityDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <div class="mm-page-eyebrow">Détail de la session</div>
+                        <h2 class="modal-title h5 mb-0" id="planningActivityDetailTitle">Activité</h2>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-secondary mb-3" id="planningActivityDetailDescription"></p>
+                    <div class="vstack gap-2">
+                        <div><strong>Horaire:</strong> <span id="planningActivityDetailTime"></span></div>
+                        <div><strong>Âge requis:</strong> <span id="planningActivityDetailAge"></span></div>
+                        <div><strong>Statut:</strong> <span id="planningActivityDetailStatus"></span></div>
+                        <div><strong>Animateur:</strong> <span id="planningActivityDetailAnimateur"></span></div>
+                        <div>
+                            <strong>Enfants inscrits sur cette session:</strong>
+                            <div class="text-secondary mt-1" id="planningActivityDetailChildren"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/parent-planning.js}"></script>
 </body>
 </html>
