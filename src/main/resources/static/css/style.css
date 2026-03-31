@@ -451,6 +451,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     border-color: var(--mm-primary);
 }
 
+/* ADDED */
+.mm-google-btn {
+    border-radius: 0.6rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+
 /* ── Alertes ─────────────────────────────────────────────── */
 .alert {
     border: none;

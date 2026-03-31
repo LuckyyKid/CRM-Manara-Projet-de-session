@@ -15,7 +15,7 @@ public class SignUpController {
     private parentService parentService;
 
     @GetMapping("/signUp")
-    public String signUp(){
+    public String signUp() {
         return "auth/signUp";
     }
 
@@ -25,10 +25,31 @@ public class SignUpController {
                          @RequestParam(name = "adresse") String adresse,
                          @RequestParam(name = "email") String email,
                          @RequestParam(name = "password") String password,
-                         RedirectAttributes redirectAttributes){
-        parentService.createNewParent(nom, prenom, adresse, email, password);
-        redirectAttributes.addFlashAttribute("message","Inscription réussie ! Connectez-vous.");
-        //Plus tard gérer l'affichage si email existant !
-        return "redirect:/login";
+                         RedirectAttributes redirectAttributes) {
+        // ADDED
+        System.out.println("STEP 1 REACHED - SignUpController.signUp()");
+        System.out.println("Signup request received for email: " + email);
+        try {
+            // MODIFIED
+            // ADDED
+            System.out.println("STEP 2 REACHED - Calling parentService.createNewParent()");
+            parentService.createNewParent(nom, prenom, adresse, email, password);
+            // ADDED
+            System.out.println("STEP 3 REACHED - parentService.createNewParent() completed successfully for: " + email);
+            redirectAttributes.addFlashAttribute("message", "Inscription reussie. Verifiez votre email avant de vous connecter.");
+            return "redirect:/login";
+        } catch (IllegalArgumentException exception) {
+            // ADDED
+            System.out.println("SIGNUP BUSINESS ERROR for email " + email + ": " + exception.getMessage());
+            exception.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", exception.getMessage());
+            return "redirect:/signUp";
+        } catch (Exception exception) {
+            // ADDED
+            System.out.println("SIGNUP UNEXPECTED ERROR for email " + email + ": " + exception.getMessage());
+            exception.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Erreur technique pendant l'inscription.");
+            return "redirect:/signUp";
+        }
     }
 }

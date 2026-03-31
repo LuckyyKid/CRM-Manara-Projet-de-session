@@ -185,6 +185,8 @@ public class AdminService {
         String hash = passwordEncoder.encode(password);
         User user = new User(email, hash);
         user.setRole(SecurityRole.ROLE_ANIMATEUR);
+        // ADDED
+        user.setEnabled(true);
         User savedUser = userRepo.save(user);
         Animateur animateur = new Animateur(nom, prenom);
         animateur.setUser(savedUser);
