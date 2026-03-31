@@ -1,6 +1,6 @@
--- CRM Manara - Sprint 1
--- Script SQL (MySQL/MariaDB) base sur les entites JPA actuelles
--- Date: 2026-02-23
+-- CRM Manara - Sprint 2 MVP
+-- Script SQL (MySQL/MariaDB) aligne sur le modele fonctionnel courant
+-- Date: 2026-03-31
 
 CREATE DATABASE IF NOT EXISTS `manara`
   CHARACTER SET utf8mb4
@@ -11,6 +11,8 @@ USE `manara`;
 SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS `Inscription`;
+DROP TABLE IF EXISTS `parent_notifications`;
+DROP TABLE IF EXISTS `verification_tokens`;
 DROP TABLE IF EXISTS `Animation`;
 DROP TABLE IF EXISTS `enfant`;
 DROP TABLE IF EXISTS `Administrateurs`;
@@ -27,6 +29,7 @@ CREATE TABLE `users` (
   `password` VARCHAR(255) NOT NULL,
   `role` VARCHAR(50) NOT NULL,
   `date_creation` DATETIME NULL,
+  `enabled` BOOLEAN NOT NULL DEFAULT TRUE,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_users_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -90,6 +93,7 @@ CREATE TABLE `enfant` (
   `nom` VARCHAR(255) NOT NULL,
   `prenom` VARCHAR(255) NOT NULL,
   `date_de_naissance` DATE NOT NULL,
+  `active` BOOLEAN NOT NULL DEFAULT FALSE,
   `Parent_id` BIGINT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_enfant_parent_id` (`Parent_id`),
@@ -106,6 +110,8 @@ CREATE TABLE `Animation` (
   `Status` VARCHAR(50) NULL,
   `Start` DATETIME NOT NULL,
   `End` DATETIME NOT NULL,
+  `start_time` DATETIME NOT NULL,
+  `end_time` DATETIME NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `idx_animation_animateur_id` (`animateur_id`),
   KEY `idx_animation_activity_id` (`activity_id`),
@@ -119,8 +125,8 @@ CREATE TABLE `Animation` (
 
 CREATE TABLE `Inscription` (
   `ID` BIGINT NOT NULL AUTO_INCREMENT,
-  `StatusInscription` VARCHAR(50) NULL,
-  `PresenceStatus` VARCHAR(50) NOT NULL,
+  `StatusInscription` ENUM('EN_ATTENTE','APPROUVEE','REFUSEE','ACTIF','ANNULÉE') NULL,
+  `PresenceStatus` ENUM('ABSENT','NON_SIGNEE','PRESENT') NOT NULL,
   `IncidentNote` VARCHAR(1000) NULL,
   `enfant_id` BIGINT NOT NULL,
   `animation_id` BIGINT NOT NULL,
@@ -132,6 +138,34 @@ CREATE TABLE `Inscription` (
     ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_inscription_animation`
     FOREIGN KEY (`animation_id`) REFERENCES `Animation`(`ID`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `verification_tokens` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `token` VARCHAR(255) NOT NULL,
+  `user_id` BIGINT NOT NULL,
+  `expiration_date` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_verification_tokens_token` (`token`),
+  UNIQUE KEY `uk_verification_tokens_user_id` (`user_id`),
+  CONSTRAINT `fk_verification_tokens_user`
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `parent_notifications` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `parent_id` BIGINT NOT NULL,
+  `category` VARCHAR(80) NOT NULL,
+  `title` VARCHAR(160) NOT NULL,
+  `message` VARCHAR(1200) NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  `read_status` BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (`id`),
+  KEY `idx_parent_notifications_parent_id` (`parent_id`),
+  CONSTRAINT `fk_parent_notifications_parent`
+    FOREIGN KEY (`parent_id`) REFERENCES `Parent`(`ID`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
