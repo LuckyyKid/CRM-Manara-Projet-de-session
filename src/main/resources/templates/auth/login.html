@@ -40,6 +40,10 @@
                                         Mot de passe, courriel, ou etat du compte invalide.
                                     </div>
 
+                                    <div th:if="${param.oauthError}" class="alert alert-danger" role="alert">
+                                        La connexion Google a echoue. Verifiez la configuration Google OAuth du projet.
+                                    </div>
+
                                     <div th:if="${message}" class="alert alert-success" role="alert">
                                         <span th:text="${message}"></span>
                                     </div>
@@ -66,9 +70,14 @@
 
                                     <div class="my-3 text-center text-secondary small">ou</div>
 
-                                    <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline-dark w-100 mm-google-btn">
+                                    <a th:if="${googleOAuthEnabled}" th:href="@{/oauth2/authorization/google}" class="btn btn-outline-dark w-100 mm-google-btn">
                                         <i class="bi bi-google me-2"></i>Sign in with Google
                                     </a>
+
+                                    <div th:unless="${googleOAuthEnabled}" class="small text-secondary text-center border rounded-3 p-3">
+                                        La connexion Google sera disponible apres configuration de
+                                        <code>GOOGLE_CLIENT_ID</code> et <code>GOOGLE_CLIENT_SECRET</code>.
+                                    </div>
 
                                     <div class="text-center small mt-3">
                                         <span class="text-secondary">Pas encore de compte ?</span>
