@@ -5,6 +5,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+
 @Component
 @Order(1)
 public class AuthSchemaInitializer implements CommandLineRunner {
@@ -19,7 +22,7 @@ public class AuthSchemaInitializer implements CommandLineRunner {
     public void run(String... args) {
         // ADDED
         if (!columnExists("users", "enabled")) {
-            jdbcTemplate.execute("ALTER TABLE users ADD COLUMN enabled BIT(1) NOT NULL DEFAULT b'1'");
+            jdbcTemplate.execute("ALTER TABLE users ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT TRUE");
         }
 
         // ADDED
@@ -40,19 +43,29 @@ public class AuthSchemaInitializer implements CommandLineRunner {
 
     // ADDED
     private boolean columnExists(String tableName, String columnName) {
-        Integer count = jdbcTemplate.queryForObject(
-                """
-                SELECT COUNT(*)
-                FROM information_schema.COLUMNS
-                WHERE TABLE_SCHEMA = DATABASE()
-                  AND TABLE_NAME = ?
-                  AND COLUMN_NAME = ?
-                """,
-                Integer.class,
-                tableName,
-                columnName
-        );
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+             ResultSet columns = connection.getMetaData().getColumns(
+                     connection.getCatalog(),
+                     null,
+                     tableName,
+                     columnName
+             )) {
+            if (columns.next()) {
+                return true;
+            }
+        } catch (Exception ignored) {
+        }
 
-        return count != null && count > 0;
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+             ResultSet columns = connection.getMetaData().getColumns(
+                     connection.getCatalog(),
+                     null,
+                     tableName.toUpperCase(),
+                     columnName.toUpperCase()
+             )) {
+            return columns.next();
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 }
