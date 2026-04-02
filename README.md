@@ -1,10 +1,14 @@
 # CRM Manara
 
-Application Spring Boot MVC pour le module CRM du Centre Manara.
+## Version 1
 
-## Sprint 2
+La version 1 du projet est l'application web Spring Boot MVC complète livrée pour les sprints 1 et 2.
 
-Le MVP Sprint 2 couvre:
+Cette version est maintenant figée dans la branche:
+
+- `version-1`
+
+Elle contient:
 
 - authentification sécurisée avec Spring Security
 - rôles `ADMIN`, `PARENT`, `ANIMATEUR`
@@ -15,13 +19,36 @@ Le MVP Sprint 2 couvre:
 - profils enfant en attente d'approbation admin
 - suivi des présences côté animateur
 - notifications admin, parent et animateur
-- reçus et courriels métier via Resend
+- courriels métier via Resend
 - suivi du remplissage et de la liste d'attente
 - tableaux de bord admin, parent et animateur
 - paramètres de compte avec avatar persistant
 - page d'erreur utilisateur dédiée
 
-## Lancement
+## Version 2
+
+La suite du projet sera développée sur `main`.
+
+Direction retenue pour la version 2:
+
+- backend Spring Boot conservé comme base métier
+- frontend Angular pour remplacer progressivement les vues Thymeleaf côté interface
+- adaptations Spring nécessaires pour servir une API plus propre au frontend Angular
+- évolution progressive sans perdre les règles métier déjà implantées
+
+## Etat actuel de `main`
+
+`main` sert maintenant de base de travail pour la version 2.
+
+Le backend existant reste utilisable pour:
+
+- l'authentification
+- la gestion des rôles
+- les parents, enfants, activités, animations, inscriptions et présences
+- les notifications et les courriels
+- les validations métier principales
+
+## Lancement local
 
 ```bash
 ./mvnw spring-boot:run
@@ -31,13 +58,13 @@ Application locale:
 
 - `http://localhost:8080`
 
-## Vérification
+## Tests
 
 ```bash
 ./mvnw test
 ```
 
-## Parcours principaux
+## Parcours actuels disponibles
 
 - Parent:
   - `/parent/dashboard`
@@ -64,4 +91,4 @@ Application locale:
 - MariaDB/MySQL pour l'environnement local
 - H2 pour les tests
 
-Le script SQL de référence est dans [SQL/schema_sprint1.sql](/home/ahmed/Desktop/Web/Projet-Session/projet-de-session/SQL/schema_sprint1.sql), mis à jour pour refléter l'état Sprint 2 du schéma métier.
+Le script SQL de référence est dans [SQL/schema_sprint1.sql](/home/ahmed/Desktop/Web/Projet-Session/projet-de-session/SQL/schema_sprint1.sql).
