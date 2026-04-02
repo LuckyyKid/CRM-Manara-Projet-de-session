@@ -17,7 +17,16 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
 
             const enfantId = form.dataset.enfantId;
-            if (!window.confirm("Supprimer cet enfant ?")) {
+            const confirmed = window.ManaraConfirm?.open
+                ? await window.ManaraConfirm.open({
+                    title: "Supprimer cet enfant",
+                    message: form.dataset.confirm || "Supprimer cet enfant ?",
+                    confirmLabel: "Supprimer",
+                    confirmClass: "btn-danger"
+                })
+                : window.confirm(form.dataset.confirm || "Supprimer cet enfant ?");
+
+            if (!confirmed) {
                 return;
             }
 

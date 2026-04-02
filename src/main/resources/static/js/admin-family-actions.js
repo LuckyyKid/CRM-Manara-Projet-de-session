@@ -16,6 +16,19 @@ document.addEventListener("DOMContentLoaded", () => {
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            const confirmed = window.ManaraConfirm?.open
+                ? await window.ManaraConfirm.open({
+                    title: form.dataset.confirmTitle || "Confirmer l'action",
+                    message: form.dataset.confirm || "Voulez-vous appliquer cette action ?",
+                    confirmLabel: form.dataset.confirmLabel || "Confirmer",
+                    confirmClass: form.dataset.confirmClass || "btn-primary"
+                })
+                : window.confirm(form.dataset.confirm || "Voulez-vous appliquer cette action ?");
+
+            if (!confirmed) {
+                return;
+            }
+
             const submitButton = form.querySelector("button[type='submit']");
             const formData = new FormData(form);
 

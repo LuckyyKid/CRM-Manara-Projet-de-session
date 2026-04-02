@@ -59,18 +59,26 @@
                                           th:text="${an.user != null and an.user.enabled} ? 'Actif' : 'Désactivé'"></span>
                                 </td>
                                 <td>
-                                    <form th:if="${an.user != null and !an.user.enabled}" th:action="@{'/admin/animateurs/' + ${an.id} + '/status'}" method="post" class="d-inline">
+                                    <form th:if="${an.user != null and !an.user.enabled}" th:action="@{'/admin/animateurs/' + ${an.id} + '/status'}" method="post" class="d-inline js-confirm-submit-form"
+                                          data-confirm="Activer ce compte animateur ?"
+                                          data-confirm-title="Activer l'animateur"
+                                          data-confirm-label="Activer"
+                                          data-confirm-class="btn-success">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                         <input type="hidden" name="enabled" value="true"/>
                                         <button type="submit" class="btn btn-sm btn-outline-success">Activer</button>
                                     </form>
-                                    <form th:if="${an.user != null and an.user.enabled}" th:action="@{'/admin/animateurs/' + ${an.id} + '/status'}" method="post" class="d-inline">
+                                    <form th:if="${an.user != null and an.user.enabled}" th:action="@{'/admin/animateurs/' + ${an.id} + '/status'}" method="post" class="d-inline js-confirm-submit-form"
+                                          data-confirm="Désactiver ce compte animateur ?"
+                                          data-confirm-title="Désactiver l'animateur"
+                                          data-confirm-label="Désactiver"
+                                          data-confirm-class="btn-warning">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                         <input type="hidden" name="enabled" value="false"/>
                                         <button type="submit" class="btn btn-sm btn-outline-warning">Désactiver</button>
                                     </form>
                                     <a class="btn btn-sm btn-outline-secondary" th:href="@{'/admin/animateurs/' + ${an.id} + '/edit'}">Modifier</a>
-                                    <form th:action="@{'/admin/animateurs/' + ${an.id} + '/delete'}" method="post" class="d-inline js-admin-delete-form" th:attr="data-delete-url=@{'/admin/api/animateurs/' + ${an.id} + '/delete'},data-row-id=${an.id},data-feedback-target='adminAnimateursFeedback',data-confirm='Supprimer cet animateur ?'">
+                                    <form th:action="@{'/admin/animateurs/' + ${an.id} + '/delete'}" method="post" class="d-inline js-admin-delete-form" th:attr="data-delete-url=@{'/admin/api/animateurs/' + ${an.id} + '/delete'},data-row-id=${an.id},data-feedback-target='adminAnimateursFeedback',data-confirm='Supprimer cet animateur ?',data-confirm-title='Supprimer l\'animateur',data-confirm-label='Supprimer',data-confirm-class='btn-danger'">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
                                     </form>

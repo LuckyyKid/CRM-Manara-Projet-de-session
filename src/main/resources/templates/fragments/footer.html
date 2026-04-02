@@ -20,6 +20,24 @@
         </div>
     </footer>
 
+    <div class="modal fade" id="mmConfirmModal" tabindex="-1" aria-labelledby="mmConfirmTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="mmConfirmTitle">Confirmer l'action</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0 text-secondary" id="mmConfirmBody">Voulez-vous continuer ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="mmConfirmSubmit">Confirmer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div th:replace="~{fragments/chatbot :: chatbot}"></div>
 
     <script>
@@ -71,6 +89,8 @@
 
         hydrateDateFormatting();
     </script>
+    <script th:src="@{/js/confirm-dialog.js}"></script>
+    <script th:src="@{/js/confirm-actions.js}"></script>
 </div>
 </body>
 </html>
