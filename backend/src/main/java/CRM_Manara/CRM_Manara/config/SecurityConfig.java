@@ -2,14 +2,23 @@ package CRM_Manara.CRM_Manara.config;
 
 import CRM_Manara.CRM_Manara.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -24,6 +33,9 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationSuccessHandler successHandler;
 
+    @Value("${app.frontend.base-url:http://localhost:4200}")
+    private String frontendBaseUrl;
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userService);
@@ -32,12 +44,26 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of(frontendBaseUrl));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authenticationProvider(authenticationProvider());
 
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/chatbot/**")
+                        .ignoringRequestMatchers("/api/**")
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -53,9 +79,10 @@ public class SecurityConfig {
                                 "/api/chatbot/**",
                                 "/about"
                         ).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/parent/**").hasRole("PARENT")
-                        .requestMatchers("/animateur/**").hasRole("ANIMATEUR")
+                        .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
+                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/parent/**", "/api/parent/**").hasRole("PARENT")
+                        .requestMatchers("/animateur/**", "/api/animateur/**").hasRole("ANIMATEUR")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -84,8 +111,18 @@ public class SecurityConfig {
                         })
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl(frontendBaseUrl + "/login?logout")
                         .permitAll()
+                )
+                .exceptionHandling(exception -> exception
+                        .defaultAuthenticationEntryPointFor(
+                                (request, response, authException) -> response.sendError(401),
+                                PathPatternRequestMatcher.pathPattern("/api/**")
+                        )
+                        .defaultAccessDeniedHandlerFor(
+                                (request, response, accessDeniedException) -> response.sendError(403),
+                                PathPatternRequestMatcher.pathPattern("/api/**")
+                        )
                 );
 
         return http.build();
