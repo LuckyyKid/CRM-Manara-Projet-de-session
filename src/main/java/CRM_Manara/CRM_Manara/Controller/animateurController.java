@@ -5,6 +5,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Animation;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.PresenceStatus;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AnimateurService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AnimateurNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,9 @@ public class animateurController {
     @Autowired
     private AnimateurService animateurService;
 
+    @Autowired
+    private AnimateurNotificationService animateurNotificationService;
+
     @GetMapping("/dashboard")
     public String dashboard(Model model, Principal principal) {
         String email = principal.getName();
@@ -47,7 +51,54 @@ public class animateurController {
         model.addAttribute("countAnimations", animations.size());
         model.addAttribute("countInscriptions", inscriptions.size());
         model.addAttribute("upcomingAnimations", animateurService.getUpcomingAnimationsForAnimateur(animateur.getId(), 5));
+        model.addAttribute("latestNotifications", animateurNotificationService.getNotificationsForAnimateur(animateur.getId(), 5));
         return "animateur/animateurDashboard";
+    }
+
+    @GetMapping("/notifications")
+    public String notifications(Model model, Principal principal) {
+        Animateur animateur = animateurNotificationService.getAnimateurByUserEmail(principal.getName());
+        model.addAttribute("notifications", animateurNotificationService.getNotificationsForAnimateur(animateur.getId(), 100));
+        model.addAttribute("archivedNotifications", animateurNotificationService.getArchivedNotificationsForAnimateur(animateur.getId(), 100));
+        return "animateur/animateurNotifications";
+    }
+
+    @PostMapping("/notifications/read-all")
+    public String readAllNotifications(Principal principal, RedirectAttributes redirectAttributes) {
+        Animateur animateur = animateurNotificationService.getAnimateurByUserEmail(principal.getName());
+        animateurNotificationService.markAllAsReadForAnimateur(animateur.getId());
+        redirectAttributes.addFlashAttribute("message", "Notifications marquées comme lues.");
+        return "redirect:/animateur/notifications";
+    }
+
+    @PostMapping("/notifications/{id}/read")
+    public String readNotification(@PathVariable("id") Long id,
+                                   Principal principal,
+                                   RedirectAttributes redirectAttributes) {
+        Animateur animateur = animateurNotificationService.getAnimateurByUserEmail(principal.getName());
+        animateurNotificationService.markAsRead(animateur.getId(), id);
+        redirectAttributes.addFlashAttribute("message", "Notification marquée comme lue.");
+        return "redirect:/animateur/notifications";
+    }
+
+    @PostMapping("/notifications/{id}/archive")
+    public String archiveNotification(@PathVariable("id") Long id,
+                                      Principal principal,
+                                      RedirectAttributes redirectAttributes) {
+        Animateur animateur = animateurNotificationService.getAnimateurByUserEmail(principal.getName());
+        animateurNotificationService.archive(animateur.getId(), id);
+        redirectAttributes.addFlashAttribute("message", "Notification archivée.");
+        return "redirect:/animateur/notifications";
+    }
+
+    @PostMapping("/notifications/{id}/restore")
+    public String restoreNotification(@PathVariable("id") Long id,
+                                      Principal principal,
+                                      RedirectAttributes redirectAttributes) {
+        Animateur animateur = animateurNotificationService.getAnimateurByUserEmail(principal.getName());
+        animateurNotificationService.restore(animateur.getId(), id);
+        redirectAttributes.addFlashAttribute("message", "Notification restaurée.");
+        return "redirect:/animateur/notifications";
     }
 
     @GetMapping("/inscriptions")

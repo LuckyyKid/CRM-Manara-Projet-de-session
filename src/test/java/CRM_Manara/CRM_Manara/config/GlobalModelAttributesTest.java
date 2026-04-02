@@ -1,6 +1,7 @@
 package CRM_Manara.CRM_Manara.config;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AnimateurNotificationService;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AvatarService;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.ParentNotificationService;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ class GlobalModelAttributesTest {
         GlobalModelAttributes attributes = new GlobalModelAttributes(
                 environment,
                 mock(ParentNotificationService.class),
+                mock(AnimateurNotificationService.class),
                 mock(AdminService.class),
                 mock(AvatarService.class)
         );
@@ -37,6 +39,7 @@ class GlobalModelAttributesTest {
         GlobalModelAttributes attributes = new GlobalModelAttributes(
                 environment,
                 mock(ParentNotificationService.class),
+                mock(AnimateurNotificationService.class),
                 mock(AdminService.class),
                 mock(AvatarService.class)
         );

@@ -6,6 +6,8 @@ import CRM_Manara.CRM_Manara.Model.Entity.User;
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
 import CRM_Manara.CRM_Manara.Repository.UserRepo;
 import CRM_Manara.CRM_Manara.Repository.VerificationTokenRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +30,8 @@ import java.util.UUID;
 @Service
 public class userService implements UserDetailsService, OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
+    private static final Logger logger = LoggerFactory.getLogger(userService.class);
+
     @Autowired
     private UserRepo userRepo;
 
@@ -46,24 +50,21 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
     @Autowired
     private AvatarService avatarService;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private ParentNotificationService parentNotificationService;
+
+    @Autowired
+    private AdminNotificationService adminNotificationService;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
-        System.out.println("Tentative de connexion pour l'email : " + email);
-
         User user = userRepo.findByEmail(email.trim()).orElseThrow(() -> {
-            System.out.println("ERREUR : Aucun utilisateur trouve en DB pour : " + email);
             return new UsernameNotFoundException("Pas trouve");
         });
-
-        // ADDED
-        if (!user.isEnabled() && !verificationTokenRepository.existsByUser(user)) {
-            user.setEnabled(true);
-            user = userRepo.save(user);
-        }
-
-        System.out.println("Utilisateur trouve ! Son mot de passe hashe est : " + user.getPassword());
-        System.out.println("Son role est : " + user.getRole());
+        logger.debug("Authentification chargée pour {} avec rôle {}", user.getEmail(), user.getRole());
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
@@ -76,7 +77,7 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
 
     // ADDED
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = OAuth2AuthenticationException.class)
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = new DefaultOAuth2UserService().loadUser(userRequest);
 
@@ -99,10 +100,11 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
                 oAuth2User.getAttribute("picture")
         );
 
-        // ADDED
         if (!user.isEnabled()) {
-            user.setEnabled(true);
-            user = userRepo.save(user);
+            throw new OAuth2AuthenticationException(
+                    new OAuth2Error("account_pending"),
+                    "Compte en attente d'approbation par l'administration."
+            );
         }
 
         return new DefaultOAuth2User(
@@ -116,13 +118,33 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
     private User createGoogleParent(String email, String fullName) {
         String[] nameParts = splitName(fullName);
 
-        User user = new User(email, passwordEncoder.encode(UUID.randomUUID().toString()), SecurityRole.ROLE_PARENT, true);
+        User user = new User(email, passwordEncoder.encode(UUID.randomUUID().toString()), SecurityRole.ROLE_PARENT, false);
         User savedUser = userRepo.save(user);
         avatarService.assignDefaultAvatar(savedUser, fullName);
 
         Parent parent = new Parent(nameParts[1], nameParts[0], "");
         parent.SetUser(savedUser);
-        parentRepo.save(parent);
+        Parent savedParent = parentRepo.save(parent);
+        parentNotificationService.createForParent(
+                savedParent,
+                "COMPTE",
+                "Compte créé",
+                "Votre compte parent a été créé avec Google. Il est en attente d'approbation par l'administration."
+        );
+        emailService.sendEmail(
+                savedUser.getEmail(),
+                "Compte parent en attente d'approbation - CRM Manara",
+                "Bonjour,\n\nVotre compte parent a été créé avec Google.\n"
+                        + "Il est maintenant en attente d'approbation par l'administration.\n"
+                        + "Tant qu'il n'est pas approuvé, vous ne pourrez pas accéder au portail.\n\n"
+                        + "Compte: " + savedUser.getEmail() + "\n\nMerci,\nCRM Manara"
+        );
+        emailService.notifyAdminsOfParentSignup(fullName, savedUser.getEmail(), "Google");
+        adminNotificationService.create(
+                "PARENT",
+                "COMPTE",
+                "Nouveau compte parent Google en attente: " + fullName + " (" + savedUser.getEmail() + ")."
+        );
 
         return savedUser;
     }

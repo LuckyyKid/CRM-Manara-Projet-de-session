@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -27,19 +28,25 @@ public class AccountSettingsService {
     private final AdminRepo adminRepo;
     private final PasswordEncoder passwordEncoder;
     private final AvatarService avatarService;
+    private final EmailService emailService;
+    private final AdminNotificationService adminNotificationService;
 
     public AccountSettingsService(UserRepo userRepo,
                                   ParentRepo parentRepo,
                                   AnimateurRepo animateurRepo,
                                   AdminRepo adminRepo,
                                   PasswordEncoder passwordEncoder,
-                                  AvatarService avatarService) {
+                                  AvatarService avatarService,
+                                  EmailService emailService,
+                                  AdminNotificationService adminNotificationService) {
         this.userRepo = userRepo;
         this.parentRepo = parentRepo;
         this.animateurRepo = animateurRepo;
         this.adminRepo = adminRepo;
         this.passwordEncoder = passwordEncoder;
         this.avatarService = avatarService;
+        this.emailService = emailService;
+        this.adminNotificationService = adminNotificationService;
     }
 
     @Transactional(readOnly = true)
@@ -85,46 +92,95 @@ public class AccountSettingsService {
                                boolean resetAvatar,
                                MultipartFile avatarFile) {
         User user = getUser(currentEmail);
+        String previousEmail = user.getEmail();
         Map<String, String> errors = validate(user, nom, prenom, email, adresse, newPassword, confirmPassword, avatarFile);
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(errors.values().iterator().next());
         }
 
+        String normalizedNom = nom.trim();
+        String normalizedPrenom = prenom.trim();
+        String normalizedEmail = email.trim();
+        String normalizedAdresse = adresse == null ? "" : adresse.trim();
+
+        String oldNom = null;
+        String oldPrenom = null;
+        String oldAdresse = null;
+        String roleLabel = user.getRole().name().replace("ROLE_", "");
+
         user.setEmail(email.trim());
+        boolean passwordChanged = newPassword != null && !newPassword.isBlank();
         if (newPassword != null && !newPassword.isBlank()) {
             user.setPassword(passwordEncoder.encode(newPassword));
         }
 
+        boolean avatarChanged = false;
         if (resetAvatar) {
             avatarService.resetToDefaultAvatar(user);
+            avatarChanged = true;
         }
         if (avatarFile != null && !avatarFile.isEmpty()) {
             avatarService.storeUploadedAvatar(user, avatarFile);
+            avatarChanged = true;
         }
 
         Parent parent = parentRepo.findByUser(user).orElse(null);
         if (parent != null) {
-            parent.setNom(nom.trim());
-            parent.setPrenom(prenom.trim());
-            parent.setAdresse(adresse == null ? "" : adresse.trim());
+            oldNom = parent.getNom();
+            oldPrenom = parent.getPrenom();
+            oldAdresse = parent.getAdresse();
+            roleLabel = "PARENT";
+            parent.setNom(normalizedNom);
+            parent.setPrenom(normalizedPrenom);
+            parent.setAdresse(normalizedAdresse);
             parentRepo.save(parent);
         }
 
         Animateur animateur = animateurRepo.findByUser(user).orElse(null);
         if (animateur != null) {
-            animateur.setNom(nom.trim());
-            animateur.setPrenom(prenom.trim());
+            oldNom = animateur.getNom();
+            oldPrenom = animateur.getPrenom();
+            roleLabel = "ANIMATEUR";
+            animateur.setNom(normalizedNom);
+            animateur.setPrenom(normalizedPrenom);
             animateurRepo.save(animateur);
         }
 
         Administrateurs admin = adminRepo.findByUser(user).orElse(null);
         if (admin != null) {
-            admin.setNom(nom.trim());
-            admin.setPrenom(prenom.trim());
+            oldNom = admin.getNom();
+            oldPrenom = admin.getPrenom();
+            roleLabel = "ADMIN";
+            admin.setNom(normalizedNom);
+            admin.setPrenom(normalizedPrenom);
             adminRepo.save(admin);
         }
 
         userRepo.save(user);
+
+        String displayName = normalizedPrenom + " " + normalizedNom;
+        String changeSummary = buildChangeSummary(
+                oldPrenom,
+                oldNom,
+                oldAdresse,
+                previousEmail,
+                normalizedPrenom,
+                normalizedNom,
+                normalizedAdresse,
+                normalizedEmail,
+                passwordChanged,
+                avatarChanged
+        );
+        if (changeSummary.isBlank()) {
+            changeSummary = "Paramètres du compte enregistrés.";
+        }
+        emailService.sendAccountUpdatedConfirmation(normalizedEmail, displayName, roleLabel, changeSummary);
+        emailService.notifyAdminsOfAccountUpdate(displayName, normalizedEmail, roleLabel, changeSummary);
+        adminNotificationService.create(
+                roleLabel,
+                "COMPTE",
+                "Compte modifié: " + displayName + " (" + normalizedEmail + "). " + changeSummary.replace("\n- ", " | ")
+        );
     }
 
     @Transactional(readOnly = true)
@@ -188,5 +244,42 @@ public class AccountSettingsService {
     private User getUser(String email) {
         return userRepo.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable."));
+    }
+
+    private String buildChangeSummary(String oldPrenom,
+                                      String oldNom,
+                                      String oldAdresse,
+                                      String oldEmail,
+                                      String newPrenom,
+                                      String newNom,
+                                      String newAdresse,
+                                      String newEmail,
+                                      boolean passwordChanged,
+                                      boolean avatarChanged) {
+        List<String> changes = new java.util.ArrayList<>();
+
+        if (!safeEquals(oldPrenom, newPrenom) || !safeEquals(oldNom, newNom)) {
+            changes.add("Nom complet mis à jour : " + newPrenom + " " + newNom);
+        }
+        if (!safeEquals(oldEmail, newEmail)) {
+            changes.add("Courriel mis à jour : " + newEmail);
+        }
+        if (oldAdresse != null && !safeEquals(oldAdresse, newAdresse)) {
+            changes.add("Adresse mise à jour : " + newAdresse);
+        }
+        if (passwordChanged) {
+            changes.add("Mot de passe modifié");
+        }
+        if (avatarChanged) {
+            changes.add("Photo de profil modifiée");
+        }
+
+        return String.join("\n- ", changes);
+    }
+
+    private boolean safeEquals(String left, String right) {
+        String normalizedLeft = left == null ? "" : left.trim();
+        String normalizedRight = right == null ? "" : right.trim();
+        return normalizedLeft.equals(normalizedRight);
     }
 }

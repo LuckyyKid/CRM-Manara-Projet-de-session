@@ -16,7 +16,7 @@
             <div class="mm-page-head">
                 <div>
                     <span class="mm-page-eyebrow">Espace animateur</span>
-                    <h1 class="mm-page-title">Présences et sessions</h1>
+                    <h1 class="mm-page-title">Présences et animations</h1>
                     <p class="mm-page-subtitle">Suivi des animations, des présences et des notes dans un espace de travail simple.</p>
                 </div>
                 <div class="mm-page-actions">
@@ -28,7 +28,7 @@
             <div class="row g-3 mb-3">
                 <div class="col-12 col-md-6">
                     <div class="mm-kpi-card h-100">
-                        <span class="mm-kpi-label">Sessions</span>
+                        <span class="mm-kpi-label">Animations</span>
                         <span class="mm-kpi-value" th:text="${countAnimations}">0</span>
                         <span class="mm-kpi-meta">Enfants inscrits: <span th:text="${countInscriptions}">0</span></span>
                     </div>
@@ -48,7 +48,7 @@
 
             <div class="card mm-card-shadow mb-3">
                 <div class="card-body">
-                    <h2 class="mm-panel-title mb-3">Sessions à venir</h2>
+                    <h2 class="mm-panel-title mb-3">Animations à venir</h2>
                     <div class="table-responsive">
                         <table class="table table-sm align-middle">
                             <thead>
@@ -61,7 +61,7 @@
                             </thead>
                             <tbody>
                             <tr th:if="${#lists.isEmpty(animations)}">
-                                <td colspan="4" class="text-secondary">Aucune session.</td>
+                                <td colspan="4" class="text-secondary">Aucune animation.</td>
                             </tr>
 
                             <tr th:each="animation : ${animations}">

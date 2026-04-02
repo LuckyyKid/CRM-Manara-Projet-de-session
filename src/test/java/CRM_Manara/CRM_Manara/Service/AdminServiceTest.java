@@ -12,6 +12,8 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminNotificationService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AnimateurNotificationService;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.ParentNotificationService;
 import CRM_Manara.CRM_Manara.Model.Entity.User;
 import CRM_Manara.CRM_Manara.Repository.ActivityRepo;
@@ -67,6 +69,10 @@ class AdminServiceTest {
     CRM_Manara.CRM_Manara.Model.Entity.Service.EmailService emailService;
     @Mock
     ParentNotificationService parentNotificationService;
+    @Mock
+    AnimateurNotificationService animateurNotificationService;
+    @Mock
+    AdminNotificationService adminNotificationService;
 
     @InjectMocks
     AdminService adminService;
@@ -93,7 +99,7 @@ class AdminServiceTest {
                 () -> adminService.approveInscription(50L)
         );
 
-        assertEquals("Plus de places disponibles sur cette session. La demande reste en attente.", exception.getMessage());
+        assertEquals("Plus de places disponibles sur cette animation. La demande reste en attente.", exception.getMessage());
         verify(inscriptionRepo, never()).save(any(Inscription.class));
     }
 

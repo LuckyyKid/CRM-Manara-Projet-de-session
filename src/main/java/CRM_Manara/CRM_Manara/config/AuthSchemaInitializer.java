@@ -61,6 +61,34 @@ public class AuthSchemaInitializer implements CommandLineRunner {
                 )
                 """);
 
+        jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS animateur_notifications (
+                    id BIGINT NOT NULL AUTO_INCREMENT,
+                    animateur_id BIGINT NOT NULL,
+                    category VARCHAR(80) NOT NULL,
+                    title VARCHAR(160) NOT NULL,
+                    message VARCHAR(1200) NOT NULL,
+                    created_at DATETIME(6) NOT NULL,
+                    read_status BOOLEAN NOT NULL DEFAULT FALSE,
+                    archived_status BOOLEAN NOT NULL DEFAULT FALSE,
+                    PRIMARY KEY (id),
+                    KEY idx_animateur_notifications_animateur_id (animateur_id),
+                    CONSTRAINT fk_animateur_notifications_animateur
+                        FOREIGN KEY (animateur_id) REFERENCES Animateurs(ID)
+                )
+                """);
+
+        jdbcTemplate.execute("""
+                CREATE TABLE IF NOT EXISTS admin_notification (
+                    id BIGINT NOT NULL AUTO_INCREMENT,
+                    created_at DATETIME(6) NOT NULL,
+                    message VARCHAR(1200) NOT NULL,
+                    source VARCHAR(80) NOT NULL,
+                    type VARCHAR(80) NOT NULL,
+                    PRIMARY KEY (id)
+                )
+                """);
+
         if (!columnExists("parent_notifications", "archived_status")) {
             jdbcTemplate.execute("ALTER TABLE parent_notifications ADD COLUMN archived_status BOOLEAN NOT NULL DEFAULT FALSE");
         }

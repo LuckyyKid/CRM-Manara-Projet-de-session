@@ -4,6 +4,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -61,18 +62,26 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .successHandler(successHandler)
                         .failureHandler((request, response, exception) -> {
-                            System.out.println("ECHEC AUTHENTIFICATION : " + exception.getMessage());
+                            if (exception instanceof DisabledException) {
+                                response.sendRedirect("/login?pending");
+                                return;
+                            }
                             response.sendRedirect("/login?error");
                         })
                         .permitAll()
                 )
-                // ADDED
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(userService))
                         .successHandler(successHandler)
-                        .failureHandler((request, response, exception) ->
-                                response.sendRedirect("/login?oauthError"))
+                        .failureHandler((request, response, exception) -> {
+                            if (exception.getMessage() != null
+                                    && exception.getMessage().toLowerCase().contains("approbation")) {
+                                response.sendRedirect("/login?pending");
+                                return;
+                            }
+                            response.sendRedirect("/login?oauthError");
+                        })
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")

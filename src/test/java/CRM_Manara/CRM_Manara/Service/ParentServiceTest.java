@@ -12,6 +12,9 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.ParentNotificationService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminNotificationService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AnimateurNotificationService;
+import CRM_Manara.CRM_Manara.Model.Entity.Service.AvatarService;
 import CRM_Manara.CRM_Manara.Model.Entity.Service.parentService;
 import CRM_Manara.CRM_Manara.Model.Entity.User;
 import CRM_Manara.CRM_Manara.Repository.ActivityRepo;
@@ -65,9 +68,42 @@ class ParentServiceTest {
     VerificationTokenRepository verificationTokenRepository;
     @Mock
     ParentNotificationService parentNotificationService;
+    @Mock
+    AvatarService avatarService;
+    @Mock
+    AnimateurNotificationService animateurNotificationService;
+    @Mock
+    AdminNotificationService adminNotificationService;
 
     @InjectMocks
     parentService parentService;
+
+    @Test
+    void createNewParent_createsDisabledAccountAndNotifiesAdmins() {
+        when(userRepo.existsByEmail("newparent@test.com")).thenReturn(false);
+        when(passwordEncoder.encode("secret123")).thenReturn("hashed");
+        when(userRepo.save(any(User.class))).thenAnswer(invocation -> {
+            User saved = invocation.getArgument(0);
+            ReflectionTestUtils.setField(saved, "id", 77L);
+            return saved;
+        });
+        when(parentRepo.save(any(Parent.class))).thenAnswer(invocation -> {
+            Parent saved = invocation.getArgument(0);
+            ReflectionTestUtils.setField(saved, "id", 88L);
+            return saved;
+        });
+
+        parentService.createNewParent("Roy", "Mia", "Adresse", "newparent@test.com", "secret123");
+
+        verify(userRepo).save(any(User.class));
+        verify(avatarService).assignDefaultAvatar(any(User.class), org.mockito.ArgumentMatchers.eq("Mia Roy"));
+        verify(emailService).sendEmail(
+                org.mockito.ArgumentMatchers.eq("newparent@test.com"),
+                org.mockito.ArgumentMatchers.contains("en attente"),
+                org.mockito.ArgumentMatchers.anyString()
+        );
+        verify(emailService).notifyAdminsOfParentSignup("Mia Roy", "newparent@test.com", "Formulaire");
+    }
 
     @Test
     void inscrireEnfant_rejectsDuplicateRequestForSameActivity() {

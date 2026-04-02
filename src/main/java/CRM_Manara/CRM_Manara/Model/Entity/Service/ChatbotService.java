@@ -133,7 +133,7 @@ public class ChatbotService {
         faqEntries.add(new FaqEntry(
             Arrays.asList("prix", "tarif", "coût", "combien", "payer", "paiement", "gratuit", "argent", "cher"),
             "💰 Informations sur les tarifs :\n\n" +
-            "• Les prix varient selon l'activité (10$ - 50$/session)\n" +
+            "• Les prix varient selon l'activité (10$ - 50$/animation)\n" +
             "• Certaines activités sont gratuites\n" +
             "• Réductions pour familles nombreuses (-15%)\n" +
             "• Paiement en ligne ou sur place\n\n" +
@@ -187,7 +187,7 @@ public class ChatbotService {
             "🏊 Natation : Maillot, bonnet, serviette\n" +
             "🎨 Arts : Matériel fourni par le centre\n" +
             "💃 Danse : Tenue confortable\n\n" +
-            "Des précisions sont envoyées par email avant chaque session.",
+            "Des précisions sont envoyées par email avant chaque animation.",
             "equipement",
             Arrays.asList("Voir les activités", "Nous contacter")
         ));

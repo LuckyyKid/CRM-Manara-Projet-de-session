@@ -71,6 +71,12 @@ public class parentService {
     @Autowired
     AvatarService avatarService;
 
+    @Autowired
+    AnimateurNotificationService animateurNotificationService;
+
+    @Autowired
+    AdminNotificationService adminNotificationService;
+
     @Transactional(readOnly = true)
     public boolean isEmailAvailable(String email) {
         if (email == null) {
@@ -81,67 +87,48 @@ public class parentService {
 
     @Transactional
     public void createNewParent(String nom, String prenom, String adresse, String email, String password) {
-        // ADDED
-        System.out.println("STEP 4 REACHED - parentService.createNewParent()");
-        System.out.println("Preparing parent signup for email: " + email);
-
-        // ADDED
         if (userRepo.existsByEmail(email.trim())) {
-            // ADDED
-            System.out.println("STEP 4.1 REACHED - Email already exists: " + email);
             throw new IllegalArgumentException("Un compte existe deja avec cet email.");
         }
 
         String hash = passwordEncoder.encode(password);
-        // ADDED
-        System.out.println("STEP 5 REACHED - Password encoded for email: " + email);
-
-        // MODIFIED
         User user1 = new User(email.trim(), hash);
         user1.setRole(SecurityRole.ROLE_PARENT);
-        // ADDED
         user1.setEnabled(false);
 
         User userSaved = userRepo.save(user1);
         avatarService.assignDefaultAvatar(userSaved, prenom + " " + nom);
-        // ADDED
-        System.out.println("STEP 6 REACHED - User saved with id: " + userSaved.getId());
 
         Parent parent = new Parent(nom, prenom, adresse);
         parent.SetUser(userSaved);
         Parent savedParent = parentRepo.save(parent);
-        // ADDED
-        System.out.println("STEP 7 REACHED - Parent profile saved for user id: " + userSaved.getId());
 
-        // ADDED
         VerificationToken verificationToken = new VerificationToken(
                 UUID.randomUUID().toString(),
                 userSaved,
                 LocalDateTime.now().plusHours(24)
         );
         verificationTokenRepository.save(verificationToken);
-        // ADDED
-        System.out.println("STEP 8 REACHED - Verification token saved for email: " + userSaved.getEmail());
-        System.out.println("Verification token value: " + verificationToken.getToken());
 
-        // ADDED
-        System.out.println("STEP 9 REACHED - About to call EmailService.sendEmail() for: " + userSaved.getEmail());
         emailService.sendEmail(
                 userSaved.getEmail(),
-                "Verification de votre compte CRM Manara",
-                buildVerificationEmail(userSaved.getEmail(), verificationToken.getToken())
+                "Compte parent en attente d'approbation - CRM Manara",
+                buildPendingApprovalEmail(userSaved.getEmail(), prenom + " " + nom)
+        );
+        emailService.notifyAdminsOfParentSignup(prenom + " " + nom, userSaved.getEmail(), "Formulaire");
+        adminNotificationService.create(
+                "PARENT",
+                "COMPTE",
+                "Nouveau compte parent créé en attente: " + prenom + " " + nom + " (" + userSaved.getEmail() + ")."
         );
         parentNotificationService.createForParent(
                 savedParent,
                 "COMPTE",
                 "Compte créé",
-                "Votre compte parent a été créé. Vérifiez votre email pour activer votre accès."
+                "Votre compte parent a été créé. Il est maintenant en attente d'approbation par l'administration."
         );
-        // ADDED
-        System.out.println("STEP 10 REACHED - Returned from EmailService.sendEmail() for: " + userSaved.getEmail());
     }
 
-    // ADDED
     @Transactional
     public void verifyUser(String token) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token)
@@ -153,19 +140,16 @@ public class parentService {
         }
 
         User user = verificationToken.getUser();
-        user.setEnabled(true);
-        userRepo.save(user);
         verificationTokenRepository.deleteByUser(user);
     }
 
-    // ADDED
-    private String buildVerificationEmail(String email, String token) {
+    private String buildPendingApprovalEmail(String email, String fullName) {
         return "Bonjour,\n\n" +
                 "Merci pour votre inscription sur CRM Manara.\n" +
-                "Veuillez verifier votre adresse courriel en cliquant sur le lien suivant :\n" +
-                "http://localhost:8080/verify?token=" + token + "\n\n" +
+                "Le compte de " + fullName + " a bien été créé.\n" +
+                "Votre demande est maintenant en attente d'approbation par l'administration.\n\n" +
                 "Compte: " + email + "\n\n" +
-                "Ce lien expire dans 24 heures.\n\n" +
+                "Tant que le compte n'est pas approuvé, vous ne pourrez pas vous connecter.\n\n" +
                 "Merci,\nCRM Manara";
     }
 
@@ -182,6 +166,11 @@ public class parentService {
         parent.setPrenom(prenom);
         parent.setAdresse(adresse);
         Parent savedParent = parentRepo.save(parent);
+        adminNotificationService.create(
+                "PARENT",
+                "PROFIL",
+                "Profil parent mis à jour: " + savedParent.getPrenom() + " " + savedParent.getNom() + "."
+        );
         parentNotificationService.createForParent(
                 savedParent,
                 "PROFIL",
@@ -211,6 +200,11 @@ public class parentService {
         enfant.setActive(false);
         parent.AddEnfant(enfant);
         parentRepo.save(parent);
+        adminNotificationService.create(
+                "PARENT",
+                "ENFANT",
+                "Nouvel enfant ajouté: " + prenom + " " + nom + " pour " + parent.getPrenom() + " " + parent.getNom() + "."
+        );
         parentNotificationService.createForParent(
                 parent,
                 "ENFANT",
@@ -234,6 +228,11 @@ public class parentService {
         enfant.setPrenom(prenom);
         enfant.setDate_de_naissance(dateNaissance);
         Enfant savedEnfant = enfantRepo.save(enfant);
+        adminNotificationService.create(
+                "PARENT",
+                "ENFANT",
+                "Profil enfant mis à jour: " + savedEnfant.getPrenom() + " " + savedEnfant.getNom() + "."
+        );
         parentNotificationService.createForParent(
                 savedEnfant.getParent(),
                 "ENFANT",
@@ -249,6 +248,11 @@ public class parentService {
         Parent parent = enfant.getParent();
         String fullName = enfant.getPrenom() + " " + enfant.getNom();
         enfantRepo.delete(enfant);
+        adminNotificationService.create(
+                "PARENT",
+                "ENFANT",
+                "Enfant supprimé: " + fullName + " du compte de " + parent.getPrenom() + " " + parent.getNom() + "."
+        );
         parentNotificationService.createForParent(
                 parent,
                 "ENFANT",
@@ -291,7 +295,7 @@ public class parentService {
         }
         inscriptionRepo.findByEnfantIdAndAnimationId(enfantId, animationId)
                 .ifPresent(existing -> {
-                    throw new IllegalArgumentException("Une demande existe déjà pour cet enfant sur cette session.");
+                    throw new IllegalArgumentException("Une demande existe déjà pour cet enfant sur cette animation.");
                 });
         Inscription inscription = new Inscription(enfant, animation);
         inscription.setStatusInscription(statusInscription.EN_ATTENTE);
@@ -301,7 +305,7 @@ public class parentService {
         int pending = (int) capacity.get("pending");
         String message = remaining > 0
                 ? "Votre demande pour " + enfant.getPrenom() + " a été envoyée. Elle sera validée par l'administration."
-                : "Votre demande pour " + enfant.getPrenom() + " a été envoyée. La session est complète pour l'instant et la demande rejoint la liste d'attente.";
+                : "Votre demande pour " + enfant.getPrenom() + " a été envoyée. L'animation est complète pour l'instant et la demande rejoint la liste d'attente.";
         if (remaining == 0 && pending > 0) {
             message += " Position estimée en attente: " + capacity.get("waitlistPosition") + ".";
         }
@@ -311,6 +315,24 @@ public class parentService {
                 "Demande d'inscription envoyée",
                 message
         );
+        adminNotificationService.create(
+                "PARENT",
+                "INSCRIPTION",
+                "Demande d'inscription: " + enfant.getPrenom() + " " + enfant.getNom()
+                        + " pour " + animation.getActivity().getActivyName()
+                        + " le " + animation.getStartTime() + "."
+        );
+        if (animation.getAnimateur() != null) {
+            animateurNotificationService.createForAnimateur(
+                    animation.getAnimateur(),
+                    "INSCRIPTION",
+                    "Nouvel enfant ajouté à votre animation",
+                    enfant.getPrenom() + " " + enfant.getNom()
+                            + " a fait l'objet d'une nouvelle demande pour "
+                            + animation.getActivity().getActivyName()
+                            + " le " + animation.getStartTime() + "."
+            );
+        }
         emailService.notifyAdminsOfInscriptionRequest(saved);
         return saved;
     }

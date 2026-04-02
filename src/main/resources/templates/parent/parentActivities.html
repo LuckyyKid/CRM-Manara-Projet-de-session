@@ -80,12 +80,12 @@
                                                              data-description=${animation.activity.description},
                                                              data-age-range=${animation.activity.ageMin + ' à ' + animation.activity.ageMax + ' ans'},
                                                              data-capacity=${approved + '/' + capacityValue + ' places confirmées'},
-                                                             data-status=${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).animationStatus(animation.statusAnimation)},
+                                                             data-status=${animation.statusAnimation == null ? '' : (animation.statusAnimation.name() == 'ACTIF' ? 'Active' : (animation.statusAnimation.name() == 'ANNULÉ' ? 'Annulée' : 'Remplacée'))},
                                                              data-start=${#temporals.format(animation.startTime, 'EEEE d MMMM yyyy ''à'' HH:mm')},
                                                              data-end=${#temporals.format(animation.endTime, 'HH:mm')},
                                                              data-animateur=${animation.animateur != null ? animation.animateur.prenom + ' ' + animation.animateur.nom : 'Animateur à confirmer'},
                                                              data-children=${#lists.isEmpty(animationChildren[animation.id]) ? 'Aucun enfant inscrit pour le moment.' : #strings.listJoin(animationChildren[animation.id].![name + ' (' + status + ')'], ' | ')}">
-                                                <div class="mm-page-eyebrow mb-2">Session</div>
+                                                <div class="mm-page-eyebrow mb-2">Animation</div>
                                                 <div class="fw-semibold text-dark mb-1">
                                                     Début:
                                                     <span data-format="datetime"
@@ -98,7 +98,7 @@
                                                 </div>
                                             </button>
                                             <div class="small mt-2 text-warning" th:if="${full}">
-                                                Session complète pour l'instant. Toute nouvelle demande ira en liste d'attente.
+                                                Animation complète pour l'instant. Toute nouvelle demande ira en liste d'attente.
                                             </div>
                                         </div>
                                         <form th:action="@{/parent/inscriptions}" method="post" class="d-flex gap-2 align-items-center flex-wrap js-parent-inscription-form">

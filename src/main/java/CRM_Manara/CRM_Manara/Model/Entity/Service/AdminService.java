@@ -21,7 +21,9 @@ import CRM_Manara.CRM_Manara.Repository.AnimationRepo;
 import CRM_Manara.CRM_Manara.Repository.EnfantRepo;
 import CRM_Manara.CRM_Manara.Repository.InscriptionRepo;
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
+import CRM_Manara.CRM_Manara.Repository.ParentNotificationRepo;
 import CRM_Manara.CRM_Manara.Repository.UserRepo;
+import CRM_Manara.CRM_Manara.Repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -59,6 +61,12 @@ public class AdminService {
     UserRepo userRepo;
 
     @Autowired
+    ParentNotificationRepo parentNotificationRepo;
+
+    @Autowired
+    VerificationTokenRepository verificationTokenRepository;
+
+    @Autowired
     InscriptionRepo inscriptionRepo;
 
     @Autowired
@@ -72,6 +80,12 @@ public class AdminService {
 
     @Autowired
     AvatarService avatarService;
+
+    @Autowired
+    AnimateurNotificationService animateurNotificationService;
+
+    @Autowired
+    AdminNotificationService adminNotificationService;
 
 
     @Transactional(readOnly = true)
@@ -143,13 +157,26 @@ public class AdminService {
         animation.setEndTime(end);
         animation.setActivity(activity);
         animation.setAnimateur(animateur);
-        return animationRepo.save(animation);
+        Animation saved = animationRepo.save(animation);
+        animateurNotificationService.createForAnimateur(
+                animateur,
+                "ANIMATION",
+                "Nouvelle animation assignée",
+                "Une nouvelle animation vous a été assignée : "
+                        + activity.getActivyName()
+                        + " du " + start + " au " + end + "."
+        );
+        return saved;
     }
 
     @Transactional
     public Animation updateAnimation(Long id, Long activityId, Long animateurId, AnimationRole role,
                                      animationStatus status, LocalDateTime start, LocalDateTime end) {
         Animation animation = getAnimationById(id);
+        Animateur previousAnimateur = animation.getAnimateur();
+        Activity previousActivity = animation.getActivity();
+        LocalDateTime previousStart = animation.getStartTime();
+        LocalDateTime previousEnd = animation.getEndTime();
         Activity activity = getActivityById(activityId);
         Animateur animateur = getAnimateurById(animateurId);
         animation.setActivity(activity);
@@ -158,14 +185,51 @@ public class AdminService {
         animation.setStatusAnimation(status);
         animation.setStartTime(start);
         animation.setEndTime(end);
-        return animationRepo.save(animation);
+        Animation saved = animationRepo.save(animation);
+
+        if (previousAnimateur != null && !previousAnimateur.getId().equals(animateur.getId())) {
+            animateurNotificationService.createForAnimateur(
+                    previousAnimateur,
+                    "ANIMATION",
+                    "Animation retirée",
+                    "L'animation "
+                            + previousActivity.getActivyName()
+                            + " du " + previousStart + " au " + previousEnd
+                            + " ne vous est plus assignée."
+            );
+        }
+
+        animateurNotificationService.createForAnimateur(
+                animateur,
+                "ANIMATION",
+                previousAnimateur != null && previousAnimateur.getId().equals(animateur.getId())
+                        ? "Animation mise à jour"
+                        : "Nouvelle animation assignée",
+                "L'animation "
+                        + activity.getActivyName()
+                        + " que vous animez a été mise à jour. Nouveau créneau : "
+                        + start + " à " + end + "."
+        );
+        return saved;
     }
 
     @Transactional
     public void deleteAnimation(Long id) {
+        Animation animation = getAnimationById(id);
         List<Inscription> inscriptions = inscriptionRepo.findByAnimationId(id);
         if (!inscriptions.isEmpty()) {
             inscriptionRepo.deleteAll(inscriptions);
+        }
+        if (animation.getAnimateur() != null && animation.getActivity() != null) {
+            animateurNotificationService.createForAnimateur(
+                    animation.getAnimateur(),
+                    "ANIMATION",
+                    "Animation annulée",
+                    "L'animation "
+                            + animation.getActivity().getActivyName()
+                            + " du " + animation.getStartTime()
+                            + " a été supprimée par l'administration."
+            );
         }
         animationRepo.deleteById(id);
     }
@@ -189,6 +253,13 @@ public class AdminService {
     public long countPendingInscriptions() {
         return inscriptionRepo.findAll().stream()
                 .filter(inscription -> inscription.getStatusInscription() == statusInscription.EN_ATTENTE)
+                .count();
+    }
+
+    @Transactional(readOnly = true)
+    public long countPendingParents() {
+        return parentRepo.findAll().stream()
+                .filter(parent -> parent.getUser() != null && !parent.getUser().isEnabled())
                 .count();
     }
 
@@ -293,6 +364,13 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
+    public List<Parent> getPendingParents() {
+        return getAllParents().stream()
+                .filter(parent -> parent.getUser() != null && !parent.getUser().isEnabled())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public Parent getParentById(Long id) {
         return parentRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Parent introuvable"));
@@ -304,6 +382,14 @@ public class AdminService {
                 .orElseThrow(() -> new IllegalArgumentException("Enfant introuvable"));
     }
 
+    @Transactional(readOnly = true)
+    public List<Enfant> getPendingEnfants() {
+        return enfantRepo.findAll().stream()
+                .filter(enfant -> !enfant.isActive())
+                .sorted(Comparator.comparing(Enfant::getNom).thenComparing(Enfant::getPrenom))
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public Parent updateParentEnabled(Long id, boolean enabled) {
         Parent parent = getParentById(id);
@@ -312,6 +398,15 @@ public class AdminService {
         }
         parent.getUser().setEnabled(enabled);
         userRepo.save(parent.getUser());
+        if (parent.getUser().getEmail() != null && !parent.getUser().getEmail().isBlank()) {
+            emailService.sendNotificationEmail(
+                    parent.getUser().getEmail(),
+                    enabled ? "Compte parent approuvé" : "Compte parent désactivé",
+                    enabled
+                            ? "Votre compte parent a été approuvé par l'administration. Vous pouvez maintenant accéder au portail."
+                            : "Votre compte parent a été désactivé par l'administration."
+            );
+        }
         parentNotificationService.createForParent(
                 parent,
                 "COMPTE",
@@ -319,6 +414,11 @@ public class AdminService {
                 enabled
                         ? "Votre compte parent a été approuvé par l'administration."
                         : "Votre compte parent a été désactivé par l'administration."
+        );
+        adminNotificationService.create(
+                "ADMIN",
+                "COMPTE",
+                "Statut parent mis à jour: " + parent.getPrenom() + " " + parent.getNom() + " -> " + (enabled ? "actif" : "désactivé") + "."
         );
         return parent;
     }
@@ -328,6 +428,17 @@ public class AdminService {
         Enfant enfant = getEnfantById(id);
         enfant.setActive(active);
         Enfant saved = enfantRepo.save(enfant);
+        if (saved.getParent() != null && saved.getParent().getUser() != null
+                && saved.getParent().getUser().getEmail() != null
+                && !saved.getParent().getUser().getEmail().isBlank()) {
+            emailService.sendNotificationEmail(
+                    saved.getParent().getUser().getEmail(),
+                    active ? "Enfant approuvé" : "Enfant désactivé",
+                    active
+                            ? saved.getPrenom() + " " + saved.getNom() + " est maintenant actif et peut être inscrit aux activités."
+                            : saved.getPrenom() + " " + saved.getNom() + " a été désactivé par l'administration."
+            );
+        }
         parentNotificationService.createForParent(
                 saved.getParent(),
                 "ENFANT",
@@ -336,15 +447,47 @@ public class AdminService {
                         ? saved.getPrenom() + " " + saved.getNom() + " est maintenant actif et peut être inscrit aux activités."
                         : saved.getPrenom() + " " + saved.getNom() + " a été désactivé par l'administration."
         );
+        adminNotificationService.create(
+                "ADMIN",
+                "ENFANT",
+                "Statut enfant mis à jour: " + saved.getPrenom() + " " + saved.getNom() + " -> " + (active ? "actif" : "désactivé") + "."
+        );
         return saved;
+    }
+
+    @Transactional
+    public Animateur updateAnimateurEnabled(Long id, boolean enabled) {
+        Animateur animateur = getAnimateurById(id);
+        if (animateur.getUser() == null) {
+            throw new IllegalArgumentException("Aucun compte utilisateur lie a cet animateur");
+        }
+        animateur.getUser().setEnabled(enabled);
+        userRepo.save(animateur.getUser());
+        if (animateur.getUser().getEmail() != null && !animateur.getUser().getEmail().isBlank()) {
+            emailService.sendNotificationEmail(
+                    animateur.getUser().getEmail(),
+                    enabled ? "Compte animateur activé" : "Compte animateur désactivé",
+                    enabled
+                            ? "Votre compte animateur a été activé par l'administration. Vous pouvez maintenant accéder au portail animateur."
+                            : "Votre compte animateur a été désactivé par l'administration."
+            );
+        }
+        adminNotificationService.create(
+                "ADMIN",
+                "ANIMATEUR",
+                "Statut animateur mis à jour: " + animateur.getPrenom() + " " + animateur.getNom() + " -> " + (enabled ? "actif" : "désactivé") + "."
+        );
+        return animateur;
     }
 
     @Transactional
     public void deleteParent(Long id) {
         Parent parent = getParentById(id);
         User user = parent.getUser();
+        parentNotificationRepo.deleteByParentId(parent.getId());
         parentRepo.delete(parent);
         if (user != null) {
+            verificationTokenRepository.deleteByUser(user);
             userRepo.delete(user);
         }
     }
@@ -391,7 +534,7 @@ public class AdminService {
         Map<String, Object> snapshot = getAnimationCapacitySnapshot(inscription.getAnimation());
         int remaining = ((Number) snapshot.get("remaining")).intValue();
         if (remaining <= 0 && inscription.getStatusInscription() == statusInscription.EN_ATTENTE) {
-            throw new IllegalStateException("Plus de places disponibles sur cette session. La demande reste en attente.");
+            throw new IllegalStateException("Plus de places disponibles sur cette animation. La demande reste en attente.");
         }
         inscription.setStatusInscription(statusInscription.APPROUVEE);
         Inscription saved = inscriptionRepo.save(inscription);

@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface ParentNotificationRepo extends JpaRepository<ParentNotification, Long> {
 
+    void deleteByParentId(Long parentId);
+
     List<ParentNotification> findByParentIdOrderByCreatedAtDesc(Long parentId);
 
     List<ParentNotification> findByParentIdAndArchivedStatusFalseOrderByCreatedAtDesc(Long parentId);
