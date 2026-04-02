@@ -3,6 +3,7 @@ package CRM_Manara.CRM_Manara.Model.Entity.Service;
 import CRM_Manara.CRM_Manara.Model.Entity.Administrateurs;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Repository.AdminRepo;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -20,7 +21,7 @@ import java.util.Locale;
 @Service
 public class EmailService {
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
-    private static final String DEMO_COPY_EMAIL = "ahmedbelm51@gmail.com";
+    private static final String DEFAULT_DEMO_COPY_EMAIL = "ahmedbelm51@gmail.com";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy 'à' HH:mm", Locale.CANADA_FRENCH);
 
     private final Environment environment;
@@ -30,6 +31,15 @@ public class EmailService {
     public EmailService(Environment environment, AdminRepo adminRepo) {
         this.environment = environment;
         this.adminRepo = adminRepo;
+    }
+
+    @PostConstruct
+    void logEmailConfiguration() {
+        if (isResendConfigured()) {
+            log.info("EMAIL CONFIGURATION: Resend actif avec expéditeur {}", getFromEmail());
+        } else {
+            log.warn("EMAIL CONFIGURATION: Resend inactif, aucune clé API détectée.");
+        }
     }
 
     public void sendEmail(String to, String subject, String text) {
@@ -166,7 +176,7 @@ public class EmailService {
     }
 
     private boolean isResendConfigured() {
-        String apiKey = environment.getProperty("RESEND_API_KEY");
+        String apiKey = getResendApiKey();
         return apiKey != null && !apiKey.isBlank();
     }
 
@@ -175,7 +185,7 @@ public class EmailService {
         String ccJson = buildJsonArray(recipients.cc);
         String htmlBody = buildEmailHtml(subject, text);
         String payload = "{"
-                + "\"from\":\"" + escapeJson(environment.getProperty("RESEND_FROM_EMAIL", "onboarding@resend.dev")) + "\","
+                + "\"from\":\"" + escapeJson(getFromEmail()) + "\","
                 + "\"to\":" + toJson + ","
                 + "\"cc\":" + ccJson + ","
                 + "\"subject\":\"" + escapeJson(subject) + "\","
@@ -184,7 +194,7 @@ public class EmailService {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.resend.com/emails"))
-                .header("Authorization", "Bearer " + environment.getProperty("RESEND_API_KEY"))
+                .header("Authorization", "Bearer " + getResendApiKey())
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(payload))
                 .build();
@@ -199,18 +209,47 @@ public class EmailService {
     private ResendRecipients resolveRecipients(String requestedTo) {
         List<String> to = new ArrayList<>();
         List<String> cc = new ArrayList<>();
+        String demoCopyEmail = getDemoCopyEmail();
 
         if (isDeliverableEmail(requestedTo)) {
             to.add(requestedTo.trim());
-            if (!requestedTo.trim().equalsIgnoreCase(DEMO_COPY_EMAIL)) {
-                cc.add(DEMO_COPY_EMAIL);
+            if (!requestedTo.trim().equalsIgnoreCase(demoCopyEmail)) {
+                cc.add(demoCopyEmail);
             }
         } else {
             log.warn("EMAIL REROUTE: destination '{}' invalide ou locale, envoi vers la copie de demo uniquement.", requestedTo);
-            to.add(DEMO_COPY_EMAIL);
+            to.add(demoCopyEmail);
         }
 
         return new ResendRecipients(to, cc);
+    }
+
+    private String getResendApiKey() {
+        return firstConfigured("resend.api.key", "RESEND_API_KEY");
+    }
+
+    private String getFromEmail() {
+        return firstConfigured("resend.from.email", "RESEND_FROM_EMAIL", "onboarding@resend.dev");
+    }
+
+    private String getDemoCopyEmail() {
+        return firstConfigured("app.email.demo-copy", "DEMO_COPY_EMAIL", DEFAULT_DEMO_COPY_EMAIL);
+    }
+
+    private String firstConfigured(String firstKey, String secondKey) {
+        return firstConfigured(firstKey, secondKey, null);
+    }
+
+    private String firstConfigured(String firstKey, String secondKey, String fallback) {
+        String first = environment.getProperty(firstKey);
+        if (first != null && !first.isBlank()) {
+            return first;
+        }
+        String second = environment.getProperty(secondKey);
+        if (second != null && !second.isBlank()) {
+            return second;
+        }
+        return fallback;
     }
 
     private boolean isDeliverableEmail(String email) {
