@@ -1,6 +1,6 @@
 package CRM_Manara.CRM_Manara.Controller;
 
-import CRM_Manara.CRM_Manara.Model.Entity.Service.parentService;
+import CRM_Manara.CRM_Manara.service.parentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

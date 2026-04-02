@@ -5,7 +5,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Animation;
 import CRM_Manara.CRM_Manara.Model.Entity.Enfant;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.parentService;
+import CRM_Manara.CRM_Manara.service.parentService;
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -433,7 +433,7 @@ public class parentController {
             block.put("animationId", inscription.getAnimation().getId());
             block.put("description", inscription.getAnimation().getActivity().getDescription());
             block.put("ageRange", inscription.getAnimation().getActivity().getAgeMin() + " à " + inscription.getAnimation().getActivity().getAgeMax() + " ans");
-            block.put("status", CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService.inscriptionStatus(inscription.getStatusInscription()));
+            block.put("status", CRM_Manara.CRM_Manara.service.UiLabelService.inscriptionStatus(inscription.getStatusInscription()));
             block.put("animateur", resolveAnimateurName(inscription.getAnimation()));
             block.put("startLabel", startTime.format(java.time.format.DateTimeFormatter.ofPattern("EEEE d MMMM yyyy 'à' HH:mm")));
             block.put("endLabel", endTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
@@ -479,7 +479,7 @@ public class parentController {
                         Collectors.mapping(inscription -> {
                             Map<String, String> child = new LinkedHashMap<>();
                             child.put("name", inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom());
-                            child.put("status", CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService.inscriptionStatus(inscription.getStatusInscription()));
+                            child.put("status", CRM_Manara.CRM_Manara.service.UiLabelService.inscriptionStatus(inscription.getStatusInscription()));
                             return child;
                         }, Collectors.toList())
                 ));

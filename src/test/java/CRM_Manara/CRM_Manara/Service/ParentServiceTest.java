@@ -11,11 +11,11 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.statusInscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.ParentNotificationService;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminNotificationService;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AnimateurNotificationService;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AvatarService;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.parentService;
+import CRM_Manara.CRM_Manara.service.ParentNotificationService;
+import CRM_Manara.CRM_Manara.service.AdminNotificationService;
+import CRM_Manara.CRM_Manara.service.AnimateurNotificationService;
+import CRM_Manara.CRM_Manara.service.AvatarService;
+import CRM_Manara.CRM_Manara.service.parentService;
 import CRM_Manara.CRM_Manara.Model.Entity.User;
 import CRM_Manara.CRM_Manara.Repository.ActivityRepo;
 import CRM_Manara.CRM_Manara.Repository.AnimationRepo;
@@ -63,7 +63,7 @@ class ParentServiceTest {
     @Mock
     InscriptionRepo inscriptionRepo;
     @Mock
-    CRM_Manara.CRM_Manara.Model.Entity.Service.EmailService emailService;
+    CRM_Manara.CRM_Manara.service.EmailService emailService;
     @Mock
     VerificationTokenRepository verificationTokenRepository;
     @Mock

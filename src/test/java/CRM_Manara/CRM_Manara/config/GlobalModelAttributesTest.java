@@ -1,9 +1,9 @@
 package CRM_Manara.CRM_Manara.config;
 
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminService;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AnimateurNotificationService;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AvatarService;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.ParentNotificationService;
+import CRM_Manara.CRM_Manara.service.AdminService;
+import CRM_Manara.CRM_Manara.service.AnimateurNotificationService;
+import CRM_Manara.CRM_Manara.service.AvatarService;
+import CRM_Manara.CRM_Manara.service.ParentNotificationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 

@@ -1,0 +1,32 @@
+<div class="app-shell">
+  <header class="hero">
+    <p class="eyebrow">Manara CRM V2</p>
+    <h1>Frontend Angular en cours de migration</h1>
+    <p class="lead">
+      Cette application Angular va progressivement remplacer l'interface Thymeleaf,
+      tout en consommant les endpoints Spring exposés sous <code>/api</code>.
+    </p>
+  </header>
+
+  <main class="content">
+    <section class="card">
+      <h2>État actuel</h2>
+      <ul>
+        <li>Backend Spring conservé</li>
+        <li>Couche DTO et endpoints REST en place</li>
+        <li>Migration écran par écran à venir</li>
+      </ul>
+    </section>
+
+    <section class="card card-accent">
+      <h2>Prochaines étapes</h2>
+      <ul>
+        <li>Brancher l'authentification Angular</li>
+        <li>Créer les pages parent, admin et animateur</li>
+        <li>Consommer <code>/api/me</code>, <code>/api/parent/*</code>, <code>/api/admin/*</code></li>
+      </ul>
+    </section>
+  </main>
+
+  <router-outlet />
+</div>

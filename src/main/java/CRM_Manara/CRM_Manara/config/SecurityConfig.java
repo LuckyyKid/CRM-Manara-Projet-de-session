@@ -1,6 +1,6 @@
 package CRM_Manara.CRM_Manara.config;
 
-import CRM_Manara.CRM_Manara.Model.Entity.Service.userService;
+import CRM_Manara.CRM_Manara.service.userService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,8 +1,8 @@
 package CRM_Manara.CRM_Manara.Controller;
 
 import CRM_Manara.CRM_Manara.Model.Entity.AdminNotification;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminNotificationService;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AdminService;
+import CRM_Manara.CRM_Manara.service.AdminNotificationService;
+import CRM_Manara.CRM_Manara.service.AdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;

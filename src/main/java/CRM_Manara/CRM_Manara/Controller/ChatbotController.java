@@ -1,6 +1,6 @@
 package CRM_Manara.CRM_Manara.Controller;
 
-import CRM_Manara.CRM_Manara.Model.Entity.Service.ChatbotService;
+import CRM_Manara.CRM_Manara.service.ChatbotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -27,28 +27,27 @@ Elle contient:
 
 ## Version 2
 
-La suite du projet sera développée sur `main`.
+La V2 avance sur des branches dédiées de migration Angular.
 
-Direction retenue pour la version 2:
+En ce moment:
+
+- `main` reste la base d'intégration de la V2
+- `ahmed-angular` porte le chantier Angular + API en cours
+
+Direction retenue pour la V2:
 
 - backend Spring Boot conservé comme base métier
-- frontend Angular pour remplacer progressivement les vues Thymeleaf côté interface
-- adaptations Spring nécessaires pour servir une API plus propre au frontend Angular
-- évolution progressive sans perdre les règles métier déjà implantées
+- frontend Angular pour remplacer progressivement les vues Thymeleaf
+- endpoints REST `/api` exposés pour Angular
+- migration progressive écran par écran
 
-## Etat actuel de `main`
+## Structure actuelle
 
-`main` sert maintenant de base de travail pour la version 2.
+- `src/main/java/...` : backend Spring Boot
+- `src/main/resources/...` : vues Thymeleaf V1 encore présentes
+- `frontend/` : nouveau frontend Angular V2
 
-Le backend existant reste utilisable pour:
-
-- l'authentification
-- la gestion des rôles
-- les parents, enfants, activités, animations, inscriptions et présences
-- les notifications et les courriels
-- les validations métier principales
-
-## Lancement local
+## Lancement local backend
 
 ```bash
 ./mvnw spring-boot:run
@@ -58,13 +57,27 @@ Application locale:
 
 - `http://localhost:8080`
 
-## Tests
+## Lancement local frontend Angular
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Application locale Angular:
+
+- `http://localhost:4200`
+
+Le proxy Angular redirige `/api` vers le backend Spring sur `http://localhost:8080`.
+
+## Tests backend
 
 ```bash
 ./mvnw test
 ```
 
-## Parcours actuels disponibles
+## Parcours actuels disponibles côté backend V1
 
 - Parent:
   - `/parent/dashboard`

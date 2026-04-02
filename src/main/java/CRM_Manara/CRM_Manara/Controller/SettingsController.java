@@ -1,8 +1,8 @@
 package CRM_Manara.CRM_Manara.Controller;
 
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AccountSettingsService;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AccountSettingsView;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AvatarService;
+import CRM_Manara.CRM_Manara.service.AccountSettingsService;
+import CRM_Manara.CRM_Manara.dto.AccountSettingsView;
+import CRM_Manara.CRM_Manara.service.AvatarService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;

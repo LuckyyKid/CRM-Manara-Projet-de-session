@@ -1,6 +1,6 @@
 package CRM_Manara.CRM_Manara.config;
 
-import CRM_Manara.CRM_Manara.Model.Entity.Service.AvatarService;
+import CRM_Manara.CRM_Manara.service.AvatarService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;

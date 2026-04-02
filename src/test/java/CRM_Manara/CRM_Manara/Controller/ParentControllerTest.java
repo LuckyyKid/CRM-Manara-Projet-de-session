@@ -1,7 +1,7 @@
 package CRM_Manara.CRM_Manara.Controller;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
-import CRM_Manara.CRM_Manara.Model.Entity.Service.parentService;
+import CRM_Manara.CRM_Manara.service.parentService;
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
