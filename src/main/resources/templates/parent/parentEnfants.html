@@ -65,7 +65,7 @@
                                 </td>
                                 <td>
                                     <a class="btn btn-sm btn-outline-secondary" th:href="@{'/parent/enfants/' + ${enfant.id} + '/edit'}">Modifier</a>
-                                    <form th:action="@{'/parent/enfants/' + ${enfant.id} + '/delete'}" method="post" class="d-inline js-parent-enfant-delete-form" th:attr="data-enfant-id=${enfant.id}">
+                                    <form th:action="@{'/parent/enfants/' + ${enfant.id} + '/delete'}" method="post" class="d-inline js-parent-enfant-delete-form" th:attr="data-enfant-id=${enfant.id},data-confirm='Supprimer cet enfant ?'">
                                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
                                     </form>

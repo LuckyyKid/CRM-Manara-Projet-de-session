@@ -21,7 +21,16 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
 
             const message = form.dataset.confirm || "Confirmer la suppression ?";
-            if (!window.confirm(message)) {
+            const confirmed = window.ManaraConfirm?.open
+                ? await window.ManaraConfirm.open({
+                    title: form.dataset.confirmTitle || "Confirmer la suppression",
+                    message,
+                    confirmLabel: form.dataset.confirmLabel || "Supprimer",
+                    confirmClass: form.dataset.confirmClass || "btn-danger"
+                })
+                : window.confirm(message);
+
+            if (!confirmed) {
                 return;
             }
 

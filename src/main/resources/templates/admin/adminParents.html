@@ -49,19 +49,19 @@
                                       th:classappend="${parent.user != null and parent.user.enabled} ? ' text-bg-success' : ' text-bg-secondary'"
                                       th:text="${parent.user != null and parent.user.enabled ? 'Actif' : 'Désactivé'}">Statut</span>
                                 <form th:if="${parent.user != null and parent.user.enabled}" th:action="@{'/admin/parents/' + ${parent.id} + '/status'}" method="post" class="d-inline js-admin-family-action-form"
-                                      th:attr="data-action-url=@{'/admin/api/parents/' + ${parent.id} + '/status'},data-parent-id=${parent.id}">
+                                      th:attr="data-action-url=@{'/admin/api/parents/' + ${parent.id} + '/status'},data-parent-id=${parent.id},data-confirm='Désactiver ce compte parent ?',data-confirm-title='Désactiver le parent',data-confirm-label='Désactiver',data-confirm-class='btn-warning'">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                     <input type="hidden" name="enabled" value="false"/>
                                     <button type="submit" class="btn btn-sm btn-outline-secondary">Désactiver parent</button>
                                 </form>
                                 <form th:if="${parent.user != null and !parent.user.enabled}" th:action="@{'/admin/parents/' + ${parent.id} + '/status'}" method="post" class="d-inline js-admin-family-action-form"
-                                      th:attr="data-action-url=@{'/admin/api/parents/' + ${parent.id} + '/status'},data-parent-id=${parent.id}">
+                                      th:attr="data-action-url=@{'/admin/api/parents/' + ${parent.id} + '/status'},data-parent-id=${parent.id},data-confirm='Réactiver ce compte parent ?',data-confirm-title='Réactiver le parent',data-confirm-label='Réactiver',data-confirm-class='btn-success'">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                     <input type="hidden" name="enabled" value="true"/>
                                     <button type="submit" class="btn btn-sm btn-outline-success">Réactiver parent</button>
                                 </form>
                                 <form th:action="@{'/admin/parents/' + ${parent.id} + '/delete'}" method="post" class="d-inline js-admin-family-action-form"
-                                      th:attr="data-action-url=@{'/admin/api/parents/' + ${parent.id} + '/delete'},data-parent-id=${parent.id},data-delete-card='true'">
+                                      th:attr="data-action-url=@{'/admin/api/parents/' + ${parent.id} + '/delete'},data-parent-id=${parent.id},data-delete-card='true',data-confirm='Supprimer définitivement ce parent ?',data-confirm-title='Supprimer le parent',data-confirm-label='Supprimer',data-confirm-class='btn-danger'">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer parent</button>
                                 </form>
@@ -95,19 +95,19 @@
                                     </td>
                                     <td>
                                         <form th:if="${enfant.active}" th:action="@{'/admin/enfants/' + ${enfant.id} + '/status'}" method="post" class="d-inline js-admin-family-action-form"
-                                              th:attr="data-action-url=@{'/admin/api/enfants/' + ${enfant.id} + '/status'},data-child-id=${enfant.id}">
+                                              th:attr="data-action-url=@{'/admin/api/enfants/' + ${enfant.id} + '/status'},data-child-id=${enfant.id},data-confirm='Désactiver cet enfant ?',data-confirm-title='Désactiver l\'enfant',data-confirm-label='Désactiver',data-confirm-class='btn-warning'">
                                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                             <input type="hidden" name="active" value="false"/>
                                             <button type="submit" class="btn btn-sm btn-outline-secondary">Désactiver</button>
                                         </form>
                                         <form th:if="${!enfant.active}" th:action="@{'/admin/enfants/' + ${enfant.id} + '/status'}" method="post" class="d-inline js-admin-family-action-form"
-                                              th:attr="data-action-url=@{'/admin/api/enfants/' + ${enfant.id} + '/status'},data-child-id=${enfant.id}">
+                                              th:attr="data-action-url=@{'/admin/api/enfants/' + ${enfant.id} + '/status'},data-child-id=${enfant.id},data-confirm='Réactiver cet enfant ?',data-confirm-title='Réactiver l\'enfant',data-confirm-label='Réactiver',data-confirm-class='btn-success'">
                                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                             <input type="hidden" name="active" value="true"/>
                                             <button type="submit" class="btn btn-sm btn-outline-success">Réactiver</button>
                                         </form>
                                         <form th:action="@{'/admin/enfants/' + ${enfant.id} + '/delete'}" method="post" class="d-inline js-admin-family-action-form"
-                                              th:attr="data-action-url=@{'/admin/api/enfants/' + ${enfant.id} + '/delete'},data-child-id=${enfant.id},data-delete-row='true'">
+                                              th:attr="data-action-url=@{'/admin/api/enfants/' + ${enfant.id} + '/delete'},data-child-id=${enfant.id},data-delete-row='true',data-confirm='Supprimer définitivement cet enfant ?',data-confirm-title='Supprimer l\'enfant',data-confirm-label='Supprimer',data-confirm-class='btn-danger'">
                                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                             <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
                                         </form>
