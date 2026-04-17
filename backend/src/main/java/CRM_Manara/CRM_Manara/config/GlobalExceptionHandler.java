@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,12 +24,16 @@ public class GlobalExceptionHandler {
     public Object handleDataIntegrity(DataIntegrityViolationException ex,
                                       HttpServletRequest request,
                                       RedirectAttributes redirectAttributes) {
+        logger.warn("Contrainte de donnees sur {}", request.getRequestURI(), ex);
+        boolean deleteRequest = "DELETE".equalsIgnoreCase(request.getMethod());
         return buildResponse(
                 request,
                 redirectAttributes,
                 HttpStatus.CONFLICT,
                 "Action impossible",
-                "Des données liées existent encore. Supprimez-les d'abord."
+                deleteRequest
+                        ? "Des donnees liees existent encore. Supprimez-les d'abord."
+                        : "Les donnees envoyees ne respectent pas une contrainte de la base. Verifiez les champs obligatoires ou les valeurs deja existantes."
         );
     }
 
@@ -42,7 +47,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 "Demande invalide",
                 ex.getMessage() == null || ex.getMessage().isBlank()
-                        ? "La demande ne peut pas être traitée avec les informations fournies."
+                        ? "La demande ne peut pas etre traitee avec les informations fournies."
                         : ex.getMessage()
         );
     }
@@ -57,8 +62,25 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT,
                 "Action indisponible",
                 ex.getMessage() == null || ex.getMessage().isBlank()
-                        ? "Cette action ne peut pas être appliquée pour le moment."
+                        ? "Cette action ne peut pas etre appliquee pour le moment."
                         : ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public Object handleResponseStatus(ResponseStatusException ex,
+                                       HttpServletRequest request,
+                                       RedirectAttributes redirectAttributes) {
+        HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
+        String message = ex.getReason();
+        return buildResponse(
+                request,
+                redirectAttributes,
+                status == null ? HttpStatus.INTERNAL_SERVER_ERROR : status,
+                "Action impossible",
+                message == null || message.isBlank()
+                        ? "La demande ne peut pas etre traitee avec les informations fournies."
+                        : message
         );
     }
 
@@ -66,13 +88,13 @@ public class GlobalExceptionHandler {
     public Object handleUnexpected(Exception ex,
                                    HttpServletRequest request,
                                    RedirectAttributes redirectAttributes) {
-        logger.error("Erreur non gérée sur {}", request.getRequestURI(), ex);
+        logger.error("Erreur non geree sur {}", request.getRequestURI(), ex);
         return buildResponse(
                 request,
                 redirectAttributes,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Erreur technique",
-                "Une erreur inattendue est survenue. Réessayez dans quelques instants."
+                "Une erreur inattendue est survenue. Reessayez dans quelques instants."
         );
     }
 

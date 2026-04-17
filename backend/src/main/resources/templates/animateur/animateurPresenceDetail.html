@@ -66,7 +66,7 @@
                                         <select name="presenceStatus" class="form-select form-select-sm js-animateur-presence-status" required>
                                             <option th:each="s : ${presenceStatuses}"
                                                     th:value="${s}"
-                                                    th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).presenceStatus(s)}"
+                                                    th:text="${T(CRM_Manara.CRM_Manara.service.UiLabelService).presenceStatus(s)}"
                                                     th:selected="${s == inscription.presenceStatus}"></option>
                                         </select>
                                     </div>

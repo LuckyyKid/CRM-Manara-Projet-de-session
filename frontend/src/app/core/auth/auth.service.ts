@@ -37,9 +37,11 @@ export class AuthService {
     const currentUser = this.currentUserSignal();
     switch (currentUser?.accountType) {
       case 'ROLE_ADMIN':
+        return '/admin/dashboard';
       case 'ROLE_PARENT':
+        return '/parent/dashboard';
       case 'ROLE_ANIMATEUR':
-        return '/me/dashboard';
+        return '/animateur/dashboard';
       default:
         return '/login';
     }
@@ -64,26 +66,46 @@ export class AuthService {
   }
 
   login(): void {
-    window.location.href = `${this.backendBaseUrl()}/login`;
+    window.location.href = '/login';
+  }
+
+  async loginWithCredentials(email: string, password: string): Promise<CurrentUserModel> {
+    this.loadingSignal.set(true);
+    try {
+      const currentUser = await firstValueFrom(
+        this.http.post<CurrentUserModel>('/api/login', { email, password }),
+      );
+      this.currentUserSignal.set(currentUser);
+      this.initializedSignal.set(true);
+      return currentUser;
+    } finally {
+      this.loadingSignal.set(false);
+    }
   }
 
   signUp(): void {
-    window.location.href = `${this.backendBaseUrl()}/signUp`;
+    window.location.href = '/signup';
   }
 
-  logout(): void {
-    window.location.href = `${this.backendBaseUrl()}/logout`;
-  }
-
-  private backendBaseUrl(): string {
-    if (typeof window === 'undefined') {
-      return 'http://localhost:8080';
+  async logout(): Promise<void> {
+    // 1. Invalider la session Spring Security côté serveur
+    try {
+      await firstValueFrom(
+        this.http.post('/api/logout', {}).pipe(catchError(() => of(null)))
+      );
+    } catch {
+      // Si le serveur est injoignable, on continue quand même le logout local
     }
 
-    if (window.location.port === '4200') {
-      return 'http://localhost:8080';
-    }
+    // 2. Vider l'état local Angular
+    this.currentUserSignal.set(null);
+    this.initializedSignal.set(true);
 
-    return window.location.origin;
+    // 3. Vider tout ce qui peut traîner en storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // 4. Rediriger vers /login (full reload pour réinitialiser l'app)
+    window.location.href = '/login';
   }
 }

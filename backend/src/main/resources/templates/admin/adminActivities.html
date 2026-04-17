@@ -62,8 +62,8 @@
                                     <span th:text="${activity.ageMax}"></span>
                                 </td>
                                 <td th:text="${activity.capacity}"></td>
-                                <td th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).activityStatus(activity.status)}"></td>
-                                <td th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).activityType(activity.type)}"></td>
+                                <td th:text="${T(CRM_Manara.CRM_Manara.service.UiLabelService).activityStatus(activity.status)}"></td>
+                                <td th:text="${T(CRM_Manara.CRM_Manara.service.UiLabelService).activityType(activity.type)}"></td>
                                 <td>
                                     <a class="btn btn-sm btn-outline-secondary" th:href="@{'/admin/activities/' + ${activity.id} + '/edit'}">Modifier</a>
                                     <form th:action="@{'/admin/activities/' + ${activity.id} + '/delete'}" method="post" class="d-inline js-admin-delete-form" th:attr="data-delete-url=@{'/admin/api/activities/' + ${activity.id} + '/delete'},data-row-id=${activity.id},data-feedback-target='adminActivitiesFeedback',data-confirm='Supprimer cette activité ?'">

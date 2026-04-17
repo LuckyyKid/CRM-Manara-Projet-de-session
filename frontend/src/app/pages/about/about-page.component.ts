@@ -1,0 +1,132 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-about-page',
+  imports: [],
+  template: `
+    <div class="container py-4">
+      <section class="mm-panel mb-4">
+        <span class="mm-page-eyebrow">À propos</span>
+        <h1 class="mm-page-title fs-1">Le portail du centre Manara.</h1>
+        <p class="mm-page-subtitle">
+          CRM Manara aide le centre communautaire à gérer les activités,
+          inscriptions et communications avec les parents.
+        </p>
+      </section>
+
+      <section class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+          <div class="card mm-card-shadow h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-person-check text-primary"></i>
+                <h2 class="h6 mb-0">Pour les parents</h2>
+              </div>
+              <p class="text-secondary small mb-0">
+                Création de profil, gestion des enfants, inscription aux activités et consultation des plannings.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card mm-card-shadow h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-briefcase text-primary"></i>
+                <h2 class="h6 mb-0">Pour l'administration</h2>
+              </div>
+              <p class="text-secondary small mb-0">
+                Gestion des animateurs, des activités, suivi des inscriptions et tableaux de bord.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card mm-card-shadow h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-calendar-event text-primary"></i>
+                <h2 class="h6 mb-0">Pour les animateurs</h2>
+              </div>
+              <p class="text-secondary small mb-0">
+                Suivi des inscriptions en temps réel et gestion des animations sous validation de l'administration.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mm-panel mb-4" id="faq">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <h2 class="h5 mb-0">FAQ</h2>
+          <span class="text-secondary small">Questions fréquentes</span>
+        </div>
+        <div class="accordion mt-3" id="faqAccordion">
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true">
+                Comment inscrire un enfant à une activité ?
+              </button>
+            </h3>
+            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                Connectez-vous au portail parent, choisissez une activité disponible puis confirmez l'inscription.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#faq2">
+                Puis-je modifier les informations de mon enfant ?
+              </button>
+            </h3>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                Oui. Dans la section enfants, vous pouvez modifier le profil de chaque enfant.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#faq3">
+                Que faire si une activité est complète ?
+              </button>
+            </h3>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                Si une activité est complète, elle restera visible mais l'inscription ira en liste d'attente.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#faq4">
+                Comment signaler un problème ?
+              </button>
+            </h3>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body">
+                Utilisez les contacts fournis par l'administration ou signalez votre demande via l'équipe sur place.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mm-panel">
+        <h2 class="h5 mb-2">Fonctionnalités principales</h2>
+        <ul class="text-secondary mb-0">
+          <li>Création et gestion de comptes parents.</li>
+          <li>Gestion des profils enfants et inscriptions aux activités.</li>
+          <li>Consultation du planning et suivi des inscriptions.</li>
+          <li>Gestion admin des activités, animateurs et statistiques.</li>
+        </ul>
+      </section>
+    </div>
+  `,
+})
+export class AboutPageComponent {}

@@ -1,0 +1,101 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Familles</span>
+      <h1 class="mm-page-title fs-1">Parents & Enfants</h1>
+      <p class="mm-page-subtitle">Gestion des comptes parents et enfants en attente.</p>
+    </div>
+  </div>
+
+  <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()">
+    <!-- Parents en attente -->
+    <div class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <div class="mb-3">
+          <h2 class="mm-panel-title">Parents en attente d'activation</h2>
+          <p class="mm-panel-subtitle">{{ pendingParents().length }} parent(s) à valider.</p>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!pendingParents().length">
+                <td colspan="5" class="text-secondary">Aucun parent en attente.</td>
+              </tr>
+              <tr *ngFor="let parent of pendingParents()">
+                <td>{{ parent.nom }}</td>
+                <td>{{ parent.prenom }}</td>
+                <td>{{ parent.user?.email }}</td>
+                <td>
+                  <span class="badge" [class.bg-success]="parent.user?.enabled" [class.bg-warning]="!parent.user?.enabled" [class.text-dark]="!parent.user?.enabled">
+                    {{ parent.user?.enabled ? 'Actif' : 'En attente' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="toggleParentStatus(parent.id, !!parent.user?.enabled)">
+                    {{ parent.user?.enabled ? 'Désactiver' : 'Activer' }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enfants en attente -->
+    <div class="card mm-card-shadow">
+      <div class="card-body">
+        <div class="mb-3">
+          <h2 class="mm-panel-title">Enfants en attente</h2>
+          <p class="mm-panel-subtitle">{{ pendingEnfants().length }} enfant(s) à valider.</p>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Date de naissance</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!pendingEnfants().length">
+                <td colspan="5" class="text-secondary">Aucun enfant en attente.</td>
+              </tr>
+              <tr *ngFor="let enfant of pendingEnfants()">
+                <td>{{ enfant.nom }}</td>
+                <td>{{ enfant.prenom }}</td>
+                <td>{{ enfant.dateDeNaissance }}</td>
+                <td>
+                  <span class="badge" [class.bg-success]="enfant.active" [class.bg-warning]="!enfant.active" [class.text-dark]="!enfant.active">
+                    {{ enfant.active ? 'Actif' : 'En attente' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="toggleEnfantStatus(enfant.id, enfant.active)">
+                    {{ enfant.active ? 'Désactiver' : 'Activer' }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

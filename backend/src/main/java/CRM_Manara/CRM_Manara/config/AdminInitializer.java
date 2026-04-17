@@ -43,7 +43,7 @@ public class AdminInitializer implements CommandLineRunner {
 
         if (adminRepo.findByUser(user).isEmpty()) {
 
-            Administrateurs admin = new Administrateurs("Steven","Chaussé", new Date());
+            Administrateurs admin = new Administrateurs("Admin","Manara", new Date());
 
             admin.setUser(user);
             admin.setRole(SecurityRole.ROLE_ADMIN);

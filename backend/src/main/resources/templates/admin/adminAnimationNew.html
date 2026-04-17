@@ -43,7 +43,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Statut</label>
                                         <select name="status" class="form-select" required>
-                                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).animationStatus(s)}"></option>
+                                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${T(CRM_Manara.CRM_Manara.service.UiLabelService).animationStatus(s)}"></option>
                                         </select>
                                     </div>
                                 </div>

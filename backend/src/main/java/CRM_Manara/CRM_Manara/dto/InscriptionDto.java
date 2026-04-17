@@ -2,7 +2,7 @@ package CRM_Manara.CRM_Manara.dto;
 
 public record InscriptionDto(
         Long id,
-        String status,
+        String statusInscription,
         String presenceStatus,
         String incidentNote,
         EnfantSummaryDto enfant,

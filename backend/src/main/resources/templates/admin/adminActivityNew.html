@@ -54,13 +54,13 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Statut</label>
                                         <select name="status" class="form-select" required>
-                                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).activityStatus(s)}" th:selected="${s.name() == formData['status']}"></option>
+                                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${T(CRM_Manara.CRM_Manara.service.UiLabelService).activityStatus(s)}" th:selected="${s.name() == formData['status']}"></option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Type</label>
                                         <select name="type" class="form-select" required>
-                                            <option th:each="t : ${types}" th:value="${t}" th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).activityType(t)}" th:selected="${t.name() == formData['type']}"></option>
+                                            <option th:each="t : ${types}" th:value="${t}" th:text="${T(CRM_Manara.CRM_Manara.service.UiLabelService).activityType(t)}" th:selected="${t.name() == formData['type']}"></option>
                                         </select>
                                     </div>
                                 </div>

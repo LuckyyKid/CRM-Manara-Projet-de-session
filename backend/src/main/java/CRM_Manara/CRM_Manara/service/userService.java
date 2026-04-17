@@ -118,6 +118,7 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
     private User createGoogleParent(String email, String fullName) {
         String[] nameParts = splitName(fullName);
 
+        // enabled = false : le compte est en attente d'approbation par l'admin
         User user = new User(email, passwordEncoder.encode(UUID.randomUUID().toString()), SecurityRole.ROLE_PARENT, false);
         User savedUser = userRepo.save(user);
         avatarService.assignDefaultAvatar(savedUser, fullName);
@@ -125,6 +126,7 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
         Parent parent = new Parent(nameParts[1], nameParts[0], "");
         parent.SetUser(savedUser);
         Parent savedParent = parentRepo.save(parent);
+
         parentNotificationService.createForParent(
                 savedParent,
                 "COMPTE",

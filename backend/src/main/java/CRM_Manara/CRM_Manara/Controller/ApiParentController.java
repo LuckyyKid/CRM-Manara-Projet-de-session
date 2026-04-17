@@ -17,7 +17,9 @@ import CRM_Manara.CRM_Manara.service.parentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -125,6 +127,64 @@ public class ApiParentController {
             return new ActionResponseDto(true, "Demande d'inscription envoyée.", inscription.getId());
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+        }
+    }
+
+    @GetMapping("/enfants/{id}")
+    public Object getEnfant(@PathVariable Long id, Authentication authentication) {
+        String email = requireEmail(authentication);
+        try {
+            Enfant enfant = parentService.getEnfantForParent(id, email);
+            return apiDtoMapper.toEnfantDto(enfant);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
+    }
+
+    @PostMapping("/enfants")
+    public ActionResponseDto createEnfant(@RequestBody Map<String, String> body,
+                                          Authentication authentication) {
+        String email = requireEmail(authentication);
+        String nom = body.get("nom");
+        String prenom = body.get("prenom");
+        String dateStr = body.get("dateDeNaissance");
+        if (nom == null || nom.isBlank() || prenom == null || prenom.isBlank() || dateStr == null || dateStr.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nom, prénom et date de naissance sont requis.");
+        }
+        try {
+            java.sql.Date dateNaissance = java.sql.Date.valueOf(dateStr);
+            Enfant enfant = parentService.createEnfantForParent(email, nom.trim(), prenom.trim(), dateNaissance);
+            return new ActionResponseDto(true, "Enfant ajouté. Il est en attente d'approbation.", enfant.getId());
+        } catch (IllegalArgumentException e) {
+            String msg = e.getMessage();
+            if (msg == null || msg.isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Format de date invalide (attendu : yyyy-MM-dd).");
+            }
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, msg, e);
+        }
+    }
+
+    @PutMapping("/enfants/{id}")
+    public ActionResponseDto updateEnfant(@PathVariable Long id,
+                                          @RequestBody Map<String, String> body,
+                                          Authentication authentication) {
+        String email = requireEmail(authentication);
+        String nom = body.get("nom");
+        String prenom = body.get("prenom");
+        String dateStr = body.get("dateDeNaissance");
+        if (nom == null || nom.isBlank() || prenom == null || prenom.isBlank() || dateStr == null || dateStr.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nom, prénom et date de naissance sont requis.");
+        }
+        try {
+            java.sql.Date dateNaissance = java.sql.Date.valueOf(dateStr);
+            parentService.updateEnfantForParent(id, email, nom.trim(), prenom.trim(), dateNaissance);
+            return new ActionResponseDto(true, "Profil enfant mis à jour.", id);
+        } catch (IllegalArgumentException e) {
+            String msg = e.getMessage();
+            if (msg == null || msg.isBlank()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Format de date invalide (attendu : yyyy-MM-dd).");
+            }
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, msg, e);
         }
     }
 

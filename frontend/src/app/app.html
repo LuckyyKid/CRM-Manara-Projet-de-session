@@ -1,32 +1,151 @@
-<div class="app-shell">
-  <header class="hero">
-    <p class="eyebrow">Manara CRM V2</p>
-    <h1>Frontend Angular en cours de migration</h1>
-    <p class="lead">
-      Cette application Angular va progressivement remplacer l'interface Thymeleaf,
-      tout en consommant les endpoints Spring exposés sous <code>/api</code>.
-    </p>
-  </header>
+<!-- ================================================================
+     NAVBAR — affichée uniquement pour les visiteurs non connectés
+     Équivalent Thymeleaf : sec:authorize="isAnonymous()"
+     ================================================================ -->
+<nav class="navbar navbar-expand-lg" *ngIf="!authService.isAuthenticated()">
+  <div class="container">
 
-  <main class="content">
-    <section class="card">
-      <h2>État actuel</h2>
-      <ul>
-        <li>Backend Spring conservé</li>
-        <li>Couche DTO et endpoints REST en place</li>
-        <li>Migration écran par écran à venir</li>
-      </ul>
-    </section>
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" routerLink="/home">
+      <span class="mm-brand-mark">
+        <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="Logo Manara">
+      </span>
+      <span class="mm-brand-meta">
+        <span>Manara CRM</span>
+        <span class="mm-brand-sub">Digital Sanctuary</span>
+      </span>
+    </a>
 
-    <section class="card card-accent">
-      <h2>Prochaines étapes</h2>
-      <ul>
-        <li>Brancher l'authentification Angular</li>
-        <li>Créer les pages parent, admin et animateur</li>
-        <li>Consommer <code>/api/me</code>, <code>/api/parent/*</code>, <code>/api/admin/*</code></li>
+    <!-- Bouton menu responsive -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar" aria-expanded="false" aria-label="Menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Liens de navigation -->
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about" routerLinkActive="active">FAQ</a>
+        </li>
       </ul>
-    </section>
+
+      <!-- Boutons connexion / inscription -->
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" routerLink="/login">Connexion</a>
+        <a class="btn btn-primary" routerLink="/signup">Créer un compte</a>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+<!-- ================================================================
+     SIDEBAR — affichée uniquement pour les utilisateurs connectés
+     Équivalent Thymeleaf : sec:authorize="isAuthenticated()"
+     ================================================================ -->
+<aside class="mm-app-sidebar" *ngIf="authService.isAuthenticated()">
+  <div class="mm-app-sidebar-inner">
+
+    <!-- Logo qui pointe vers le dashboard du rôle -->
+    <a class="navbar-brand d-flex align-items-center mb-4" [routerLink]="authService.dashboardPath()">
+      <span class="mm-brand-mark">
+        <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="Logo Manara">
+      </span>
+      <span class="mm-brand-meta">
+        <span>Manara CRM</span>
+        <span class="mm-brand-sub">Digital Sanctuary</span>
+      </span>
+    </a>
+
+    <!-- Navigation principale -->
+    <nav class="mm-side-nav">
+
+      <!-- Liens ADMIN — sec:authorize="hasRole('ADMIN')" -->
+      <ng-container *ngIf="isAdmin()">
+        <a class="mm-side-link" routerLink="/admin/dashboard"
+           routerLinkActive="mm-side-link-active">Tableau de bord</a>
+        <a class="mm-side-link" routerLink="/admin/activities"
+           routerLinkActive="mm-side-link-active">Activités</a>
+        <a class="mm-side-link" routerLink="/admin/animations"
+           routerLinkActive="mm-side-link-active">Animations</a>
+        <a class="mm-side-link" routerLink="/admin/animateurs"
+           routerLinkActive="mm-side-link-active">Animateurs</a>
+        <a class="mm-side-link" routerLink="/admin/parents"
+           routerLinkActive="mm-side-link-active">Parents / Enfants</a>
+        <a class="mm-side-link" routerLink="/admin/demandes"
+           routerLinkActive="mm-side-link-active">Demandes</a>
+        <a class="mm-side-link" routerLink="/admin/notifications"
+           routerLinkActive="mm-side-link-active">Notifications</a>
+      </ng-container>
+
+      <!-- Liens PARENT — sec:authorize="hasRole('PARENT')" -->
+      <ng-container *ngIf="isParent()">
+        <a class="mm-side-link" routerLink="/parent/dashboard"
+           routerLinkActive="mm-side-link-active">Espace parent</a>
+        <a class="mm-side-link" routerLink="/parent/enfants"
+           routerLinkActive="mm-side-link-active">Enfants</a>
+        <a class="mm-side-link" routerLink="/parent/activities"
+           routerLinkActive="mm-side-link-active">Activités</a>
+        <a class="mm-side-link" routerLink="/parent/planning"
+           routerLinkActive="mm-side-link-active">Calendrier</a>
+        <a class="mm-side-link" routerLink="/parent/notifications"
+           routerLinkActive="mm-side-link-active">Notifications</a>
+      </ng-container>
+
+      <!-- Liens ANIMATEUR — sec:authorize="hasRole('ANIMATEUR')" -->
+      <ng-container *ngIf="isAnimateur()">
+        <a class="mm-side-link" routerLink="/animateur/dashboard"
+           routerLinkActive="mm-side-link-active">Espace animateur</a>
+        <a class="mm-side-link" routerLink="/animateur/inscriptions"
+           routerLinkActive="mm-side-link-active">Présences</a>
+        <a class="mm-side-link" routerLink="/animateur/notifications"
+           routerLinkActive="mm-side-link-active">Notifications</a>
+      </ng-container>
+
+    </nav>
+
+    <!-- Liens secondaires (FAQ) poussés vers le bas -->
+    <div class="mm-side-nav mm-side-nav-secondary mt-auto">
+      <a class="mm-side-link mm-side-link-muted" routerLink="/about"
+         routerLinkActive="mm-side-link-active">FAQ</a>
+    </div>
+
+    <!-- Carte utilisateur — clique pour aller aux settings -->
+    <a class="mm-user-card mt-3 text-decoration-none" routerLink="/settings">
+      <img *ngIf="avatarUrl()"
+           [src]="avatarUrl()"
+           [alt]="authService.displayName() ?? 'Profil utilisateur'"
+           class="mm-user-avatar">
+      <div class="mm-user-meta">
+        <span class="mm-user-name">
+          {{ authService.displayName() ?? 'Utilisateur' }}
+        </span>
+      </div>
+    </a>
+
+    <!-- Bouton déconnexion -->
+    <button type="button" class="btn btn-primary w-100 mt-3" (click)="logout()">
+      Déconnexion
+    </button>
+
+  </div>
+</aside>
+
+
+<!-- ================================================================
+     CONTENU DES PAGES — router-outlet injecte la page active
+     La classe mm-page-with-sidebar ajoute la marge gauche quand
+     la sidebar est présente.
+     ================================================================ -->
+<div class="mm-page" [class.mm-page-with-sidebar]="authService.isAuthenticated()">
+  <main class="mm-main">
+    <router-outlet />
   </main>
-
-  <router-outlet />
 </div>

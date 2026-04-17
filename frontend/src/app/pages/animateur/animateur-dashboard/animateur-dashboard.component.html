@@ -1,0 +1,69 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Espace animateur</span>
+      <h1 class="mm-page-title">Tableau de bord</h1>
+      <p class="mm-page-subtitle">Vue d'ensemble de vos animations.</p>
+    </div>
+    <div class="mm-page-actions">
+      <a class="btn btn-outline-primary" routerLink="/animateur/inscriptions">Mes séances</a>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()">
+    <!-- KPI -->
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Total animations</span>
+          <span class="mm-kpi-value">{{ countTotal() }}</span>
+          <span class="mm-kpi-meta">Toutes séances confondues</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">À venir</span>
+          <span class="mm-kpi-value">{{ countUpcoming() }}</span>
+          <span class="mm-kpi-meta">Séances planifiées</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prochaines animations -->
+    <div class="card mm-card-shadow mt-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mm-panel-title mb-0">Prochaines séances</h2>
+          <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/inscriptions">Voir tout</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Activité</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!upcomingAnimations().length">
+                <td colspan="4" class="text-secondary">Aucune séance à venir.</td>
+              </tr>
+              <tr *ngFor="let animation of upcomingAnimations()">
+                <td>{{ animation.activity.name }}</td>
+                <td>{{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ animation.status }}</td>
+                <td>
+                  <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Présences</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

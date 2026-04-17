@@ -1,0 +1,117 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Validation</span>
+      <h1 class="mm-page-title fs-1">Demandes</h1>
+      <p class="mm-page-subtitle">Demandes en attente de validation.</p>
+    </div>
+  </div>
+
+  <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()">
+
+    <!-- Inscriptions en attente (comptes parents + demandes d'inscription) -->
+    <div class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <div class="mb-3">
+          <h2 class="mm-panel-title">Inscriptions en attente</h2>
+          <p class="mm-panel-subtitle">{{ pendingParents().length + pendingInscriptions().length }} demande(s) à traiter.</p>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Nom</th>
+                <th>Détails</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!pendingParents().length && !pendingInscriptions().length">
+                <td colspan="4" class="text-secondary">Aucune demande en attente.</td>
+              </tr>
+
+              <!-- Comptes parents en attente -->
+              <tr *ngFor="let parent of pendingParents()">
+                <td><span class="badge bg-primary">Compte parent</span></td>
+                <td>{{ parent.prenom }} {{ parent.nom }}</td>
+                <td class="text-secondary">{{ parent.user?.email }}</td>
+                <td>
+                  <button class="btn btn-sm btn-success me-2" (click)="approveParent(parent.id)">Approuver</button>
+                  <button class="btn btn-sm btn-danger" (click)="rejectParent(parent.id)">Refuser</button>
+                </td>
+              </tr>
+
+              <!-- Demandes d'inscription -->
+              <tr *ngFor="let review of pendingInscriptions()">
+                <td><span class="badge bg-info text-dark">Inscription</span></td>
+                <td>
+                  {{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}
+                  <span *ngIf="review.inscription.enfant.parent" class="text-secondary d-block small">
+                    Parent : {{ review.inscription.enfant.parent.prenom }} {{ review.inscription.enfant.parent.nom }}
+                  </span>
+                </td>
+                <td>
+                  <span>{{ review.inscription.animation.activity.name }}</span>
+                  <span class="text-secondary d-block small">{{ review.inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</span>
+                  <span *ngIf="review.capacity" class="text-secondary small">
+                    Places : {{ review.capacity.approved }}/{{ review.capacity.capacity }}
+                    <span class="badge bg-warning text-dark ms-1" *ngIf="review.capacity.full">Complet</span>
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-success me-2" (click)="approve(review.inscription.id)">Approuver</button>
+                  <button class="btn btn-sm btn-danger" (click)="reject(review.inscription.id)">Refuser</button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inscriptions traitées -->
+    <div class="card mm-card-shadow">
+      <div class="card-body">
+        <div class="mb-3">
+          <h2 class="mm-panel-title">Inscriptions traitées</h2>
+          <p class="mm-panel-subtitle">Historique des inscriptions approuvées ou refusées.</p>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Enfant</th>
+                <th>Activité</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!processedInscriptions().length">
+                <td colspan="3" class="text-secondary">Aucune inscription traitée.</td>
+              </tr>
+              <tr *ngFor="let review of processedInscriptions()">
+                <td>{{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}</td>
+                <td>{{ review.inscription.animation.activity.name }}</td>
+                <td>
+                  <span class="badge"
+                    [class.bg-success]="review.inscription.statusInscription === 'APPROUVEE' || review.inscription.statusInscription === 'ACTIF'"
+                    [class.bg-danger]="review.inscription.statusInscription === 'REFUSEE'"
+                    [class.bg-secondary]="review.inscription.statusInscription === 'EN_ATTENTE'">
+                    {{ review.inscription.statusInscription }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

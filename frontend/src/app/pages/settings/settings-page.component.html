@@ -1,0 +1,55 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Compte</span>
+      <h1 class="mm-page-title fs-1">Paramètres</h1>
+      <p class="mm-page-subtitle">Personnalisez votre profil et vos préférences.</p>
+    </div>
+  </div>
+
+  <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+
+  <div class="card mm-card-shadow" style="max-width: 520px;">
+    <div class="card-body">
+      <h2 class="mm-panel-title mb-4">Photo de profil</h2>
+
+      <form (ngSubmit)="onSubmit()" novalidate>
+        <!-- Avatar preview -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="mm-avatar mm-avatar-lg">
+            <img *ngIf="avatarPreview() || currentUser()?.user?.avatarUrl"
+              [src]="avatarPreview() ?? currentUser()?.user?.avatarUrl"
+              alt="Avatar"
+              class="rounded-circle"
+              style="width: 64px; height: 64px; object-fit: cover;">
+            <div *ngIf="!avatarPreview() && !currentUser()?.user?.avatarUrl"
+              class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white"
+              style="width: 64px; height: 64px; font-size: 1.5rem;">
+              {{ currentUser()?.user?.email?.charAt(0)?.toUpperCase() }}
+            </div>
+          </div>
+          <div>
+            <label class="form-label mb-1">Changer la photo</label>
+            <input type="file" class="form-control form-control-sm" accept="image/*" (change)="onFileChange($event)">
+            <div *ngIf="errors()['avatar']" class="small text-danger mt-1">{{ errors()['avatar'] }}</div>
+          </div>
+        </div>
+
+        <!-- User info (read-only) -->
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" [value]="currentUser()?.user?.email ?? ''" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Rôle</label>
+          <input type="text" class="form-control" [value]="currentUser()?.accountType ?? ''" readonly>
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="loading()">
+          {{ loading() ? 'Sauvegarde...' : 'Sauvegarder' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

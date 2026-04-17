@@ -57,10 +57,15 @@ public class AnimateurService {
     public List<Animation> getUpcomingAnimationsForAnimateur(Long animateurId, int limit) {
         LocalDateTime now = LocalDateTime.now();
         return animationRepo.findByAnimateurId(animateurId).stream()
-                .filter(a -> a.getStartTime() != null && a.getStartTime().isAfter(now))
+                .filter(a -> isOngoingOrUpcoming(a, now))
                 .sorted(Comparator.comparing(Animation::getStartTime))
                 .limit(limit)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isOngoingOrUpcoming(Animation animation, LocalDateTime now) {
+        LocalDateTime reference = animation.getEndTime() != null ? animation.getEndTime() : animation.getStartTime();
+        return reference != null && !reference.isBefore(now);
     }
 
 

@@ -1,0 +1,53 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Présences</span>
+      <h1 class="mm-page-title fs-1">Gestion des présences</h1>
+      <p class="mm-page-subtitle">Séance #{{ animationId() }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()" class="card mm-card-shadow">
+    <div class="card-body">
+      <div class="mb-3">
+        <h2 class="mm-panel-title">Liste des inscrits</h2>
+        <p class="mm-panel-subtitle">{{ rows().length }} enfant(s) inscrit(s).</p>
+      </div>
+      <div *ngIf="!rows().length" class="text-secondary">Aucun inscrit pour cette séance.</div>
+      <div class="table-responsive" *ngIf="rows().length">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Enfant</th>
+              <th>Présence</th>
+              <th>Note d'incident</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of rows()">
+              <td>{{ row.inscription.enfant.prenom }} {{ row.inscription.enfant.nom }}</td>
+              <td>
+                <select class="form-select form-select-sm w-auto" [(ngModel)]="row.presenceStatus" [name]="'presence_' + row.inscription.id">
+                  <option *ngFor="let opt of presenceOptions" [value]="opt">{{ opt }}</option>
+                </select>
+              </td>
+              <td>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="row.incidentNote" [name]="'note_' + row.inscription.id" placeholder="Note...">
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="save(row)" [disabled]="row.saving">
+                  {{ row.saving ? 'Sauvegarde...' : row.saved ? 'Sauvegardé' : 'Sauvegarder' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
