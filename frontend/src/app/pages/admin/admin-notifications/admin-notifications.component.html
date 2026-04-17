@@ -1,0 +1,29 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Système</span>
+      <h1 class="mm-page-title fs-1">Notifications</h1>
+      <p class="mm-page-subtitle">Historique des notifications du système.</p>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()" class="card mm-card-shadow">
+    <div class="card-body">
+      <div *ngIf="!notifications().length" class="text-secondary">Aucune notification.</div>
+      <div class="vstack gap-2">
+        <div *ngFor="let n of notifications()" class="border rounded-3 p-3">
+          <div class="d-flex justify-content-between gap-3 flex-wrap">
+            <div>
+              <div class="mm-page-eyebrow mb-1">{{ n.source }} • {{ n.type }}</div>
+              <div>{{ n.message }}</div>
+            </div>
+            <div class="text-secondary small">{{ n.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

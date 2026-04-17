@@ -1,88 +1,27 @@
-:host {
-  display: block;
-  min-height: 100vh;
-  color: #0b2942;
-}
-
-.app-shell {
-  min-height: 100vh;
-  padding: 48px 24px;
-  background:
-    radial-gradient(circle at top left, rgba(255, 199, 44, 0.22), transparent 28%),
-    linear-gradient(160deg, #f7fbff 0%, #eef5fa 52%, #dbe8f1 100%);
-}
-
-.hero,
-.content {
-  width: min(1040px, 100%);
-  margin: 0 auto;
-}
-
-.hero {
-  margin-bottom: 28px;
-}
-
-.eyebrow {
-  margin: 0 0 12px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #b78800;
-}
-
-h1,
-h2 {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-}
-
-h1 {
-  font-size: clamp(2.2rem, 5vw, 4rem);
-  line-height: 1.05;
-  margin-bottom: 16px;
-}
-
-.lead {
-  max-width: 62ch;
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: #35516b;
-}
-
-.content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
-
-.card {
-  padding: 24px;
-  border-radius: 24px;
+// ============================================================
+// État actif d'un lien sidebar (routerLinkActive="mm-side-link-active")
+// Reproduit le style hover du style.css du backend
+// ============================================================
+.mm-side-link.mm-side-link-active {
   background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(11, 41, 66, 0.08);
-  box-shadow: 0 18px 40px rgba(11, 41, 66, 0.08);
+  color: var(--mm-primary, #0a66ff);
+  transform: translateX(2px);
+
+  // La barre bleue à gauche du lien
+  &::before {
+    background: var(--mm-primary, #0a66ff);
+  }
 }
 
-.card-accent {
-  background: linear-gradient(180deg, rgba(12, 66, 104, 0.96), rgba(9, 43, 70, 0.96));
-  color: #f7fbff;
-}
+// ============================================================
+// Décale le contenu vers la droite quand la sidebar est visible
+// Remplace le sélecteur CSS .mm-app-sidebar + .mm-page
+// (qui ne fonctionne pas avec les commentaires ng-template)
+// ============================================================
+.mm-page-with-sidebar {
+  margin-left: 18rem;
 
-.card-accent code {
-  color: #ffcf4a;
-}
-
-ul {
-  margin: 16px 0 0;
-  padding-left: 18px;
-  line-height: 1.8;
-}
-
-code {
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: rgba(11, 41, 66, 0.08);
-  font-size: 0.9em;
+  .mm-main {
+    padding-left: 1rem;
+  }
 }

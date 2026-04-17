@@ -1,9 +1,25 @@
+<<<<<<< HEAD
+import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+=======
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
+>>>>>>> origin/main
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-dashboard-page',
+<<<<<<< HEAD
+  imports: [],
+  template: `<div class="text-secondary py-4 text-center">Chargement...</div>`,
+})
+export class DashboardPageComponent implements OnInit {
+  readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  ngOnInit() {
+    this.router.navigateByUrl(this.authService.dashboardPath());
+=======
   imports: [CommonModule],
   template: `
     <section class="dashboard-shell">
@@ -229,5 +245,6 @@ export class DashboardPageComponent {
 
   logout(): void {
     this.authService.logout();
+>>>>>>> origin/main
   }
 }

@@ -1,0 +1,85 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Espace parent</span>
+      <h1 class="mm-page-title">Tableau de bord</h1>
+      <p class="mm-page-subtitle">Bienvenue sur votre espace Manara.</p>
+    </div>
+    <div class="mm-page-actions">
+      <a class="btn btn-outline-primary" routerLink="/parent/enfants">Mes enfants</a>
+      <a class="btn btn-outline-primary" routerLink="/parent/activities">Activités</a>
+      <a class="btn btn-outline-primary" routerLink="/parent/planning">Planning</a>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()">
+    <!-- KPI cards -->
+    <div class="row g-3">
+      <div class="col-12 col-md-4">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Enfants</span>
+          <span class="mm-kpi-value">{{ countEnfants() }}</span>
+          <span class="mm-kpi-meta">Profils enregistrés</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Inscriptions</span>
+          <span class="mm-kpi-value">{{ countInscriptions() }}</span>
+          <span class="mm-kpi-meta">Total des demandes</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">En attente</span>
+          <span class="mm-kpi-value">{{ countPending() }}</span>
+          <span class="mm-kpi-meta">Demandes à traiter</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inscriptions récentes -->
+    <div class="card mm-card-shadow mt-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mm-panel-title mb-0">Inscriptions récentes</h2>
+          <a class="btn btn-outline-primary btn-sm" routerLink="/parent/activities">Voir tout</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Enfant</th>
+                <th>Activité</th>
+                <th>Date</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!recentInscriptions().length">
+                <td colspan="4" class="text-secondary">Aucune inscription.</td>
+              </tr>
+              <tr *ngFor="let insc of recentInscriptions()">
+                <td>{{ insc.enfant.prenom }} {{ insc.enfant.nom }}</td>
+                <td>{{ insc.animation.activity.name }}</td>
+                <td>{{ insc.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <span class="badge"
+                    [class.bg-success]="normalizedStatus(insc.statusInscription) === 'APPROUVEE' || normalizedStatus(insc.statusInscription) === 'ACTIF'"
+                    [class.bg-warning]="normalizedStatus(insc.statusInscription) === 'EN_ATTENTE'"
+                    [class.text-dark]="normalizedStatus(insc.statusInscription) === 'EN_ATTENTE'"
+                    [class.bg-danger]="normalizedStatus(insc.statusInscription) === 'REFUSEE'"
+                    [class.bg-secondary]="normalizedStatus(insc.statusInscription) !== 'APPROUVEE' && normalizedStatus(insc.statusInscription) !== 'ACTIF' && normalizedStatus(insc.statusInscription) !== 'EN_ATTENTE' && normalizedStatus(insc.statusInscription) !== 'REFUSEE'">
+                    {{ statusLabel(insc.statusInscription) }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

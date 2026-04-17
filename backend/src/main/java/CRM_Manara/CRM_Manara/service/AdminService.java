@@ -120,6 +120,8 @@ public class AdminService {
         activity.setAgeMin(ageMin);
         activity.setAgeMax(ageMax);
         activity.setCapacity(capacity);
+        activity.setStatus(status);
+        activity.setType(type);
         return activityRepo.save(activity);
     }
 
@@ -584,10 +586,15 @@ public class AdminService {
     public List<Animation> getUpcomingAnimations(int limit) {
         LocalDateTime now = LocalDateTime.now();
         return animationRepo.findAll().stream()
-                .filter(a -> a.getStartTime() != null && a.getStartTime().isAfter(now))
+                .filter(a -> isOngoingOrUpcoming(a, now))
                 .sorted(Comparator.comparing(Animation::getStartTime))
                 .limit(limit)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isOngoingOrUpcoming(Animation animation, LocalDateTime now) {
+        LocalDateTime reference = animation.getEndTime() != null ? animation.getEndTime() : animation.getStartTime();
+        return reference != null && !reference.isBefore(now);
     }
 
     @Transactional(readOnly = true)

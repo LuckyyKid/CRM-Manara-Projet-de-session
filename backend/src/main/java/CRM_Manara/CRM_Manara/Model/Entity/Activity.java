@@ -19,7 +19,7 @@ public class Activity {
     @Column(name = "ActivyName")
     private String activyName;
 
-    @Column(name = "Description")
+    @Column(name = "Description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "AgeMin")
@@ -103,8 +103,14 @@ public class Activity {
     public status getStatus() {
         return status;
     }
+    public void setStatus(status status) {
+        this.status = status;
+    }
     public typeActivity getType() {
         return type;
+    }
+    public void setType(typeActivity type) {
+        this.type = type;
     }
 
 }

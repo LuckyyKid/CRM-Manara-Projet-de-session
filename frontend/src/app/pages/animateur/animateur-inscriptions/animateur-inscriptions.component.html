@@ -1,0 +1,48 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Séances</span>
+      <h1 class="mm-page-title fs-1">Mes animations</h1>
+      <p class="mm-page-subtitle">Liste de toutes vos séances planifiées.</p>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()" class="card mm-card-shadow">
+    <div class="card-body">
+      <div class="mb-3">
+        <h2 class="mm-panel-title">Toutes les séances</h2>
+        <p class="mm-panel-subtitle">{{ animations().length }} séance(s) au total.</p>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Activité</th>
+              <th>Début</th>
+              <th>Fin</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!animations().length">
+              <td colspan="5" class="text-secondary">Aucune séance trouvée.</td>
+            </tr>
+            <tr *ngFor="let animation of animations()">
+              <td>{{ animation.activity.name }}</td>
+              <td>{{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ animation.endTime | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ animation.status }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Présences</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

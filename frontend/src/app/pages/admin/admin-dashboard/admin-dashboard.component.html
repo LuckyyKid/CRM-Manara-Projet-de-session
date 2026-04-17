@@ -1,0 +1,139 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Administration</span>
+      <h1 class="mm-page-title">Tableau de bord administrateur</h1>
+      <p class="mm-page-subtitle">Gestion des activités, animations, animateurs et demandes d'inscription.</p>
+    </div>
+    <div class="mm-page-actions">
+      <a class="btn btn-outline-primary" routerLink="/admin/activities">Catalogue</a>
+      <a class="btn btn-outline-primary" routerLink="/admin/demandes">Demandes</a>
+      <a class="btn btn-outline-primary" routerLink="/admin/notifications">Notifications</a>
+      <a class="btn btn-primary" routerLink="/admin/animations/new">Nouvelle animation</a>
+    </div>
+  </div>
+
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()">
+    <!-- KPI cards -->
+    <div class="row g-3">
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Activités</span>
+          <span class="mm-kpi-value">{{ countActivities() }}</span>
+          <span class="mm-kpi-meta">Ouvertes: {{ countOpenActivities() }}</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Animations</span>
+          <span class="mm-kpi-value">{{ countAnimations() }}</span>
+          <span class="mm-kpi-meta">Animations planifiées</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Animateurs</span>
+          <span class="mm-kpi-value">{{ countAnimateurs() }}</span>
+          <span class="mm-kpi-meta">Équipe active</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Demandes</span>
+          <span class="mm-kpi-value">{{ countPendingInscriptions() }}</span>
+          <span class="mm-kpi-meta">En attente de validation</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Remplissage moyen</span>
+          <span class="mm-kpi-value">{{ averageFillRate() }}%</span>
+          <span class="mm-kpi-meta">Taux confirmé des animations</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Familles actives</span>
+          <span class="mm-kpi-value">{{ countActiveParents() }}</span>
+          <span class="mm-kpi-meta">Enfants en attente: {{ countPendingChildren() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tables -->
+    <div class="row g-3 mt-1">
+      <!-- Demandes récentes -->
+      <div class="col-12 col-lg-6">
+        <div class="card mm-card-shadow h-100">
+          <div class="card-body">
+            <h2 class="mm-panel-title mb-3">Demandes récentes</h2>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle">
+                <thead><tr><th>Enfant</th><th>Activité</th></tr></thead>
+                <tbody>
+                  <tr *ngIf="!recentPendingInscriptions().length">
+                    <td colspan="2" class="text-secondary">Aucune demande.</td>
+                  </tr>
+                  <tr *ngFor="let review of recentPendingInscriptions()">
+                    <td>{{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}</td>
+                    <td>{{ review.inscription.animation.activity.name }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Animations à venir -->
+      <div class="col-12 col-lg-6">
+        <div class="card mm-card-shadow h-100">
+          <div class="card-body">
+            <h2 class="mm-panel-title mb-3">Animations à venir</h2>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle">
+                <thead><tr><th>Activité</th><th>Début</th><th>Animateur</th></tr></thead>
+                <tbody>
+                  <tr *ngIf="!upcomingAnimations().length">
+                    <td colspan="3" class="text-secondary">Aucune animation à venir.</td>
+                  </tr>
+                  <tr *ngFor="let row of upcomingAnimations()">
+                    <td>{{ row.animation.activity.name }}</td>
+                    <td>{{ row.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>{{ row.animation.animateur.prenom }} {{ row.animation.animateur.nom }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications récentes -->
+      <div class="col-12">
+        <div class="card mm-card-shadow">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="mm-panel-title mb-0">Notifications récentes</h2>
+              <a class="btn btn-outline-primary btn-sm" routerLink="/admin/notifications">Tout voir</a>
+            </div>
+            <div *ngIf="!recentNotifications().length" class="text-secondary">Aucune notification.</div>
+            <div class="vstack gap-2">
+              <div *ngFor="let n of recentNotifications()" class="border rounded-3 p-3">
+                <div class="d-flex justify-content-between gap-3 flex-wrap">
+                  <div>
+                    <div class="mm-page-eyebrow mb-1">{{ n.source }} • {{ n.type }}</div>
+                    <div>{{ n.message }}</div>
+                  </div>
+                  <div class="text-secondary small">{{ n.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

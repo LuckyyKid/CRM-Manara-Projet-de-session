@@ -1,0 +1,48 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Équipe</span>
+      <h1 class="mm-page-title fs-1">Animateurs</h1>
+      <p class="mm-page-subtitle">Gestion des animateurs de l'établissement.</p>
+    </div>
+    <div class="mm-page-actions">
+      <button class="btn btn-primary" (click)="goToNew()">Ajouter un animateur</button>
+    </div>
+  </div>
+
+  <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()" class="card mm-card-shadow">
+    <div class="card-body">
+      <div class="mb-3">
+        <h2 class="mm-panel-title">Liste des animateurs</h2>
+        <p class="mm-panel-subtitle">Liste complete des animateurs.</p>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!animateurs().length">
+              <td colspan="3" class="text-secondary">Aucun animateur trouvé.</td>
+            </tr>
+            <tr *ngFor="let animateur of animateurs()">
+              <td>{{ animateur.nom }}</td>
+              <td>{{ animateur.prenom }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-secondary me-2" (click)="goToEdit(animateur.id)">Modifier</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

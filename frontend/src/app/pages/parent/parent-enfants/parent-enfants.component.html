@@ -1,0 +1,55 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Mes enfants</span>
+      <h1 class="mm-page-title fs-1">Enfants</h1>
+      <p class="mm-page-subtitle">Gérez les profils de vos enfants.</p>
+    </div>
+    <div class="mm-page-actions">
+      <button class="btn btn-primary" (click)="onSubmit()">Ajouter un enfant</button>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()" class="card mm-card-shadow">
+    <div class="card-body">
+      <div class="mb-3">
+        <h2 class="mm-panel-title">Mes enfants</h2>
+        <p class="mm-panel-subtitle">{{ enfants().length }} enfant(s) enregistré(s).</p>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>Date de naissance</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!enfants().length">
+              <td colspan="5" class="text-secondary">Aucun enfant enregistré.</td>
+            </tr>
+            <tr *ngFor="let enfant of enfants()">
+              <td>{{ enfant.nom }}</td>
+              <td>{{ enfant.prenom }}</td>
+              <td>{{ enfant.dateDeNaissance }}</td>
+              <td>
+                <span class="badge" [class.bg-success]="enfant.active" [class.bg-warning]="!enfant.active" [class.text-dark]="!enfant.active">
+                  {{ enfant.active ? 'Actif' : 'En attente' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(enfant.id)">Modifier</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

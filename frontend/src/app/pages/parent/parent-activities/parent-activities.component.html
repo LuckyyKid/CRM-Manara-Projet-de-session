@@ -1,0 +1,84 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Catalogue</span>
+      <h1 class="mm-page-title fs-1">Activites</h1>
+      <p class="mm-page-subtitle">Inscrivez vos enfants aux activites disponibles.</p>
+    </div>
+  </div>
+
+  <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()">
+    <div class="card mm-card-shadow mb-4" *ngIf="enfants.length > 0">
+      <div class="card-body">
+        <label class="form-label fw-semibold">Inscrire pour :</label>
+        <select class="form-select w-auto" [(ngModel)]="selectedEnfantId" name="selectedEnfant">
+          <option *ngFor="let enfant of enfants" [ngValue]="enfant.id">
+            {{ enfant.prenom }} {{ enfant.nom }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="enfants.length === 0" class="alert alert-info">
+      Vous devez d'abord ajouter un enfant approuve avant de pouvoir vous inscrire a une activite.
+    </div>
+
+    <div *ngIf="activityViews.length === 0" class="alert alert-info">
+      Aucune activite disponible pour le moment.
+    </div>
+
+    <div *ngFor="let view of activityViews" class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <div class="mb-3">
+          <h2 class="mm-panel-title">{{ view.activity.name }}</h2>
+          <p class="mm-panel-subtitle">
+            {{ view.activity.description }} -
+            Age : {{ view.activity.ageMin }}-{{ view.activity.ageMax }} ans -
+            Statut : {{ view.activity.status }}
+          </p>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Animateur</th>
+                <th>Places</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!view.animations.length">
+                <td colspan="4" class="text-secondary">Aucune seance disponible.</td>
+              </tr>
+              <tr *ngFor="let row of view.animations">
+                <td>{{ row.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ row.animation.animateur.prenom }} {{ row.animation.animateur.nom }}</td>
+                <td>
+                  <span *ngIf="row.capacity">
+                    {{ row.capacity.remaining }} restante(s)
+                    <span class="badge bg-danger ms-1" *ngIf="row.capacity.full">Complet</span>
+                  </span>
+                </td>
+                <td>
+                  <span *ngIf="isInscrit(row.animation.id)" class="badge bg-success">Inscrit</span>
+                  <button
+                    *ngIf="!isInscrit(row.animation.id)"
+                    class="btn btn-sm btn-primary"
+                    [disabled]="inscribing() || !selectedEnfantId"
+                    (click)="inscrire(row.animation.id)">
+                    {{ row.capacity.full ? "Liste d'attente" : "S'inscrire" }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

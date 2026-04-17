@@ -1,0 +1,37 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card mm-card-shadow mm-form-card">
+        <div class="card-body p-4">
+          <span class="mm-page-eyebrow">Édition</span>
+          <h1 class="mm-page-title fs-2 mb-3">Modifier un enfant</h1>
+
+          <div *ngIf="loading()" class="text-secondary py-3">Chargement...</div>
+          <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+
+          <form *ngIf="!loading()" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label class="form-label">Nom</label>
+              <input type="text" class="form-control" [(ngModel)]="nom" name="nom" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Prénom</label>
+              <input type="text" class="form-control" [(ngModel)]="prenom" name="prenom" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Date de naissance</label>
+              <input type="date" class="form-control" [(ngModel)]="dateDeNaissance" name="dateDeNaissance" required>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+              <button type="submit" class="btn btn-primary" [disabled]="saving()">
+                {{ saving() ? 'Enregistrement...' : 'Enregistrer' }}
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">Annuler</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -122,7 +122,7 @@
                                          th:attr="data-title=${inscription.animation.activity.activyName},
                                                   data-description=${inscription.animation.activity.description},
                                                   data-age-range=${inscription.animation.activity.ageMin + ' à ' + inscription.animation.activity.ageMax + ' ans'},
-                                                  data-status=${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).inscriptionStatus(inscription.statusInscription)},
+                                                  data-status=${T(CRM_Manara.CRM_Manara.service.UiLabelService).inscriptionStatus(inscription.statusInscription)},
                                                   data-start=${#temporals.format(inscription.animation.startTime, 'EEEE d MMMM yyyy ''à'' HH:mm')},
                                                   data-end=${#temporals.format(inscription.animation.endTime, 'HH:mm')},
                                                   data-animateur=${inscription.animation.animateur != null ? inscription.animation.animateur.prenom + ' ' + inscription.animation.animateur.nom : 'Animateur à confirmer'},
@@ -131,7 +131,7 @@
                                         <span class="mm-planning-item-child"
                                               th:text="${inscription.enfant.prenom + ' ' + inscription.enfant.nom}">Enfant</span>
                                         <span class="mm-planning-item-status"
-                                              th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).inscriptionStatus(inscription.statusInscription)}">Statut</span>
+                                              th:text="${T(CRM_Manara.CRM_Manara.service.UiLabelService).inscriptionStatus(inscription.statusInscription)}">Statut</span>
                                     </div>
                                     <div class="mm-planning-item-title"
                                          th:text="${inscription.animation.activity.activyName}">Activité</div>

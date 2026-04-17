@@ -1,0 +1,56 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Catalogue</span>
+      <h1 class="mm-page-title fs-1">Activités</h1>
+      <p class="mm-page-subtitle">Gestion des activités disponibles.</p>
+    </div>
+    <div class="mm-page-actions">
+      <button class="btn btn-primary" (click)="goToNew()">Créer une activité</button>
+    </div>
+  </div>
+
+  <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()" class="card mm-card-shadow">
+    <div class="card-body">
+      <div class="mb-3">
+        <h2 class="mm-panel-title">Catalogue</h2>
+        <p class="mm-panel-subtitle">Liste complète des activités configurées.</p>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Description</th>
+              <th>Âge</th>
+              <th>Capacité</th>
+              <th>Statut</th>
+              <th>Type</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!activities().length">
+              <td colspan="7" class="text-secondary">Aucune activité.</td>
+            </tr>
+            <tr *ngFor="let activity of activities()">
+              <td>{{ activity.name }}</td>
+              <td>{{ activity.description }}</td>
+              <td>{{ activity.ageMin }} - {{ activity.ageMax }}</td>
+              <td>{{ activity.capacity }}</td>
+              <td>{{ activity.status }}</td>
+              <td>{{ activity.type }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(activity.id)">Modifier</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

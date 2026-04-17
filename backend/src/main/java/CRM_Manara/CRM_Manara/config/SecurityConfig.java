@@ -6,8 +6,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+<<<<<<< HEAD
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+=======
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+>>>>>>> origin/main
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -44,6 +51,14 @@ public class SecurityConfig {
     }
 
     @Bean
+<<<<<<< HEAD
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+=======
+>>>>>>> origin/main
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(frontendBaseUrl));
@@ -63,7 +78,11 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf
+<<<<<<< HEAD
+                        .ignoringRequestMatchers("/api/**", "/login")
+=======
                         .ignoringRequestMatchers("/api/**")
+>>>>>>> origin/main
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -73,6 +92,10 @@ public class SecurityConfig {
                                 "/",
                                 "/index",
                                 "/signUp",
+<<<<<<< HEAD
+                                "/api/login",
+=======
+>>>>>>> origin/main
                                 "/api/signUp/**",
                                 "/verify",
                                 "/oauth2/**",
@@ -90,10 +113,17 @@ public class SecurityConfig {
                         .successHandler(successHandler)
                         .failureHandler((request, response, exception) -> {
                             if (exception instanceof DisabledException) {
+<<<<<<< HEAD
+                                response.sendRedirect(frontendBaseUrl + "/login?pending");
+                                return;
+                            }
+                            response.sendRedirect(frontendBaseUrl + "/login?error");
+=======
                                 response.sendRedirect("/login?pending");
                                 return;
                             }
                             response.sendRedirect("/login?error");
+>>>>>>> origin/main
                         })
                         .permitAll()
                 )
@@ -111,7 +141,26 @@ public class SecurityConfig {
                         })
                 )
                 .logout(logout -> logout
+<<<<<<< HEAD
+                        .logoutRequestMatcher(request -> "POST".equals(request.getMethod())
+                                && ("/api/logout".equals(request.getServletPath())
+                                || "/logout".equals(request.getServletPath())))
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            if (!request.getServletPath().startsWith("/api/")) {
+                                response.sendRedirect("/login?logout");
+                                return;
+                            }
+
+                            // Retourner 200 JSON — Angular gère la redirection
+                            response.setStatus(200);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"success\":true}");
+                        })
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+=======
                         .logoutSuccessUrl(frontendBaseUrl + "/login?logout")
+>>>>>>> origin/main
                         .permitAll()
                 )
                 .exceptionHandling(exception -> exception

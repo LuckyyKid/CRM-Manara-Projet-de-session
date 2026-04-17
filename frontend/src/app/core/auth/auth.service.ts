@@ -37,9 +37,17 @@ export class AuthService {
     const currentUser = this.currentUserSignal();
     switch (currentUser?.accountType) {
       case 'ROLE_ADMIN':
+<<<<<<< HEAD
+        return '/admin/dashboard';
+      case 'ROLE_PARENT':
+        return '/parent/dashboard';
+      case 'ROLE_ANIMATEUR':
+        return '/animateur/dashboard';
+=======
       case 'ROLE_PARENT':
       case 'ROLE_ANIMATEUR':
         return '/me/dashboard';
+>>>>>>> origin/main
       default:
         return '/login';
     }
@@ -64,6 +72,49 @@ export class AuthService {
   }
 
   login(): void {
+<<<<<<< HEAD
+    window.location.href = '/login';
+  }
+
+  async loginWithCredentials(email: string, password: string): Promise<CurrentUserModel> {
+    this.loadingSignal.set(true);
+    try {
+      const currentUser = await firstValueFrom(
+        this.http.post<CurrentUserModel>('/api/login', { email, password }),
+      );
+      this.currentUserSignal.set(currentUser);
+      this.initializedSignal.set(true);
+      return currentUser;
+    } finally {
+      this.loadingSignal.set(false);
+    }
+  }
+
+  signUp(): void {
+    window.location.href = '/signup';
+  }
+
+  async logout(): Promise<void> {
+    // 1. Invalider la session Spring Security côté serveur
+    try {
+      await firstValueFrom(
+        this.http.post('/api/logout', {}).pipe(catchError(() => of(null)))
+      );
+    } catch {
+      // Si le serveur est injoignable, on continue quand même le logout local
+    }
+
+    // 2. Vider l'état local Angular
+    this.currentUserSignal.set(null);
+    this.initializedSignal.set(true);
+
+    // 3. Vider tout ce qui peut traîner en storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // 4. Rediriger vers /login (full reload pour réinitialiser l'app)
+    window.location.href = '/login';
+=======
     window.location.href = `${this.backendBaseUrl()}/login`;
   }
 
@@ -85,5 +136,6 @@ export class AuthService {
     }
 
     return window.location.origin;
+>>>>>>> origin/main
   }
 }

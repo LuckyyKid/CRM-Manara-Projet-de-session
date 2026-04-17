@@ -74,7 +74,7 @@
                                     <span data-format="datetime"
                                           th:attr="data-value=${#temporals.format(animation.endTime, 'yyyy-MM-dd''T''HH:mm')}"></span>
                                 </td>
-                                <td th:text="${T(CRM_Manara.CRM_Manara.Model.Entity.Service.UiLabelService).animationStatus(animation.statusAnimation)}"></td>
+                                <td th:text="${T(CRM_Manara.CRM_Manara.service.UiLabelService).animationStatus(animation.statusAnimation)}"></td>
                             </tr>
 
                             </tbody>

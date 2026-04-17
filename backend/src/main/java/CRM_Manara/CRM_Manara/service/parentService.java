@@ -198,8 +198,8 @@ public class parentService {
         Parent parent = getParentByEmail(email);
         Enfant enfant = new Enfant(nom, prenom, dateNaissance);
         enfant.setActive(false);
-        parent.AddEnfant(enfant);
-        parentRepo.save(parent);
+        enfant.setParent(parent);
+        Enfant savedEnfant = enfantRepo.save(enfant);
         adminNotificationService.create(
                 "PARENT",
                 "ENFANT",
@@ -211,7 +211,7 @@ public class parentService {
                 "Nouvel enfant ajouté",
                 prenom + " " + nom + " a été ajouté. Son profil est en attente d'approbation par l'administration."
         );
-        return enfant;
+        return savedEnfant;
     }
 
     @Transactional(readOnly = true)
@@ -381,11 +381,22 @@ public class parentService {
         LocalDateTime now = LocalDateTime.now();
         return inscriptionRepo.findByParentId(parent.getId()).stream()
                 .filter(i -> i.getAnimation() != null
-                        && i.getAnimation().getStartTime() != null
-                        && i.getAnimation().getStartTime().isAfter(now))
+                        && isVisiblePlanningStatus(i.getStatusInscription())
+                        && isOngoingOrUpcoming(i.getAnimation(), now))
                 .sorted(Comparator.comparing(i -> i.getAnimation().getStartTime()))
                 .limit(limit)
                 .collect(Collectors.toList());
+    }
+
+    private boolean isVisiblePlanningStatus(statusInscription status) {
+        return status == statusInscription.EN_ATTENTE
+                || status == statusInscription.APPROUVEE
+                || status == statusInscription.ACTIF;
+    }
+
+    private boolean isOngoingOrUpcoming(Animation animation, LocalDateTime now) {
+        LocalDateTime reference = animation.getEndTime() != null ? animation.getEndTime() : animation.getStartTime();
+        return reference != null && !reference.isBefore(now);
     }
 
     @Transactional(readOnly = true)

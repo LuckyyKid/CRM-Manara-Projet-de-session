@@ -1,4 +1,28 @@
+<<<<<<< HEAD
 package CRM_Manara.CRM_Manara.Controller;
+
+import CRM_Manara.CRM_Manara.dto.CurrentUserDto;
+import CRM_Manara.CRM_Manara.service.CurrentUserService;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api")
+public class ApiMeController {
+
+    private final CurrentUserService currentUserService;
+
+    public ApiMeController(CurrentUserService currentUserService) {
+        this.currentUserService = currentUserService;
+    }
+
+    @GetMapping("/me")
+    public CurrentUserDto me(Authentication authentication) {
+        return currentUserService.currentUser(authentication);
+=======
+package CRM_Manara.CRM_Manara.service;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Administrateurs;
 import CRM_Manara.CRM_Manara.Model.Entity.Animateur;
@@ -12,14 +36,11 @@ import CRM_Manara.CRM_Manara.dto.ApiDtoMapper;
 import CRM_Manara.CRM_Manara.dto.CurrentUserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-@RestController
-@RequestMapping("/api")
-public class ApiMeController {
+@Service
+public class CurrentUserService {
 
     private final UserRepo userRepo;
     private final ParentRepo parentRepo;
@@ -27,11 +48,11 @@ public class ApiMeController {
     private final AdminRepo adminRepo;
     private final ApiDtoMapper apiDtoMapper;
 
-    public ApiMeController(UserRepo userRepo,
-                           ParentRepo parentRepo,
-                           AnimateurRepo animateurRepo,
-                           AdminRepo adminRepo,
-                           ApiDtoMapper apiDtoMapper) {
+    public CurrentUserService(UserRepo userRepo,
+                              ParentRepo parentRepo,
+                              AnimateurRepo animateurRepo,
+                              AdminRepo adminRepo,
+                              ApiDtoMapper apiDtoMapper) {
         this.userRepo = userRepo;
         this.parentRepo = parentRepo;
         this.animateurRepo = animateurRepo;
@@ -39,10 +60,9 @@ public class ApiMeController {
         this.apiDtoMapper = apiDtoMapper;
     }
 
-    @GetMapping("/me")
-    public CurrentUserDto me(Authentication authentication) {
+    public CurrentUserDto currentUser(Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifié");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifie");
         }
 
         User user = userRepo.findByEmail(authentication.getName())
@@ -62,5 +82,6 @@ public class ApiMeController {
                 apiDtoMapper.toAnimateurDto(animateur),
                 apiDtoMapper.toAdminDto(admin)
         );
+>>>>>>> origin/main
     }
 }

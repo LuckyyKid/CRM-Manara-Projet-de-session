@@ -1,0 +1,150 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Planning</span>
+      <h1 class="mm-page-title fs-1">Mon planning</h1>
+      <p class="mm-page-subtitle">Toutes les séances inscrites de vos enfants, en attente ou confirmées.</p>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()">
+    <div class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <div class="mm-weekly-shell">
+          <div class="mm-weekly-toolbar">
+            <div>
+              <div class="mm-weekly-title">Calendrier de la semaine</div>
+              <div class="mm-weekly-range">
+                {{ weekStart() | date:'d MMMM' }} au {{ weekEnd() | date:'d MMMM yyyy' }}
+              </div>
+            </div>
+            <div class="mm-weekly-nav">
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="previousWeek()">Semaine précédente</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="currentWeek()">Cette semaine</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="nextWeek()">Semaine suivante</button>
+            </div>
+          </div>
+
+          <div class="mm-calendar">
+            <div *ngFor="let day of calendarDays()" class="mm-cal-cell">
+              <div class="mm-cal-day">
+                {{ day.date | date:'EEE d MMM' }}
+              </div>
+
+              <div *ngIf="!day.inscriptions.length" class="mm-schedule-empty position-static">
+                Aucun cours
+              </div>
+
+              <article *ngFor="let insc of day.inscriptions" class="mm-cal-event">
+                <span class="mm-cal-event-title">{{ insc.animation.activity.name }}</span>
+                <span class="mm-cal-event-meta">{{ insc.enfant.prenom }} {{ insc.enfant.nom }}</span>
+                <span class="mm-cal-event-time">
+                  {{ insc.animation.startTime | date:'HH:mm' }} - {{ insc.animation.endTime | date:'HH:mm' }}
+                </span>
+                <span class="mm-cal-event-meta">{{ statusLabel(insc.statusInscription) }}</span>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <div class="mb-3">
+          <h2 class="mm-panel-title">Séances à venir</h2>
+          <p class="mm-panel-subtitle">{{ upcomingInscriptions().length }} séance(s) planifiée(s).</p>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Enfant</th>
+                <th>Activité</th>
+                <th>Date</th>
+                <th>Animateur</th>
+                <th>Statut</th>
+                <th>Présence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!upcomingInscriptions().length">
+                <td colspan="6" class="text-secondary">Aucune séance à venir.</td>
+              </tr>
+              <tr *ngFor="let insc of upcomingInscriptions()">
+                <td>{{ insc.enfant.prenom }} {{ insc.enfant.nom }}</td>
+                <td>{{ insc.animation.activity.name }}</td>
+                <td>
+                  {{ insc.animation.startTime | date:'dd/MM/yyyy HH:mm' }}
+                  à {{ insc.animation.endTime | date:'HH:mm' }}
+                </td>
+                <td>{{ insc.animation.animateur.prenom }} {{ insc.animation.animateur.nom }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    [class.bg-warning]="normalizedStatus(insc.statusInscription) === 'EN_ATTENTE'"
+                    [class.text-dark]="normalizedStatus(insc.statusInscription) === 'EN_ATTENTE'"
+                    [class.bg-success]="normalizedStatus(insc.statusInscription) === 'APPROUVEE' || normalizedStatus(insc.statusInscription) === 'ACTIF'"
+                  >
+                    {{ statusLabel(insc.statusInscription) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge bg-secondary">{{ insc.presenceStatus }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mm-card-shadow">
+      <div class="card-body">
+        <div class="mb-3">
+          <h2 class="mm-panel-title">Historique</h2>
+          <p class="mm-panel-subtitle">Séances terminées.</p>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Enfant</th>
+                <th>Activité</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Présence</th>
+                <th>Incident</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!pastInscriptions().length">
+                <td colspan="6" class="text-secondary">Aucune séance passée.</td>
+              </tr>
+              <tr *ngFor="let insc of pastInscriptions()">
+                <td>{{ insc.enfant.prenom }} {{ insc.enfant.nom }}</td>
+                <td>{{ insc.animation.activity.name }}</td>
+                <td>{{ insc.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <span class="badge bg-secondary">{{ statusLabel(insc.statusInscription) }}</span>
+                </td>
+                <td>
+                  <span class="badge"
+                    [class.bg-success]="insc.presenceStatus === 'PRESENT'"
+                    [class.bg-danger]="insc.presenceStatus === 'ABSENT'"
+                    [class.bg-secondary]="insc.presenceStatus !== 'PRESENT' && insc.presenceStatus !== 'ABSENT'">
+                    {{ insc.presenceStatus }}
+                  </span>
+                </td>
+                <td>{{ insc.incidentNote ?? '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
