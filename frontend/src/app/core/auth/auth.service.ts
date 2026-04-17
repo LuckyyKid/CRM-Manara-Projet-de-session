@@ -37,11 +37,17 @@ export class AuthService {
     const currentUser = this.currentUserSignal();
     switch (currentUser?.accountType) {
       case 'ROLE_ADMIN':
+<<<<<<< HEAD
         return '/admin/dashboard';
       case 'ROLE_PARENT':
         return '/parent/dashboard';
       case 'ROLE_ANIMATEUR':
         return '/animateur/dashboard';
+=======
+      case 'ROLE_PARENT':
+      case 'ROLE_ANIMATEUR':
+        return '/me/dashboard';
+>>>>>>> origin/main
       default:
         return '/login';
     }
@@ -66,6 +72,7 @@ export class AuthService {
   }
 
   login(): void {
+<<<<<<< HEAD
     window.location.href = '/login';
   }
 
@@ -107,5 +114,28 @@ export class AuthService {
 
     // 4. Rediriger vers /login (full reload pour réinitialiser l'app)
     window.location.href = '/login';
+=======
+    window.location.href = `${this.backendBaseUrl()}/login`;
+  }
+
+  signUp(): void {
+    window.location.href = `${this.backendBaseUrl()}/signUp`;
+  }
+
+  logout(): void {
+    window.location.href = `${this.backendBaseUrl()}/logout`;
+  }
+
+  private backendBaseUrl(): string {
+    if (typeof window === 'undefined') {
+      return 'http://localhost:8080';
+    }
+
+    if (window.location.port === '4200') {
+      return 'http://localhost:8080';
+    }
+
+    return window.location.origin;
+>>>>>>> origin/main
   }
 }

@@ -5,6 +5,7 @@ import { AuthService } from './core/auth/auth.service';
 
 @Component({
   selector: 'app-root',
+<<<<<<< HEAD
   imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -32,3 +33,9 @@ export class App {
     await this.authService.logout();
   }
 }
+=======
+  imports: [RouterOutlet],
+  template: '<router-outlet />',
+})
+export class App {}
+>>>>>>> origin/main
