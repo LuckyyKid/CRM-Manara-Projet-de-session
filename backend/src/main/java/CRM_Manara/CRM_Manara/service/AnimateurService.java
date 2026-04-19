@@ -54,28 +54,6 @@ public class AnimateurService {
     }
 
     @Transactional(readOnly = true)
-    public List<Animation> getTutoratAnimations(Long animateurId) {
-        return animationRepo.findTutoratByAnimateurId(animateurId).stream()
-                .sorted(Comparator.comparing(Animation::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())))
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    public List<java.util.Map<String, Object>> getTutoratAnimationsSummary(Long animateurId) {
-        return getTutoratAnimations(animateurId).stream().map(a -> {
-            long count = inscriptionRepo.countByAnimationId(a.getId());
-            java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
-            m.put("id", a.getId());
-            m.put("activityName", a.getActivity() != null ? a.getActivity().getActivyName() : "");
-            m.put("startTime", a.getStartTime() != null ? a.getStartTime().toString() : "");
-            m.put("endTime", a.getEndTime() != null ? a.getEndTime().toString() : "");
-            m.put("status", a.getStatusAnimation() != null ? a.getStatusAnimation().name() : "");
-            m.put("inscriptionCount", count);
-            return m;
-        }).collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public List<Animation> getUpcomingAnimationsForAnimateur(Long animateurId, int limit) {
         LocalDateTime now = LocalDateTime.now();
         return animationRepo.findByAnimateurId(animateurId).stream()

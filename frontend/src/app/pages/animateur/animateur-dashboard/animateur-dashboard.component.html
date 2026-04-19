@@ -31,41 +31,6 @@
       </div>
     </div>
 
-    <!-- Prochaines séances de tutorat -->
-    <div class="card mm-card-shadow mt-4" *ngIf="upcomingTutorat().length > 0">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="mm-panel-title mb-0">Prochaines séances de tutorat</h2>
-          <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/tutoring">Voir tout</a>
-        </div>
-        <div class="table-responsive">
-          <table class="table table-sm align-middle">
-            <thead>
-              <tr>
-                <th>Activité</th>
-                <th>Date</th>
-                <th>Élèves</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let anim of upcomingTutorat()">
-                <td class="fw-semibold">{{ anim.activityName }}</td>
-                <td>{{ anim.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
-                <td>{{ anim.inscriptionCount }}</td>
-                <td>
-                  <a class="btn btn-sm btn-primary"
-                     [routerLink]="['/animateur/tutoring/session', anim.id]">
-                    Ouvrir la séance
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
     <!-- Prochaines animations -->
     <div class="card mm-card-shadow mt-4">
       <div class="card-body">
