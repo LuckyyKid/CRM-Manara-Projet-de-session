@@ -81,5 +81,77 @@
         </div>
       </div>
     </div>
+
+    <!-- Tutorat : Quiz en attente -->
+    <div class="card mm-card-shadow mt-4">
+      <div class="card-body">
+        <h2 class="mm-panel-title mb-3">Quiz en attente</h2>
+        <div *ngIf="pendingQuizzes().length === 0" class="text-secondary">
+          Aucun quiz à faire pour le moment.
+        </div>
+        <div class="table-responsive" *ngIf="pendingQuizzes().length > 0">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr><th>Enfant</th><th>Activité</th><th>Date</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of pendingQuizzes()">
+                <td>{{ item.enfant.prenom }}</td>
+                <td>{{ item.quiz.activityName }}</td>
+                <td>{{ item.quiz.startTime | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <a class="btn btn-sm btn-primary"
+                     [routerLink]="['/student/quiz', item.quiz.sessionId, item.enfant.id]">
+                    Faire le quiz
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tutorat : Devoirs en attente -->
+    <div class="card mm-card-shadow mt-4" *ngIf="pendingHomeworks().length > 0">
+      <div class="card-body">
+        <h2 class="mm-panel-title mb-3">Devoirs en attente</h2>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr><th>Enfant</th><th>Axe</th><th>Statut</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of pendingHomeworks()">
+                <td>{{ item.enfant.prenom }}</td>
+                <td>{{ item.hw.axisName }}</td>
+                <td><span class="badge bg-warning text-dark">{{ item.hw.status }}</span></td>
+                <td>
+                  <a class="btn btn-sm btn-outline-primary"
+                     [routerLink]="['/student/homework', item.hw.id, item.enfant.id]">
+                    Faire le devoir
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tutorat : Révisions du jour -->
+    <div class="card mm-card-shadow mt-4" *ngIf="reviewQuestions().length > 0">
+      <div class="card-body">
+        <h2 class="mm-panel-title mb-3">Révisions du jour</h2>
+        <div *ngFor="let item of reviewQuestions()" class="d-flex justify-content-between align-items-center py-2 border-bottom">
+          <span>{{ item.enfant.prenom }} — {{ item.count }} question(s) de révision</span>
+          <a class="btn btn-sm btn-outline-secondary"
+             [routerLink]="['/parent/tutoring/progress', item.enfant.id]">
+            Voir progression
+          </a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

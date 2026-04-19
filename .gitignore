@@ -32,7 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
-<<<<<<< HEAD
 backend/src/main/resources/application-local.properties
 backend/src/main/resources/application-secret.properties
 **/application-secret.properties
@@ -40,10 +39,6 @@ backend/src/main/resources/application-secret.properties
 .env.*
 backend/.env
 frontend/.env
-=======
-backend/src/main/resources/application.properties
-backend/src/main/resources/application-local.properties
->>>>>>> origin/main
 
 .codex/
 .codex
