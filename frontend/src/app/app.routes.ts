@@ -1,17 +1,18 @@
 import { Routes } from '@angular/router';
+<<<<<<< HEAD
 import { adminGuard, animateurGuard, authGuard, parentGuard } from './core/auth/auth.guard';
 import { guestGuard } from './core/auth/guest.guard';
 
-// Pages publiques
+// Public pages
 import { HomePageComponent } from './pages/home/home-page.component';
 import { AboutPageComponent } from './pages/about/about-page.component';
 import { SignupPageComponent } from './pages/signup/signup-page.component';
 import { LoginPageComponent } from './pages/login/login-page.component';
 
-// Dashboard générique (redirige selon le rôle)
+// Generic dashboard (redirects by role)
 import { DashboardPageComponent } from './pages/dashboard/dashboard-page.component';
 
-// Pages Admin
+// Admin pages
 import { AdminDashboardComponent } from './pages/admin/admin-dashboard/admin-dashboard.component';
 import { AdminActivitiesComponent } from './pages/admin/admin-activities/admin-activities.component';
 import { AdminActivityFormComponent } from './pages/admin/admin-activity-form/admin-activity-form.component';
@@ -23,7 +24,7 @@ import { AdminDemandesComponent } from './pages/admin/admin-demandes/admin-deman
 import { AdminNotificationsComponent } from './pages/admin/admin-notifications/admin-notifications.component';
 import { AdminParentsComponent } from './pages/admin/admin-parents/admin-parents.component';
 
-// Pages Parent
+// Parent pages
 import { ParentDashboardComponent } from './pages/parent/parent-dashboard/parent-dashboard.component';
 import { ParentEnfantsComponent } from './pages/parent/parent-enfants/parent-enfants.component';
 import { ParentEnfantNewComponent } from './pages/parent/parent-enfant-new/parent-enfant-new.component';
@@ -32,22 +33,13 @@ import { ParentActivitiesComponent } from './pages/parent/parent-activities/pare
 import { ParentPlanningComponent } from './pages/parent/parent-planning/parent-planning.component';
 import { ParentNotificationsComponent } from './pages/parent/parent-notifications/parent-notifications.component';
 
-// Pages Animateur
+// Animateur pages
 import { AnimateurDashboardComponent } from './pages/animateur/animateur-dashboard/animateur-dashboard.component';
 import { AnimateurInscriptionsComponent } from './pages/animateur/animateur-inscriptions/animateur-inscriptions.component';
 import { AnimateurPresenceComponent } from './pages/animateur/animateur-presence/animateur-presence.component';
 import { AnimateurNotificationsComponent } from './pages/animateur/animateur-notifications/animateur-notifications.component';
 
-// Pages Tutorat adaptatif
-import { AnimateurTutoringListComponent } from './pages/tutoring/animateur-tutoring-list/animateur-tutoring-list.component';
-import { AnimateurTutoringSessionComponent } from './pages/tutoring/animateur-tutoring-session/animateur-tutoring-session.component';
-import { TutorDashboardComponent } from './pages/tutoring/tutor-dashboard/tutor-dashboard.component';
-import { StudentQuizComponent } from './pages/tutoring/student-quiz/student-quiz.component';
-import { StudentHomeworkComponent } from './pages/tutoring/student-homework/student-homework.component';
-import { ParentProgressComponent } from './pages/tutoring/parent-progress/parent-progress.component';
-import { ParentTutoringIndexComponent } from './pages/tutoring/parent-tutoring-index/parent-tutoring-index.component';
-
-// Paramètres
+// Settings
 import { SettingsPageComponent } from './pages/settings/settings-page.component';
 
 export const routes: Routes = [
@@ -58,7 +50,7 @@ export const routes: Routes = [
   { path: 'signup', component: SignupPageComponent, canActivate: [guestGuard] },
   { path: 'login', component: LoginPageComponent, canActivate: [guestGuard] },
 
-  // Dashboard générique
+  // Generic dashboard redirect
   { path: 'me/dashboard', component: DashboardPageComponent, canActivate: [authGuard] },
 
   // Admin
@@ -84,25 +76,43 @@ export const routes: Routes = [
   { path: 'parent/activities', component: ParentActivitiesComponent, canActivate: [parentGuard] },
   { path: 'parent/planning', component: ParentPlanningComponent, canActivate: [parentGuard] },
   { path: 'parent/notifications', component: ParentNotificationsComponent, canActivate: [parentGuard] },
-  { path: 'parent/tutoring/progress/:enfantId', component: ParentProgressComponent, canActivate: [parentGuard] },
 
   // Animateur
   { path: 'animateur/dashboard', component: AnimateurDashboardComponent, canActivate: [animateurGuard] },
   { path: 'animateur/inscriptions', component: AnimateurInscriptionsComponent, canActivate: [animateurGuard] },
   { path: 'animateur/presence/:id', component: AnimateurPresenceComponent, canActivate: [animateurGuard] },
   { path: 'animateur/notifications', component: AnimateurNotificationsComponent, canActivate: [animateurGuard] },
-  { path: 'animateur/tutoring', component: AnimateurTutoringListComponent, canActivate: [animateurGuard] },
-  { path: 'animateur/tutoring/session/:animationId', component: AnimateurTutoringSessionComponent, canActivate: [animateurGuard] },
-  { path: 'animateur/tutoring/dashboard/:animationId', component: TutorDashboardComponent, canActivate: [animateurGuard] },
 
-  // Étudiant (tutorat)
-  { path: 'student/quiz/:sessionId/:enfantId', component: StudentQuizComponent, canActivate: [authGuard] },
-  { path: 'student/homework/:homeworkId/:enfantId', component: StudentHomeworkComponent, canActivate: [authGuard] },
-  { path: 'parent/tutoring', component: ParentTutoringIndexComponent, canActivate: [parentGuard] },
-
-  // Paramètres
+  // Settings
   { path: 'settings', component: SettingsPageComponent, canActivate: [authGuard] },
 
   // Fallback
   { path: '**', redirectTo: 'home' },
+=======
+import { authGuard } from './core/auth/auth.guard';
+import { guestGuard } from './core/auth/guest.guard';
+import { DashboardPageComponent } from './pages/dashboard/dashboard-page.component';
+import { LoginPageComponent } from './pages/login/login-page.component';
+
+export const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'me/dashboard',
+  },
+  {
+    path: 'login',
+    component: LoginPageComponent,
+    canActivate: [guestGuard],
+  },
+  {
+    path: 'me/dashboard',
+    component: DashboardPageComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: '**',
+    redirectTo: 'me/dashboard',
+  },
+>>>>>>> origin/main
 ];

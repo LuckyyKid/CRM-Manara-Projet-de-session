@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, of, timeout } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CurrentUserModel } from '../models/current-user.model';
 
@@ -37,11 +37,17 @@ export class AuthService {
     const currentUser = this.currentUserSignal();
     switch (currentUser?.accountType) {
       case 'ROLE_ADMIN':
+<<<<<<< HEAD
         return '/admin/dashboard';
       case 'ROLE_PARENT':
         return '/parent/dashboard';
       case 'ROLE_ANIMATEUR':
         return '/animateur/dashboard';
+=======
+      case 'ROLE_PARENT':
+      case 'ROLE_ANIMATEUR':
+        return '/me/dashboard';
+>>>>>>> origin/main
       default:
         return '/login';
     }
@@ -55,10 +61,7 @@ export class AuthService {
     this.loadingSignal.set(true);
     try {
       const currentUser = await firstValueFrom(
-        this.http.get<CurrentUserModel>('/api/me').pipe(
-          timeout(8000),
-          catchError(() => of(null)),
-        ),
+        this.http.get<CurrentUserModel>('/api/me').pipe(catchError(() => of(null))),
       );
       this.currentUserSignal.set(currentUser);
       this.initializedSignal.set(true);
@@ -69,6 +72,7 @@ export class AuthService {
   }
 
   login(): void {
+<<<<<<< HEAD
     window.location.href = '/login';
   }
 
@@ -91,6 +95,7 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
+    // 1. Invalider la session Spring Security côté serveur
     try {
       await firstValueFrom(
         this.http.post('/api/logout', {}).pipe(catchError(() => of(null)))
@@ -99,12 +104,38 @@ export class AuthService {
       // Si le serveur est injoignable, on continue quand même le logout local
     }
 
+    // 2. Vider l'état local Angular
     this.currentUserSignal.set(null);
     this.initializedSignal.set(true);
 
+    // 3. Vider tout ce qui peut traîner en storage
     localStorage.clear();
     sessionStorage.clear();
 
+    // 4. Rediriger vers /login (full reload pour réinitialiser l'app)
     window.location.href = '/login';
+=======
+    window.location.href = `${this.backendBaseUrl()}/login`;
+  }
+
+  signUp(): void {
+    window.location.href = `${this.backendBaseUrl()}/signUp`;
+  }
+
+  logout(): void {
+    window.location.href = `${this.backendBaseUrl()}/logout`;
+  }
+
+  private backendBaseUrl(): string {
+    if (typeof window === 'undefined') {
+      return 'http://localhost:8080';
+    }
+
+    if (window.location.port === '4200') {
+      return 'http://localhost:8080';
+    }
+
+    return window.location.origin;
+>>>>>>> origin/main
   }
 }
