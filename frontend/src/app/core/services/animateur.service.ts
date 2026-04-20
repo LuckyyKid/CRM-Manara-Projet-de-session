@@ -6,6 +6,9 @@ import {
   AnimateurNotificationDto,
   AnimationDto,
   InscriptionDto,
+  QuizCreateRequestDto,
+  QuizDto,
+  TutorDashboardDto,
 } from '../models/api.models';
 
 @Injectable({ providedIn: 'root' })
@@ -33,5 +36,21 @@ export class AnimateurService {
       presenceStatus,
       incidentNote,
     });
+  }
+
+  getQuizzes(): Observable<QuizDto[]> {
+    return this.http.get<QuizDto[]>('/api/animateur/quizzes');
+  }
+
+  createQuiz(request: QuizCreateRequestDto): Observable<QuizDto> {
+    return this.http.post<QuizDto>('/api/animateur/quizzes', request);
+  }
+
+  deleteQuiz(quizId: number): Observable<void> {
+    return this.http.delete<void>(`/api/animateur/quizzes/${quizId}`);
+  }
+
+  getTutorDashboard(): Observable<TutorDashboardDto> {
+    return this.http.get<TutorDashboardDto>('/api/animateur/quizzes/dashboard');
   }
 }

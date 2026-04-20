@@ -1,7 +1,6 @@
 package CRM_Manara.CRM_Manara.Controller;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
-<<<<<<< HEAD
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.AnimationRole;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.animationStatus;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.status;
@@ -9,42 +8,33 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.dto.ActionResponseDto;
 import CRM_Manara.CRM_Manara.dto.ActivityDto;
 import CRM_Manara.CRM_Manara.dto.ActivityRequestDto;
-import CRM_Manara.CRM_Manara.dto.AdminOptionsDto;
 import CRM_Manara.CRM_Manara.dto.AdminAnimationRowDto;
+import CRM_Manara.CRM_Manara.dto.AdminDemandesDto;
+import CRM_Manara.CRM_Manara.dto.AdminInscriptionReviewDto;
+import CRM_Manara.CRM_Manara.dto.AdminNotificationDto;
+import CRM_Manara.CRM_Manara.dto.AdminOptionsDto;
 import CRM_Manara.CRM_Manara.dto.AnimateurDto;
 import CRM_Manara.CRM_Manara.dto.AnimateurRequestDto;
 import CRM_Manara.CRM_Manara.dto.AnimationDto;
 import CRM_Manara.CRM_Manara.dto.AnimationRequestDto;
-=======
-import CRM_Manara.CRM_Manara.dto.ActionResponseDto;
-import CRM_Manara.CRM_Manara.dto.AdminAnimationRowDto;
->>>>>>> origin/main
-import CRM_Manara.CRM_Manara.dto.AdminDemandesDto;
-import CRM_Manara.CRM_Manara.dto.AdminInscriptionReviewDto;
-import CRM_Manara.CRM_Manara.dto.AdminNotificationDto;
 import CRM_Manara.CRM_Manara.dto.ApiDtoMapper;
 import CRM_Manara.CRM_Manara.service.AdminNotificationService;
 import CRM_Manara.CRM_Manara.service.AdminService;
 import org.springframework.http.HttpStatus;
-<<<<<<< HEAD
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-=======
->>>>>>> origin/main
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-<<<<<<< HEAD
-import java.util.Arrays;
-=======
->>>>>>> origin/main
 
 @RestController
 @RequestMapping("/api/admin")
@@ -63,18 +53,13 @@ public class ApiAdminController {
     }
 
     @GetMapping("/activities")
-<<<<<<< HEAD
     public List<ActivityDto> activities() {
-=======
-    public List<?> activities() {
->>>>>>> origin/main
         return adminService.getAllActivities().stream()
                 .sorted(Comparator.comparing(activity -> activity.getActivyName(), Comparator.nullsLast(String::compareToIgnoreCase)))
                 .map(apiDtoMapper::toActivityDto)
                 .toList();
     }
 
-<<<<<<< HEAD
     @GetMapping("/activities/{id}")
     public ActivityDto activity(@PathVariable Long id) {
         return apiDtoMapper.toActivityDto(adminService.getActivityById(id));
@@ -109,8 +94,6 @@ public class ApiAdminController {
         ));
     }
 
-=======
->>>>>>> origin/main
     @GetMapping("/animations")
     public List<AdminAnimationRowDto> animations() {
         return adminService.getAllAnimations().stream()
@@ -122,7 +105,6 @@ public class ApiAdminController {
                 .toList();
     }
 
-<<<<<<< HEAD
     @GetMapping("/animations/{id}")
     public AnimationDto animation(@PathVariable Long id) {
         return apiDtoMapper.toAnimationDto(adminService.getAnimationById(id));
@@ -199,9 +181,8 @@ public class ApiAdminController {
         );
     }
 
-=======
->>>>>>> origin/main
     @GetMapping("/demandes")
+    @Transactional(readOnly = true)
     public AdminDemandesDto demandes() {
         List<AdminInscriptionReviewDto> pending = adminService.getPendingInscriptions().stream()
                 .map(this::toReviewDto)
@@ -228,26 +209,26 @@ public class ApiAdminController {
     @PostMapping("/parents/{id}/status")
     public ActionResponseDto updateParentStatus(@PathVariable Long id, @RequestParam boolean enabled) {
         adminService.updateParentEnabled(id, enabled);
-        return new ActionResponseDto(true, enabled ? "Compte parent confirmé." : "Compte parent désactivé.", id);
+        return new ActionResponseDto(true, enabled ? "Compte parent confirme." : "Compte parent desactive.", id);
     }
 
     @PostMapping("/enfants/{id}/status")
     public ActionResponseDto updateEnfantStatus(@PathVariable Long id, @RequestParam boolean active) {
         adminService.updateEnfantActive(id, active);
-        return new ActionResponseDto(true, active ? "Enfant activé." : "Enfant désactivé.", id);
+        return new ActionResponseDto(true, active ? "Enfant active." : "Enfant desactive.", id);
     }
 
     @PostMapping("/animateurs/{id}/status")
     public ActionResponseDto updateAnimateurStatus(@PathVariable Long id, @RequestParam boolean enabled) {
         adminService.updateAnimateurEnabled(id, enabled);
-        return new ActionResponseDto(true, enabled ? "Compte animateur activé." : "Compte animateur désactivé.", id);
+        return new ActionResponseDto(true, enabled ? "Compte animateur active." : "Compte animateur desactive.", id);
     }
 
     @PostMapping("/inscriptions/{id}/approve")
     public ActionResponseDto approveInscription(@PathVariable Long id) {
         try {
             adminService.approveInscription(id);
-            return new ActionResponseDto(true, "Demande approuvée.", id);
+            return new ActionResponseDto(true, "Demande approuvee.", id);
         } catch (IllegalStateException exception) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage(), exception);
         }
@@ -256,7 +237,7 @@ public class ApiAdminController {
     @PostMapping("/inscriptions/{id}/reject")
     public ActionResponseDto rejectInscription(@PathVariable Long id) {
         adminService.rejectInscription(id);
-        return new ActionResponseDto(true, "Demande refusée.", id);
+        return new ActionResponseDto(true, "Demande refusee.", id);
     }
 
     private AdminInscriptionReviewDto toReviewDto(Inscription inscription) {
@@ -268,7 +249,6 @@ public class ApiAdminController {
                 )
         );
     }
-<<<<<<< HEAD
 
     private void validateActivityRequest(ActivityRequestDto request) {
         if (request == null
@@ -333,6 +313,4 @@ public class ApiAdminController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le mot de passe doit contenir au moins 6 caracteres.");
         }
     }
-=======
->>>>>>> origin/main
 }

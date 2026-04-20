@@ -42,8 +42,8 @@
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
           <span class="mm-kpi-label">Demandes</span>
-          <span class="mm-kpi-value">{{ countPendingInscriptions() }}</span>
-          <span class="mm-kpi-meta">En attente de validation</span>
+          <span class="mm-kpi-value">{{ countPendingRequests() }}</span>
+          <span class="mm-kpi-meta">Parents: {{ countPendingParents() }} - inscriptions: {{ countPendingInscriptions() }}</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
@@ -55,8 +55,8 @@
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Familles actives</span>
-          <span class="mm-kpi-value">{{ countActiveParents() }}</span>
+          <span class="mm-kpi-label">Parents en attente</span>
+          <span class="mm-kpi-value">{{ countPendingParents() }}</span>
           <span class="mm-kpi-meta">Enfants en attente: {{ countPendingChildren() }}</span>
         </div>
       </div>

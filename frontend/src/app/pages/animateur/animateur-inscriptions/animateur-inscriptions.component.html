@@ -37,7 +37,10 @@
               <td>{{ animation.endTime | date:'dd/MM/yyyy HH:mm' }}</td>
               <td>{{ animation.status }}</td>
               <td>
-                <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Présences</a>
+                <div class="d-flex gap-2">
+                  <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Présences</a>
+                  <a class="btn btn-sm btn-outline-primary" routerLink="/animateur/quizzes" [queryParams]="{ animationId: animation.id }">Quiz</a>
+                </div>
               </td>
             </tr>
           </tbody>

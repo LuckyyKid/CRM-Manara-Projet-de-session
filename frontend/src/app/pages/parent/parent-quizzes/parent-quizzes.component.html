@@ -1,0 +1,127 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Espace parent</span>
+      <h1 class="mm-page-title fs-1">Quiz</h1>
+      <p class="mm-page-subtitle">Repondez aux micro-diagnostics disponibles pour vos enfants.</p>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()" class="row g-4">
+    <div class="col-12 col-xl-4">
+      <div class="card mm-card-shadow mb-4">
+        <div class="card-body">
+          <h2 class="mm-panel-title">Quiz disponibles</h2>
+          <div class="list-group list-group-flush">
+            <button type="button"
+                    class="list-group-item list-group-item-action px-0"
+                    *ngFor="let parentQuiz of quizzes()"
+                    (click)="selectQuiz(parentQuiz)">
+              <div class="d-flex justify-content-between gap-3">
+                <div>
+                  <div class="fw-semibold">{{ parentQuiz.quiz.title }}</div>
+                  <div class="text-secondary small">{{ parentQuiz.quiz.activityName || 'Activite' }}</div>
+                </div>
+                <span class="badge align-self-start" [class.text-bg-success]="parentQuiz.alreadySubmitted" [class.text-bg-primary]="!parentQuiz.alreadySubmitted">
+                  {{ parentQuiz.alreadySubmitted ? 'Soumis' : 'A faire' }}
+                </span>
+              </div>
+            </button>
+            <div *ngIf="!quizzes().length" class="text-secondary py-2">
+              Aucun quiz disponible pour les seances de vos enfants.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mm-card-shadow">
+        <div class="card-body">
+          <h2 class="mm-panel-title">Soumissions recentes</h2>
+          <div class="list-group list-group-flush">
+            <div class="list-group-item px-0" *ngFor="let attempt of attempts() | slice:0:5">
+              <div class="fw-semibold">{{ attempt.quizTitle }}</div>
+              <div class="text-secondary small">
+                {{ attempt.enfantName }} - {{ attempt.submittedAt | date:'dd/MM/yyyy HH:mm' }} - {{ statusLabel(attempt.status) }}
+              </div>
+            </div>
+            <div *ngIf="!attempts().length" class="text-secondary py-2">Aucune soumission.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-8">
+      <div class="card mm-card-shadow">
+        <div class="card-body">
+          <ng-container *ngIf="selectedQuiz() as parentQuiz; else noQuiz">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+              <div>
+                <h2 class="mm-panel-title mb-1">{{ parentQuiz.quiz.title }}</h2>
+                <p class="mm-panel-subtitle mb-0">
+                  {{ parentQuiz.quiz.axes.length }} axe(s), {{ quizQuestionCount() }} question(s)
+                </p>
+              </div>
+              <span class="badge text-bg-light">{{ parentQuiz.quiz.activityName }}</span>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label" for="childSelect">Enfant</label>
+              <select id="childSelect" class="form-select" [ngModel]="selectedChildId()" (ngModelChange)="selectedChildId.set($event)">
+                <option *ngFor="let child of parentQuiz.eligibleChildren" [ngValue]="child.id">
+                  {{ child.prenom }} {{ child.nom }}
+                </option>
+              </select>
+            </div>
+
+            <div *ngIf="parentQuiz.alreadySubmitted" class="alert alert-info">
+              Ce quiz a deja ete soumis pour au moins un enfant de votre compte.
+            </div>
+
+            <div class="accordion" id="parentQuizAxes">
+              <div class="accordion-item" *ngFor="let axis of parentQuiz.quiz.axes; let i = index">
+                <h3 class="accordion-header">
+                  <button class="accordion-button" [class.collapsed]="i !== 0" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#parentAxis' + axis.id">
+                    Axe {{ axis.position }} - {{ axis.title }}
+                  </button>
+                </h3>
+                <div class="accordion-collapse collapse" [class.show]="i === 0" [id]="'parentAxis' + axis.id" data-bs-parent="#parentQuizAxes">
+                  <div class="accordion-body">
+                    <p class="text-secondary">{{ axis.summary }}</p>
+                    <div class="d-grid gap-3">
+                      <div *ngFor="let question of axis.questions">
+                        <label class="form-label fw-semibold" [for]="'question' + question.id">
+                          {{ question.position }}. {{ question.questionText }}
+                        </label>
+                        <textarea class="form-control"
+                                  rows="3"
+                                  [id]="'question' + question.id"
+                                  [ngModel]="answers()[question.id] || ''"
+                                  (ngModelChange)="setAnswer(question.id, $event)"
+                                  placeholder="Votre reponse"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              <span class="text-secondary">{{ answeredCount() }} / {{ quizQuestionCount() }} reponses</span>
+              <button class="btn btn-primary" type="button" [disabled]="!canSubmit()" (click)="submit()">
+                {{ saving() ? 'Soumission...' : 'Soumettre le quiz' }}
+              </button>
+            </div>
+          </ng-container>
+
+          <ng-template #noQuiz>
+            <div class="text-secondary py-4">Selectionnez un quiz disponible.</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

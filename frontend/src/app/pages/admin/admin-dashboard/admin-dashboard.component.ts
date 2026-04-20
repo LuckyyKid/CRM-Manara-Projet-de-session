@@ -34,8 +34,9 @@ export class AdminDashboardComponent implements OnInit {
     return ids.size;
   });
   countPendingInscriptions = computed(() => this.demandes()?.pendingInscriptions.length ?? 0);
-  countActiveParents = computed(
-    () => this.demandes()?.pendingParents.filter((p) => p.user?.enabled).length ?? 0,
+  countPendingParents = computed(() => this.demandes()?.pendingParents.length ?? 0);
+  countPendingRequests = computed(
+    () => this.countPendingParents() + this.countPendingInscriptions(),
   );
   countPendingChildren = computed(() => this.demandes()?.pendingEnfants.length ?? 0);
   averageFillRate = computed(() => {

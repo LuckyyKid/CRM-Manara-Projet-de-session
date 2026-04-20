@@ -8,6 +8,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Parent;
 import CRM_Manara.CRM_Manara.service.parentService;
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Profile("thymeleaf")
 @Controller
 @RequestMapping("/parent")
 public class parentController {

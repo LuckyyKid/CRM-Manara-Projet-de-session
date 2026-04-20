@@ -12,6 +12,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.service.AdminService;
 import CRM_Manara.CRM_Manara.service.AdminNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Profile("thymeleaf")
 @Controller
 @RequestMapping("/admin")
 public class adminController {

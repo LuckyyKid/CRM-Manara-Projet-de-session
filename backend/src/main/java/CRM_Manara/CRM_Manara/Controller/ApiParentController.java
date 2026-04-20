@@ -13,7 +13,12 @@ import CRM_Manara.CRM_Manara.dto.InscriptionRequestDto;
 import CRM_Manara.CRM_Manara.dto.ParentActivitiesResponseDto;
 import CRM_Manara.CRM_Manara.dto.ParentActivityViewDto;
 import CRM_Manara.CRM_Manara.dto.ParentNotificationDto;
+import CRM_Manara.CRM_Manara.dto.ParentQuizDto;
+import CRM_Manara.CRM_Manara.dto.QuizAttemptDto;
+import CRM_Manara.CRM_Manara.dto.QuizAttemptSubmitDto;
+import CRM_Manara.CRM_Manara.service.ParentQuizService;
 import CRM_Manara.CRM_Manara.service.parentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,11 +41,18 @@ import java.util.stream.Collectors;
 public class ApiParentController {
 
     private final parentService parentService;
+    private final ParentQuizService parentQuizService;
     private final ApiDtoMapper apiDtoMapper;
 
-    public ApiParentController(parentService parentService, ApiDtoMapper apiDtoMapper) {
+    @Autowired
+    public ApiParentController(parentService parentService, ParentQuizService parentQuizService, ApiDtoMapper apiDtoMapper) {
         this.parentService = parentService;
+        this.parentQuizService = parentQuizService;
         this.apiDtoMapper = apiDtoMapper;
+    }
+
+    ApiParentController(parentService parentService, ApiDtoMapper apiDtoMapper) {
+        this(parentService, null, apiDtoMapper);
     }
 
     @GetMapping("/enfants")
@@ -66,6 +78,28 @@ public class ApiParentController {
         return parentService.getNotificationsForParent(email, 100).stream()
                 .map(apiDtoMapper::toParentNotificationDto)
                 .toList();
+    }
+
+    @GetMapping("/quizzes")
+    public List<ParentQuizDto> quizzes(Authentication authentication) {
+        return parentQuizService.listAvailableQuizzes(requireEmail(authentication));
+    }
+
+    @GetMapping("/quizzes/{id}")
+    public ParentQuizDto quiz(@PathVariable Long id, Authentication authentication) {
+        return parentQuizService.getAvailableQuiz(id, requireEmail(authentication));
+    }
+
+    @GetMapping("/quiz-attempts")
+    public List<QuizAttemptDto> quizAttempts(Authentication authentication) {
+        return parentQuizService.listAttempts(requireEmail(authentication));
+    }
+
+    @PostMapping("/quizzes/{id}/attempts")
+    public QuizAttemptDto submitQuiz(@PathVariable Long id,
+                                     @RequestBody QuizAttemptSubmitDto request,
+                                     Authentication authentication) {
+        return parentQuizService.submitAttempt(id, request, requireEmail(authentication));
     }
 
     @GetMapping("/activities")

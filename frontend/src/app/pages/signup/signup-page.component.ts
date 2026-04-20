@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-signup-page',
@@ -11,7 +11,8 @@ import { inject } from '@angular/core';
   templateUrl: './signup-page.component.html',
 })
 export class SignupPageComponent {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
   nom = signal('');
   prenom = signal('');
@@ -23,11 +24,9 @@ export class SignupPageComponent {
   message = signal('');
   errorMsg = signal('');
   loading = signal(false);
-
-  // Vérification de la disponibilité de l'email
   emailAvailableMsg = signal('');
 
-  checkEmail() {
+  checkEmail(): void {
     const val = this.email();
     if (!val || !val.includes('@')) {
       this.emailAvailableMsg.set('');
@@ -43,7 +42,7 @@ export class SignupPageComponent {
   validate(): boolean {
     const errs: Record<string, string> = {};
     if (!this.nom().trim()) errs['nom'] = 'Le nom est obligatoire.';
-    if (!this.prenom().trim()) errs['prenom'] = 'Le prénom est obligatoire.';
+    if (!this.prenom().trim()) errs['prenom'] = 'Le prenom est obligatoire.';
     if (!this.adresse().trim()) errs['adresse'] = "L'adresse est obligatoire.";
     if (!this.email().trim()) {
       errs['email'] = "L'email est obligatoire.";
@@ -53,40 +52,39 @@ export class SignupPageComponent {
     if (!this.password().trim()) {
       errs['password'] = 'Le mot de passe est obligatoire.';
     } else if (this.password().length < 6) {
-      errs['password'] = 'Le mot de passe doit contenir au moins 6 caractères.';
+      errs['password'] = 'Le mot de passe doit contenir au moins 6 caracteres.';
     }
     this.errors.set(errs);
     return Object.keys(errs).length === 0;
   }
 
-  onSubmit() {
+  async onSubmit(): Promise<void> {
     if (!this.validate()) return;
     this.loading.set(true);
     this.errorMsg.set('');
     this.message.set('');
 
-    // POST au backend Spring en form-urlencoded
-    // (le backend /signUp exige CSRF via cookie ou session)
-    // On redirige vers le formulaire Thymeleaf du backend pour que le CSRF fonctionne.
-    // Quand un endpoint POST /api/signUp sera ajouté, on pourra faire l'appel ici.
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/signUp';
-    const fields: Record<string, string> = {
-      nom: this.nom(),
-      prenom: this.prenom(),
-      adresse: this.adresse(),
-      email: this.email(),
-      password: this.password(),
-    };
-    for (const [key, val] of Object.entries(fields)) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = val;
-      form.appendChild(input);
+    try {
+      const response = await firstValueFrom(
+        this.http.post<{ success: boolean; message: string }>('/api/signUp', {
+          nom: this.nom(),
+          prenom: this.prenom(),
+          adresse: this.adresse(),
+          email: this.email(),
+          password: this.password(),
+        }),
+      );
+      this.message.set(response.message);
+      this.errors.set({});
+      setTimeout(() => this.router.navigate(['/login'], { queryParams: { pending: true } }), 900);
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.error?.message) {
+        this.errorMsg.set(error.error.message);
+        return;
+      }
+      this.errorMsg.set("L'inscription est impossible pour le moment.");
+    } finally {
+      this.loading.set(false);
     }
-    document.body.appendChild(form);
-    form.submit();
   }
 }

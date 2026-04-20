@@ -1,0 +1,117 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Micro-diagnostic</span>
+      <h1 class="mm-page-title fs-1">Creation de quiz</h1>
+      <p class="mm-page-subtitle">Transformez des notes de seance en axes et questions.</p>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
+
+  <div class="row g-4">
+    <div class="col-12 col-xl-5">
+      <div class="card mm-card-shadow h-100">
+        <div class="card-body">
+          <h2 class="mm-panel-title">Nouveau quiz</h2>
+          <p class="mm-panel-subtitle">Collez les notes couvertes apres la seance. Le systeme cree 3 a 7 axes et 5 questions par axe.</p>
+
+          <form class="d-grid gap-3" (ngSubmit)="createQuiz()">
+            <div>
+              <label class="form-label" for="quizTitle">Titre</label>
+              <input id="quizTitle" class="form-control" name="title" [(ngModel)]="form.title" placeholder="Quiz - Calcul differentiel">
+            </div>
+
+            <div>
+              <label class="form-label" for="animationId">Seance liee</label>
+              <select id="animationId" class="form-select" name="animationId" [(ngModel)]="form.animationId" (ngModelChange)="onAnimationChange()">
+                <option [ngValue]="null">Aucune seance precise</option>
+                <option *ngFor="let animation of animations()" [ngValue]="animation.id">
+                  {{ animation.activity.name }} - {{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label" for="sourceNotes">Notes de seance</label>
+              <textarea id="sourceNotes" class="form-control" rows="10" name="sourceNotes" [(ngModel)]="form.sourceNotes" placeholder="Ex.: derivees, regle du produit, erreurs de signe, interpretation graphique..."></textarea>
+            </div>
+
+            <button class="btn btn-primary" type="submit" [disabled]="saving()">
+              {{ saving() ? 'Creation...' : 'Generer le quiz' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-7">
+      <div class="card mm-card-shadow mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+            <div>
+              <h2 class="mm-panel-title mb-1">Quiz genere</h2>
+              <p class="mm-panel-subtitle mb-0" *ngIf="currentQuiz() as quiz">
+                {{ quiz.axes.length }} axe(s), {{ quiz.axes.length * 5 }} question(s)
+              </p>
+            </div>
+            <span *ngIf="currentQuiz()?.activityName" class="badge text-bg-light">{{ currentQuiz()?.activityName }}</span>
+          </div>
+
+          <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+          <div *ngIf="!loading() && !currentQuiz()" class="text-secondary py-4">Aucun quiz cree pour le moment.</div>
+
+          <ng-container *ngIf="currentQuiz() as quiz">
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <h3 class="h5 mb-1">{{ quiz.title }}</h3>
+                  <div class="text-secondary small">Cree le {{ quiz.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                </div>
+                <button class="btn btn-sm btn-outline-danger" type="button" (click)="deleteQuiz(quiz)">Supprimer</button>
+              </div>
+            </div>
+
+            <div class="accordion" id="quizAxes">
+              <div class="accordion-item" *ngFor="let axis of quiz.axes; let i = index">
+                <h3 class="accordion-header">
+                  <button class="accordion-button" [class.collapsed]="i !== 0" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#axis' + axis.id">
+                    Axe {{ axis.position }} - {{ axis.title }}
+                  </button>
+                </h3>
+                <div class="accordion-collapse collapse" [class.show]="i === 0" [id]="'axis' + axis.id" data-bs-parent="#quizAxes">
+                  <div class="accordion-body">
+                    <p class="text-secondary">{{ axis.summary }}</p>
+                    <ol class="d-grid gap-3 ps-3">
+                      <li *ngFor="let question of axis.questions">
+                        <div class="fw-semibold">{{ question.angle }}</div>
+                        <div>{{ question.questionText }}</div>
+                        <div class="small text-secondary mt-1">Attendu: {{ question.expectedAnswer }}</div>
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="card mm-card-shadow">
+        <div class="card-body">
+          <h2 class="mm-panel-title">Historique</h2>
+          <div class="list-group list-group-flush">
+            <button type="button" class="list-group-item list-group-item-action" *ngFor="let quiz of quizzes()" (click)="selectQuiz(quiz)">
+              <div class="d-flex justify-content-between gap-3">
+                <span>{{ quiz.title }}</span>
+                <span class="text-secondary small">{{ quiz.createdAt | date:'dd/MM HH:mm' }}</span>
+              </div>
+            </button>
+            <div *ngIf="!quizzes().length" class="text-secondary py-2">Aucun quiz dans l'historique.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,19 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-<<<<<<< HEAD
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-=======
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
->>>>>>> origin/main
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
@@ -51,14 +47,11 @@ public class SecurityConfig {
     }
 
     @Bean
-<<<<<<< HEAD
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-=======
->>>>>>> origin/main
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(frontendBaseUrl));
@@ -68,110 +61,109 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/oauth2/**", configuration);
+        source.registerCorsConfiguration("/login/oauth2/**", configuration);
         return source;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authenticationProvider(authenticationProvider());
-
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher(PathPatternRequestMatcher.pathPattern("/api/**"))
+                .authenticationProvider(authenticationProvider())
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf
-<<<<<<< HEAD
-                        .ignoringRequestMatchers("/api/**", "/login")
-=======
-                        .ignoringRequestMatchers("/api/**")
->>>>>>> origin/main
-                )
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .oauth2Login(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/login",
-                                "/register",
-                                "/css/**",
-                                "/",
-                                "/index",
-                                "/signUp",
-<<<<<<< HEAD
-                                "/api/login",
-=======
->>>>>>> origin/main
-                                "/api/signUp/**",
-                                "/verify",
-                                "/oauth2/**",
-                                "/api/chatbot/**",
-                                "/about"
-                        ).permitAll()
+                        .requestMatchers("/api/login", "/api/signUp/**", "/api/chatbot/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
-                        .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/parent/**", "/api/parent/**").hasRole("PARENT")
-                        .requestMatchers("/animateur/**", "/api/animateur/**").hasRole("ANIMATEUR")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/parent/**").hasRole("PARENT")
+                        .requestMatchers("/api/animateur/**").hasRole("ANIMATEUR")
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .successHandler(successHandler)
-                        .failureHandler((request, response, exception) -> {
-                            if (exception instanceof DisabledException) {
-<<<<<<< HEAD
-                                response.sendRedirect(frontendBaseUrl + "/login?pending");
-                                return;
-                            }
-                            response.sendRedirect(frontendBaseUrl + "/login?error");
-=======
-                                response.sendRedirect("/login?pending");
-                                return;
-                            }
-                            response.sendRedirect("/login?error");
->>>>>>> origin/main
-                        })
-                        .permitAll()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
-                        .userInfoEndpoint(userInfo -> userInfo.userService(userService))
-                        .successHandler(successHandler)
-                        .failureHandler((request, response, exception) -> {
-                            if (exception.getMessage() != null
-                                    && exception.getMessage().toLowerCase().contains("approbation")) {
-                                response.sendRedirect("/login?pending");
-                                return;
-                            }
-                            response.sendRedirect("/login?oauthError");
-                        })
-                )
                 .logout(logout -> logout
-<<<<<<< HEAD
-                        .logoutRequestMatcher(request -> "POST".equals(request.getMethod())
-                                && ("/api/logout".equals(request.getServletPath())
-                                || "/logout".equals(request.getServletPath())))
+                        .logoutUrl("/api/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
-                            if (!request.getServletPath().startsWith("/api/")) {
-                                response.sendRedirect("/login?logout");
-                                return;
-                            }
-
-                            // Retourner 200 JSON — Angular gère la redirection
                             response.setStatus(200);
                             response.setContentType("application/json");
                             response.getWriter().write("{\"success\":true}");
                         })
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-=======
-                        .logoutSuccessUrl(frontendBaseUrl + "/login?logout")
->>>>>>> origin/main
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> response.sendError(401))
+                        .accessDeniedHandler((request, response, accessDeniedException) -> response.sendError(403))
+                );
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authenticationProvider(authenticationProvider());
+
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/logout"))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/",
+                                "/index",
+                                "/about",
+                                "/login",
+                                "/register",
+                                "/signUp",
+                                "/css/**",
+                                "/api/login",
+                                "/api/signUp/**",
+                                "/api/chatbot/**",
+                                "/oauth2/**",
+                                "/login/oauth2/**"
+                        ).permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/parent/**").hasRole("PARENT")
+                        .requestMatchers("/animateur/**").hasRole("ANIMATEUR")
+                        .anyRequest().authenticated()
+                )
+                .formLogin(AbstractHttpConfigurer::disable)
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo.userService(userService))
+                        .successHandler(successHandler)
+                        .failureHandler((request, response, exception) -> {
+                            if (exception.getMessage() != null
+                                    && exception.getMessage().toLowerCase().contains("approbation")) {
+                                response.sendRedirect(frontendBaseUrl + "/login?pending");
+                                return;
+                            }
+                            response.sendRedirect(frontendBaseUrl + "/login?oauthError");
+                        })
+                )
+                .logout(logout -> logout
+                        .logoutRequestMatcher(request -> "POST".equals(request.getMethod())
+                                && "/logout".equals(request.getServletPath()))
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            if (!request.getServletPath().startsWith("/api/")) {
+                                response.sendRedirect(frontendBaseUrl + "/login?logout");
+                                return;
+                            }
+
+                            response.setStatus(200);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"success\":true}");
+                        })
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
                 .exceptionHandling(exception -> exception
-                        .defaultAuthenticationEntryPointFor(
-                                (request, response, authException) -> response.sendError(401),
-                                PathPatternRequestMatcher.pathPattern("/api/**")
-                        )
-                        .defaultAccessDeniedHandlerFor(
-                                (request, response, accessDeniedException) -> response.sendError(403),
-                                PathPatternRequestMatcher.pathPattern("/api/**")
-                        )
+                        .authenticationEntryPoint((request, response, authException) -> response.sendError(401))
+                        .accessDeniedHandler((request, response, accessDeniedException) -> response.sendError(403))
                 );
 
         return http.build();

@@ -3,6 +3,7 @@ package CRM_Manara.CRM_Manara.Controller;
 import CRM_Manara.CRM_Manara.service.AccountSettingsService;
 import CRM_Manara.CRM_Manara.dto.AccountSettingsView;
 import CRM_Manara.CRM_Manara.service.AvatarService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +29,7 @@ import java.security.Principal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Profile("thymeleaf")
 @Controller
 @RequestMapping
 public class SettingsController {
