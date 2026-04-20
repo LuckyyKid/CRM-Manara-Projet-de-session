@@ -118,7 +118,6 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
     private User createGoogleParent(String email, String fullName) {
         String[] nameParts = splitName(fullName);
 
-        // enabled = false : le compte est en attente d'approbation par l'admin
         User user = new User(email, passwordEncoder.encode(UUID.randomUUID().toString()), SecurityRole.ROLE_PARENT, false);
         User savedUser = userRepo.save(user);
         avatarService.assignDefaultAvatar(savedUser, fullName);
@@ -131,14 +130,14 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
                 savedParent,
                 "COMPTE",
                 "Compte créé",
-                "Votre compte parent a été créé avec Google. Il est en attente d'approbation par l'administration."
+                "Votre compte parent a ete cree avec Google. Il est en attente d'approbation par l'administration."
         );
         emailService.sendEmail(
                 savedUser.getEmail(),
                 "Compte parent en attente d'approbation - CRM Manara",
                 "Bonjour,\n\nVotre compte parent a été créé avec Google.\n"
                         + "Il est maintenant en attente d'approbation par l'administration.\n"
-                        + "Tant qu'il n'est pas approuvé, vous ne pourrez pas accéder au portail.\n\n"
+                        + "Tant qu'il n'est pas approuve, vous ne pourrez pas acceder au portail.\n\n"
                         + "Compte: " + savedUser.getEmail() + "\n\nMerci,\nCRM Manara"
         );
         emailService.notifyAdminsOfParentSignup(fullName, savedUser.getEmail(), "Google");

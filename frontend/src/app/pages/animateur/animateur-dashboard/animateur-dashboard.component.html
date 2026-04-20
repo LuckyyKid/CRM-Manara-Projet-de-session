@@ -3,46 +3,136 @@
     <div>
       <span class="mm-page-eyebrow">Espace animateur</span>
       <h1 class="mm-page-title">Tableau de bord</h1>
-      <p class="mm-page-subtitle">Vue d'ensemble de vos animations.</p>
+      <p class="mm-page-subtitle">Suivi des quiz, axes et prochaines seances.</p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" routerLink="/animateur/inscriptions">Mes séances</a>
+      <a class="btn btn-primary" routerLink="/animateur/quizzes">Creer un quiz</a>
+      <a class="btn btn-outline-primary" routerLink="/animateur/inscriptions">Mes seances</a>
     </div>
   </div>
 
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
   <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()">
-    <!-- KPI -->
     <div class="row g-3">
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Total animations</span>
-          <span class="mm-kpi-value">{{ countTotal() }}</span>
-          <span class="mm-kpi-meta">Toutes séances confondues</span>
+          <span class="mm-kpi-label">Progression globale</span>
+          <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.globalProgressPercent, '%') }}</span>
+          <span class="mm-kpi-meta">{{ tutorDashboard()?.progressStatus }}</span>
         </div>
       </div>
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">À venir</span>
+          <span class="mm-kpi-label">Axes suivis</span>
+          <span class="mm-kpi-value">{{ tutorDashboard()?.axisCount ?? 0 }}</span>
+          <span class="mm-kpi-meta">{{ tutorDashboard()?.questionCount ?? 0 }} questions generees</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Temps moyen</span>
+          <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.averageResponseTimeSeconds, 's') }}</span>
+          <span class="mm-kpi-meta">Disponible apres les tentatives</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">A venir</span>
           <span class="mm-kpi-value">{{ countUpcoming() }}</span>
-          <span class="mm-kpi-meta">Séances planifiées</span>
+          <span class="mm-kpi-meta">Seances planifiees</span>
         </div>
       </div>
     </div>
 
-    <!-- Prochaines animations -->
+    <div class="card mm-card-shadow mt-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start gap-3">
+          <div>
+            <h2 class="mm-panel-title mb-1">Suggestion prochaine seance</h2>
+            <p class="mm-panel-subtitle mb-0">{{ tutorDashboard()?.nextSessionSuggestion }}</p>
+          </div>
+          <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/quizzes">Nouveau quiz</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+      <div class="col-12 col-xl-7">
+        <div class="card mm-card-shadow h-100">
+          <div class="card-body">
+            <h2 class="mm-panel-title mb-1">Progression par axe</h2>
+            <p class="mm-panel-subtitle">Les scores seront alimentes par les micro-diagnostics.</p>
+
+            <div class="table-responsive">
+              <table class="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Axe</th>
+                    <th>Quiz</th>
+                    <th>Score</th>
+                    <th>Temps</th>
+                    <th>Statut</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngIf="!axesPreview().length">
+                    <td colspan="5" class="text-secondary">Aucun axe suivi. Creez un quiz pour initialiser le suivi.</td>
+                  </tr>
+                  <tr *ngFor="let axis of axesPreview()">
+                    <td>
+                      <div class="fw-semibold">{{ axis.axisTitle }}</div>
+                      <div class="text-secondary small">{{ axis.questionCount }} questions</div>
+                    </td>
+                    <td>{{ axis.quizCount }}</td>
+                    <td>{{ formatMetric(axis.scorePercent, '%') }}</td>
+                    <td>{{ formatMetric(axis.averageResponseTimeSeconds, 's') }}</td>
+                    <td><span class="badge text-bg-light">{{ axis.status }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-xl-5">
+        <div class="card mm-card-shadow h-100">
+          <div class="card-body">
+            <h2 class="mm-panel-title">Axes persistants</h2>
+            <p class="mm-panel-subtitle">Axes revenus dans plusieurs quiz ou a surveiller en priorite.</p>
+
+            <div class="list-group list-group-flush">
+              <div class="list-group-item px-0" *ngFor="let axis of persistentAxesPreview()">
+                <div class="d-flex justify-content-between gap-3">
+                  <div>
+                    <div class="fw-semibold">{{ axis.axisTitle }}</div>
+                    <div class="text-secondary small">Dernier quiz: {{ axis.latestQuizTitle }}</div>
+                  </div>
+                  <span class="badge text-bg-warning align-self-start">{{ axis.quizCount }}x</span>
+                </div>
+              </div>
+              <div *ngIf="!persistentAxesPreview().length" class="text-secondary py-2">
+                Aucun axe persistant detecte pour l'instant.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card mm-card-shadow mt-4">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="mm-panel-title mb-0">Prochaines séances</h2>
+          <h2 class="mm-panel-title mb-0">Prochaines seances</h2>
           <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/inscriptions">Voir tout</a>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>Activité</th>
+                <th>Activite</th>
                 <th>Date</th>
                 <th>Statut</th>
                 <th>Actions</th>
@@ -50,14 +140,17 @@
             </thead>
             <tbody>
               <tr *ngIf="!upcomingAnimations().length">
-                <td colspan="4" class="text-secondary">Aucune séance à venir.</td>
+                <td colspan="4" class="text-secondary">Aucune seance a venir.</td>
               </tr>
               <tr *ngFor="let animation of upcomingAnimations()">
                 <td>{{ animation.activity.name }}</td>
                 <td>{{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td>{{ animation.status }}</td>
                 <td>
-                  <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Présences</a>
+                  <div class="d-flex gap-2">
+                    <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Presences</a>
+                    <a class="btn btn-sm btn-outline-primary" routerLink="/animateur/quizzes" [queryParams]="{ animationId: animation.id }">Quiz</a>
+                  </div>
                 </td>
               </tr>
             </tbody>

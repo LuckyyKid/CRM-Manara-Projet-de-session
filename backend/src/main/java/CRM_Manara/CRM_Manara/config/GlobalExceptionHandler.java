@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.LinkedHashMap;
@@ -21,14 +19,11 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public Object handleDataIntegrity(DataIntegrityViolationException ex,
-                                      HttpServletRequest request,
-                                      RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Map<String, Object>> handleDataIntegrity(DataIntegrityViolationException ex,
+                                                                  HttpServletRequest request) {
         logger.warn("Contrainte de donnees sur {}", request.getRequestURI(), ex);
         boolean deleteRequest = "DELETE".equalsIgnoreCase(request.getMethod());
         return buildResponse(
-                request,
-                redirectAttributes,
                 HttpStatus.CONFLICT,
                 "Action impossible",
                 deleteRequest
@@ -38,12 +33,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public Object handleIllegalArgument(IllegalArgumentException ex,
-                                        HttpServletRequest request,
-                                        RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
         return buildResponse(
-                request,
-                redirectAttributes,
                 HttpStatus.BAD_REQUEST,
                 "Demande invalide",
                 ex.getMessage() == null || ex.getMessage().isBlank()
@@ -53,12 +44,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public Object handleIllegalState(IllegalStateException ex,
-                                     HttpServletRequest request,
-                                     RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Map<String, Object>> handleIllegalState(IllegalStateException ex) {
         return buildResponse(
-                request,
-                redirectAttributes,
                 HttpStatus.CONFLICT,
                 "Action indisponible",
                 ex.getMessage() == null || ex.getMessage().isBlank()
@@ -68,14 +55,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public Object handleResponseStatus(ResponseStatusException ex,
-                                       HttpServletRequest request,
-                                       RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex) {
         HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
         String message = ex.getReason();
         return buildResponse(
-                request,
-                redirectAttributes,
                 status == null ? HttpStatus.INTERNAL_SERVER_ERROR : status,
                 "Action impossible",
                 message == null || message.isBlank()
@@ -85,53 +68,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public Object handleUnexpected(Exception ex,
-                                   HttpServletRequest request,
-                                   RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Map<String, Object>> handleUnexpected(Exception ex,
+                                                               HttpServletRequest request) {
         logger.error("Erreur non geree sur {}", request.getRequestURI(), ex);
         return buildResponse(
-                request,
-                redirectAttributes,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Erreur technique",
                 "Une erreur inattendue est survenue. Reessayez dans quelques instants."
         );
     }
 
-    private Object buildResponse(HttpServletRequest request,
-                                 RedirectAttributes redirectAttributes,
-                                 HttpStatus status,
-                                 String title,
-                                 String message) {
-        if (expectsJson(request)) {
-            Map<String, Object> body = new LinkedHashMap<>();
-            body.put("success", false);
-            body.put("message", message);
-            body.put("title", title);
-            body.put("status", status.value());
-            return ResponseEntity.status(status).body(body);
-        }
-
-        String referer = request.getHeader("Referer");
-        if (referer != null && !referer.isBlank() && !referer.contains("/error")) {
-            redirectAttributes.addFlashAttribute("error", message);
-            return "redirect:" + referer;
-        }
-
-        ModelAndView modelAndView = new ModelAndView("error");
-        modelAndView.addObject("errorStatus", status.value());
-        modelAndView.addObject("errorTitle", title);
-        modelAndView.addObject("errorMessage", message);
-        return modelAndView;
-    }
-
-    private boolean expectsJson(HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        String requestedWith = request.getHeader("X-Requested-With");
-        String accept = request.getHeader("Accept");
-
-        return (uri != null && uri.startsWith("/api/"))
-                || "XMLHttpRequest".equalsIgnoreCase(requestedWith)
-                || (accept != null && accept.contains("application/json"));
+    private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String title, String message) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("success", false);
+        body.put("message", message);
+        body.put("title", title);
+        body.put("status", status.value());
+        return ResponseEntity.status(status).body(body);
     }
 }

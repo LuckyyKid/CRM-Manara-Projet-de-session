@@ -13,6 +13,7 @@ import CRM_Manara.CRM_Manara.dto.CurrentUserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -36,6 +37,7 @@ public class CurrentUserService {
         this.apiDtoMapper = apiDtoMapper;
     }
 
+    @Transactional(readOnly = true)
     public CurrentUserDto currentUser(Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifie");

@@ -188,3 +188,90 @@ export interface ActionResponseDto {
   message: string;
   id: number | null;
 }
+
+export interface QuizCreateRequestDto {
+  title: string;
+  sourceNotes: string;
+  animationId: number | null;
+}
+
+export interface QuizQuestionDto {
+  id: number;
+  angle: string;
+  type: string;
+  questionText: string;
+  expectedAnswer: string;
+  position: number;
+}
+
+export interface QuizAxisDto {
+  id: number;
+  title: string;
+  summary: string;
+  position: number;
+  questions: QuizQuestionDto[];
+}
+
+export interface QuizDto {
+  id: number;
+  title: string;
+  sourceNotes: string;
+  createdAt: string;
+  animationId: number | null;
+  activityName: string | null;
+  axes: QuizAxisDto[];
+}
+
+export interface TutorAxisProgressDto {
+  axisTitle: string;
+  quizCount: number;
+  questionCount: number;
+  scorePercent: number | null;
+  averageResponseTimeSeconds: number | null;
+  status: string;
+  latestQuizTitle: string | null;
+  latestQuizCreatedAt: string | null;
+}
+
+export interface TutorDashboardDto {
+  quizCount: number;
+  axisCount: number;
+  questionCount: number;
+  globalProgressPercent: number | null;
+  averageResponseTimeSeconds: number | null;
+  progressStatus: string;
+  nextSessionSuggestion: string;
+  lastQuizCreatedAt: string | null;
+  axes: TutorAxisProgressDto[];
+  persistentAxes: TutorAxisProgressDto[];
+}
+
+export interface ParentQuizDto {
+  quiz: QuizDto;
+  eligibleChildren: EnfantSummaryDto[];
+  alreadySubmitted: boolean;
+  latestSubmittedAt: string | null;
+}
+
+export interface QuizAnswerSubmitDto {
+  questionId: number;
+  answerText: string;
+}
+
+export interface QuizAttemptSubmitDto {
+  enfantId: number;
+  elapsedSeconds: number | null;
+  answers: QuizAnswerSubmitDto[];
+}
+
+export interface QuizAttemptDto {
+  id: number;
+  quizId: number;
+  quizTitle: string;
+  enfantId: number;
+  enfantName: string;
+  submittedAt: string;
+  elapsedSeconds: number | null;
+  scorePercent: number | null;
+  status: string;
+}

@@ -7,6 +7,9 @@ import {
   InscriptionDto,
   ParentActivitiesResponseDto,
   ParentNotificationDto,
+  ParentQuizDto,
+  QuizAttemptDto,
+  QuizAttemptSubmitDto,
 } from '../models/api.models';
 
 @Injectable({ providedIn: 'root' })
@@ -43,5 +46,17 @@ export class ParentService {
 
   getEnfant(id: number): Observable<EnfantDto> {
     return this.http.get<EnfantDto>(`/api/parent/enfants/${id}`);
+  }
+
+  getQuizzes(): Observable<ParentQuizDto[]> {
+    return this.http.get<ParentQuizDto[]>('/api/parent/quizzes');
+  }
+
+  submitQuiz(quizId: number, request: QuizAttemptSubmitDto): Observable<QuizAttemptDto> {
+    return this.http.post<QuizAttemptDto>(`/api/parent/quizzes/${quizId}/attempts`, request);
+  }
+
+  getQuizAttempts(): Observable<QuizAttemptDto[]> {
+    return this.http.get<QuizAttemptDto[]>('/api/parent/quiz-attempts');
   }
 }
