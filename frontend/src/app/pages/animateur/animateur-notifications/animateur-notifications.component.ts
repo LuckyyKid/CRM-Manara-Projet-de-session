@@ -1,19 +1,27 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { AnimateurService } from '../../../core/services/animateur.service';
 import { AnimateurNotificationDto } from '../../../core/models/api.models';
+import { PaginationComponent } from '../../../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-animateur-notifications',
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, PaginationComponent],
   templateUrl: './animateur-notifications.component.html',
 })
 export class AnimateurNotificationsComponent implements OnInit {
   private animateurService = inject(AnimateurService);
 
   notifications = signal<AnimateurNotificationDto[]>([]);
+  page = signal(1);
+  pageSize = 6;
   loading = signal(true);
   error = signal('');
+  totalPages = computed(() => Math.max(1, Math.ceil(this.notifications().length / this.pageSize)));
+  visibleNotifications = computed(() => {
+    const start = (Math.min(this.page(), this.totalPages()) - 1) * this.pageSize;
+    return this.notifications().slice(start, start + this.pageSize);
+  });
 
   ngOnInit() {
     this.animateurService.getNotifications().subscribe({
@@ -27,4 +35,7 @@ export class AnimateurNotificationsComponent implements OnInit {
       },
     });
   }
+
+  previousPage(): void { this.page.set(Math.max(1, this.page() - 1)); }
+  nextPage(): void { this.page.set(Math.min(this.totalPages(), this.page() + 1)); }
 }

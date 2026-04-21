@@ -2,6 +2,13 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { InscriptionDto } from '../../../core/models/api.models';
 import { ParentService } from '../../../core/services/parent.service';
+import {
+  AnimationTimeStatus,
+  animationTimeStatus,
+  animationTimeStatusLabel,
+  isAnimationActiveOrUpcoming,
+} from '../../../core/utils/animation-time-status';
+import { PaginationComponent } from '../../../shared/pagination/pagination.component';
 
 interface PlanningDay {
   date: Date;
@@ -10,7 +17,7 @@ interface PlanningDay {
 
 @Component({
   selector: 'app-parent-planning',
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, PaginationComponent],
   templateUrl: './parent-planning.component.html',
 })
 export class ParentPlanningComponent implements OnInit {
@@ -20,6 +27,9 @@ export class ParentPlanningComponent implements OnInit {
   loading = signal(true);
   error = signal('');
   weekStart = signal(this.startOfWeek(new Date()));
+  upcomingPage = signal(1);
+  pastPage = signal(1);
+  pageSize = 6;
 
   visibleInscriptions = computed(() =>
     this.inscriptions().filter((i) => this.isVisiblePlanningStatus(i.statusInscription)),
@@ -53,6 +63,16 @@ export class ParentPlanningComponent implements OnInit {
           new Date(a.animation.startTime).getTime(),
       ),
   );
+  upcomingTotalPages = computed(() => Math.max(1, Math.ceil(this.upcomingInscriptions().length / this.pageSize)));
+  visibleUpcomingInscriptions = computed(() => {
+    const start = (Math.min(this.upcomingPage(), this.upcomingTotalPages()) - 1) * this.pageSize;
+    return this.upcomingInscriptions().slice(start, start + this.pageSize);
+  });
+  pastTotalPages = computed(() => Math.max(1, Math.ceil(this.pastInscriptions().length / this.pageSize)));
+  visiblePastInscriptions = computed(() => {
+    const start = (Math.min(this.pastPage(), this.pastTotalPages()) - 1) * this.pageSize;
+    return this.pastInscriptions().slice(start, start + this.pageSize);
+  });
 
   calendarDays = computed<PlanningDay[]>(() => {
     const start = this.weekStart();
@@ -99,6 +119,11 @@ export class ParentPlanningComponent implements OnInit {
     this.weekStart.set(this.startOfWeek(new Date()));
   }
 
+  previousUpcomingPage(): void { this.upcomingPage.set(Math.max(1, this.upcomingPage() - 1)); }
+  nextUpcomingPage(): void { this.upcomingPage.set(Math.min(this.upcomingTotalPages(), this.upcomingPage() + 1)); }
+  previousPastPage(): void { this.pastPage.set(Math.max(1, this.pastPage() - 1)); }
+  nextPastPage(): void { this.pastPage.set(Math.min(this.pastTotalPages(), this.pastPage() + 1)); }
+
   statusLabel(status: string | null): string {
     switch (this.normalizeStatus(status)) {
       case 'EN_ATTENTE':
@@ -119,6 +144,14 @@ export class ParentPlanningComponent implements OnInit {
 
   normalizedStatus(status: string | null): string | null {
     return this.normalizeStatus(status);
+  }
+
+  timeStatus(startTime: string | null, endTime: string | null): AnimationTimeStatus {
+    return animationTimeStatus(startTime, endTime);
+  }
+
+  timeStatusLabel(startTime: string | null, endTime: string | null): string {
+    return animationTimeStatusLabel(this.timeStatus(startTime, endTime));
   }
 
   private isVisiblePlanningStatus(status: string | null): boolean {
@@ -152,8 +185,7 @@ export class ParentPlanningComponent implements OnInit {
   }
 
   private isOngoingOrUpcoming(endTime: string | null, startTime: string | null): boolean {
-    const reference = endTime || startTime;
-    return !!reference && new Date(reference).getTime() >= Date.now();
+    return isAnimationActiveOrUpcoming(startTime, endTime);
   }
 
   private moveWeek(days: number): void {

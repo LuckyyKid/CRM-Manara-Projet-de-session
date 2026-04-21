@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { AnimateurService } from '../../../core/services/animateur.service';
 import { AnimationDto, TutorDashboardDto } from '../../../core/models/api.models';
+import { animationTimeStatus, animationTimeStatusLabel, isAnimationActiveOrUpcoming } from '../../../core/utils/animation-time-status';
 
 @Component({
   selector: 'app-animateur-dashboard',
@@ -31,6 +32,13 @@ export class AnimateurDashboardComponent implements OnInit {
   countUpcoming = computed(
     () => this.animations().filter((a) => this.isOngoingOrUpcoming(a.endTime, a.startTime)).length,
   );
+  responseSummary = computed(() => {
+    const dashboard = this.tutorDashboard();
+    if (!dashboard) {
+      return 'En attente';
+    }
+    return `${dashboard.quizResponderCount}/${dashboard.enrolledChildrenCount} enfant(s)`;
+  });
   persistentAxesPreview = computed(() => this.tutorDashboard()?.persistentAxes.slice(0, 4) ?? []);
   axesPreview = computed(() => this.tutorDashboard()?.axes.slice(0, 6) ?? []);
 
@@ -58,8 +66,11 @@ export class AnimateurDashboardComponent implements OnInit {
     return `${Math.round(value)}${suffix}`;
   }
 
+  animationTimeLabel(startTime: string | null, endTime: string | null): string {
+    return animationTimeStatusLabel(animationTimeStatus(startTime, endTime));
+  }
+
   private isOngoingOrUpcoming(endTime: string | null, startTime: string | null): boolean {
-    const reference = endTime || startTime;
-    return !!reference && new Date(reference).getTime() >= Date.now();
+    return isAnimationActiveOrUpcoming(startTime, endTime);
   }
 }

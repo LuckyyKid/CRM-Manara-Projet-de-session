@@ -1,0 +1,121 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Detail quiz</span>
+      <h1 class="mm-page-title fs-1">{{ quiz()?.title || 'Quiz' }}</h1>
+      <p class="mm-page-subtitle" *ngIf="quiz() as item">
+        Cree le {{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}
+        <span *ngIf="item.activityName">- {{ item.activityName }}</span>
+      </p>
+    </div>
+    <div class="mm-page-actions">
+      <a class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">Historique</a>
+      <a class="btn btn-primary" routerLink="/animateur/quizzes">Creer un quiz</a>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <ng-container *ngIf="!loading() && quiz() as item">
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Etudiants repondants</span>
+          <span class="mm-kpi-value">{{ uniqueResponderCount() }}</span>
+          <span class="mm-kpi-meta">Sur {{ eligibleCount() }} inscrit(s)</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Completion</span>
+          <span class="mm-kpi-value">{{ formatMetric(completionRate(), '%') }}</span>
+          <span class="mm-kpi-meta">Soumissions uniques</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Reussite</span>
+          <span class="mm-kpi-value">{{ formatMetric(successRate(), '%') }}</span>
+          <span class="mm-kpi-meta">Seuil: 60%</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Temps moyen</span>
+          <span class="mm-kpi-value">{{ formatMetric(averageTime(), 's') }}</span>
+          <span class="mm-kpi-meta">Temps des soumissions</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mm-card-shadow">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
+          <div>
+            <h2 class="mm-panel-title mb-1">Soumissions</h2>
+            <p class="mm-panel-subtitle mb-0">{{ quizSubmissions().length }} soumission(s) recueillie(s).</p>
+          </div>
+          <div class="text-secondary small">{{ filteredSubmissions().length }} resultat(s)</div>
+        </div>
+
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-12 col-lg-6">
+            <label class="form-label">Recherche</label>
+            <input
+              #searchInput
+              type="search"
+              class="form-control"
+              placeholder="Nom de l'etudiant"
+              [value]="search()"
+              (input)="setSearch(searchInput.value)"
+            />
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Etudiant</th>
+                <th>Date de soumission</th>
+                <th>Statut</th>
+                <th>Score</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!visibleSubmissions().length">
+                <td colspan="5" class="text-secondary">Aucune soumission ne correspond a la recherche.</td>
+              </tr>
+              <tr *ngFor="let submission of visibleSubmissions()">
+                <td>{{ submission.enfantName }}</td>
+                <td>{{ submission.submittedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>
+                  <span class="badge" [class.bg-success]="submission.scorePercent !== null && submission.scorePercent !== undefined" [class.bg-warning]="submission.scorePercent === null || submission.scorePercent === undefined" [class.text-dark]="submission.scorePercent === null || submission.scorePercent === undefined">
+                    {{ submissionStatus(submission) }}
+                  </span>
+                </td>
+                <td>{{ formatMetric(submission.scorePercent, '%') }}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" type="button" (click)="openSubmission(submission)">
+                    Voir les reponses
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <app-pagination
+          [page]="page()"
+          [totalPages]="totalPages()"
+          [totalItems]="filteredSubmissions().length"
+          [pageSize]="pageSize"
+          (previous)="previousPage()"
+          (next)="nextPage()"
+        />
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -1,10 +1,12 @@
 package CRM_Manara.CRM_Manara.Controller;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
+import CRM_Manara.CRM_Manara.Model.Entity.Quiz;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.AnimationRole;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.animationStatus;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.status;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
+import CRM_Manara.CRM_Manara.Repository.QuizRepo;
 import CRM_Manara.CRM_Manara.dto.ActionResponseDto;
 import CRM_Manara.CRM_Manara.dto.ActivityDto;
 import CRM_Manara.CRM_Manara.dto.ActivityRequestDto;
@@ -18,6 +20,11 @@ import CRM_Manara.CRM_Manara.dto.AnimateurRequestDto;
 import CRM_Manara.CRM_Manara.dto.AnimationDto;
 import CRM_Manara.CRM_Manara.dto.AnimationRequestDto;
 import CRM_Manara.CRM_Manara.dto.ApiDtoMapper;
+import CRM_Manara.CRM_Manara.dto.EnfantDto;
+import CRM_Manara.CRM_Manara.dto.ParentDto;
+import CRM_Manara.CRM_Manara.dto.QuizAxisDto;
+import CRM_Manara.CRM_Manara.dto.QuizDto;
+import CRM_Manara.CRM_Manara.dto.QuizQuestionDto;
 import CRM_Manara.CRM_Manara.service.AdminNotificationService;
 import CRM_Manara.CRM_Manara.service.AdminService;
 import org.springframework.http.HttpStatus;
@@ -43,16 +50,20 @@ public class ApiAdminController {
     private final AdminService adminService;
     private final AdminNotificationService adminNotificationService;
     private final ApiDtoMapper apiDtoMapper;
+    private final QuizRepo quizRepo;
 
     public ApiAdminController(AdminService adminService,
                               AdminNotificationService adminNotificationService,
-                              ApiDtoMapper apiDtoMapper) {
+                              ApiDtoMapper apiDtoMapper,
+                              QuizRepo quizRepo) {
         this.adminService = adminService;
         this.adminNotificationService = adminNotificationService;
         this.apiDtoMapper = apiDtoMapper;
+        this.quizRepo = quizRepo;
     }
 
     @GetMapping("/activities")
+    @Transactional(readOnly = true)
     public List<ActivityDto> activities() {
         return adminService.getAllActivities().stream()
                 .sorted(Comparator.comparing(activity -> activity.getActivyName(), Comparator.nullsLast(String::compareToIgnoreCase)))
@@ -61,6 +72,7 @@ public class ApiAdminController {
     }
 
     @GetMapping("/activities/{id}")
+    @Transactional(readOnly = true)
     public ActivityDto activity(@PathVariable Long id) {
         return apiDtoMapper.toActivityDto(adminService.getActivityById(id));
     }
@@ -95,6 +107,7 @@ public class ApiAdminController {
     }
 
     @GetMapping("/animations")
+    @Transactional(readOnly = true)
     public List<AdminAnimationRowDto> animations() {
         return adminService.getAllAnimations().stream()
                 .sorted(Comparator.comparing(animation -> animation.getStartTime(), Comparator.nullsLast(Comparator.naturalOrder())))
@@ -106,8 +119,18 @@ public class ApiAdminController {
     }
 
     @GetMapping("/animations/{id}")
+    @Transactional(readOnly = true)
     public AnimationDto animation(@PathVariable Long id) {
         return apiDtoMapper.toAnimationDto(adminService.getAnimationById(id));
+    }
+
+    @GetMapping("/animations/{id}/quizzes")
+    @Transactional(readOnly = true)
+    public List<QuizDto> animationQuizzes(@PathVariable Long id) {
+        adminService.getAnimationById(id);
+        return quizRepo.findByAnimation_IdOrderByCreatedAtDesc(id).stream()
+                .map(this::toQuizDto)
+                .toList();
     }
 
     @PostMapping("/animations")
@@ -138,6 +161,7 @@ public class ApiAdminController {
     }
 
     @GetMapping("/animateurs")
+    @Transactional(readOnly = true)
     public List<AnimateurDto> animateurs() {
         return adminService.getAllAnimateurs().stream()
                 .sorted(Comparator.comparing(animateur -> animateur.getNom(), Comparator.nullsLast(String::compareToIgnoreCase)))
@@ -146,8 +170,25 @@ public class ApiAdminController {
     }
 
     @GetMapping("/animateurs/{id}")
+    @Transactional(readOnly = true)
     public AnimateurDto animateur(@PathVariable Long id) {
         return apiDtoMapper.toAnimateurDto(adminService.getAnimateurById(id));
+    }
+
+    @GetMapping("/parents")
+    @Transactional(readOnly = true)
+    public List<ParentDto> parents() {
+        return adminService.getAllParents().stream()
+                .map(apiDtoMapper::toParentDto)
+                .toList();
+    }
+
+    @GetMapping("/enfants")
+    @Transactional(readOnly = true)
+    public List<EnfantDto> enfants() {
+        return adminService.getAllEnfants().stream()
+                .map(apiDtoMapper::toEnfantDto)
+                .toList();
     }
 
     @PostMapping("/animateurs")
@@ -199,6 +240,44 @@ public class ApiAdminController {
         );
     }
 
+    @GetMapping("/inscriptions")
+    @Transactional(readOnly = true)
+    public List<AdminInscriptionReviewDto> inscriptions(@RequestParam(required = false) Long animateurId,
+                                                        @RequestParam(required = false) Long activityId,
+                                                        @RequestParam(required = false) Long animationId,
+                                                        @RequestParam(required = false) Long parentId,
+                                                        @RequestParam(required = false) Long enfantId,
+                                                        @RequestParam(required = false, defaultValue = "") String status,
+                                                        @RequestParam(required = false, defaultValue = "") String search) {
+        String normalizedStatus = status == null ? "" : status.trim().toUpperCase();
+        String normalizedSearch = normalize(search);
+        return adminService.getAllInscriptions().stream()
+                .filter(inscription -> animateurId == null
+                        || inscription.getAnimation().getAnimateur().getId().equals(animateurId))
+                .filter(inscription -> activityId == null
+                        || inscription.getAnimation().getActivity().getId().equals(activityId))
+                .filter(inscription -> animationId == null
+                        || inscription.getAnimation().getId().equals(animationId))
+                .filter(inscription -> parentId == null
+                        || (inscription.getEnfant().getParent() != null
+                        && inscription.getEnfant().getParent().getId().equals(parentId)))
+                .filter(inscription -> enfantId == null
+                        || inscription.getEnfant().getId().equals(enfantId))
+                .filter(inscription -> normalizedStatus.isBlank()
+                        || "DEMANDE".equals(normalizedStatus) && "EN_ATTENTE".equals(inscription.getStatusInscription().name())
+                        || "APPROUVE".equals(normalizedStatus) && ("APPROUVEE".equals(inscription.getStatusInscription().name()) || "ACTIF".equals(inscription.getStatusInscription().name()))
+                        || "REFUSER".equals(normalizedStatus) && "REFUSEE".equals(inscription.getStatusInscription().name()))
+                .filter(inscription -> normalizedSearch.isBlank()
+                        || normalize(inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom()).contains(normalizedSearch)
+                        || inscription.getEnfant().getParent() != null
+                        && normalize(inscription.getEnfant().getParent().getPrenom() + " " + inscription.getEnfant().getParent().getNom()).contains(normalizedSearch)
+                        || normalize(inscription.getAnimation().getActivity().getActivyName()).contains(normalizedSearch)
+                        || normalize(inscription.getAnimation().getAnimateur().getPrenom() + " " + inscription.getAnimation().getAnimateur().getNom()).contains(normalizedSearch))
+                .sorted(Comparator.comparing(Inscription::getId).reversed())
+                .map(this::toReviewDto)
+                .toList();
+    }
+
     @GetMapping("/notifications")
     public List<AdminNotificationDto> notifications() {
         return adminNotificationService.getAll().stream()
@@ -248,6 +327,45 @@ public class ApiAdminController {
                         inscription.getAnimation() == null ? null : adminService.getAnimationCapacitySnapshot(inscription.getAnimation())
                 )
         );
+    }
+
+    private QuizDto toQuizDto(Quiz quiz) {
+        List<QuizAxisDto> axes = quiz.getAxes().stream()
+                .map(axis -> new QuizAxisDto(
+                        axis.getId(),
+                        axis.getTitle(),
+                        axis.getSummary(),
+                        axis.getPosition(),
+                        axis.getQuestions().stream()
+                                .map(question -> new QuizQuestionDto(
+                                        question.getId(),
+                                        question.getAngle(),
+                                        question.getType(),
+                                        question.getQuestionText(),
+                                        question.getExpectedAnswer(),
+                                        question.getPosition()
+                                ))
+                                .toList()
+                ))
+                .toList();
+        return new QuizDto(
+                quiz.getId(),
+                quiz.getTitle(),
+                quiz.getSourceNotes(),
+                quiz.getCreatedAt(),
+                quiz.getAnimation() == null ? null : quiz.getAnimation().getId(),
+                quiz.getAnimation() == null || quiz.getAnimation().getActivity() == null
+                        ? null
+                        : quiz.getAnimation().getActivity().getActivyName(),
+                axes
+        );
+    }
+
+    private String normalize(String value) {
+        return java.text.Normalizer.normalize(value == null ? "" : value, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase()
+                .trim();
     }
 
     private void validateActivityRequest(ActivityRequestDto request) {

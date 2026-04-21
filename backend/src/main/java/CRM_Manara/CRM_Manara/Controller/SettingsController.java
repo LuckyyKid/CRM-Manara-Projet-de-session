@@ -2,13 +2,7 @@ package CRM_Manara.CRM_Manara.Controller;
 
 import CRM_Manara.CRM_Manara.service.AccountSettingsService;
 import CRM_Manara.CRM_Manara.dto.AccountSettingsView;
-import CRM_Manara.CRM_Manara.service.AvatarService;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
@@ -22,9 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,8 +24,6 @@ import java.util.Map;
 @Controller
 @RequestMapping
 public class SettingsController {
-    private static final Path AVATAR_STORAGE = AvatarService.avatarStoragePath();
-
     private final AccountSettingsService accountSettingsService;
 
     public SettingsController(AccountSettingsService accountSettingsService) {
@@ -105,27 +94,4 @@ public class SettingsController {
         return payload;
     }
 
-    @GetMapping("/avatars/{filename:.+}")
-    public ResponseEntity<Resource> avatar(@org.springframework.web.bind.annotation.PathVariable("filename") String filename) throws MalformedURLException {
-        Path file = AVATAR_STORAGE.resolve(filename).normalize();
-        Resource resource = new UrlResource(file.toUri());
-        if (!resource.exists() || !resource.isReadable()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        String contentType = MediaType.IMAGE_PNG_VALUE;
-        String lower = filename.toLowerCase();
-        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) {
-            contentType = MediaType.IMAGE_JPEG_VALUE;
-        } else if (lower.endsWith(".gif")) {
-            contentType = MediaType.IMAGE_GIF_VALUE;
-        } else if (lower.endsWith(".webp")) {
-            contentType = "image/webp";
-        }
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(resource);
-    }
 }

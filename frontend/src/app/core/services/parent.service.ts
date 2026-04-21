@@ -4,9 +4,13 @@ import { Observable } from 'rxjs';
 import {
   ActionResponseDto,
   EnfantDto,
+  HomeworkAttemptDto,
+  HomeworkAttemptSubmitDto,
+  HomeworkDto,
   InscriptionDto,
   ParentActivitiesResponseDto,
   ParentNotificationDto,
+  ParentQuizAttemptDetailDto,
   ParentQuizDto,
   QuizAttemptDto,
   QuizAttemptSubmitDto,
@@ -52,11 +56,39 @@ export class ParentService {
     return this.http.get<ParentQuizDto[]>('/api/parent/quizzes');
   }
 
+  getQuiz(quizId: number): Observable<ParentQuizDto> {
+    return this.http.get<ParentQuizDto>(`/api/parent/quizzes/${quizId}`);
+  }
+
   submitQuiz(quizId: number, request: QuizAttemptSubmitDto): Observable<QuizAttemptDto> {
     return this.http.post<QuizAttemptDto>(`/api/parent/quizzes/${quizId}/attempts`, request);
   }
 
   getQuizAttempts(): Observable<QuizAttemptDto[]> {
     return this.http.get<QuizAttemptDto[]>('/api/parent/quiz-attempts');
+  }
+
+  getQuizAttempt(attemptId: number): Observable<ParentQuizAttemptDetailDto> {
+    return this.http.get<ParentQuizAttemptDetailDto>(`/api/parent/quiz-attempts/${attemptId}`);
+  }
+
+  getHomeworks(): Observable<HomeworkDto[]> {
+    return this.http.get<HomeworkDto[]>('/api/parent/homeworks');
+  }
+
+  getHomework(homeworkId: number): Observable<HomeworkDto> {
+    return this.http.get<HomeworkDto>(`/api/parent/homeworks/${homeworkId}`);
+  }
+
+  submitHomework(homeworkId: number, request: HomeworkAttemptSubmitDto): Observable<HomeworkAttemptDto> {
+    return this.http.post<HomeworkAttemptDto>(`/api/parent/homeworks/${homeworkId}/attempts`, request);
+  }
+
+  getHomeworkAttempts(): Observable<HomeworkAttemptDto[]> {
+    return this.http.get<HomeworkAttemptDto[]>('/api/parent/homework-attempts');
+  }
+
+  getHomeworkAttempt(attemptId: number): Observable<HomeworkAttemptDto> {
+    return this.http.get<HomeworkAttemptDto>(`/api/parent/homework-attempts/${attemptId}`);
   }
 }

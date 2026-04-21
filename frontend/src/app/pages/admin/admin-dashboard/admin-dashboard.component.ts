@@ -8,6 +8,7 @@ import {
   AdminDemandesDto,
   AdminNotificationDto,
 } from '../../../core/models/api.models';
+import { isAnimationActiveOrUpcoming } from '../../../core/utils/animation-time-status';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -72,7 +73,6 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   private isOngoingOrUpcoming(endTime: string | null, startTime: string | null): boolean {
-    const reference = endTime || startTime;
-    return !!reference && new Date(reference).getTime() >= Date.now();
+    return isAnimationActiveOrUpcoming(startTime, endTime);
   }
 }

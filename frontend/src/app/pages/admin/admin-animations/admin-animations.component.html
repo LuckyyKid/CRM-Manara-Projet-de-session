@@ -3,7 +3,7 @@
     <div>
       <span class="mm-page-eyebrow">Planning</span>
       <h1 class="mm-page-title fs-1">Animations</h1>
-      <p class="mm-page-subtitle">Gestion des séances d'animation planifiées.</p>
+      <p class="mm-page-subtitle">Recherche et filtres sur les seances planifiees.</p>
     </div>
     <div class="mm-page-actions">
       <button class="btn btn-primary" (click)="goToNew()">Nouvelle animation</button>
@@ -15,33 +15,71 @@
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
-      <div class="mb-3">
-        <h2 class="mm-panel-title">Toutes les animations</h2>
-        <p class="mm-panel-subtitle">{{ animations().length }} animation(s) configurée(s).</p>
+      <div class="row g-2 align-items-end mb-3">
+        <div class="col-12 col-lg-4">
+          <label class="form-label">Recherche</label>
+          <input
+            #searchInput
+            type="search"
+            class="form-control"
+            placeholder="Activite, animateur ou statut"
+            [value]="search()"
+            (input)="setSearch(searchInput.value)"
+          />
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+          <label class="form-label">Activite</label>
+          <select #activitySelect class="form-select" [value]="activityFilter()" (change)="setActivity(activitySelect.value)">
+            <option value="">Toutes</option>
+            <option *ngFor="let activity of activities()" [value]="activity">{{ activity }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+          <label class="form-label">Statut</label>
+          <select #statusSelect class="form-select" [value]="statusFilter()" (change)="setStatus(statusSelect.value)">
+            <option value="">Tous</option>
+            <option *ngFor="let status of statuses()" [value]="status">{{ status }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+          <label class="form-label">Situation</label>
+          <select #timeSelect class="form-select" [value]="timeFilter()" (change)="setTimeFilter(timeSelect.value)">
+            <option value="">Toutes</option>
+            <option value="UPCOMING">A venir</option>
+            <option value="ONGOING">En cours</option>
+            <option value="COMPLETED">Terminees</option>
+          </select>
+        </div>
+        <div class="col-12 col-lg-2 text-lg-end text-secondary small">
+          {{ filteredAnimations().length }} resultat(s)
+        </div>
       </div>
+
       <div class="table-responsive">
         <table class="table table-sm align-middle">
           <thead>
             <tr>
-              <th>Activité</th>
-              <th>Début</th>
+              <th>Activite</th>
+              <th>Debut</th>
               <th>Fin</th>
               <th>Animateur</th>
               <th>Statut</th>
+              <th>Situation</th>
               <th>Remplissage</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngIf="!animations().length">
-              <td colspan="7" class="text-secondary">Aucune animation.</td>
+            <tr *ngIf="!visibleAnimations().length">
+              <td colspan="8" class="text-secondary">Aucune animation ne correspond aux filtres.</td>
             </tr>
-            <tr *ngFor="let row of animations()">
+            <tr *ngFor="let row of visibleAnimations()">
               <td>{{ row.animation.activity.name }}</td>
               <td>{{ row.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
               <td>{{ row.animation.endTime | date:'dd/MM/yyyy HH:mm' }}</td>
               <td>{{ row.animation.animateur.prenom }} {{ row.animation.animateur.nom }}</td>
               <td>{{ row.animation.status }}</td>
+              <td><span class="badge text-bg-light">{{ timeStatusLabel(timeStatus(row.animation.startTime, row.animation.endTime)) }}</span></td>
               <td>
                 <span *ngIf="row.capacity">
                   {{ row.capacity.approved }}/{{ row.capacity.capacity }}
@@ -49,12 +87,22 @@
                 </span>
               </td>
               <td>
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="goToDetail(row.animation.id)">Details</button>
                 <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(row.animation.id)">Modifier</button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <app-pagination
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="filteredAnimations().length"
+        [pageSize]="pageSize"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      />
     </div>
   </div>
 </div>

@@ -31,7 +31,7 @@
       Aucune activite disponible pour le moment.
     </div>
 
-    <div *ngFor="let view of activityViews" class="card mm-card-shadow mb-4">
+    <div *ngFor="let view of visibleActivityViews()" class="card mm-card-shadow mb-4">
       <div class="card-body">
         <div class="mb-3">
           <h2 class="mm-panel-title">{{ view.activity.name }}</h2>
@@ -80,5 +80,13 @@
         </div>
       </div>
     </div>
+    <app-pagination
+      [page]="page()"
+      [totalPages]="totalPages()"
+      [totalItems]="activityViews.length"
+      [pageSize]="pageSize"
+      (previous)="previousPage()"
+      (next)="nextPage()"
+    />
   </div>
 </div>

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -63,6 +64,24 @@ public class ApiAnimateurController {
                 .toList();
     }
 
+    @GetMapping("/inscriptions")
+    public List<InscriptionDto> inscriptions(@RequestParam(required = false) Long animationId,
+                                             @RequestParam(required = false, defaultValue = "") String search,
+                                             Authentication authentication) {
+        Animateur animateur = requireAnimateur(authentication);
+        String normalizedSearch = normalize(search);
+        return animateurService.getInscriptionsForAnimateur(animateur.getId()).stream()
+                .filter(inscription -> animationId == null
+                        || inscription.getAnimation().getId().equals(animationId))
+                .filter(inscription -> normalizedSearch.isBlank()
+                        || normalize(inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom()).contains(normalizedSearch)
+                        || (inscription.getEnfant().getParent() != null
+                        && normalize(inscription.getEnfant().getParent().getPrenom() + " " + inscription.getEnfant().getParent().getNom()).contains(normalizedSearch)))
+                .sorted(Comparator.comparing(inscription -> inscription.getEnfant().getPrenom(), Comparator.nullsLast(String::compareToIgnoreCase)))
+                .map(apiDtoMapper::toInscriptionDto)
+                .toList();
+    }
+
     @PostMapping("/inscriptions/{id}/presence")
     public ActionResponseDto updatePresence(@PathVariable Long id,
                                             @RequestBody PresenceUpdateRequestDto request,
@@ -89,5 +108,12 @@ public class ApiAnimateurController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifié");
         }
         return authentication.getName();
+    }
+
+    private String normalize(String value) {
+        return java.text.Normalizer.normalize(value == null ? "" : value, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase()
+                .trim();
     }
 }

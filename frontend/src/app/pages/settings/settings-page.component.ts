@@ -41,14 +41,15 @@ export class SettingsPageComponent {
 
     const formData = new FormData();
     if (this.avatarFile) {
-      formData.append('avatar', this.avatarFile);
+      formData.append('avatarFile', this.avatarFile);
     }
 
-    this.settingsService.saveSettings(formData).subscribe({
+    this.settingsService.uploadAvatar(formData).subscribe({
       next: (res) => {
         this.loading.set(false);
         if (res.success) {
           this.message.set(res.message);
+          this.avatarFile = null;
           this.authService.loadSession(true);
         } else {
           this.error.set(res.message);
@@ -57,7 +58,7 @@ export class SettingsPageComponent {
       },
       error: () => {
         this.loading.set(false);
-        this.error.set('Erreur lors de la sauvegarde des paramètres.');
+        this.error.set('Erreur lors de la sauvegarde de la photo de profil.');
       },
     });
   }

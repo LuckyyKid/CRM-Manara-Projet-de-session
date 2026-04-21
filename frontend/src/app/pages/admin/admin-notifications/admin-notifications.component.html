@@ -14,7 +14,7 @@
     <div class="card-body">
       <div *ngIf="!notifications().length" class="text-secondary">Aucune notification.</div>
       <div class="vstack gap-2">
-        <div *ngFor="let n of notifications()" class="border rounded-3 p-3">
+        <div *ngFor="let n of visibleNotifications()" class="border rounded-3 p-3">
           <div class="d-flex justify-content-between gap-3 flex-wrap">
             <div>
               <div class="mm-page-eyebrow mb-1">{{ n.source }} • {{ n.type }}</div>
@@ -24,6 +24,14 @@
           </div>
         </div>
       </div>
+      <app-pagination
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="notifications().length"
+        [pageSize]="pageSize"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      />
     </div>
   </div>
 </div>

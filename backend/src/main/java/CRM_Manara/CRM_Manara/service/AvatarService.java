@@ -67,7 +67,15 @@ public class AvatarService {
         if (user == null) {
             return;
         }
-        user.setAvatarUrl(DEFAULT_AVATAR_URL);
+        if (isLocalUploadedAvatar(user.getAvatarUrl())) {
+            return;
+        }
+
+        if (pictureUrl != null && !pictureUrl.isBlank()) {
+            user.setAvatarUrl(pictureUrl.trim());
+        } else if (user.getAvatarUrl() == null || user.getAvatarUrl().isBlank()) {
+            user.setAvatarUrl(DEFAULT_AVATAR_URL);
+        }
         userRepo.save(user);
     }
 
@@ -137,7 +145,7 @@ public class AvatarService {
 
         try {
             Files.createDirectories(AVATAR_STORAGE);
-            String extension = resolveExtension(file.getOriginalFilename(), file.getContentType());
+            String extension = resolveExtension(file.getContentType());
             String filename = "user-" + user.getId() + "-" + UUID.randomUUID() + extension;
             Path target = AVATAR_STORAGE.resolve(filename);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
@@ -149,15 +157,10 @@ public class AvatarService {
         }
     }
 
-    private String resolveExtension(String originalFilename, String contentType) {
-        if (originalFilename != null && originalFilename.contains(".")) {
-            return originalFilename.substring(originalFilename.lastIndexOf('.'));
-        }
-        if (contentType == null) {
-            return ".png";
-        }
+    private String resolveExtension(String contentType) {
         return switch (contentType) {
             case "image/jpeg" -> ".jpg";
+            case "image/png" -> ".png";
             case "image/gif" -> ".gif";
             case "image/webp" -> ".webp";
             default -> ".png";
@@ -176,6 +179,10 @@ public class AvatarService {
 
     public static Path avatarStoragePath() {
         return AVATAR_STORAGE;
+    }
+
+    private boolean isLocalUploadedAvatar(String avatarUrl) {
+        return avatarUrl != null && avatarUrl.startsWith("/avatars/") && isStoredAvatarAvailable(avatarUrl);
     }
 
     private boolean isStoredAvatarAvailable(String avatarUrl) {

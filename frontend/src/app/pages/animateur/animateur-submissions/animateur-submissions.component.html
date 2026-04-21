@@ -1,0 +1,114 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Espace animateur</span>
+      <h1 class="mm-page-title">Soumissions de quiz</h1>
+      <p class="mm-page-subtitle">Consultez les réponses, scores et temps de chaque enfant.</p>
+    </div>
+    <div class="mm-page-actions">
+      <a class="btn btn-outline-primary" routerLink="/animateur/dashboard">Tableau de bord</a>
+      <a class="btn btn-primary" routerLink="/animateur/quizzes">Quiz</a>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()" class="row g-4">
+    <div class="col-12 col-xl-4">
+      <div class="card mm-card-shadow h-100">
+        <div class="card-body">
+          <h2 class="mm-panel-title">Soumissions</h2>
+          <p class="mm-panel-subtitle">{{ submissions().length }} tentative(s) recueillie(s).</p>
+
+          <div *ngIf="!submissions().length" class="text-secondary py-3">
+            Aucune soumission pour l'instant.
+          </div>
+
+          <div class="list-group list-group-flush">
+            <button
+              type="button"
+              class="list-group-item list-group-item-action px-0"
+              *ngFor="let submission of submissions()"
+              [class.active]="selectedId() === submission.id"
+              (click)="selectSubmission(submission)">
+              <div class="d-flex justify-content-between gap-3">
+                <div>
+                  <div class="fw-semibold">{{ submission.enfantName }}</div>
+                  <div class="small">{{ submission.quizTitle }}</div>
+                  <div class="small opacity-75">{{ submission.submittedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                </div>
+                <span class="badge text-bg-light align-self-start">
+                  {{ formatMetric(submission.scorePercent, '%') }}
+                </span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-8">
+      <div class="card mm-card-shadow h-100" *ngIf="selectedSubmission() as submission">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+            <div>
+              <h2 class="mm-panel-title mb-1">{{ submission.enfantName }}</h2>
+              <p class="mm-panel-subtitle mb-0">
+                {{ submission.quizTitle }}
+                <span *ngIf="submission.activityName">- {{ submission.activityName }}</span>
+              </p>
+            </div>
+            <span class="badge text-bg-light">{{ submission.status }}</span>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+              <div class="mm-kpi-card h-100">
+                <span class="mm-kpi-label">Score</span>
+                <span class="mm-kpi-value">{{ formatMetric(submission.scorePercent, '%') }}</span>
+                <span class="mm-kpi-meta">Correction automatique</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="mm-kpi-card h-100">
+                <span class="mm-kpi-label">Temps</span>
+                <span class="mm-kpi-value">{{ formatMetric(submission.elapsedSeconds, 's') }}</span>
+                <span class="mm-kpi-meta">Temps de réponse</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="mm-kpi-card h-100">
+                <span class="mm-kpi-label">Réponses</span>
+                <span class="mm-kpi-value">{{ submission.answers.length }}</span>
+                <span class="mm-kpi-meta">Questions soumises</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="vstack gap-3">
+            <article class="border rounded p-3" *ngFor="let answer of submission.answers">
+              <div class="d-flex justify-content-between gap-3 mb-2">
+                <div>
+                  <div class="fw-semibold">{{ answer.axisTitle }}</div>
+                  <div class="text-secondary small">{{ answer.angle }}</div>
+                </div>
+              </div>
+              <p class="mb-2">{{ answer.questionText }}</p>
+              <div class="bg-light rounded p-3 mb-2">
+                <div class="small text-secondary mb-1">Réponse de l'enfant</div>
+                <div>{{ answer.answerText }}</div>
+              </div>
+              <div class="small text-secondary">Attendu</div>
+              <div>{{ answer.expectedAnswer }}</div>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mm-card-shadow h-100" *ngIf="!selectedSubmission()">
+        <div class="card-body text-secondary">Sélectionnez une soumission.</div>
+      </div>
+    </div>
+  </div>
+</div>

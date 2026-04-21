@@ -392,6 +392,13 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<Enfant> getAllEnfants() {
+        return enfantRepo.findAll().stream()
+                .sorted(Comparator.comparing(Enfant::getNom).thenComparing(Enfant::getPrenom))
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public Parent updateParentEnabled(Long id, boolean enabled) {
         Parent parent = getParentById(id);

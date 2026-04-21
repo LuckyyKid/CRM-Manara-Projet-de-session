@@ -91,6 +91,11 @@ public class QuizAttempt {
         return status;
     }
 
+    public void markScored(Double scorePercent, String status) {
+        this.scorePercent = scorePercent;
+        this.status = status;
+    }
+
     public List<QuizAnswer> getAnswers() {
         return answers;
     }
@@ -99,4 +104,5 @@ public class QuizAttempt {
         answer.setAttempt(this);
         answers.add(answer);
     }
+
 }

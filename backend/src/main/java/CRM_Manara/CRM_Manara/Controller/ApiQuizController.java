@@ -3,6 +3,7 @@ package CRM_Manara.CRM_Manara.Controller;
 import CRM_Manara.CRM_Manara.dto.QuizCreateRequestDto;
 import CRM_Manara.CRM_Manara.dto.QuizDto;
 import CRM_Manara.CRM_Manara.dto.TutorDashboardDto;
+import CRM_Manara.CRM_Manara.dto.TutorQuizSubmissionDto;
 import CRM_Manara.CRM_Manara.service.QuizService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -36,6 +37,11 @@ public class ApiQuizController {
     @GetMapping("/dashboard")
     public TutorDashboardDto dashboard(Authentication authentication) {
         return quizService.getTutorDashboard(requireEmail(authentication));
+    }
+
+    @GetMapping("/submissions")
+    public List<TutorQuizSubmissionDto> submissions(Authentication authentication) {
+        return quizService.listSubmissionsForAnimateur(requireEmail(authentication));
     }
 
     @GetMapping("/{id}")

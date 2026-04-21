@@ -3,7 +3,7 @@
     <div>
       <span class="mm-page-eyebrow">Familles</span>
       <h1 class="mm-page-title fs-1">Parents & Enfants</h1>
-      <p class="mm-page-subtitle">Gestion des comptes parents et enfants en attente.</p>
+      <p class="mm-page-subtitle">Recherche globale par parent, enfant ou email.</p>
     </div>
   </div>
 
@@ -12,32 +12,54 @@
   <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()">
-    <!-- Parents en attente -->
+    <div class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-lg-8">
+            <label class="form-label">Recherche</label>
+            <input
+              #searchInput
+              type="search"
+              class="form-control"
+              placeholder="Nom du parent, nom de l'enfant ou email"
+              [value]="search()"
+              (input)="setSearch(searchInput.value)"
+            />
+          </div>
+          <div class="col-12 col-lg-4 text-lg-end text-secondary small">
+            {{ filteredParents().length }} parent(s), {{ filteredEnfants().length }} enfant(s)
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">Parents en attente d'activation</h2>
-          <p class="mm-panel-subtitle">{{ pendingParents().length }} parent(s) à valider.</p>
+          <h2 class="mm-panel-title">Parents</h2>
+          <p class="mm-panel-subtitle">{{ pendingParents().length }} parent(s) en attente d'activation.</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
                 <th>Nom</th>
-                <th>Prénom</th>
+                <th>Prenom</th>
                 <th>Email</th>
+                <th>Enfants</th>
                 <th>Statut</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngIf="!pendingParents().length">
-                <td colspan="5" class="text-secondary">Aucun parent en attente.</td>
+              <tr *ngIf="!visibleParents().length">
+                <td colspan="6" class="text-secondary">Aucun parent trouve.</td>
               </tr>
-              <tr *ngFor="let parent of pendingParents()">
+              <tr *ngFor="let parent of visibleParents()">
                 <td>{{ parent.nom }}</td>
                 <td>{{ parent.prenom }}</td>
                 <td>{{ parent.user?.email }}</td>
+                <td>{{ parent.enfants.length }}</td>
                 <td>
                   <span class="badge" [class.bg-success]="parent.user?.enabled" [class.bg-warning]="!parent.user?.enabled" [class.text-dark]="!parent.user?.enabled">
                     {{ parent.user?.enabled ? 'Actif' : 'En attente' }}
@@ -45,41 +67,50 @@
                 </td>
                 <td>
                   <button class="btn btn-sm btn-outline-secondary" (click)="toggleParentStatus(parent.id, !!parent.user?.enabled)">
-                    {{ parent.user?.enabled ? 'Désactiver' : 'Activer' }}
+                    {{ parent.user?.enabled ? 'Desactiver' : 'Activer' }}
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+        <app-pagination
+          [page]="parentPage()"
+          [totalPages]="parentTotalPages()"
+          [totalItems]="filteredParents().length"
+          [pageSize]="pageSize"
+          (previous)="previousParentPage()"
+          (next)="nextParentPage()"
+        />
       </div>
     </div>
 
-    <!-- Enfants en attente -->
     <div class="card mm-card-shadow">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">Enfants en attente</h2>
-          <p class="mm-panel-subtitle">{{ pendingEnfants().length }} enfant(s) à valider.</p>
+          <h2 class="mm-panel-title">Enfants</h2>
+          <p class="mm-panel-subtitle">{{ pendingEnfants().length }} enfant(s) en attente de validation.</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
                 <th>Nom</th>
-                <th>Prénom</th>
+                <th>Prenom</th>
+                <th>Parent</th>
                 <th>Date de naissance</th>
                 <th>Statut</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngIf="!pendingEnfants().length">
-                <td colspan="5" class="text-secondary">Aucun enfant en attente.</td>
+              <tr *ngIf="!visibleEnfants().length">
+                <td colspan="6" class="text-secondary">Aucun enfant trouve.</td>
               </tr>
-              <tr *ngFor="let enfant of pendingEnfants()">
+              <tr *ngFor="let enfant of visibleEnfants()">
                 <td>{{ enfant.nom }}</td>
                 <td>{{ enfant.prenom }}</td>
+                <td>{{ enfant.parent?.prenom }} {{ enfant.parent?.nom }}</td>
                 <td>{{ enfant.dateDeNaissance }}</td>
                 <td>
                   <span class="badge" [class.bg-success]="enfant.active" [class.bg-warning]="!enfant.active" [class.text-dark]="!enfant.active">
@@ -88,13 +119,21 @@
                 </td>
                 <td>
                   <button class="btn btn-sm btn-outline-secondary" (click)="toggleEnfantStatus(enfant.id, enfant.active)">
-                    {{ enfant.active ? 'Désactiver' : 'Activer' }}
+                    {{ enfant.active ? 'Desactiver' : 'Activer' }}
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+        <app-pagination
+          [page]="childPage()"
+          [totalPages]="childTotalPages()"
+          [totalItems]="filteredEnfants().length"
+          [pageSize]="pageSize"
+          (previous)="previousChildPage()"
+          (next)="nextChildPage()"
+        />
       </div>
     </div>
   </div>

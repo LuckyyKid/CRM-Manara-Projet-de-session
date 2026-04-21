@@ -7,6 +7,7 @@ export interface SettingsUpdateResult {
   message: string;
   errors?: Record<string, string>;
   redirectUrl?: string;
+  avatarUrl?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -15,5 +16,9 @@ export class SettingsService {
 
   saveSettings(formData: FormData): Observable<SettingsUpdateResult> {
     return this.http.post<SettingsUpdateResult>('/api/settings', formData);
+  }
+
+  uploadAvatar(formData: FormData): Observable<SettingsUpdateResult> {
+    return this.http.post<SettingsUpdateResult>('/api/me/avatar', formData);
   }
 }

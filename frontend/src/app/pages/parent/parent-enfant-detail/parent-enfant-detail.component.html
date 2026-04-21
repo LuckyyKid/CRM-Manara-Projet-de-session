@@ -1,0 +1,138 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Detail enfant</span>
+      <h1 class="mm-page-title fs-1">{{ enfant()?.prenom }} {{ enfant()?.nom }}</h1>
+      <p class="mm-page-subtitle">Activites, inscriptions et resultats de quiz disponibles.</p>
+    </div>
+    <div class="mm-page-actions">
+      <button class="btn btn-outline-secondary" type="button" (click)="goBack()">Retour</button>
+      <a class="btn btn-primary" [routerLink]="['/parent/enfants', enfant()?.id, 'edit']">Modifier</a>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <ng-container *ngIf="!loading() && enfant()">
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Activites suivies</span>
+          <span class="mm-kpi-value">{{ activitySummaries().length }}</span>
+          <span class="mm-kpi-meta">Activites avec inscription</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Seances inscrites</span>
+          <span class="mm-kpi-value">{{ childInscriptions().length }}</span>
+          <span class="mm-kpi-meta">Toutes activites confondues</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Quiz remis</span>
+          <span class="mm-kpi-value">{{ childAttempts().length }}</span>
+          <span class="mm-kpi-meta">Tentatives soumises</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <h2 class="mm-panel-title">Activites inscrites</h2>
+        <p class="mm-panel-subtitle">Synthese par activite.</p>
+
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Activite</th>
+                <th>Type</th>
+                <th>Seances</th>
+                <th>A venir</th>
+                <th>Terminees</th>
+                <th>Quiz remis</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!visibleActivitySummaries().length">
+                <td colspan="7" class="text-secondary">Aucune activite inscrite pour cet enfant.</td>
+              </tr>
+              <tr *ngFor="let activity of visibleActivitySummaries()">
+                <td>{{ activity.activityName }}</td>
+                <td>{{ activity.activityType || '-' }}</td>
+                <td>{{ activity.inscriptionCount }}</td>
+                <td>{{ activity.upcomingCount }}</td>
+                <td>{{ activity.completedCount }}</td>
+                <td>{{ isTutoring(activity.activityType) ? activity.quizAttemptCount : '-' }}</td>
+                <td>
+                  <span *ngIf="isTutoring(activity.activityType); else noGrades">
+                    Moyenne: {{ formatScore(activity.averageScore) }}
+                    <span class="text-secondary small d-block" *ngIf="activity.latestSubmittedAt">
+                      Derniere note: {{ formatScore(activity.latestScore) }} le {{ activity.latestSubmittedAt | date:'dd/MM/yyyy' }}
+                    </span>
+                  </span>
+                  <ng-template #noGrades><span class="text-secondary">Non applicable</span></ng-template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <app-pagination
+          [page]="activityPage()"
+          [totalPages]="activityTotalPages()"
+          [totalItems]="activitySummaries().length"
+          [pageSize]="pageSize"
+          (previous)="previousActivityPage()"
+          (next)="nextActivityPage()"
+        />
+      </div>
+    </div>
+
+    <div class="card mm-card-shadow">
+      <div class="card-body">
+        <h2 class="mm-panel-title">Animations liees</h2>
+        <p class="mm-panel-subtitle">Liste detaillee des animations auxquelles l'enfant est inscrit.</p>
+
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Activite</th>
+                <th>Date</th>
+                <th>Animateur</th>
+                <th>Inscription</th>
+                <th>Situation</th>
+                <th>Presence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!visibleChildInscriptions().length">
+                <td colspan="6" class="text-secondary">Aucune animation trouvee.</td>
+              </tr>
+              <tr *ngFor="let inscription of visibleChildInscriptions()">
+                <td>{{ inscription.animation.activity.name }}</td>
+                <td>{{ inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ inscription.animation.animateur.prenom }} {{ inscription.animation.animateur.nom }}</td>
+                <td><span class="badge text-bg-light">{{ inscription.statusInscription }}</span></td>
+                <td><span class="badge text-bg-light">{{ timeLabel(inscription) }}</span></td>
+                <td><span class="badge text-bg-light">{{ inscription.presenceStatus }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <app-pagination
+          [page]="inscriptionPage()"
+          [totalPages]="inscriptionTotalPages()"
+          [totalItems]="childInscriptions().length"
+          [pageSize]="pageSize"
+          (previous)="previousInscriptionPage()"
+          (next)="nextInscriptionPage()"
+        />
+      </div>
+    </div>
+  </ng-container>
+</div>
