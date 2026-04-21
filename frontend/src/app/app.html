@@ -12,7 +12,6 @@
       </span>
       <span class="mm-brand-meta">
         <span>Manara CRM</span>
-        <span class="mm-brand-sub">Digital Sanctuary</span>
       </span>
     </a>
 
@@ -32,6 +31,9 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/about" routerLinkActive="active">FAQ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/activity-finder" routerLinkActive="active">Trouver une activite</a>
         </li>
       </ul>
 
@@ -60,7 +62,6 @@
       </span>
       <span class="mm-brand-meta">
         <span>Manara CRM</span>
-        <span class="mm-brand-sub">Digital Sanctuary</span>
       </span>
     </a>
 
@@ -109,6 +110,8 @@
            routerLinkActive="mm-side-link-active">Présences</a>
         <a class="mm-side-link" routerLink="/animateur/quizzes"
            routerLinkActive="mm-side-link-active">Quiz</a>
+        <a class="mm-side-link" routerLink="/animateur/quizzes/history"
+           routerLinkActive="mm-side-link-active">Quiz generes</a>
         <a class="mm-side-link" routerLink="/animateur/notifications"
            routerLinkActive="mm-side-link-active">Notifications</a>
       </ng-container>
@@ -153,3 +156,5 @@
     <router-outlet />
   </main>
 </div>
+
+<app-chatbot-widget />

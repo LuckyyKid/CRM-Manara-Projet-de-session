@@ -31,8 +31,9 @@
           </div>
           <div>
             <label class="form-label mb-1">Changer la photo</label>
-            <input type="file" class="form-control form-control-sm" accept="image/*" (change)="onFileChange($event)">
-            <div *ngIf="errors()['avatar']" class="small text-danger mt-1">{{ errors()['avatar'] }}</div>
+            <input type="file" class="form-control form-control-sm" accept="image/png,image/jpeg,image/gif,image/webp" (change)="onFileChange($event)">
+            <div class="form-text">Formats image acceptés, maximum 2 Mo.</div>
+            <div *ngIf="errors()['avatarFile']" class="small text-danger mt-1">{{ errors()['avatarFile'] }}</div>
           </div>
         </div>
 
@@ -46,8 +47,8 @@
           <input type="text" class="form-control" [value]="currentUser()?.accountType ?? ''" readonly>
         </div>
 
-        <button type="submit" class="btn btn-primary" [disabled]="loading()">
-          {{ loading() ? 'Sauvegarde...' : 'Sauvegarder' }}
+        <button type="submit" class="btn btn-primary" [disabled]="loading() || !avatarFile">
+          {{ loading() ? 'Sauvegarde...' : 'Sauvegarder la photo' }}
         </button>
       </form>
     </div>

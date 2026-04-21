@@ -1,9 +1,9 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Équipe</span>
+      <span class="mm-page-eyebrow">Equipe</span>
       <h1 class="mm-page-title fs-1">Animateurs</h1>
-      <p class="mm-page-subtitle">Gestion des animateurs de l'établissement.</p>
+      <p class="mm-page-subtitle">Recherche par nom et filtre actif/inactif.</p>
     </div>
     <div class="mm-page-actions">
       <button class="btn btn-primary" (click)="goToNew()">Ajouter un animateur</button>
@@ -16,33 +16,73 @@
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
-      <div class="mb-3">
-        <h2 class="mm-panel-title">Liste des animateurs</h2>
-        <p class="mm-panel-subtitle">Liste complete des animateurs.</p>
+      <div class="row g-2 align-items-end mb-3">
+        <div class="col-12 col-lg-6">
+          <label class="form-label">Recherche</label>
+          <input
+            #searchInput
+            type="search"
+            class="form-control"
+            placeholder="Nom, prenom ou email"
+            [value]="search()"
+            (input)="setSearch(searchInput.value)"
+          />
+        </div>
+        <div class="col-12 col-lg-3">
+          <label class="form-label">Statut</label>
+          <select #statusSelect class="form-select" [value]="statusFilter()" (change)="setStatus(statusSelect.value)">
+            <option value="">Tous</option>
+            <option value="ACTIVE">Actifs</option>
+            <option value="INACTIVE">Inactifs</option>
+          </select>
+        </div>
+        <div class="col-12 col-lg-3 text-lg-end text-secondary small">
+          {{ filteredAnimateurs().length }} resultat(s)
+        </div>
       </div>
+
       <div class="table-responsive">
         <table class="table table-sm align-middle">
           <thead>
             <tr>
               <th>Nom</th>
-              <th>Prénom</th>
+              <th>Prenom</th>
+              <th>Email</th>
+              <th>Statut</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngIf="!animateurs().length">
-              <td colspan="3" class="text-secondary">Aucun animateur trouvé.</td>
+            <tr *ngIf="!visibleAnimateurs().length">
+              <td colspan="5" class="text-secondary">Aucun animateur trouve.</td>
             </tr>
-            <tr *ngFor="let animateur of animateurs()">
+            <tr *ngFor="let animateur of visibleAnimateurs()">
               <td>{{ animateur.nom }}</td>
               <td>{{ animateur.prenom }}</td>
+              <td>{{ animateur.user?.email }}</td>
+              <td>
+                <span class="badge" [class.bg-success]="animateur.user?.enabled" [class.bg-secondary]="!animateur.user?.enabled">
+                  {{ animateur.user?.enabled ? 'Actif' : 'Inactif' }}
+                </span>
+              </td>
               <td>
                 <button class="btn btn-sm btn-outline-secondary me-2" (click)="goToEdit(animateur.id)">Modifier</button>
+                <button class="btn btn-sm btn-outline-primary" (click)="toggleStatus(animateur.id, !!animateur.user?.enabled)">
+                  {{ animateur.user?.enabled ? 'Desactiver' : 'Activer' }}
+                </button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+      <app-pagination
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="filteredAnimateurs().length"
+        [pageSize]="pageSize"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      />
     </div>
   </div>
 </div>

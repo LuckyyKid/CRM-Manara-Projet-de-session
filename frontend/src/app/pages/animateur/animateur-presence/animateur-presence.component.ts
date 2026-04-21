@@ -1,9 +1,10 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AnimateurService } from '../../../core/services/animateur.service';
 import { InscriptionDto } from '../../../core/models/api.models';
+import { PaginationComponent } from '../../../shared/pagination/pagination.component';
 
 interface PresenceRow {
   inscription: InscriptionDto;
@@ -15,7 +16,7 @@ interface PresenceRow {
 
 @Component({
   selector: 'app-animateur-presence',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaginationComponent],
   templateUrl: './animateur-presence.component.html',
 })
 export class AnimateurPresenceComponent implements OnInit {
@@ -24,11 +25,18 @@ export class AnimateurPresenceComponent implements OnInit {
 
   animationId = signal(0);
   rows = signal<PresenceRow[]>([]);
+  page = signal(1);
+  pageSize = 6;
   loading = signal(true);
   error = signal('');
   message = signal('');
 
   readonly presenceOptions = ['UNKNOWN', 'PRESENT', 'ABSENT', 'LATE'];
+  totalPages = computed(() => Math.max(1, Math.ceil(this.rows().length / this.pageSize)));
+  visibleRows = computed(() => {
+    const start = (Math.min(this.page(), this.totalPages()) - 1) * this.pageSize;
+    return this.rows().slice(start, start + this.pageSize);
+  });
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -70,4 +78,7 @@ export class AnimateurPresenceComponent implements OnInit {
         },
       });
   }
+
+  previousPage(): void { this.page.set(Math.max(1, this.page() - 1)); }
+  nextPage(): void { this.page.set(Math.min(this.totalPages(), this.page() + 1)); }
 }

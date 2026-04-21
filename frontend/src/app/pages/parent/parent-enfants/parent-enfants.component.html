@@ -3,7 +3,7 @@
     <div>
       <span class="mm-page-eyebrow">Mes enfants</span>
       <h1 class="mm-page-title fs-1">Enfants</h1>
-      <p class="mm-page-subtitle">Gérez les profils de vos enfants.</p>
+      <p class="mm-page-subtitle">Gerez les profils et consultez les activites suivies.</p>
     </div>
     <div class="mm-page-actions">
       <button class="btn btn-primary" (click)="onSubmit()">Ajouter un enfant</button>
@@ -15,26 +15,40 @@
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
-      <div class="mb-3">
-        <h2 class="mm-panel-title">Mes enfants</h2>
-        <p class="mm-panel-subtitle">{{ enfants().length }} enfant(s) enregistré(s).</p>
+      <div class="row g-2 align-items-end mb-3">
+        <div class="col-12 col-lg-6">
+          <label class="form-label" for="searchChild">Recherche</label>
+          <input
+            id="searchChild"
+            #searchInput
+            class="form-control"
+            type="search"
+            placeholder="Nom ou prenom de l'enfant"
+            [value]="search()"
+            (input)="setSearch(searchInput.value)"
+          />
+        </div>
+        <div class="col-12 col-lg-6 text-lg-end text-secondary small">
+          {{ filteredEnfants().length }} enfant(s) trouve(s)
+        </div>
       </div>
+
       <div class="table-responsive">
         <table class="table table-sm align-middle">
           <thead>
             <tr>
               <th>Nom</th>
-              <th>Prénom</th>
+              <th>Prenom</th>
               <th>Date de naissance</th>
               <th>Statut</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngIf="!enfants().length">
-              <td colspan="5" class="text-secondary">Aucun enfant enregistré.</td>
+            <tr *ngIf="!visibleEnfants().length">
+              <td colspan="5" class="text-secondary">Aucun enfant ne correspond a la recherche.</td>
             </tr>
-            <tr *ngFor="let enfant of enfants()">
+            <tr *ngFor="let enfant of visibleEnfants()">
               <td>{{ enfant.nom }}</td>
               <td>{{ enfant.prenom }}</td>
               <td>{{ enfant.dateDeNaissance }}</td>
@@ -44,12 +58,21 @@
                 </span>
               </td>
               <td>
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="goToDetail(enfant.id)">Details</button>
                 <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(enfant.id)">Modifier</button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+      <app-pagination
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="filteredEnfants().length"
+        [pageSize]="pageSize"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      />
     </div>
   </div>
 </div>

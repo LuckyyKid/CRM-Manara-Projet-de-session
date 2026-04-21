@@ -2,11 +2,11 @@
   <div class="mm-page-head">
     <div>
       <span class="mm-page-eyebrow">Catalogue</span>
-      <h1 class="mm-page-title fs-1">Activités</h1>
-      <p class="mm-page-subtitle">Gestion des activités disponibles.</p>
+      <h1 class="mm-page-title fs-1">Activites</h1>
+      <p class="mm-page-subtitle">Recherche, filtres et pagination du catalogue.</p>
     </div>
     <div class="mm-page-actions">
-      <button class="btn btn-primary" (click)="goToNew()">Créer une activité</button>
+      <button class="btn btn-primary" (click)="goToNew()">Creer une activite</button>
     </div>
   </div>
 
@@ -16,28 +16,69 @@
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
-      <div class="mb-3">
-        <h2 class="mm-panel-title">Catalogue</h2>
-        <p class="mm-panel-subtitle">Liste complète des activités configurées.</p>
+      <div class="row g-2 align-items-end mb-3">
+        <div class="col-12 col-lg-4">
+          <label class="form-label">Recherche</label>
+          <input
+            #searchInput
+            type="search"
+            class="form-control"
+            placeholder="Nom ou description"
+            [value]="search()"
+            (input)="setSearch(searchInput.value)"
+          />
+        </div>
+        <div class="col-12 col-md-4 col-lg-2">
+          <label class="form-label">Statut</label>
+          <select #statusSelect class="form-select" [value]="statusFilter()" (change)="setStatus(statusSelect.value)">
+            <option value="">Tous</option>
+            <option *ngFor="let status of statuses()" [value]="status">{{ status }}</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-4 col-lg-2">
+          <label class="form-label">Age</label>
+          <input
+            #ageInput
+            type="number"
+            min="0"
+            class="form-control"
+            placeholder="Age"
+            [value]="ageFilter() ?? ''"
+            (input)="setAge(ageInput.value)"
+          />
+        </div>
+        <div class="col-12 col-md-4 col-lg-2">
+          <label class="form-label">Capacite</label>
+          <select #capacitySelect class="form-select" [value]="capacityFilter()" (change)="setCapacity(capacitySelect.value)">
+            <option value="">Toutes</option>
+            <option value="LOW">10 et moins</option>
+            <option value="MEDIUM">11 a 25</option>
+            <option value="HIGH">Plus de 25</option>
+          </select>
+        </div>
+        <div class="col-12 col-lg-2 text-lg-end text-secondary small">
+          {{ filteredActivities().length }} resultat(s)
+        </div>
       </div>
+
       <div class="table-responsive">
         <table class="table table-sm align-middle">
           <thead>
             <tr>
               <th>Nom</th>
               <th>Description</th>
-              <th>Âge</th>
-              <th>Capacité</th>
+              <th>Age</th>
+              <th>Capacite</th>
               <th>Statut</th>
               <th>Type</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngIf="!activities().length">
-              <td colspan="7" class="text-secondary">Aucune activité.</td>
+            <tr *ngIf="!visibleActivities().length">
+              <td colspan="7" class="text-secondary">Aucune activite ne correspond aux filtres.</td>
             </tr>
-            <tr *ngFor="let activity of activities()">
+            <tr *ngFor="let activity of visibleActivities()">
               <td>{{ activity.name }}</td>
               <td>{{ activity.description }}</td>
               <td>{{ activity.ageMin }} - {{ activity.ageMax }}</td>
@@ -51,6 +92,15 @@
           </tbody>
         </table>
       </div>
+
+      <app-pagination
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="filteredActivities().length"
+        [pageSize]="pageSize"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      />
     </div>
   </div>
 </div>

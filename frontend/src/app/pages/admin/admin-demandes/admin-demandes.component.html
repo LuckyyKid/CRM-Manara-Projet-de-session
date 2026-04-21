@@ -12,6 +12,135 @@
   <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()">
+    <div class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <div class="mb-3">
+          <h2 class="mm-panel-title">Recherche des inscriptions</h2>
+          <p class="mm-panel-subtitle">Filtrez par animateur, activite, animation, parent, enfant ou statut.</p>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-md-4 col-xl-3">
+            <label class="form-label" for="filterAnimateur">Animateur</label>
+            <select id="filterAnimateur" class="form-select" (change)="updateFilter('animateurId', $any($event.target).value)">
+              <option value="">Tous</option>
+              <option *ngFor="let animateur of animateurs()" [value]="animateur.id">
+                {{ animateur.prenom }} {{ animateur.nom }}
+              </option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4 col-xl-3">
+            <label class="form-label" for="filterActivity">Activite</label>
+            <select id="filterActivity" class="form-select" (change)="updateFilter('activityId', $any($event.target).value)">
+              <option value="">Toutes</option>
+              <option *ngFor="let activity of activities()" [value]="activity.id">{{ activity.name }}</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4 col-xl-3">
+            <label class="form-label" for="filterAnimation">Animation</label>
+            <select id="filterAnimation" class="form-select" (change)="updateFilter('animationId', $any($event.target).value)">
+              <option value="">Toutes</option>
+              <option *ngFor="let row of animations()" [value]="row.animation.id">
+                {{ row.animation.activity.name }} - {{ row.animation.startTime | date:'dd/MM/yyyy HH:mm' }}
+              </option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4 col-xl-3">
+            <label class="form-label" for="filterStatus">Statut</label>
+            <select id="filterStatus" class="form-select" (change)="updateFilter('status', $any($event.target).value)">
+              <option value="">Tous</option>
+              <option value="DEMANDE">Demande</option>
+              <option value="APPROUVE">Approuve</option>
+              <option value="REFUSER">Refuse</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4 col-xl-3">
+            <label class="form-label" for="filterParent">Parent</label>
+            <select id="filterParent" class="form-select" (change)="updateFilter('parentId', $any($event.target).value)">
+              <option value="">Tous</option>
+              <option *ngFor="let parent of parents()" [value]="parent.id">
+                {{ parent.prenom }} {{ parent.nom }}
+              </option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4 col-xl-3">
+            <label class="form-label" for="filterEnfant">Enfant</label>
+            <select id="filterEnfant" class="form-select" (change)="updateFilter('enfantId', $any($event.target).value)">
+              <option value="">Tous</option>
+              <option *ngFor="let enfant of enfants()" [value]="enfant.id">
+                {{ enfant.prenom }} {{ enfant.nom }}
+              </option>
+            </select>
+          </div>
+          <div class="col-12 col-md-8 col-xl-6">
+            <label class="form-label" for="filterSearch">Recherche</label>
+            <input
+              id="filterSearch"
+              class="form-control"
+              type="search"
+              placeholder="Enfant, parent, animateur ou activite"
+              (input)="updateFilter('search', $any($event.target).value)">
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Enfant</th>
+                <th>Parent</th>
+                <th>Animateur</th>
+                <th>Activite</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!visibleFilteredInscriptions().length">
+                <td colspan="7" class="text-secondary">
+                  {{ searching() ? 'Recherche...' : 'Aucune inscription ne correspond aux filtres.' }}
+                </td>
+              </tr>
+              <tr *ngFor="let review of visibleFilteredInscriptions()">
+                <td>{{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}</td>
+                <td>
+                  <span *ngIf="review.inscription.enfant.parent">
+                    {{ review.inscription.enfant.parent.prenom }} {{ review.inscription.enfant.parent.nom }}
+                  </span>
+                </td>
+                <td>{{ review.inscription.animation.animateur.prenom }} {{ review.inscription.animation.animateur.nom }}</td>
+                <td>{{ review.inscription.animation.activity.name }}</td>
+                <td>{{ review.inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td><span class="badge text-bg-light">{{ review.inscription.statusInscription }}</span></td>
+                <td>
+                  <button
+                    *ngIf="review.inscription.statusInscription === 'EN_ATTENTE'"
+                    class="btn btn-sm btn-success me-2"
+                    (click)="approve(review.inscription.id)">
+                    Approuver
+                  </button>
+                  <button
+                    *ngIf="review.inscription.statusInscription === 'EN_ATTENTE'"
+                    class="btn btn-sm btn-danger"
+                    (click)="reject(review.inscription.id)">
+                    Refuser
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <app-pagination
+          [page]="filteredPage()"
+          [totalPages]="filteredTotalPages()"
+          [totalItems]="filteredInscriptions().length"
+          [pageSize]="pageSize"
+          (previous)="previousFilteredPage()"
+          (next)="nextFilteredPage()"
+        />
+      </div>
+    </div>
 
     <!-- Inscriptions en attente (comptes parents + demandes d'inscription) -->
     <div class="card mm-card-shadow mb-4">
@@ -36,7 +165,7 @@
               </tr>
 
               <!-- Comptes parents en attente -->
-              <tr *ngFor="let parent of pendingParents()">
+              <tr *ngFor="let parent of visiblePendingParents()">
                 <td><span class="badge bg-primary">Compte parent</span></td>
                 <td>{{ parent.prenom }} {{ parent.nom }}</td>
                 <td class="text-secondary">{{ parent.user?.email }}</td>
@@ -47,7 +176,7 @@
               </tr>
 
               <!-- Demandes d'inscription -->
-              <tr *ngFor="let review of pendingInscriptions()">
+              <tr *ngFor="let review of visiblePendingInscriptions()">
                 <td><span class="badge bg-info text-dark">Inscription</span></td>
                 <td>
                   {{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}
@@ -72,6 +201,22 @@
             </tbody>
           </table>
         </div>
+        <app-pagination
+          [page]="pendingParentPage()"
+          [totalPages]="pendingParentTotalPages()"
+          [totalItems]="pendingParents().length"
+          [pageSize]="pageSize"
+          (previous)="previousPendingParentPage()"
+          (next)="nextPendingParentPage()"
+        />
+        <app-pagination
+          [page]="pendingInscriptionPage()"
+          [totalPages]="pendingInscriptionTotalPages()"
+          [totalItems]="pendingInscriptions().length"
+          [pageSize]="pageSize"
+          (previous)="previousPendingInscriptionPage()"
+          (next)="nextPendingInscriptionPage()"
+        />
       </div>
     </div>
 
@@ -92,10 +237,10 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngIf="!processedInscriptions().length">
+              <tr *ngIf="!visibleProcessedInscriptions().length">
                 <td colspan="3" class="text-secondary">Aucune inscription traitée.</td>
               </tr>
-              <tr *ngFor="let review of processedInscriptions()">
+              <tr *ngFor="let review of visibleProcessedInscriptions()">
                 <td>{{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}</td>
                 <td>{{ review.inscription.animation.activity.name }}</td>
                 <td>
@@ -110,6 +255,14 @@
             </tbody>
           </table>
         </div>
+        <app-pagination
+          [page]="processedPage()"
+          [totalPages]="processedTotalPages()"
+          [totalItems]="processedInscriptions().length"
+          [pageSize]="pageSize"
+          (previous)="previousProcessedPage()"
+          (next)="nextProcessedPage()"
+        />
       </div>
     </div>
 

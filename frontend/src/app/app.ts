@@ -2,10 +2,11 @@ import { Component, computed, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './core/auth/auth.service';
+import { ChatbotWidgetComponent } from './shared/chatbot/chatbot-widget.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, ChatbotWidgetComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

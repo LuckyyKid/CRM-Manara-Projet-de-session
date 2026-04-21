@@ -1,9 +1,9 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Séances</span>
-      <h1 class="mm-page-title fs-1">Mes animations</h1>
-      <p class="mm-page-subtitle">Liste de toutes vos séances planifiées.</p>
+      <span class="mm-page-eyebrow">Inscriptions</span>
+      <h1 class="mm-page-title fs-1">Enfants inscrits</h1>
+      <p class="mm-page-subtitle">Filtrez par animation et recherchez un enfant ou un parent.</p>
     </div>
   </div>
 
@@ -12,40 +12,78 @@
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
-      <div class="mb-3">
-        <h2 class="mm-panel-title">Toutes les séances</h2>
-        <p class="mm-panel-subtitle">{{ animations().length }} séance(s) au total.</p>
+      <div class="row g-3 align-items-end mb-4">
+        <div class="col-12 col-lg-4">
+          <label class="form-label" for="animationFilter">Animation</label>
+          <select id="animationFilter" class="form-select" (change)="setAnimationFilter($any($event.target).value)">
+            <option value="">Toutes mes animations</option>
+            <option *ngFor="let animation of animations()" [value]="animation.id">
+              {{ animation.activity.name }} - {{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}
+            </option>
+          </select>
+        </div>
+        <div class="col-12 col-lg-5">
+          <label class="form-label" for="search">Recherche</label>
+          <input
+            id="search"
+            class="form-control"
+            type="search"
+            placeholder="Nom de l'enfant ou du parent"
+            (input)="setSearchTerm($any($event.target).value)">
+        </div>
+        <div class="col-12 col-lg-3">
+          <div class="text-secondary">
+            {{ searching() ? 'Recherche...' : countResults() + ' enfant(s) inscrit(s)' }}
+          </div>
+        </div>
       </div>
+
       <div class="table-responsive">
         <table class="table table-sm align-middle">
           <thead>
             <tr>
-              <th>Activité</th>
-              <th>Début</th>
-              <th>Fin</th>
+              <th>Enfant</th>
+              <th>Parent</th>
+              <th>Activite</th>
+              <th>Date</th>
               <th>Statut</th>
+              <th>Situation</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngIf="!animations().length">
-              <td colspan="5" class="text-secondary">Aucune séance trouvée.</td>
+            <tr *ngIf="!visibleInscriptions().length">
+              <td colspan="7" class="text-secondary">Aucun enfant inscrit ne correspond aux filtres.</td>
             </tr>
-            <tr *ngFor="let animation of animations()">
-              <td>{{ animation.activity.name }}</td>
-              <td>{{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td>{{ animation.endTime | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td>{{ animation.status }}</td>
+            <tr *ngFor="let inscription of visibleInscriptions()">
+              <td>{{ inscription.enfant.prenom }} {{ inscription.enfant.nom }}</td>
               <td>
-                <div class="d-flex gap-2">
-                  <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Présences</a>
-                  <a class="btn btn-sm btn-outline-primary" routerLink="/animateur/quizzes" [queryParams]="{ animationId: animation.id }">Quiz</a>
-                </div>
+                <span *ngIf="inscription.enfant.parent; else noParent">
+                  {{ inscription.enfant.parent.prenom }} {{ inscription.enfant.parent.nom }}
+                </span>
+                <ng-template #noParent><span class="text-secondary">Non precise</span></ng-template>
+              </td>
+              <td>{{ inscription.animation.activity.name }}</td>
+              <td>{{ inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td><span class="badge text-bg-light">{{ inscription.statusInscription }}</span></td>
+              <td><span class="badge text-bg-light">{{ timeStatusLabel(timeStatus(inscription.animation.startTime, inscription.animation.endTime)) }}</span></td>
+              <td>
+                <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', inscription.animation.id]">
+                  Presences
+                </a>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+      <app-pagination
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="inscriptions().length"
+        [pageSize]="pageSize"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      />
     </div>
   </div>
 </div>

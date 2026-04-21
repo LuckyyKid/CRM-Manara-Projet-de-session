@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   ActionResponseDto,
@@ -7,12 +7,16 @@ import {
   ActivityDto,
   AdminAnimationRowDto,
   AdminDemandesDto,
+  AdminInscriptionReviewDto,
   AdminNotificationDto,
   AdminOptionsDto,
   AnimateurDto,
   AnimateurRequestDto,
   AnimationDto,
   AnimationRequestDto,
+  EnfantDto,
+  ParentDto,
+  QuizDto,
 } from '../models/api.models';
 
 @Injectable({ providedIn: 'root' })
@@ -43,6 +47,10 @@ export class AdminService {
     return this.http.get<AnimationDto>(`/api/admin/animations/${id}`);
   }
 
+  getAnimationQuizzes(id: number): Observable<QuizDto[]> {
+    return this.http.get<QuizDto[]>(`/api/admin/animations/${id}/quizzes`);
+  }
+
   createAnimation(request: AnimationRequestDto): Observable<AnimationDto> {
     return this.http.post<AnimationDto>('/api/admin/animations', request);
   }
@@ -59,6 +67,14 @@ export class AdminService {
     return this.http.get<AnimateurDto>(`/api/admin/animateurs/${id}`);
   }
 
+  getParents(): Observable<ParentDto[]> {
+    return this.http.get<ParentDto[]>('/api/admin/parents');
+  }
+
+  getEnfants(): Observable<EnfantDto[]> {
+    return this.http.get<EnfantDto[]>('/api/admin/enfants');
+  }
+
   createAnimateur(request: AnimateurRequestDto): Observable<AnimateurDto> {
     return this.http.post<AnimateurDto>('/api/admin/animateurs', request);
   }
@@ -73,6 +89,24 @@ export class AdminService {
 
   getDemandes(): Observable<AdminDemandesDto> {
     return this.http.get<AdminDemandesDto>('/api/admin/demandes');
+  }
+
+  searchInscriptions(filters: {
+    animateurId?: number | null;
+    activityId?: number | null;
+    animationId?: number | null;
+    parentId?: number | null;
+    enfantId?: number | null;
+    status?: string;
+    search?: string;
+  }): Observable<AdminInscriptionReviewDto[]> {
+    let params = new HttpParams();
+    for (const [key, value] of Object.entries(filters)) {
+      if (value !== null && value !== undefined && `${value}`.trim() !== '') {
+        params = params.set(key, `${value}`.trim());
+      }
+    }
+    return this.http.get<AdminInscriptionReviewDto[]>('/api/admin/inscriptions', { params });
   }
 
   getNotifications(): Observable<AdminNotificationDto[]> {

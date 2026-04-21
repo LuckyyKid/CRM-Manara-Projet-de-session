@@ -1,0 +1,98 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Repondre au quiz</span>
+      <h1 class="mm-page-title fs-1">{{ parentQuiz()?.quiz?.title || 'Quiz' }}</h1>
+      <p class="mm-page-subtitle" *ngIf="parentQuiz() as item">
+        {{ item.quiz.activityName || 'Activite' }} - {{ item.quiz.axes.length }} axe(s), {{ quizQuestionCount() }} question(s)
+      </p>
+    </div>
+    <div class="mm-page-actions">
+      <a class="btn btn-outline-primary" routerLink="/parent/quizzes">Retour aux quiz</a>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <div *ngIf="!loading()" class="card mm-card-shadow">
+    <div class="card-body">
+      <ng-container *ngIf="parentQuiz() as item">
+        <div class="mb-4">
+          <label class="form-label" for="childSelect">Enfant admissible</label>
+          <select id="childSelect" class="form-select" [ngModel]="selectedChildId()" (ngModelChange)="selectedChildId.set($event)">
+            <option *ngFor="let child of item.eligibleChildren" [ngValue]="child.id">
+              {{ child.prenom }} {{ child.nom }}
+            </option>
+          </select>
+          <div class="form-text">Seuls les enfants inscrits a cette animation peuvent repondre a ce quiz.</div>
+        </div>
+
+        <div *ngIf="!item.eligibleChildren.length" class="alert alert-warning">
+          Aucun enfant de votre compte n'est admissible a ce quiz.
+        </div>
+
+        <ng-container *ngIf="currentCarouselQuestion() as current; else noQuestions">
+          <div class="quiz-carousel">
+            <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+              <div>
+                <div class="text-secondary small">
+                  Question {{ currentQuestionIndex() + 1 }} / {{ quizQuestionCount() }}
+                </div>
+                <h2 class="h5 mb-0">Axe {{ current.axisPosition }} - {{ current.axisTitle }}</h2>
+              </div>
+              <span class="badge text-bg-light">{{ answeredCount() }} reponse(s)</span>
+            </div>
+
+            <div class="progress mb-4" role="progressbar" aria-label="Progression du quiz" [attr.aria-valuenow]="answeredCount()" aria-valuemin="0" [attr.aria-valuemax]="quizQuestionCount()">
+              <div class="progress-bar" [style.width.%]="quizQuestionCount() ? (answeredCount() / quizQuestionCount()) * 100 : 0"></div>
+            </div>
+
+            <div class="quiz-carousel-slide">
+              <p class="text-secondary">{{ current.axisSummary }}</p>
+              <label class="form-label fw-semibold" [for]="'question' + current.question.id">
+                {{ current.question.questionText }}
+              </label>
+              <textarea class="form-control"
+                        rows="6"
+                        [id]="'question' + current.question.id"
+                        [ngModel]="answers()[current.question.id] || ''"
+                        (ngModelChange)="setAnswer(current.question.id, $event)"
+                        placeholder="Votre reponse"></textarea>
+            </div>
+
+            <div class="quiz-carousel-dots" aria-label="Questions du quiz">
+              <button type="button"
+                      class="quiz-carousel-dot"
+                      *ngFor="let question of carouselQuestions(); let i = index"
+                      [class.active]="i === currentQuestionIndex()"
+                      [class.answered]="(answers()[question.question.id] || '').trim().length > 0"
+                      [attr.aria-label]="'Aller a la question ' + (i + 1)"
+                      (click)="currentQuestionIndex.set(i)">
+              </button>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center gap-3 mt-4">
+            <button class="btn btn-outline-secondary" type="button" [disabled]="isFirstQuestion()" (click)="previousQuestion()">
+              Precedent
+            </button>
+
+            <button *ngIf="!isLastQuestion()" class="btn btn-primary" type="button" [disabled]="!currentQuestionAnswered()" (click)="nextQuestion()">
+              Question suivante
+            </button>
+
+            <button *ngIf="isLastQuestion()" class="btn btn-primary" type="button" [disabled]="!canSubmit()" (click)="submit()">
+              {{ saving() ? 'Soumission...' : 'Soumettre le quiz' }}
+            </button>
+          </div>
+        </ng-container>
+
+        <ng-template #noQuestions>
+          <div class="text-secondary py-4">Aucune question disponible pour ce quiz.</div>
+        </ng-template>
+      </ng-container>
+    </div>
+  </div>
+</div>

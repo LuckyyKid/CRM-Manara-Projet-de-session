@@ -4,6 +4,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.AdminNotification;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
 import CRM_Manara.CRM_Manara.Model.Entity.User;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.SecurityRole;
+import CRM_Manara.CRM_Manara.Repository.QuizRepo;
 import CRM_Manara.CRM_Manara.dto.ApiDtoMapper;
 import CRM_Manara.CRM_Manara.service.AdminNotificationService;
 import CRM_Manara.CRM_Manara.service.AdminService;
@@ -28,12 +29,14 @@ class ApiAdminControllerTest {
     private MockMvc mockMvc;
     private AdminService adminService;
     private AdminNotificationService adminNotificationService;
+    private QuizRepo quizRepo;
 
     @BeforeEach
     void setUp() {
         adminService = mock(AdminService.class);
         adminNotificationService = mock(AdminNotificationService.class);
-        mockMvc = MockMvcBuilders.standaloneSetup(new ApiAdminController(adminService, adminNotificationService, new ApiDtoMapper())).build();
+        quizRepo = mock(QuizRepo.class);
+        mockMvc = MockMvcBuilders.standaloneSetup(new ApiAdminController(adminService, adminNotificationService, new ApiDtoMapper(), quizRepo)).build();
     }
 
     @Test

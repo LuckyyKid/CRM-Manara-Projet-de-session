@@ -15,6 +15,9 @@ public interface QuizRepo extends JpaRepository<Quiz, Long> {
     @EntityGraph(attributePaths = {"animation", "animation.activity"})
     List<Quiz> findByAnimateurIdOrderByCreatedAtDesc(Long animateurId);
 
+    @EntityGraph(attributePaths = {"animation", "animation.activity", "axes"})
+    List<Quiz> findByAnimation_IdOrderByCreatedAtDesc(Long animationId);
+
     @EntityGraph(attributePaths = {"animation", "animation.activity"})
     Optional<Quiz> findByIdAndAnimateurId(Long id, Long animateurId);
 

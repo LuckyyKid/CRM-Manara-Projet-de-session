@@ -13,12 +13,14 @@ import CRM_Manara.CRM_Manara.Repository.InscriptionRepo;
 import CRM_Manara.CRM_Manara.Repository.QuizAttemptRepo;
 import CRM_Manara.CRM_Manara.Repository.QuizRepo;
 import CRM_Manara.CRM_Manara.dto.EnfantSummaryDto;
+import CRM_Manara.CRM_Manara.dto.ParentQuizAttemptDetailDto;
 import CRM_Manara.CRM_Manara.dto.ParentQuizDto;
 import CRM_Manara.CRM_Manara.dto.QuizAttemptDto;
 import CRM_Manara.CRM_Manara.dto.QuizAttemptSubmitDto;
 import CRM_Manara.CRM_Manara.dto.QuizAxisDto;
 import CRM_Manara.CRM_Manara.dto.QuizDto;
 import CRM_Manara.CRM_Manara.dto.QuizQuestionDto;
+import CRM_Manara.CRM_Manara.dto.TutorQuizAnswerDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,15 +43,21 @@ public class ParentQuizService {
     private final QuizRepo quizRepo;
     private final QuizAttemptRepo quizAttemptRepo;
     private final InscriptionRepo inscriptionRepo;
+    private final AnthropicQuizScoringService anthropicQuizScoringService;
+    private final HomeworkService homeworkService;
 
     public ParentQuizService(parentService parentService,
                              QuizRepo quizRepo,
                              QuizAttemptRepo quizAttemptRepo,
-                             InscriptionRepo inscriptionRepo) {
+                             InscriptionRepo inscriptionRepo,
+                             AnthropicQuizScoringService anthropicQuizScoringService,
+                             HomeworkService homeworkService) {
         this.parentService = parentService;
         this.quizRepo = quizRepo;
         this.quizAttemptRepo = quizAttemptRepo;
         this.inscriptionRepo = inscriptionRepo;
+        this.anthropicQuizScoringService = anthropicQuizScoringService;
+        this.homeworkService = homeworkService;
     }
 
     @Transactional(readOnly = true)
@@ -110,7 +118,11 @@ public class ParentQuizService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Toutes les questions du quiz doivent etre repondues.");
         }
 
-        return toAttemptDto(quizAttemptRepo.save(attempt));
+        AnthropicQuizScoringService.ScoringResult scoringResult = anthropicQuizScoringService.scoreAttempt(attempt);
+        attempt.markScored(scoringResult.scorePercent(), scoringResult.status());
+        QuizAttempt savedAttempt = quizAttemptRepo.save(attempt);
+        homeworkService.createAutomaticHomeworkFromQuizAttempt(savedAttempt);
+        return toAttemptDto(savedAttempt);
     }
 
     @Transactional(readOnly = true)
@@ -119,6 +131,14 @@ public class ParentQuizService {
         return quizAttemptRepo.findByEnfantParentIdOrderBySubmittedAtDesc(parent.getId()).stream()
                 .map(this::toAttemptDto)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ParentQuizAttemptDetailDto getAttemptDetail(Long attemptId, String parentEmail) {
+        Parent parent = parentService.getParentByEmail(parentEmail);
+        QuizAttempt attempt = quizAttemptRepo.findByIdAndEnfantParentId(attemptId, parent.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Soumission introuvable."));
+        return toAttemptDetailDto(attempt);
     }
 
     private List<Inscription> eligibleInscriptions(Long parentId) {
@@ -198,6 +218,36 @@ public class ParentQuizService {
                 attempt.getElapsedSeconds(),
                 attempt.getScorePercent(),
                 attempt.getStatus()
+        );
+    }
+
+    private ParentQuizAttemptDetailDto toAttemptDetailDto(QuizAttempt attempt) {
+        Quiz quiz = attempt.getQuiz();
+        String enfantName = attempt.getEnfant().getPrenom() + " " + attempt.getEnfant().getNom();
+        return new ParentQuizAttemptDetailDto(
+                attempt.getId(),
+                quiz.getId(),
+                quiz.getTitle(),
+                quiz.getAnimation() == null ? null : quiz.getAnimation().getId(),
+                quiz.getAnimation() == null || quiz.getAnimation().getActivity() == null
+                        ? null
+                        : quiz.getAnimation().getActivity().getActivyName(),
+                attempt.getEnfant().getId(),
+                enfantName,
+                attempt.getSubmittedAt(),
+                attempt.getElapsedSeconds(),
+                attempt.getScorePercent(),
+                attempt.getStatus(),
+                attempt.getAnswers().stream()
+                        .map(answer -> new TutorQuizAnswerDto(
+                                answer.getQuestion().getId(),
+                                answer.getQuestion().getAxis().getTitle(),
+                                answer.getQuestion().getAngle(),
+                                answer.getQuestion().getQuestionText(),
+                                answer.getQuestion().getExpectedAnswer(),
+                                answer.getAnswerText()
+                        ))
+                        .toList()
         );
     }
 

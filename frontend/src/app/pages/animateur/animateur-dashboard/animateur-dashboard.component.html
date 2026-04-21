@@ -3,10 +3,11 @@
     <div>
       <span class="mm-page-eyebrow">Espace animateur</span>
       <h1 class="mm-page-title">Tableau de bord</h1>
-      <p class="mm-page-subtitle">Suivi des quiz, axes et prochaines seances.</p>
+      <p class="mm-page-subtitle">Vue globale des inscriptions, quiz, axes et prochaines seances.</p>
     </div>
     <div class="mm-page-actions">
       <a class="btn btn-primary" routerLink="/animateur/quizzes">Creer un quiz</a>
+      <a class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">Quiz generes</a>
       <a class="btn btn-outline-primary" routerLink="/animateur/inscriptions">Mes seances</a>
     </div>
   </div>
@@ -16,6 +17,34 @@
 
   <div *ngIf="!loading()">
     <div class="row g-3">
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Enfants inscrits</span>
+          <span class="mm-kpi-value">{{ tutorDashboard()?.enrolledChildrenCount ?? 0 }}</span>
+          <span class="mm-kpi-meta">Inscriptions approuvees ou actives</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Repondants quiz</span>
+          <span class="mm-kpi-value">{{ responseSummary() }}</span>
+          <span class="mm-kpi-meta">{{ tutorDashboard()?.quizAttemptCount ?? 0 }} soumission(s)</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Participation</span>
+          <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.quizParticipationPercent, '%') }}</span>
+          <span class="mm-kpi-meta">Enfants ayant soumis au moins un quiz</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Age moyen</span>
+          <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.averageStudentAge, ' ans') }}</span>
+          <span class="mm-kpi-meta">Sur les enfants inscrits</span>
+        </div>
+      </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
           <span class="mm-kpi-label">Progression globale</span>
@@ -135,17 +164,19 @@
                 <th>Activite</th>
                 <th>Date</th>
                 <th>Statut</th>
+                <th>Situation</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!upcomingAnimations().length">
-                <td colspan="4" class="text-secondary">Aucune seance a venir.</td>
+                <td colspan="5" class="text-secondary">Aucune seance a venir.</td>
               </tr>
               <tr *ngFor="let animation of upcomingAnimations()">
                 <td>{{ animation.activity.name }}</td>
                 <td>{{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td>{{ animation.status }}</td>
+                <td><span class="badge text-bg-light">{{ animationTimeLabel(animation.startTime, animation.endTime) }}</span></td>
                 <td>
                   <div class="d-flex gap-2">
                     <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Presences</a>

@@ -3,7 +3,7 @@
     <div>
       <span class="mm-page-eyebrow">Planning</span>
       <h1 class="mm-page-title fs-1">Mon planning</h1>
-      <p class="mm-page-subtitle">Toutes les séances inscrites de vos enfants, en attente ou confirmées.</p>
+      <p class="mm-page-subtitle">Toutes les seances inscrites de vos enfants, en attente ou confirmees.</p>
     </div>
   </div>
 
@@ -22,7 +22,7 @@
               </div>
             </div>
             <div class="mm-weekly-nav">
-              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="previousWeek()">Semaine précédente</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="previousWeek()">Semaine precedente</button>
               <button type="button" class="btn btn-outline-secondary btn-sm" (click)="currentWeek()">Cette semaine</button>
               <button type="button" class="btn btn-outline-secondary btn-sm" (click)="nextWeek()">Semaine suivante</button>
             </div>
@@ -45,6 +45,7 @@
                   {{ insc.animation.startTime | date:'HH:mm' }} - {{ insc.animation.endTime | date:'HH:mm' }}
                 </span>
                 <span class="mm-cal-event-meta">{{ statusLabel(insc.statusInscription) }}</span>
+                <span class="mm-cal-event-meta">{{ timeStatusLabel(insc.animation.startTime, insc.animation.endTime) }}</span>
               </article>
             </div>
           </div>
@@ -55,31 +56,32 @@
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">Séances à venir</h2>
-          <p class="mm-panel-subtitle">{{ upcomingInscriptions().length }} séance(s) planifiée(s).</p>
+          <h2 class="mm-panel-title">Seances a venir</h2>
+          <p class="mm-panel-subtitle">{{ upcomingInscriptions().length }} seance(s) planifiee(s).</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
                 <th>Enfant</th>
-                <th>Activité</th>
+                <th>Activite</th>
                 <th>Date</th>
                 <th>Animateur</th>
                 <th>Statut</th>
-                <th>Présence</th>
+                <th>Situation</th>
+                <th>Presence</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngIf="!upcomingInscriptions().length">
-                <td colspan="6" class="text-secondary">Aucune séance à venir.</td>
+              <tr *ngIf="!visibleUpcomingInscriptions().length">
+                <td colspan="7" class="text-secondary">Aucune seance a venir.</td>
               </tr>
-              <tr *ngFor="let insc of upcomingInscriptions()">
+              <tr *ngFor="let insc of visibleUpcomingInscriptions()">
                 <td>{{ insc.enfant.prenom }} {{ insc.enfant.nom }}</td>
                 <td>{{ insc.animation.activity.name }}</td>
                 <td>
                   {{ insc.animation.startTime | date:'dd/MM/yyyy HH:mm' }}
-                  à {{ insc.animation.endTime | date:'HH:mm' }}
+                  a {{ insc.animation.endTime | date:'HH:mm' }}
                 </td>
                 <td>{{ insc.animation.animateur.prenom }} {{ insc.animation.animateur.nom }}</td>
                 <td>
@@ -93,12 +95,23 @@
                   </span>
                 </td>
                 <td>
+                  <span class="badge text-bg-light">{{ timeStatusLabel(insc.animation.startTime, insc.animation.endTime) }}</span>
+                </td>
+                <td>
                   <span class="badge bg-secondary">{{ insc.presenceStatus }}</span>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+        <app-pagination
+          [page]="upcomingPage()"
+          [totalPages]="upcomingTotalPages()"
+          [totalItems]="upcomingInscriptions().length"
+          [pageSize]="pageSize"
+          (previous)="previousUpcomingPage()"
+          (next)="nextUpcomingPage()"
+        />
       </div>
     </div>
 
@@ -106,30 +119,34 @@
       <div class="card-body">
         <div class="mb-3">
           <h2 class="mm-panel-title">Historique</h2>
-          <p class="mm-panel-subtitle">Séances terminées.</p>
+          <p class="mm-panel-subtitle">Seances terminees.</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
                 <th>Enfant</th>
-                <th>Activité</th>
+                <th>Activite</th>
                 <th>Date</th>
                 <th>Statut</th>
-                <th>Présence</th>
+                <th>Situation</th>
+                <th>Presence</th>
                 <th>Incident</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngIf="!pastInscriptions().length">
-                <td colspan="6" class="text-secondary">Aucune séance passée.</td>
+              <tr *ngIf="!visiblePastInscriptions().length">
+                <td colspan="7" class="text-secondary">Aucune seance passee.</td>
               </tr>
-              <tr *ngFor="let insc of pastInscriptions()">
+              <tr *ngFor="let insc of visiblePastInscriptions()">
                 <td>{{ insc.enfant.prenom }} {{ insc.enfant.nom }}</td>
                 <td>{{ insc.animation.activity.name }}</td>
                 <td>{{ insc.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td>
                   <span class="badge bg-secondary">{{ statusLabel(insc.statusInscription) }}</span>
+                </td>
+                <td>
+                  <span class="badge text-bg-light">{{ timeStatusLabel(insc.animation.startTime, insc.animation.endTime) }}</span>
                 </td>
                 <td>
                   <span class="badge"
@@ -144,6 +161,14 @@
             </tbody>
           </table>
         </div>
+        <app-pagination
+          [page]="pastPage()"
+          [totalPages]="pastTotalPages()"
+          [totalItems]="pastInscriptions().length"
+          [pageSize]="pageSize"
+          (previous)="previousPastPage()"
+          (next)="nextPastPage()"
+        />
       </div>
     </div>
   </div>

@@ -1,26 +1,29 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AnimationDto } from '../../../core/models/api.models';
 import { AnimateurService } from '../../../core/services/animateur.service';
-import { AnimationDto, QuizDto } from '../../../core/models/api.models';
 
 @Component({
   selector: 'app-animateur-quizzes',
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, RouterLink],
   templateUrl: './animateur-quizzes.component.html',
 })
-export class AnimateurQuizzesComponent implements OnInit {
+export class AnimateurQuizzesComponent implements OnInit, OnDestroy {
   private animateurService = inject(AnimateurService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   animations = signal<AnimationDto[]>([]);
-  quizzes = signal<QuizDto[]>([]);
-  currentQuiz = signal<QuizDto | null>(null);
   loading = signal(true);
   saving = signal(false);
+  generationProgress = signal(0);
+  generationRemainingSeconds = signal(0);
   error = signal('');
   success = signal('');
+  private generationTimer: ReturnType<typeof setInterval> | null = null;
+  private readonly estimatedGenerationSeconds = 45;
 
   form = {
     title: '',
@@ -41,11 +44,17 @@ export class AnimateurQuizzesComponent implements OnInit {
         if (selected && !this.form.title) {
           this.form.title = `Quiz - ${selected.activity.name}`;
         }
+        this.loading.set(false);
       },
-      error: () => this.error.set('Erreur lors du chargement des seances.'),
+      error: () => {
+        this.error.set('Erreur lors du chargement des seances.');
+        this.loading.set(false);
+      },
     });
+  }
 
-    this.loadQuizzes();
+  ngOnDestroy(): void {
+    this.stopGenerationProgress();
   }
 
   onAnimationChange(): void {
@@ -58,73 +67,64 @@ export class AnimateurQuizzesComponent implements OnInit {
   createQuiz(): void {
     this.error.set('');
     this.success.set('');
-
     if (this.form.sourceNotes.trim().length < 20) {
       this.error.set('Ajoutez au moins 20 caracteres de notes de seance.');
       return;
     }
 
-    this.saving.set(true);
+    this.startGenerationProgress();
     this.animateurService.createQuiz({
       title: this.form.title.trim(),
       sourceNotes: this.form.sourceNotes.trim(),
       animationId: this.form.animationId,
     }).subscribe({
       next: (quiz) => {
-        this.currentQuiz.set(quiz);
-        this.quizzes.set([quiz, ...this.quizzes().filter((item) => item.id !== quiz.id)]);
-        this.success.set('Quiz cree avec axes et questions.');
-        this.saving.set(false);
+        this.finishGenerationProgress();
+        this.router.navigateByUrl(`/animateur/quizzes/${quiz.id}/detail`);
       },
       error: () => {
         this.error.set('Erreur lors de la creation du quiz.');
-        this.saving.set(false);
+        this.stopGenerationProgress();
       },
     });
   }
 
-  selectQuiz(quiz: QuizDto): void {
-    this.currentQuiz.set(quiz);
-    this.success.set('');
-    this.error.set('');
+  private startGenerationProgress(): void {
+    this.stopGenerationProgress();
+    this.saving.set(true);
+    this.generationProgress.set(3);
+    this.generationRemainingSeconds.set(this.estimatedGenerationSeconds);
+    const startedAt = Date.now();
+
+    this.generationTimer = setInterval(() => {
+      const elapsedSeconds = Math.floor((Date.now() - startedAt) / 1000);
+      const progress = Math.min(95, Math.round((elapsedSeconds / this.estimatedGenerationSeconds) * 95));
+      this.generationProgress.set(Math.max(3, progress));
+      this.generationRemainingSeconds.set(Math.max(1, this.estimatedGenerationSeconds - elapsedSeconds));
+    }, 1000);
   }
 
-  deleteQuiz(quiz: QuizDto): void {
-    const confirmed = window.confirm(`Supprimer le quiz "${quiz.title}"? Les soumissions associees seront aussi supprimees.`);
-    if (!confirmed) {
-      return;
+  private finishGenerationProgress(): void {
+    if (this.generationTimer) {
+      clearInterval(this.generationTimer);
+      this.generationTimer = null;
     }
+    this.generationProgress.set(100);
+    this.generationRemainingSeconds.set(0);
+    this.saving.set(false);
+  }
 
-    this.error.set('');
-    this.success.set('');
-    this.animateurService.deleteQuiz(quiz.id).subscribe({
-      next: () => {
-        const remaining = this.quizzes().filter((item) => item.id !== quiz.id);
-        this.quizzes.set(remaining);
-        if (this.currentQuiz()?.id === quiz.id) {
-          this.currentQuiz.set(remaining[0] ?? null);
-        }
-        this.success.set('Quiz supprime.');
-      },
-      error: () => this.error.set('Erreur lors de la suppression du quiz.'),
-    });
+  private stopGenerationProgress(): void {
+    if (this.generationTimer) {
+      clearInterval(this.generationTimer);
+      this.generationTimer = null;
+    }
+    this.generationProgress.set(0);
+    this.generationRemainingSeconds.set(0);
+    this.saving.set(false);
   }
 
   private selectedAnimation(): AnimationDto | null {
     return this.animations().find((animation) => animation.id === this.form.animationId) ?? null;
-  }
-
-  private loadQuizzes(): void {
-    this.animateurService.getQuizzes().subscribe({
-      next: (quizzes) => {
-        this.quizzes.set(quizzes);
-        this.currentQuiz.set(quizzes[0] ?? null);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('Erreur lors du chargement des quiz.');
-        this.loading.set(false);
-      },
-    });
   }
 }

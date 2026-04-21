@@ -232,8 +232,8 @@ public class AccountSettingsService {
         }
         if (avatarFile != null && !avatarFile.isEmpty()) {
             String contentType = avatarFile.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                errors.put("avatarFile", "Le fichier doit être une image.");
+            if (!isAllowedAvatarType(contentType)) {
+                errors.put("avatarFile", "Le fichier doit être une image JPG, PNG, GIF ou WebP.");
             }
             if (avatarFile.getSize() > 2_000_000) {
                 errors.put("avatarFile", "L'image ne doit pas dépasser 2 Mo.");
@@ -241,6 +241,13 @@ public class AccountSettingsService {
         }
 
         return errors;
+    }
+
+    private boolean isAllowedAvatarType(String contentType) {
+        return "image/jpeg".equals(contentType)
+                || "image/png".equals(contentType)
+                || "image/gif".equals(contentType)
+                || "image/webp".equals(contentType);
     }
 
     private User getUser(String email) {

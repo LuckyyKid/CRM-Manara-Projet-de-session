@@ -1,0 +1,73 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Soumission</span>
+      <h1 class="mm-page-title fs-1">{{ submissionName() }}</h1>
+      <p class="mm-page-subtitle" *ngIf="quiz() as item">
+        {{ item.title }}
+        <span *ngIf="submission() as submitted">- soumis le {{ submitted.submittedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+      </p>
+    </div>
+    <div class="mm-page-actions">
+      <a class="btn btn-outline-primary" [routerLink]="['/animateur/quizzes', quiz()?.id, 'detail']">Retour au quiz</a>
+      <a class="btn btn-primary" routerLink="/animateur/quizzes/history">Historique</a>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+  <ng-container *ngIf="!loading() && submission() as submitted">
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Score</span>
+          <span class="mm-kpi-value">{{ formatMetric(submitted.scorePercent, '%') }}</span>
+          <span class="mm-kpi-meta">Correction automatique</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Temps de reponse</span>
+          <span class="mm-kpi-value">{{ formatMetric(submitted.elapsedSeconds, 's') }}</span>
+          <span class="mm-kpi-meta">Temps soumis</span>
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="mm-kpi-card h-100">
+          <span class="mm-kpi-label">Reponses</span>
+          <span class="mm-kpi-value">{{ submitted.answers.length }}</span>
+          <span class="mm-kpi-meta">{{ submitted.status }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <h2 class="mm-panel-title">Analyse</h2>
+        <p class="mb-0">{{ analysis() }}</p>
+      </div>
+    </div>
+
+    <div class="card mm-card-shadow">
+      <div class="card-body">
+        <h2 class="mm-panel-title">Reponses detaillees</h2>
+        <p class="mm-panel-subtitle">Comparaison entre les reponses de l'etudiant et les reponses attendues.</p>
+
+        <div class="vstack gap-3">
+          <article class="border rounded p-3" *ngFor="let answer of submitted.answers">
+            <div class="fw-semibold">{{ answer.axisTitle }}</div>
+            <div class="text-secondary small mb-2">{{ answer.angle }}</div>
+            <p class="mb-2">{{ answer.questionText }}</p>
+            <div class="bg-light rounded p-3 mb-2">
+              <div class="small text-secondary mb-1">Reponse de l'etudiant</div>
+              <div>{{ answer.answerText || '-' }}</div>
+            </div>
+            <div class="small text-secondary">Attendu</div>
+            <div>{{ answer.expectedAnswer }}</div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

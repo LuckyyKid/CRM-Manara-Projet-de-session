@@ -1,12 +1,13 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AdminService } from '../../../core/services/admin.service';
 import { ActivityDto } from '../../../core/models/api.models';
+import { AdminService } from '../../../core/services/admin.service';
+import { PaginationComponent } from '../../../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-admin-activities',
-  imports: [CommonModule],
+  imports: [CommonModule, PaginationComponent],
   templateUrl: './admin-activities.component.html',
 })
 export class AdminActivitiesComponent implements OnInit {
@@ -14,28 +15,90 @@ export class AdminActivitiesComponent implements OnInit {
   private router = inject(Router);
 
   activities = signal<ActivityDto[]>([]);
+  search = signal('');
+  statusFilter = signal('');
+  ageFilter = signal<number | null>(null);
+  capacityFilter = signal('');
+  page = signal(1);
+  pageSize = 6;
   loading = signal(true);
   message = signal('');
   error = signal('');
 
-  ngOnInit() {
+  statuses = computed(() => [...new Set(this.activities().map((a) => a.status).filter(Boolean))]);
+  filteredActivities = computed(() => {
+    const search = this.normalize(this.search());
+    const status = this.statusFilter();
+    const age = this.ageFilter();
+    const capacity = this.capacityFilter();
+    return this.activities().filter((activity) => {
+      const matchesSearch = !search || this.normalize(`${activity.name} ${activity.description}`).includes(search);
+      const matchesStatus = !status || activity.status === status;
+      const matchesAge = age === null || (activity.ageMin <= age && activity.ageMax >= age);
+      const matchesCapacity =
+        !capacity ||
+        (capacity === 'LOW' && activity.capacity <= 10) ||
+        (capacity === 'MEDIUM' && activity.capacity > 10 && activity.capacity <= 25) ||
+        (capacity === 'HIGH' && activity.capacity > 25);
+      return matchesSearch && matchesStatus && matchesAge && matchesCapacity;
+    });
+  });
+  totalPages = computed(() => Math.max(1, Math.ceil(this.filteredActivities().length / this.pageSize)));
+  visibleActivities = computed(() => {
+    const start = (Math.min(this.page(), this.totalPages()) - 1) * this.pageSize;
+    return this.filteredActivities().slice(start, start + this.pageSize);
+  });
+
+  ngOnInit(): void {
     this.adminService.getActivities().subscribe({
       next: (data) => {
         this.activities.set(data);
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Erreur lors du chargement des activités.');
+        this.error.set('Erreur lors du chargement des activites.');
         this.loading.set(false);
       },
     });
   }
 
-  goToNew() {
+  setSearch(value: string): void {
+    this.search.set(value);
+    this.page.set(1);
+  }
+
+  setStatus(value: string): void {
+    this.statusFilter.set(value);
+    this.page.set(1);
+  }
+
+  setAge(value: string): void {
+    this.ageFilter.set(value ? Number(value) : null);
+    this.page.set(1);
+  }
+
+  setCapacity(value: string): void {
+    this.capacityFilter.set(value);
+    this.page.set(1);
+  }
+
+  nextPage(): void {
+    this.page.set(Math.min(this.totalPages(), this.page() + 1));
+  }
+
+  previousPage(): void {
+    this.page.set(Math.max(1, this.page() - 1));
+  }
+
+  goToNew(): void {
     this.router.navigateByUrl('/admin/activities/new');
   }
 
-  goToEdit(id: number) {
+  goToEdit(id: number): void {
     this.router.navigateByUrl(`/admin/activities/${id}/edit`);
+  }
+
+  private normalize(value: string): string {
+    return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
   }
 }

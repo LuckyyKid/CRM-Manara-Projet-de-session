@@ -29,7 +29,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let row of rows()">
+            <tr *ngFor="let row of visibleRows()">
               <td>{{ row.inscription.enfant.prenom }} {{ row.inscription.enfant.nom }}</td>
               <td>
                 <select class="form-select form-select-sm w-auto" [(ngModel)]="row.presenceStatus" [name]="'presence_' + row.inscription.id">
@@ -48,6 +48,14 @@
           </tbody>
         </table>
       </div>
+      <app-pagination
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="rows().length"
+        [pageSize]="pageSize"
+        (previous)="previousPage()"
+        (next)="nextPage()"
+      />
     </div>
   </div>
 </div>
