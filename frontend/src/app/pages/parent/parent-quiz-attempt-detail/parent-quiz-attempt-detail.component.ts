@@ -1,6 +1,6 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ParentQuizAttemptDetailDto } from '../../../core/models/api.models';
 import { ParentService } from '../../../core/services/parent.service';
 
@@ -13,9 +13,11 @@ import { ParentService } from '../../../core/services/parent.service';
 export class ParentQuizAttemptDetailComponent implements OnInit {
   private parentService = inject(ParentService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   attempt = signal<ParentQuizAttemptDetailDto | null>(null);
   loading = signal(true);
+  generatingHomework = signal(false);
   error = signal('');
 
   scoreLabel = computed(() => {
@@ -77,5 +79,32 @@ export class ParentQuizAttemptDetailComponent implements OnInit {
       return 'Corrige localement';
     }
     return status || 'Soumis';
+  }
+
+  generateHomework(): void {
+    const attemptId = this.attempt()?.id;
+    if (!attemptId || this.generatingHomework()) {
+      return;
+    }
+    this.generatingHomework.set(true);
+    this.error.set('');
+    this.parentService.generateHomeworkFromQuizAttempt(attemptId).subscribe({
+      next: (homework) => {
+        this.generatingHomework.set(false);
+        this.router.navigateByUrl(`/parent/homeworks/${homework.id}/respond`);
+      },
+      error: (error) => {
+        this.generatingHomework.set(false);
+        this.error.set(this.resolveErrorMessage(error, 'Erreur lors de la generation du devoir.'));
+      },
+    });
+  }
+
+  private resolveErrorMessage(error: unknown, fallback: string): string {
+    const apiMessage = (error as { error?: { message?: string } })?.error?.message;
+    if (typeof apiMessage === 'string' && apiMessage.trim()) {
+      return apiMessage.trim();
+    }
+    return fallback;
   }
 }

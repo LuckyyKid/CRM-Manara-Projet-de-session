@@ -4,6 +4,7 @@ public record ActivityDto(
         Long id,
         String name,
         String description,
+        String imageUrl,
         int ageMin,
         int ageMax,
         int capacity,

@@ -14,93 +14,74 @@
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
   <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
-  <div *ngIf="!loading()" class="card mm-card-shadow">
-    <div class="card-body">
-      <div class="row g-2 align-items-end mb-3">
-        <div class="col-12 col-lg-4">
-          <label class="form-label">Recherche</label>
-          <input
-            #searchInput
-            type="search"
-            class="form-control"
-            placeholder="Nom ou description"
-            [value]="search()"
-            (input)="setSearch(searchInput.value)"
-          />
-        </div>
-        <div class="col-12 col-md-4 col-lg-2">
-          <label class="form-label">Statut</label>
-          <select #statusSelect class="form-select" [value]="statusFilter()" (change)="setStatus(statusSelect.value)">
-            <option value="">Tous</option>
-            <option *ngFor="let status of statuses()" [value]="status">{{ status }}</option>
-          </select>
-        </div>
-        <div class="col-12 col-md-4 col-lg-2">
-          <label class="form-label">Age</label>
-          <input
-            #ageInput
-            type="number"
-            min="0"
-            class="form-control"
-            placeholder="Age"
-            [value]="ageFilter() ?? ''"
-            (input)="setAge(ageInput.value)"
-          />
-        </div>
-        <div class="col-12 col-md-4 col-lg-2">
-          <label class="form-label">Capacite</label>
-          <select #capacitySelect class="form-select" [value]="capacityFilter()" (change)="setCapacity(capacitySelect.value)">
-            <option value="">Toutes</option>
-            <option value="LOW">10 et moins</option>
-            <option value="MEDIUM">11 a 25</option>
-            <option value="HIGH">Plus de 25</option>
-          </select>
-        </div>
-        <div class="col-12 col-lg-2 text-lg-end text-secondary small">
-          {{ filteredActivities().length }} resultat(s)
-        </div>
+  <app-list-page
+    *ngIf="!loading()"
+    [items]="visibleActivities()"
+    [searchLabel]="'Recherche'"
+    [searchPlaceholder]="'Nom ou description'"
+    [searchValue]="search()"
+    [resultLabel]="filteredActivities().length + ' resultat(s)'"
+    [emptyColspan]="7"
+    [emptyMessage]="'Aucune activite ne correspond aux filtres.'"
+    [page]="page()"
+    [totalPages]="totalPages()"
+    [totalItems]="filteredActivities().length"
+    [pageSize]="pageSize"
+    (searchChange)="setSearch($event)"
+    (previous)="previousPage()"
+    (next)="nextPage()">
+    <ng-template appListFilters>
+      <div class="col-12 col-md-4 col-lg-2">
+        <label class="form-label">Statut</label>
+        <select #statusSelect class="form-select" [value]="statusFilter()" (change)="setStatus(statusSelect.value)">
+          <option value="">Tous</option>
+          <option *ngFor="let status of statuses()" [value]="status">{{ status }}</option>
+        </select>
       </div>
-
-      <div class="table-responsive">
-        <table class="table table-sm align-middle">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Description</th>
-              <th>Age</th>
-              <th>Capacite</th>
-              <th>Statut</th>
-              <th>Type</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngIf="!visibleActivities().length">
-              <td colspan="7" class="text-secondary">Aucune activite ne correspond aux filtres.</td>
-            </tr>
-            <tr *ngFor="let activity of visibleActivities()">
-              <td>{{ activity.name }}</td>
-              <td>{{ activity.description }}</td>
-              <td>{{ activity.ageMin }} - {{ activity.ageMax }}</td>
-              <td>{{ activity.capacity }}</td>
-              <td>{{ activity.status }}</td>
-              <td>{{ activity.type }}</td>
-              <td>
-                <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(activity.id)">Modifier</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="col-12 col-md-4 col-lg-2">
+        <label class="form-label">Age</label>
+        <input
+          #ageInput
+          type="number"
+          min="0"
+          class="form-control"
+          placeholder="Age"
+          [value]="ageFilter() ?? ''"
+          (input)="setAge(ageInput.value)"
+        />
       </div>
-
-      <app-pagination
-        [page]="page()"
-        [totalPages]="totalPages()"
-        [totalItems]="filteredActivities().length"
-        [pageSize]="pageSize"
-        (previous)="previousPage()"
-        (next)="nextPage()"
-      />
-    </div>
-  </div>
+      <div class="col-12 col-md-4 col-lg-2">
+        <label class="form-label">Capacite</label>
+        <select #capacitySelect class="form-select" [value]="capacityFilter()" (change)="setCapacity(capacitySelect.value)">
+          <option value="">Toutes</option>
+          <option value="LOW">10 et moins</option>
+          <option value="MEDIUM">11 a 25</option>
+          <option value="HIGH">Plus de 25</option>
+        </select>
+      </div>
+    </ng-template>
+    <ng-template appListHead>
+      <th>Nom</th>
+      <th>Description</th>
+      <th>Age</th>
+      <th>Capacite</th>
+      <th>Statut</th>
+      <th>Type</th>
+      <th>Actions</th>
+    </ng-template>
+    <ng-template appListRow let-activity>
+      <td>{{ activity.name }}</td>
+      <td>{{ activity.description }}</td>
+      <td>{{ activity.ageMin }} - {{ activity.ageMax }}</td>
+      <td>{{ activity.capacity }}</td>
+      <td>{{ activity.status }}</td>
+      <td>{{ activity.type }}</td>
+      <td>
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(activity.id)">Modifier</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="deleteActivity(activity.id)">Supprimer</button>
+        </div>
+      </td>
+    </ng-template>
+  </app-list-page>
 </div>

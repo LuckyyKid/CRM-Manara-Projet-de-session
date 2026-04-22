@@ -6,6 +6,7 @@ export interface ActivityDto {
   id: number;
   name: string;
   description: string;
+  imageUrl: string | null;
   ageMin: number;
   ageMax: number;
   capacity: number;
@@ -16,6 +17,7 @@ export interface ActivityDto {
 export interface ActivityRequestDto {
   name: string;
   description: string;
+  imageUrl: string | null;
   ageMin: number;
   ageMax: number;
   capacity: number;
@@ -195,6 +197,33 @@ export interface QuizCreateRequestDto {
   animationId: number | null;
 }
 
+export interface SportPracticePlanCreateRequestDto {
+  title: string;
+  sourceNotes: string;
+  animationId: number | null;
+}
+
+export interface SportPracticePlanItemDto {
+  id: number;
+  title: string;
+  instructions: string;
+  purpose: string;
+  durationLabel: string | null;
+  safetyTip: string | null;
+  position: number;
+}
+
+export interface SportPracticePlanDto {
+  id: number;
+  animationId: number | null;
+  activityName: string | null;
+  title: string;
+  summary: string;
+  sourceNotes: string | null;
+  createdAt: string;
+  items: SportPracticePlanItemDto[];
+}
+
 export interface QuizQuestionDto {
   id: number;
   angle: string;
@@ -202,6 +231,7 @@ export interface QuizQuestionDto {
   questionText: string;
   expectedAnswer: string;
   position: number;
+  options: string[];
 }
 
 export interface QuizAxisDto {
@@ -258,6 +288,7 @@ export interface TutorQuizAnswerDto {
   questionText: string;
   expectedAnswer: string;
   answerText: string;
+  options: string[];
 }
 
 export interface TutorQuizSubmissionDto {
@@ -314,11 +345,13 @@ export interface ParentQuizAttemptDetailDto extends QuizAttemptDto {
 export interface HomeworkExerciseDto {
   id: number;
   axisTitle: string;
+  type: string;
   difficulty: string;
   questionText: string;
   expectedAnswer: string;
   targetMistake: string | null;
   position: number;
+  options: string[];
 }
 
 export interface HomeworkDto {
@@ -358,4 +391,33 @@ export interface HomeworkAttemptDto {
   scorePercent: number | null;
   status: string;
   answers: TutorQuizAnswerDto[];
+}
+
+export interface AnimateurHomeworkStudentRowDto {
+  enfantId: number;
+  enfantName: string;
+  assignedCount: number;
+  submittedCount: number;
+  remainingCount: number;
+  averageScorePercent: number | null;
+  latestSubmittedAt: string | null;
+}
+
+export interface AnimateurHomeworkOverviewDto {
+  assignedCount: number;
+  submittedCount: number;
+  remainingCount: number;
+  studentCount: number;
+  students: AnimateurHomeworkStudentRowDto[];
+}
+
+export interface AnimateurHomeworkStudentDetailDto {
+  enfantId: number;
+  enfantName: string;
+  assignedCount: number;
+  submittedCount: number;
+  remainingCount: number;
+  averageScorePercent: number | null;
+  assignments: HomeworkDto[];
+  attempts: HomeworkAttemptDto[];
 }

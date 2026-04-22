@@ -3,7 +3,7 @@
     <div>
       <span class="mm-page-eyebrow">Validation</span>
       <h1 class="mm-page-title fs-1">Demandes</h1>
-      <p class="mm-page-subtitle">Demandes en attente de validation.</p>
+      <p class="mm-page-subtitle">Unifiez le traitement des demandes avec une vue par section.</p>
     </div>
   </div>
 
@@ -13,6 +13,37 @@
 
   <div *ngIf="!loading()">
     <div class="card mm-card-shadow mb-4">
+      <div class="card-body">
+        <div class="d-flex gap-2 flex-wrap">
+          <button
+            type="button"
+            class="btn"
+            [class.btn-primary]="activeSection() === 'pending'"
+            [class.btn-outline-primary]="activeSection() !== 'pending'"
+            (click)="setSection('pending')">
+            En attente
+          </button>
+          <button
+            type="button"
+            class="btn"
+            [class.btn-primary]="activeSection() === 'search'"
+            [class.btn-outline-primary]="activeSection() !== 'search'"
+            (click)="setSection('search')">
+            Recherche
+          </button>
+          <button
+            type="button"
+            class="btn"
+            [class.btn-primary]="activeSection() === 'processed'"
+            [class.btn-outline-primary]="activeSection() !== 'processed'"
+            (click)="setSection('processed')">
+            Traitees
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeSection() === 'search'" class="card mm-card-shadow mb-4">
       <div class="card-body">
         <div class="mb-3">
           <h2 class="mm-panel-title">Recherche des inscriptions</h2>
@@ -114,18 +145,20 @@
                 <td>{{ review.inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td><span class="badge text-bg-light">{{ review.inscription.statusInscription }}</span></td>
                 <td>
-                  <button
-                    *ngIf="review.inscription.statusInscription === 'EN_ATTENTE'"
-                    class="btn btn-sm btn-success me-2"
-                    (click)="approve(review.inscription.id)">
-                    Approuver
-                  </button>
-                  <button
-                    *ngIf="review.inscription.statusInscription === 'EN_ATTENTE'"
-                    class="btn btn-sm btn-danger"
-                    (click)="reject(review.inscription.id)">
-                    Refuser
-                  </button>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button
+                      *ngIf="review.inscription.statusInscription === 'EN_ATTENTE'"
+                      class="btn btn-sm btn-success"
+                      (click)="approve(review.inscription.id)">
+                      Approuver
+                    </button>
+                    <button
+                      *ngIf="review.inscription.statusInscription === 'EN_ATTENTE'"
+                      class="btn btn-sm btn-danger"
+                      (click)="reject(review.inscription.id)">
+                      Refuser
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -142,107 +175,135 @@
       </div>
     </div>
 
-    <!-- Inscriptions en attente (comptes parents + demandes d'inscription) -->
-    <div class="card mm-card-shadow mb-4">
-      <div class="card-body">
-        <div class="mb-3">
-          <h2 class="mm-panel-title">Inscriptions en attente</h2>
-          <p class="mm-panel-subtitle">{{ pendingParents().length + pendingInscriptions().length }} demande(s) à traiter.</p>
+    <div *ngIf="activeSection() === 'pending'" class="row g-4">
+      <div class="col-12 col-xl-5">
+        <div class="card mm-card-shadow h-100">
+          <div class="card-body">
+            <div class="mb-3">
+              <h2 class="mm-panel-title">Comptes parents en attente</h2>
+              <p class="mm-panel-subtitle">{{ pendingParents().length }} compte(s) a traiter.</p>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngIf="!visiblePendingParents().length">
+                    <td colspan="3" class="text-secondary">Aucun compte parent en attente.</td>
+                  </tr>
+                  <tr *ngFor="let parent of visiblePendingParents()">
+                    <td>{{ parent.prenom }} {{ parent.nom }}</td>
+                    <td class="text-secondary">{{ parent.user?.email }}</td>
+                    <td>
+                      <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-success" (click)="approveParent(parent.id)">Approuver</button>
+                        <button class="btn btn-sm btn-danger" (click)="rejectParent(parent.id)">Refuser</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <app-pagination
+              [page]="pendingParentPage()"
+              [totalPages]="pendingParentTotalPages()"
+              [totalItems]="pendingParents().length"
+              [pageSize]="pageSize"
+              (previous)="previousPendingParentPage()"
+              (next)="nextPendingParentPage()"
+            />
+          </div>
         </div>
-        <div class="table-responsive">
-          <table class="table table-sm align-middle">
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Nom</th>
-                <th>Détails</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngIf="!pendingParents().length && !pendingInscriptions().length">
-                <td colspan="4" class="text-secondary">Aucune demande en attente.</td>
-              </tr>
+      </div>
 
-              <!-- Comptes parents en attente -->
-              <tr *ngFor="let parent of visiblePendingParents()">
-                <td><span class="badge bg-primary">Compte parent</span></td>
-                <td>{{ parent.prenom }} {{ parent.nom }}</td>
-                <td class="text-secondary">{{ parent.user?.email }}</td>
-                <td>
-                  <button class="btn btn-sm btn-success me-2" (click)="approveParent(parent.id)">Approuver</button>
-                  <button class="btn btn-sm btn-danger" (click)="rejectParent(parent.id)">Refuser</button>
-                </td>
-              </tr>
-
-              <!-- Demandes d'inscription -->
-              <tr *ngFor="let review of visiblePendingInscriptions()">
-                <td><span class="badge bg-info text-dark">Inscription</span></td>
-                <td>
-                  {{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}
-                  <span *ngIf="review.inscription.enfant.parent" class="text-secondary d-block small">
-                    Parent : {{ review.inscription.enfant.parent.prenom }} {{ review.inscription.enfant.parent.nom }}
-                  </span>
-                </td>
-                <td>
-                  <span>{{ review.inscription.animation.activity.name }}</span>
-                  <span class="text-secondary d-block small">{{ review.inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</span>
-                  <span *ngIf="review.capacity" class="text-secondary small">
-                    Places : {{ review.capacity.approved }}/{{ review.capacity.capacity }}
-                    <span class="badge bg-warning text-dark ms-1" *ngIf="review.capacity.full">Complet</span>
-                  </span>
-                </td>
-                <td>
-                  <button class="btn btn-sm btn-success me-2" (click)="approve(review.inscription.id)">Approuver</button>
-                  <button class="btn btn-sm btn-danger" (click)="reject(review.inscription.id)">Refuser</button>
-                </td>
-              </tr>
-
-            </tbody>
-          </table>
+      <div class="col-12 col-xl-7">
+        <div class="card mm-card-shadow h-100">
+          <div class="card-body">
+            <div class="mb-3">
+              <h2 class="mm-panel-title">Demandes d inscription en attente</h2>
+              <p class="mm-panel-subtitle">{{ pendingInscriptions().length }} demande(s) a traiter.</p>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Enfant</th>
+                    <th>Activite</th>
+                    <th>Details</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngIf="!visiblePendingInscriptions().length">
+                    <td colspan="4" class="text-secondary">Aucune inscription en attente.</td>
+                  </tr>
+                  <tr *ngFor="let review of visiblePendingInscriptions()">
+                    <td>
+                      {{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}
+                      <span *ngIf="review.inscription.enfant.parent" class="text-secondary d-block small">
+                        Parent : {{ review.inscription.enfant.parent.prenom }} {{ review.inscription.enfant.parent.nom }}
+                      </span>
+                    </td>
+                    <td>{{ review.inscription.animation.activity.name }}</td>
+                    <td>
+                      <span class="d-block">{{ review.inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</span>
+                      <span *ngIf="review.capacity" class="text-secondary small">
+                        Places : {{ review.capacity.approved }}/{{ review.capacity.capacity }}
+                        <span class="badge bg-warning text-dark ms-1" *ngIf="review.capacity.full">Complet</span>
+                      </span>
+                    </td>
+                    <td>
+                      <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-sm btn-success" (click)="approve(review.inscription.id)">Approuver</button>
+                        <button class="btn btn-sm btn-danger" (click)="reject(review.inscription.id)">Refuser</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <app-pagination
+              [page]="pendingInscriptionPage()"
+              [totalPages]="pendingInscriptionTotalPages()"
+              [totalItems]="pendingInscriptions().length"
+              [pageSize]="pageSize"
+              (previous)="previousPendingInscriptionPage()"
+              (next)="nextPendingInscriptionPage()"
+            />
+          </div>
         </div>
-        <app-pagination
-          [page]="pendingParentPage()"
-          [totalPages]="pendingParentTotalPages()"
-          [totalItems]="pendingParents().length"
-          [pageSize]="pageSize"
-          (previous)="previousPendingParentPage()"
-          (next)="nextPendingParentPage()"
-        />
-        <app-pagination
-          [page]="pendingInscriptionPage()"
-          [totalPages]="pendingInscriptionTotalPages()"
-          [totalItems]="pendingInscriptions().length"
-          [pageSize]="pageSize"
-          (previous)="previousPendingInscriptionPage()"
-          (next)="nextPendingInscriptionPage()"
-        />
       </div>
     </div>
 
-    <!-- Inscriptions traitées -->
-    <div class="card mm-card-shadow">
+    <div *ngIf="activeSection() === 'processed'" class="card mm-card-shadow">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">Inscriptions traitées</h2>
-          <p class="mm-panel-subtitle">Historique des inscriptions approuvées ou refusées.</p>
+          <h2 class="mm-panel-title">Inscriptions traitees</h2>
+          <p class="mm-panel-subtitle">Historique des inscriptions approuvees ou refusees.</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
                 <th>Enfant</th>
-                <th>Activité</th>
+                <th>Activite</th>
+                <th>Date</th>
                 <th>Statut</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visibleProcessedInscriptions().length">
-                <td colspan="3" class="text-secondary">Aucune inscription traitée.</td>
+                <td colspan="4" class="text-secondary">Aucune inscription traitee.</td>
               </tr>
               <tr *ngFor="let review of visibleProcessedInscriptions()">
                 <td>{{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}</td>
                 <td>{{ review.inscription.animation.activity.name }}</td>
+                <td>{{ review.inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td>
                   <span class="badge"
                     [class.bg-success]="review.inscription.statusInscription === 'APPROUVEE' || review.inscription.statusInscription === 'ACTIF'"
@@ -265,6 +326,5 @@
         />
       </div>
     </div>
-
   </div>
 </div>

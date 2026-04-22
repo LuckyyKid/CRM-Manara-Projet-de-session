@@ -180,7 +180,7 @@ export class HomePageComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set("Impossible de charger les activites du moment. Les suggestions locales restent disponibles.");
+        this.error.set("Impossible de charger les activites du moment.");
         this.loading.set(false);
       },
     });

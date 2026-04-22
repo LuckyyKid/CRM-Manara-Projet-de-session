@@ -2,6 +2,7 @@ package CRM_Manara.CRM_Manara.service;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Animation;
 import CRM_Manara.CRM_Manara.Model.Entity.Enfant;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.Model.Entity.HomeworkAnswer;
 import CRM_Manara.CRM_Manara.Model.Entity.HomeworkAssignment;
 import CRM_Manara.CRM_Manara.Model.Entity.HomeworkAttempt;
@@ -12,6 +13,9 @@ import CRM_Manara.CRM_Manara.Model.Entity.QuizAttempt;
 import CRM_Manara.CRM_Manara.Repository.HomeworkAssignmentRepo;
 import CRM_Manara.CRM_Manara.Repository.HomeworkAttemptRepo;
 import CRM_Manara.CRM_Manara.Repository.QuizAttemptRepo;
+import CRM_Manara.CRM_Manara.dto.AnimateurHomeworkOverviewDto;
+import CRM_Manara.CRM_Manara.dto.AnimateurHomeworkStudentDetailDto;
+import CRM_Manara.CRM_Manara.dto.AnimateurHomeworkStudentRowDto;
 import CRM_Manara.CRM_Manara.dto.HomeworkAttemptDto;
 import CRM_Manara.CRM_Manara.dto.HomeworkAttemptSubmitDto;
 import CRM_Manara.CRM_Manara.dto.HomeworkDto;
@@ -31,17 +35,25 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class HomeworkService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HomeworkService.class);
+
     private static final double WEAK_AXIS_THRESHOLD = 66.0;
+    private static final double REVIEW_AXIS_THRESHOLD = 85.0;
     private static final int AXIS_HISTORY_SIZE = 3;
     private static final int REVIEW_DELAY_DAYS = 10;
+    private static final int IMMEDIATE_AXIS_LIMIT = 3;
+    private static final int MAX_EXERCISE_TEXT_LENGTH = 500;
     private static final Pattern WORD_PATTERN = Pattern.compile("\\p{L}[\\p{L}'-]{2,}|\\d+(?:[.,]\\d+)?");
     private static final Set<String> STOP_WORDS = Set.of(
             "avec", "dans", "des", "les", "une", "pour", "que", "qui", "sur", "aux", "par",
@@ -53,30 +65,49 @@ public class HomeworkService {
     private final HomeworkAttemptRepo homeworkAttemptRepo;
     private final QuizAttemptRepo quizAttemptRepo;
     private final AnthropicHomeworkGenerationService anthropicHomeworkGenerationService;
+    private final AnthropicHomeworkScoringService anthropicHomeworkScoringService;
+    private final HomeworkTemplateService homeworkTemplateService;
 
     public HomeworkService(HomeworkAssignmentRepo homeworkAssignmentRepo,
                            HomeworkAttemptRepo homeworkAttemptRepo,
                            QuizAttemptRepo quizAttemptRepo,
-                           AnthropicHomeworkGenerationService anthropicHomeworkGenerationService) {
+                           AnthropicHomeworkGenerationService anthropicHomeworkGenerationService,
+                           AnthropicHomeworkScoringService anthropicHomeworkScoringService,
+                           HomeworkTemplateService homeworkTemplateService) {
         this.homeworkAssignmentRepo = homeworkAssignmentRepo;
         this.homeworkAttemptRepo = homeworkAttemptRepo;
         this.quizAttemptRepo = quizAttemptRepo;
         this.anthropicHomeworkGenerationService = anthropicHomeworkGenerationService;
+        this.anthropicHomeworkScoringService = anthropicHomeworkScoringService;
+        this.homeworkTemplateService = homeworkTemplateService;
     }
 
-    @Transactional
-    public void createAutomaticHomeworkFromQuizAttempt(QuizAttempt sourceAttempt) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public boolean createAutomaticHomeworkFromQuizAttempt(QuizAttempt sourceAttempt) {
         if (sourceAttempt == null
                 || sourceAttempt.getId() == null
                 || sourceAttempt.getEnfant() == null
                 || sourceAttempt.getQuiz() == null
                 || homeworkAssignmentRepo.existsBySourceAttemptIdAndEnfantId(sourceAttempt.getId(), sourceAttempt.getEnfant().getId())) {
-            return;
+            LOGGER.info("Generation automatique ignoree. attemptId={}, enfantId={}, quizId={}, reason={}",
+                    sourceAttempt == null ? null : sourceAttempt.getId(),
+                    sourceAttempt == null || sourceAttempt.getEnfant() == null ? null : sourceAttempt.getEnfant().getId(),
+                    sourceAttempt == null || sourceAttempt.getQuiz() == null ? null : sourceAttempt.getQuiz().getId(),
+                    sourceAttempt == null ? "attempt_null"
+                            : sourceAttempt.getId() == null ? "attempt_id_null"
+                            : sourceAttempt.getEnfant() == null ? "enfant_null"
+                            : sourceAttempt.getQuiz() == null ? "quiz_null"
+                            : "homework_already_exists");
+            return false;
         }
 
-        List<AxisNeed> weakAxes = determineAxisNeeds(sourceAttempt.getEnfant(), false);
+        LOGGER.info("Generation automatique du devoir lancee. attemptId={}, enfantId={}, quizId={}",
+                sourceAttempt.getId(), sourceAttempt.getEnfant().getId(), sourceAttempt.getQuiz().getId());
+        List<AxisNeed> weakAxes = determineImmediateAxisNeeds(sourceAttempt);
         if (weakAxes.isEmpty()) {
-            return;
+            LOGGER.warn("Aucun axe faible detecte pour la generation automatique. attemptId={}, enfantId={}",
+                    sourceAttempt.getId(), sourceAttempt.getEnfant().getId());
+            return false;
         }
 
         HomeworkAssignment assignment = buildAssignment(
@@ -86,13 +117,55 @@ public class HomeworkService {
                 weakAxes,
                 false
         );
-        homeworkAssignmentRepo.save(assignment);
+        HomeworkAssignment savedAssignment = homeworkAssignmentRepo.save(assignment);
+        LOGGER.info("Devoir automatique sauvegarde. assignmentId={}, attemptId={}, exerciseCount={}",
+                savedAssignment.getId(), sourceAttempt.getId(), savedAssignment.getExercises().size());
+        return true;
+    }
+
+    @Transactional
+    public HomeworkDto generateHomeworkForExistingQuizAttempt(QuizAttempt sourceAttempt) {
+        if (sourceAttempt == null || sourceAttempt.getId() == null || sourceAttempt.getEnfant() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Soumission de quiz invalide.");
+        }
+
+        HomeworkAssignment existingAssignment = homeworkAssignmentRepo
+                .findBySourceAttemptIdAndEnfantParentId(sourceAttempt.getId(), sourceAttempt.getEnfant().getParent().getId())
+                .orElse(null);
+        if (existingAssignment != null) {
+            LOGGER.info("Generation manuelle reutilise un devoir existant. attemptId={}, assignmentId={}",
+                    sourceAttempt.getId(), existingAssignment.getId());
+            return toHomeworkDto(existingAssignment);
+        }
+
+        LOGGER.info("Generation manuelle du devoir lancee. attemptId={}, enfantId={}, quizId={}",
+                sourceAttempt.getId(), sourceAttempt.getEnfant().getId(),
+                sourceAttempt.getQuiz() == null ? null : sourceAttempt.getQuiz().getId());
+        List<AxisNeed> weakAxes = determineImmediateAxisNeeds(sourceAttempt);
+        if (weakAxes.isEmpty()) {
+            LOGGER.warn("Generation manuelle impossible: aucun axe faible detecte. attemptId={}, enfantId={}",
+                    sourceAttempt.getId(), sourceAttempt.getEnfant().getId());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Aucun axe faible n'a ete detecte pour generer un devoir.");
+        }
+
+        HomeworkAssignment assignment = buildAssignment(
+                sourceAttempt.getEnfant(),
+                sourceAttempt.getQuiz(),
+                sourceAttempt,
+                weakAxes,
+                false
+        );
+        HomeworkAssignment savedAssignment = homeworkAssignmentRepo.save(assignment);
+        LOGGER.info("Devoir manuel sauvegarde. assignmentId={}, attemptId={}, exerciseCount={}",
+                savedAssignment.getId(), sourceAttempt.getId(), savedAssignment.getExercises().size());
+        return toHomeworkDto(savedAssignment);
     }
 
     @Transactional(readOnly = true)
     public List<HomeworkDto> listAssignmentsForParent(String parentEmail, parentService parentService) {
         Long parentId = parentService.getParentByEmail(parentEmail).getId();
         return homeworkAssignmentRepo.findByEnfantParentIdOrderByCreatedAtDesc(parentId).stream()
+                .filter(this::isTutoringAssignment)
                 .map(this::toHomeworkDto)
                 .toList();
     }
@@ -102,6 +175,9 @@ public class HomeworkService {
         Long parentId = parentService.getParentByEmail(parentEmail).getId();
         HomeworkAssignment assignment = homeworkAssignmentRepo.findByIdAndEnfantParentId(assignmentId, parentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Devoir introuvable."));
+        if (!isTutoringAssignment(assignment)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Devoir introuvable.");
+        }
         return toHomeworkDto(assignment);
     }
 
@@ -116,6 +192,9 @@ public class HomeworkService {
         Long parentId = parentService.getParentByEmail(parentEmail).getId();
         HomeworkAssignment assignment = homeworkAssignmentRepo.findByIdAndEnfantParentId(assignmentId, parentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Devoir introuvable."));
+        if (!isTutoringAssignment(assignment)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Devoir introuvable.");
+        }
         if (!assignment.getAttempts().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ce devoir a deja ete soumis.");
         }
@@ -138,30 +217,39 @@ public class HomeworkService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tous les exercices du devoir doivent etre repondus.");
         }
 
-        double score = scoreHomeworkAttempt(attempt);
-        attempt.markScored(score, "SCORED_LOCAL");
         assignment.addAttempt(attempt);
-        assignment.markCompleted();
         homeworkAttemptRepo.save(attempt);
 
-        if (score < WEAK_AXIS_THRESHOLD) {
-            HomeworkAssignment followUp = buildAssignment(
-                    assignment.getEnfant(),
-                    assignment.getSourceQuiz(),
-                    assignment.getSourceAttempt(),
-                    deriveNeedsFromHomework(assignment, score, false),
-                    false
-            );
-            homeworkAssignmentRepo.save(followUp);
+        assignment.markCompleted();
+        attempt.markStatus("PENDING_AI");
+
+        var scoringResult = anthropicHomeworkScoringService.scoreAttempt(attempt);
+        if (scoringResult.isPresent()) {
+            double score = scoringResult.get().scorePercent();
+            attempt.markScored(score, scoringResult.get().status());
+
+            if (score < WEAK_AXIS_THRESHOLD) {
+                HomeworkAssignment followUp = buildAssignment(
+                        assignment.getEnfant(),
+                        assignment.getSourceQuiz(),
+                        assignment.getSourceAttempt(),
+                        deriveNeedsFromHomework(assignment, score, false),
+                        false
+                );
+                homeworkAssignmentRepo.save(followUp);
+            } else {
+                HomeworkAssignment review = buildAssignment(
+                        assignment.getEnfant(),
+                        assignment.getSourceQuiz(),
+                        assignment.getSourceAttempt(),
+                        deriveNeedsFromHomework(assignment, score, true),
+                        true
+                );
+                homeworkAssignmentRepo.save(review);
+            }
         } else {
-            HomeworkAssignment review = buildAssignment(
-                    assignment.getEnfant(),
-                    assignment.getSourceQuiz(),
-                    assignment.getSourceAttempt(),
-                    deriveNeedsFromHomework(assignment, score, true),
-                    true
-            );
-            homeworkAssignmentRepo.save(review);
+            LOGGER.warn("Soumission de devoir en attente de correction IA. assignmentId={}, attemptId={}",
+                    assignment.getId(), attempt.getId());
         }
 
         return toAttemptDto(attempt);
@@ -171,6 +259,7 @@ public class HomeworkService {
     public List<HomeworkAttemptDto> listAttemptsForParent(String parentEmail, parentService parentService) {
         Long parentId = parentService.getParentByEmail(parentEmail).getId();
         return homeworkAttemptRepo.findByEnfantParentIdOrderBySubmittedAtDesc(parentId).stream()
+                .filter(attempt -> isTutoringAssignment(attempt.getAssignment()))
                 .map(this::toAttemptDto)
                 .toList();
     }
@@ -180,6 +269,89 @@ public class HomeworkService {
         Long parentId = parentService.getParentByEmail(parentEmail).getId();
         HomeworkAttempt attempt = homeworkAttemptRepo.findByIdAndEnfantParentId(attemptId, parentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Soumission du devoir introuvable."));
+        if (!isTutoringAssignment(attempt.getAssignment())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Soumission du devoir introuvable.");
+        }
+        return toAttemptDto(attempt);
+    }
+
+    @Transactional(readOnly = true)
+    public AnimateurHomeworkOverviewDto getOverviewForAnimateur(String animateurEmail, AnimateurService animateurService) {
+        Long animateurId = animateurService.getAnimateurByEmail(animateurEmail).getId();
+        List<HomeworkAssignment> assignments = homeworkAssignmentRepo.findByAnimateurIdOrderByCreatedAtDesc(animateurId).stream()
+                .filter(this::isTutoringAssignment)
+                .toList();
+        List<HomeworkAttempt> attempts = homeworkAttemptRepo.findByAssignmentAnimateurIdOrderBySubmittedAtDesc(animateurId).stream()
+                .filter(attempt -> isTutoringAssignment(attempt.getAssignment()))
+                .toList();
+
+        List<AnimateurHomeworkStudentRowDto> students = assignments.stream()
+                .collect(Collectors.groupingBy(assignment -> assignment.getEnfant().getId(), LinkedHashMap::new, Collectors.toList()))
+                .values().stream()
+                .map(studentAssignments -> toAnimateurStudentRow(studentAssignments, attempts))
+                .sorted(Comparator.comparing(AnimateurHomeworkStudentRowDto::enfantName, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+
+        long assignedCount = assignments.size();
+        long submittedCount = assignments.stream().filter(assignment -> !assignment.getAttempts().isEmpty()).count();
+        return new AnimateurHomeworkOverviewDto(
+                assignedCount,
+                submittedCount,
+                Math.max(0, assignedCount - submittedCount),
+                students.size(),
+                students
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public AnimateurHomeworkStudentDetailDto getStudentDetailForAnimateur(Long enfantId,
+                                                                          String animateurEmail,
+                                                                          AnimateurService animateurService) {
+        Long animateurId = animateurService.getAnimateurByEmail(animateurEmail).getId();
+        List<HomeworkAssignment> assignments = homeworkAssignmentRepo.findByAnimateurIdAndEnfantIdOrderByCreatedAtDesc(animateurId, enfantId).stream()
+                .filter(this::isTutoringAssignment)
+                .toList();
+        if (assignments.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Aucun devoir trouve pour cet etudiant.");
+        }
+        List<HomeworkAttempt> attempts = homeworkAttemptRepo.findByAssignmentAnimateurIdAndEnfantIdOrderBySubmittedAtDesc(animateurId, enfantId).stream()
+                .filter(attempt -> isTutoringAssignment(attempt.getAssignment()))
+                .toList();
+
+        AnimateurHomeworkStudentRowDto row = toAnimateurStudentRow(assignments, attempts);
+        return new AnimateurHomeworkStudentDetailDto(
+                row.enfantId(),
+                row.enfantName(),
+                row.assignedCount(),
+                row.submittedCount(),
+                row.remainingCount(),
+                row.averageScorePercent(),
+                assignments.stream().map(this::toHomeworkDto).toList(),
+                attempts.stream().map(this::toAttemptDto).toList()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public HomeworkDto getAssignmentForAnimateur(Long assignmentId, String animateurEmail, AnimateurService animateurService) {
+        Long animateurId = animateurService.getAnimateurByEmail(animateurEmail).getId();
+        HomeworkAssignment assignment = homeworkAssignmentRepo.findByIdAndAnimateurId(assignmentId, animateurId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Devoir introuvable."));
+        if (!isTutoringAssignment(assignment)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Devoir introuvable.");
+        }
+        return toHomeworkDto(assignment);
+    }
+
+    @Transactional(readOnly = true)
+    public HomeworkAttemptDto getLatestAttemptForAnimateurAssignment(Long assignmentId,
+                                                                     String animateurEmail,
+                                                                     AnimateurService animateurService) {
+        Long animateurId = animateurService.getAnimateurByEmail(animateurEmail).getId();
+        HomeworkAttempt attempt = homeworkAttemptRepo.findTopByAssignmentIdAndAssignmentAnimateurIdOrderBySubmittedAtDesc(assignmentId, animateurId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aucune soumission trouvee pour ce devoir."));
+        if (!isTutoringAssignment(attempt.getAssignment())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Aucune soumission trouvee pour ce devoir.");
+        }
         return toAttemptDto(attempt);
     }
 
@@ -192,9 +364,28 @@ public class HomeworkService {
                 ? sourceQuiz.getAnimation().getActivity().getActivyName()
                 : null;
         String childName = enfant.getPrenom() + " " + enfant.getNom();
+        LOGGER.info("Construction du devoir. enfantId={}, quizId={}, attemptId={}, reviewMode={}, activityName={}, axisNeeds={}",
+                enfant.getId(),
+                sourceQuiz == null ? null : sourceQuiz.getId(),
+                sourceAttempt == null ? null : sourceAttempt.getId(),
+                reviewMode,
+                activityName,
+                summarizeAxisNeeds(axisNeeds));
+        AnthropicHomeworkGenerationService.GeneratedHomework draftHomework = homeworkTemplateService
+                .buildDraft(activityName, axisNeeds, reviewMode);
+        LOGGER.info("Brouillon local genere. attemptId={}, title={}, exerciseCount={}",
+                sourceAttempt == null ? null : sourceAttempt.getId(),
+                draftHomework.title(),
+                draftHomework.exercises().size());
         AnthropicHomeworkGenerationService.GeneratedHomework generatedHomework = anthropicHomeworkGenerationService
-                .generate(activityName, childName, axisNeeds, reviewMode)
-                .orElseGet(() -> buildLocalHomework(activityName, axisNeeds, reviewMode));
+                .generate(activityName, childName, axisNeeds, reviewMode, draftHomework)
+                .map(homework -> validateAndMergeHomework(homework, draftHomework))
+                .orElseGet(() -> {
+                    LOGGER.warn("Fallback local conserve pour le devoir. attemptId={}, draftExerciseCount={}",
+                            sourceAttempt == null ? null : sourceAttempt.getId(),
+                            draftHomework.exercises().size());
+                    return draftHomework;
+                });
 
         Animation animation = sourceQuiz != null ? sourceQuiz.getAnimation() : null;
         HomeworkAssignment assignment = new HomeworkAssignment(
@@ -212,14 +403,120 @@ public class HomeworkService {
             AnthropicHomeworkGenerationService.GeneratedExercise exercise = generatedHomework.exercises().get(i);
             assignment.addExercise(new HomeworkExercise(
                     exercise.axisTitle(),
+                    normalizeExerciseType(exercise.type(), exercise.options()),
                     normalizeDifficulty(exercise.difficulty()),
                     exercise.questionText(),
                     exercise.expectedAnswer(),
                     exercise.targetMistake(),
-                    i + 1
+                    i + 1,
+                    sanitizeOptions(exercise.options())
             ));
         }
         return assignment;
+    }
+
+    private AnthropicHomeworkGenerationService.GeneratedHomework validateAndMergeHomework(
+            AnthropicHomeworkGenerationService.GeneratedHomework generated,
+            AnthropicHomeworkGenerationService.GeneratedHomework draft
+    ) {
+        if (generated == null || generated.exercises().isEmpty()) {
+            LOGGER.warn("Validation du devoir IA impossible: contenu vide. Fallback complet sur le brouillon.");
+            return draft;
+        }
+
+        String title = sanitizeHomeworkText(generated.title(), 120);
+        String summary = sanitizeHomeworkText(generated.summary(), 220);
+        List<AnthropicHomeworkGenerationService.GeneratedExercise> mergedExercises = new ArrayList<>();
+        List<AnthropicHomeworkGenerationService.GeneratedExercise> draftExercises = draft.exercises();
+        for (int i = 0; i < draftExercises.size(); i++) {
+            AnthropicHomeworkGenerationService.GeneratedExercise draftExercise = draftExercises.get(i);
+            AnthropicHomeworkGenerationService.GeneratedExercise generatedExercise = i < generated.exercises().size()
+                    ? generated.exercises().get(i)
+                    : null;
+            if (generatedExercise == null) {
+                LOGGER.warn("Exercice IA manquant a la position {}. Reutilisation du brouillon.", i + 1);
+                mergedExercises.add(draftExercise);
+                continue;
+            }
+            mergedExercises.add(validateExercise(generatedExercise, draftExercise));
+        }
+
+        if (generated.exercises().size() != draftExercises.size()) {
+            LOGGER.warn("Le nombre d'exercices IA differe du brouillon. generated={}, draft={}.", generated.exercises().size(), draftExercises.size());
+        }
+
+        return new AnthropicHomeworkGenerationService.GeneratedHomework(
+                fallbackText(title, draft.title()),
+                fallbackText(summary, draft.summary()),
+                mergedExercises
+        );
+    }
+
+    private AnthropicHomeworkGenerationService.GeneratedExercise validateExercise(
+            AnthropicHomeworkGenerationService.GeneratedExercise generatedExercise,
+            AnthropicHomeworkGenerationService.GeneratedExercise draftExercise
+    ) {
+        String axisTitle = matchesExpectedAxis(generatedExercise.axisTitle(), draftExercise.axisTitle())
+                ? sanitizeHomeworkText(generatedExercise.axisTitle(), 120)
+                : draftExercise.axisTitle();
+        if (!axisTitle.equals(draftExercise.axisTitle())
+                && !normalizeAxis(axisTitle).equals(normalizeAxis(draftExercise.axisTitle()))) {
+            LOGGER.warn("Axe IA remplace par le brouillon. generatedAxis='{}', expectedAxis='{}'",
+                    generatedExercise.axisTitle(), draftExercise.axisTitle());
+        }
+        String difficulty = normalizeDifficulty(fallbackText(generatedExercise.difficulty(), draftExercise.difficulty()));
+        String type = normalizeExerciseType(fallbackText(generatedExercise.type(), draftExercise.type()),
+                generatedExercise.options().isEmpty() ? draftExercise.options() : generatedExercise.options());
+        String questionText = sanitizeHomeworkText(generatedExercise.questionText(), MAX_EXERCISE_TEXT_LENGTH);
+        String expectedAnswer = sanitizeHomeworkText(generatedExercise.expectedAnswer(), MAX_EXERCISE_TEXT_LENGTH);
+        String targetMistake = sanitizeHomeworkText(generatedExercise.targetMistake(), 240);
+        List<String> options = type.equals("CHOICE")
+                ? ensureExpectedOption(
+                        sanitizeOptions(generatedExercise.options().isEmpty() ? draftExercise.options() : generatedExercise.options()),
+                        fallbackText(expectedAnswer, draftExercise.expectedAnswer())
+                )
+                : List.of();
+
+        return new AnthropicHomeworkGenerationService.GeneratedExercise(
+                axisTitle,
+                type,
+                difficulty,
+                fallbackText(questionText, draftExercise.questionText()),
+                fallbackText(expectedAnswer, draftExercise.expectedAnswer()),
+                fallbackText(targetMistake, draftExercise.targetMistake()),
+                options
+        );
+    }
+
+    private boolean matchesExpectedAxis(String candidateAxis, String expectedAxis) {
+        String normalizedCandidate = normalizeAxis(candidateAxis);
+        String normalizedExpected = normalizeAxis(expectedAxis);
+        if (normalizedCandidate.isBlank()) {
+            return false;
+        }
+        return normalizedCandidate.equals(normalizedExpected)
+                || normalizedCandidate.contains(normalizedExpected)
+                || normalizedExpected.contains(normalizedCandidate);
+    }
+
+    private String sanitizeHomeworkText(String value, int maxLength) {
+        if (value == null) {
+            return "";
+        }
+        String sanitized = value
+                .replace('\r', ' ')
+                .replace('\n', ' ')
+                .replace('\t', ' ')
+                .replaceAll("\\s+", " ")
+                .trim();
+        if (sanitized.length() > maxLength) {
+            sanitized = sanitized.substring(0, maxLength).trim();
+        }
+        return sanitized;
+    }
+
+    private String fallbackText(String candidate, String fallback) {
+        return candidate == null || candidate.isBlank() ? fallback : candidate.trim();
     }
 
     private List<AxisNeed> determineAxisNeeds(Enfant enfant, boolean reviewMode) {
@@ -254,7 +551,33 @@ public class HomeworkService {
                 ));
             }
         }
-        return result.stream().limit(3).toList();
+        List<AxisNeed> limited = result.stream().limit(3).toList();
+        LOGGER.info("Axes detectes pour l'enfant {}. reviewMode={}, axisNeeds={}",
+                enfant.getId(), reviewMode, summarizeAxisNeeds(limited));
+        return limited;
+    }
+
+    private List<AxisNeed> determineImmediateAxisNeeds(QuizAttempt sourceAttempt) {
+        if (sourceAttempt == null) {
+            return List.of();
+        }
+
+        List<AxisNeed> result = axisStatsForAttempt(sourceAttempt).values().stream()
+                .sorted(Comparator.comparingDouble(AxisAttemptStat::scorePercent)
+                        .thenComparing(AxisAttemptStat::axisTitle, String.CASE_INSENSITIVE_ORDER))
+                .limit(IMMEDIATE_AXIS_LIMIT)
+                .map(stat -> new AxisNeed(
+                        stat.axisTitle(),
+                        stat.scorePercent(),
+                        stat.scorePercent() < WEAK_AXIS_THRESHOLD ? "A consolider" : "Revision",
+                        stat.scorePercent() < 40 ? 3 : 2,
+                        stat.mistakes()
+                ))
+                .toList();
+
+        LOGGER.info("Axes immediats detectes pour attemptId={}. axisNeeds={}",
+                sourceAttempt.getId(), summarizeAxisNeeds(result));
+        return result;
     }
 
     private Map<String, AxisAttemptStat> axisStatsForAttempt(QuizAttempt attempt) {
@@ -292,41 +615,18 @@ public class HomeworkService {
         return clampScore(20 + (overlap * 80));
     }
 
-    private double scoreHomeworkAttempt(HomeworkAttempt attempt) {
-        if (attempt.getAnswers().isEmpty()) {
-            return 0;
-        }
-        return clampScore(attempt.getAnswers().stream()
-                .mapToDouble(this::scoreHomeworkAnswer)
-                .average()
-                .orElse(0));
-    }
-
-    private double scoreHomeworkAnswer(HomeworkAnswer answer) {
-        Set<String> expectedTokens = keywords(answer.getExercise().getExpectedAnswer());
-        Set<String> answerTokens = keywords(answer.getAnswerText());
-        if (answerTokens.isEmpty()) {
-            return 0;
-        }
-        if (expectedTokens.isEmpty()) {
-            return answer.getAnswerText().trim().length() >= 20 ? 60 : 35;
-        }
-        long matches = expectedTokens.stream().filter(answerTokens::contains).count();
-        double overlap = (double) matches / expectedTokens.size();
-        return clampScore(20 + (overlap * 80));
-    }
-
     private List<AxisNeed> deriveNeedsFromHomework(HomeworkAssignment assignment, double score, boolean reviewMode) {
         Map<String, List<HomeworkExercise>> byAxis = assignment.getExercises().stream()
                 .collect(Collectors.groupingBy(exercise -> normalizeAxis(exercise.getAxisTitle()), LinkedHashMap::new, Collectors.toList()));
         List<AxisNeed> needs = new ArrayList<>();
         for (List<HomeworkExercise> exercises : byAxis.values()) {
             HomeworkExercise first = exercises.get(0);
+            boolean stillWeak = score < REVIEW_AXIS_THRESHOLD;
             needs.add(new AxisNeed(
                     first.getAxisTitle(),
                     score,
-                    reviewMode ? "Revision espacee" : "Remediation",
-                    reviewMode ? 2 : Math.max(2, exercises.size()),
+                    reviewMode ? "Revision espacee" : stillWeak ? "Remediation" : "Revision",
+                    reviewMode ? 2 : stillWeak ? Math.max(2, exercises.size()) : 2,
                     exercises.stream()
                             .map(HomeworkExercise::getTargetMistake)
                             .filter(value -> value != null && !value.isBlank())
@@ -335,47 +635,6 @@ public class HomeworkService {
             ));
         }
         return needs;
-    }
-
-    private AnthropicHomeworkGenerationService.GeneratedHomework buildLocalHomework(String activityName,
-                                                                                    List<AxisNeed> axisNeeds,
-                                                                                    boolean reviewMode) {
-        List<AnthropicHomeworkGenerationService.GeneratedExercise> exercises = new ArrayList<>();
-        int position = 1;
-        for (AxisNeed axis : axisNeeds) {
-            int count = Math.max(2, axis.exerciseCount());
-            for (int index = 0; index < count; index++) {
-                String difficulty = index == 0 ? "FACILE" : index == count - 1 ? "DIFFICILE" : "MOYEN";
-                String mistake = axis.mistakes().isEmpty() ? "" : axis.mistakes().get(Math.min(index, axis.mistakes().size() - 1));
-                exercises.add(new AnthropicHomeworkGenerationService.GeneratedExercise(
-                        axis.axisTitle(),
-                        difficulty,
-                        buildLocalQuestion(axis.axisTitle(), difficulty, reviewMode, mistake, position),
-                        buildLocalExpectedAnswer(axis.axisTitle(), difficulty, reviewMode),
-                        mistake
-                ));
-                position++;
-            }
-        }
-        return new AnthropicHomeworkGenerationService.GeneratedHomework(
-                reviewMode ? "Devoir de revision espacee" : "Devoir personnalise",
-                reviewMode
-                        ? "Revision de retention sur les axes maitrises pour verifier la memorisation."
-                        : "Serie d'exercices cibles sur les axes faibles observes pendant les quiz recents.",
-                exercises
-        );
-    }
-
-    private String buildLocalQuestion(String axisTitle, String difficulty, boolean reviewMode, String mistake, int position) {
-        String prefix = reviewMode ? "Revision" : "Entrainement";
-        String note = mistake == null || mistake.isBlank() ? "" : " Evite l'erreur suivante: " + mistake + ".";
-        return prefix + " " + difficulty.toLowerCase(Locale.ROOT) + " #" + position + " sur \"" + axisTitle
-                + "\". Resous un exercice similaire a ceux vus en classe et explique briievement ta demarche." + note;
-    }
-
-    private String buildLocalExpectedAnswer(String axisTitle, String difficulty, boolean reviewMode) {
-        return "La reponse doit traiter correctement l'axe \"" + axisTitle + "\" avec une justification adaptee au niveau "
-                + difficulty.toLowerCase(Locale.ROOT) + (reviewMode ? " dans un contexte de revision." : ".");
     }
 
     private HomeworkDto toHomeworkDto(HomeworkAssignment assignment) {
@@ -401,11 +660,13 @@ public class HomeworkService {
                         .map(exercise -> new HomeworkExerciseDto(
                                 exercise.getId(),
                                 exercise.getAxisTitle(),
+                                exercise.getType(),
                                 exercise.getDifficulty(),
                                 exercise.getQuestionText(),
                                 exercise.getExpectedAnswer(),
                                 exercise.getTargetMistake(),
-                                exercise.getPosition()
+                                exercise.getPosition(),
+                                exercise.getOptions()
                         ))
                         .toList(),
                 latestAttempt == null ? null : latestAttempt.getScorePercent(),
@@ -432,7 +693,8 @@ public class HomeworkService {
                                 answer.getExercise().getDifficulty(),
                                 answer.getExercise().getQuestionText(),
                                 answer.getExercise().getExpectedAnswer(),
-                                answer.getAnswerText()
+                                answer.getAnswerText(),
+                                answer.getExercise().getOptions()
                         ))
                         .toList()
         );
@@ -440,6 +702,34 @@ public class HomeworkService {
 
     private Integer normalizeElapsedSeconds(Integer elapsedSeconds) {
         return elapsedSeconds == null || elapsedSeconds < 0 ? null : elapsedSeconds;
+    }
+
+    private AnimateurHomeworkStudentRowDto toAnimateurStudentRow(List<HomeworkAssignment> assignments, List<HomeworkAttempt> attempts) {
+        HomeworkAssignment first = assignments.get(0);
+        Long enfantId = first.getEnfant().getId();
+        String enfantName = first.getEnfant().getPrenom() + " " + first.getEnfant().getNom();
+        long submittedCount = assignments.stream().filter(assignment -> !assignment.getAttempts().isEmpty()).count();
+        Double averageScore = attempts.stream()
+                .filter(attempt -> attempt.getEnfant().getId().equals(enfantId))
+                .map(HomeworkAttempt::getScorePercent)
+                .filter(score -> score != null)
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(Double.NaN);
+        LocalDateTime latestSubmittedAt = attempts.stream()
+                .filter(attempt -> attempt.getEnfant().getId().equals(enfantId))
+                .map(HomeworkAttempt::getSubmittedAt)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+        return new AnimateurHomeworkStudentRowDto(
+                enfantId,
+                enfantName,
+                assignments.size(),
+                submittedCount,
+                Math.max(0, assignments.size() - submittedCount),
+                Double.isNaN(averageScore) ? null : averageScore,
+                latestSubmittedAt
+        );
     }
 
     private Set<String> keywords(String value) {
@@ -456,6 +746,13 @@ public class HomeworkService {
 
     private String stripAccents(String value) {
         return Normalizer.normalize(value, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+    }
+
+    private boolean isTutoringAssignment(HomeworkAssignment assignment) {
+        return assignment != null
+                && assignment.getAnimation() != null
+                && assignment.getAnimation().getActivity() != null
+                && assignment.getAnimation().getActivity().getType() == typeActivity.TUTORAT;
     }
 
     private String normalizeAxis(String title) {
@@ -475,6 +772,54 @@ public class HomeworkService {
             case "FACILE", "MOYEN", "DIFFICILE" -> normalized;
             default -> "MOYEN";
         };
+    }
+
+    private String normalizeExerciseType(String type, List<String> options) {
+        String normalized = type == null ? "" : stripAccents(type).toUpperCase(Locale.ROOT).trim();
+        if ("CHOICE".equals(normalized) && options != null && options.size() >= 2) {
+            return "CHOICE";
+        }
+        return "OPEN";
+    }
+
+    private List<String> sanitizeOptions(List<String> options) {
+        if (options == null) {
+            return List.of();
+        }
+        return options.stream()
+                .map(option -> sanitizeHomeworkText(option, 240))
+                .filter(option -> !option.isBlank())
+                .distinct()
+                .limit(6)
+                .toList();
+    }
+
+    private List<String> ensureExpectedOption(List<String> options, String expectedAnswer) {
+        if (expectedAnswer == null || expectedAnswer.isBlank()) {
+            return options;
+        }
+        List<String> normalized = new ArrayList<>(options);
+        boolean containsExpected = normalized.stream()
+                .anyMatch(option -> normalizeComparableText(option).equals(normalizeComparableText(expectedAnswer)));
+        if (!containsExpected) {
+            normalized.add(0, sanitizeHomeworkText(expectedAnswer, 240));
+        }
+        return normalized.stream().distinct().limit(6).toList();
+    }
+
+    private String normalizeComparableText(String value) {
+        return stripAccents(value == null ? "" : value)
+                .toLowerCase(Locale.ROOT)
+                .replaceAll("\\s+", "")
+                .trim();
+    }
+
+    private String summarizeAxisNeeds(List<AxisNeed> axisNeeds) {
+        return axisNeeds.stream()
+                .map(axis -> axis.axisTitle() + "(score=" + Math.round(axis.averageScore())
+                        + ",difficulty=" + axis.targetDifficulty()
+                        + ",count=" + axis.exerciseCount() + ")")
+                .collect(Collectors.joining(", "));
     }
 
     public record AxisNeed(String axisTitle,

@@ -14,6 +14,7 @@ import {
   ParentQuizDto,
   QuizAttemptDto,
   QuizAttemptSubmitDto,
+  SportPracticePlanDto,
 } from '../models/api.models';
 
 @Injectable({ providedIn: 'root' })
@@ -72,6 +73,10 @@ export class ParentService {
     return this.http.get<ParentQuizAttemptDetailDto>(`/api/parent/quiz-attempts/${attemptId}`);
   }
 
+  generateHomeworkFromQuizAttempt(attemptId: number): Observable<HomeworkDto> {
+    return this.http.post<HomeworkDto>(`/api/parent/quiz-attempts/${attemptId}/generate-homework`, {});
+  }
+
   getHomeworks(): Observable<HomeworkDto[]> {
     return this.http.get<HomeworkDto[]>('/api/parent/homeworks');
   }
@@ -90,5 +95,13 @@ export class ParentService {
 
   getHomeworkAttempt(attemptId: number): Observable<HomeworkAttemptDto> {
     return this.http.get<HomeworkAttemptDto>(`/api/parent/homework-attempts/${attemptId}`);
+  }
+
+  getSportPracticePlans(): Observable<SportPracticePlanDto[]> {
+    return this.http.get<SportPracticePlanDto[]>('/api/parent/sport-practice-plans');
+  }
+
+  getSportPracticePlan(planId: number): Observable<SportPracticePlanDto> {
+    return this.http.get<SportPracticePlanDto>(`/api/parent/sport-practice-plans/${planId}`);
   }
 }

@@ -18,6 +18,12 @@ export class App {
   readonly isAnimateur = computed(
     () => this.authService.currentUser()?.accountType === 'ROLE_ANIMATEUR',
   );
+  readonly canAccessTutoringTools = computed(
+    () => this.authService.currentUser()?.canAccessTutoringTools === true,
+  );
+  readonly canAccessSportPracticeTools = computed(
+    () => this.authService.currentUser()?.canAccessSportPracticeTools === true,
+  );
 
   readonly avatarUrl = computed(() => this.authService.currentUser()?.user?.avatarUrl ?? null);
 

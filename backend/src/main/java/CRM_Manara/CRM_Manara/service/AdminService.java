@@ -105,18 +105,19 @@ public class AdminService {
     }
 
     @Transactional
-    public Activity createActivity(String name, String description, int ageMin, int ageMax, int capacity,
+    public Activity createActivity(String name, String description, String imageUrl, int ageMin, int ageMax, int capacity,
                                    status status, typeActivity type) {
-        Activity activity = new Activity(name, description, ageMin, ageMax, capacity, status, type);
+        Activity activity = new Activity(name, description, imageUrl, ageMin, ageMax, capacity, status, type);
         return activityRepo.save(activity);
     }
 
     @Transactional
-    public Activity updateActivity(Long id, String name, String description, int ageMin, int ageMax, int capacity,
+    public Activity updateActivity(Long id, String name, String description, String imageUrl, int ageMin, int ageMax, int capacity,
                                    status status, typeActivity type) {
         Activity activity = getActivityById(id);
         activity.setActivyName(name);
         activity.setDescription(description);
+        activity.setImageUrl(imageUrl);
         activity.setAgeMin(ageMin);
         activity.setAgeMax(ageMax);
         activity.setCapacity(capacity);

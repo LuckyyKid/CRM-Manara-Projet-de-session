@@ -4,18 +4,22 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { HomeworkAttemptDto, HomeworkDto } from '../../../core/models/api.models';
 import { ParentService } from '../../../core/services/parent.service';
-import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import {
+  ListHeadDirective,
+  ListPageComponent,
+  ListRowDirective,
+} from '../../../shared/list-page/list-page.component';
 
 @Component({
   selector: 'app-parent-homeworks',
-  imports: [CommonModule, DatePipe, RouterLink, PaginationComponent],
+  imports: [CommonModule, DatePipe, RouterLink, ListPageComponent, ListHeadDirective, ListRowDirective],
   template: `
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
           <span class="mm-page-eyebrow">Espace parent</span>
-          <h1 class="mm-page-title fs-1">Devoirs personnalises</h1>
-          <p class="mm-page-subtitle">Exercices cibles generes a partir des axes faibles detectes pendant les quiz.</p>
+          <h1 class="mm-page-title fs-1">Historique des devoirs</h1>
+          <p class="mm-page-subtitle">Devoirs personnalises separes des quiz, avec acces direct au detail et aux soumissions deja corrigees.</p>
         </div>
         <div class="mm-page-actions">
           <a class="btn btn-outline-primary" routerLink="/parent/quizzes">Retour aux quiz</a>
@@ -25,85 +29,65 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
       <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
-      <div *ngIf="!loading()" class="card mm-card-shadow">
-        <div class="card-body">
-          <div class="row g-2 align-items-end mb-3">
-            <div class="col-12 col-lg-7">
-              <label class="form-label" for="homeworkSearch">Recherche</label>
-              <input
-                id="homeworkSearch"
-                #searchInput
-                type="search"
-                class="form-control"
-                placeholder="Devoir, activite ou enfant"
-                [value]="search()"
-                (input)="setSearch(searchInput.value)"
-              />
+      <app-list-page
+        *ngIf="!loading()"
+        [items]="visibleHomeworks()"
+        [searchId]="'homeworkSearch'"
+        [searchLabel]="'Recherche'"
+        [searchPlaceholder]="'Devoir, activite ou enfant'"
+        [searchValue]="search()"
+        [resultLabel]="filteredHomeworks().length + ' devoir(s)'"
+        [emptyColspan]="6"
+        [emptyMessage]="'Aucun devoir disponible pour le moment.'"
+        [page]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="filteredHomeworks().length"
+        [pageSize]="pageSize"
+        (searchChange)="setSearch($event)"
+        (previous)="previousPage()"
+        (next)="nextPage()">
+        <ng-template appListHead>
+          <th>Devoir</th>
+          <th>Enfant</th>
+          <th>Activite</th>
+          <th>Statut</th>
+          <th>Derniere soumission</th>
+          <th>Actions</th>
+        </ng-template>
+        <ng-template appListRow let-homework>
+          <td>
+            <div class="fw-semibold">{{ homework.title }}</div>
+            <div class="text-secondary small">{{ homework.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+          </td>
+          <td>{{ homework.enfantName }}</td>
+          <td>{{ homework.activityName || 'Activite' }}</td>
+          <td>
+            <span class="badge" [class.text-bg-success]="homework.latestSubmittedAt" [class.text-bg-primary]="!homework.latestSubmittedAt">
+              {{ homework.latestSubmittedAt ? 'Soumis' : 'A faire' }}
+            </span>
+          </td>
+          <td class="text-secondary small">
+            {{ homework.latestSubmittedAt ? (homework.latestSubmittedAt | date:'dd/MM/yyyy HH:mm') : 'Aucune' }}
+          </td>
+          <td>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-primary" type="button" (click)="openHomework(homework)">
+                Faire le devoir
+              </button>
+              <button
+                class="btn btn-sm btn-primary"
+                type="button"
+                [disabled]="!latestAttemptForHomework(homework)"
+                (click)="openAttemptDetails(homework)">
+                Details
+              </button>
             </div>
-            <div class="col-12 col-lg-5 text-lg-end text-secondary small">
-              {{ filteredHomeworks().length }} devoir(s)
+            <div *ngIf="latestAttemptForHomework(homework) as attempt" class="text-secondary small mt-1">
+              Note: {{ scoreLabel(attempt.scorePercent) }} - Temps: {{ timeLabel(attempt.elapsedSeconds) }}
             </div>
-          </div>
-
-          <div class="table-responsive">
-            <table class="table table-sm align-middle">
-              <thead>
-                <tr>
-                  <th>Devoir</th>
-                  <th>Enfant</th>
-                  <th>Activite</th>
-                  <th>Statut</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngIf="!visibleHomeworks().length">
-                  <td colspan="5" class="text-secondary">Aucun devoir disponible pour le moment.</td>
-                </tr>
-                <tr *ngFor="let homework of visibleHomeworks()">
-                  <td>
-                    <div class="fw-semibold">{{ homework.title }}</div>
-                    <div class="text-secondary small">{{ homework.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
-                  </td>
-                  <td>{{ homework.enfantName }}</td>
-                  <td>{{ homework.activityName || 'Activite' }}</td>
-                  <td>
-                    <span class="badge" [class.text-bg-success]="homework.latestSubmittedAt" [class.text-bg-primary]="!homework.latestSubmittedAt">
-                      {{ homework.latestSubmittedAt ? 'Soumis' : 'A faire' }}
-                    </span>
-                  </td>
-                  <td>
-                    <div class="d-flex gap-2 flex-wrap">
-                      <button class="btn btn-sm btn-outline-primary" type="button" (click)="openHomework(homework)">
-                        Faire le devoir
-                      </button>
-                      <button
-                        class="btn btn-sm btn-primary"
-                        type="button"
-                        [disabled]="!latestAttemptForHomework(homework)"
-                        (click)="openAttemptDetails(homework)">
-                        Details
-                      </button>
-                    </div>
-                    <div *ngIf="latestAttemptForHomework(homework) as attempt" class="text-secondary small mt-1">
-                      Note: {{ scoreLabel(attempt.scorePercent) }} - Temps: {{ timeLabel(attempt.elapsedSeconds) }}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <app-pagination
-            [page]="page()"
-            [totalPages]="totalPages()"
-            [totalItems]="filteredHomeworks().length"
-            [pageSize]="pageSize"
-            (previous)="previousPage()"
-            (next)="nextPage()"
-          />
-        </div>
-      </div>
+          </td>
+        </ng-template>
+      </app-list-page>
     </div>
   `,
 })

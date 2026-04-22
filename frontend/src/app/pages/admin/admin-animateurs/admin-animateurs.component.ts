@@ -94,6 +94,20 @@ export class AdminAnimateursComponent implements OnInit {
     this.router.navigateByUrl(`/admin/animateurs/${id}/edit`);
   }
 
+  deleteAnimateur(id: number): void {
+    if (!window.confirm('Supprimer cet animateur ? Les animations liees seront aussi supprimees.')) {
+      return;
+    }
+    this.adminService.deleteAnimateur(id).subscribe({
+      next: (response) => {
+        this.message.set(response.message);
+        this.animateurs.update((items) => items.filter((animateur) => animateur.id !== id));
+        this.page.set(Math.min(this.page(), this.totalPages()));
+      },
+      error: () => this.error.set('Erreur lors de la suppression de l animateur.'),
+    });
+  }
+
   private normalize(value: string): string {
     return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
   }

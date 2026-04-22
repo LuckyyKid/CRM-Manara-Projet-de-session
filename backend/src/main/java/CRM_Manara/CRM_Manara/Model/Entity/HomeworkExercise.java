@@ -8,10 +8,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.List;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 @Entity
 @Table(name = "HomeworkExercise")
 public class HomeworkExercise {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +28,9 @@ public class HomeworkExercise {
 
     @Column(name = "AxisTitle", nullable = false)
     private String axisTitle;
+
+    @Column(name = "ExerciseType")
+    private String type;
 
     @Column(name = "Difficulty", nullable = false)
     private String difficulty;
@@ -36,6 +44,9 @@ public class HomeworkExercise {
     @Column(name = "TargetMistake", columnDefinition = "TEXT")
     private String targetMistake;
 
+    @Column(name = "OptionsJson", columnDefinition = "TEXT")
+    private String optionsJson;
+
     @Column(name = "Position", nullable = false)
     private int position;
 
@@ -43,17 +54,31 @@ public class HomeworkExercise {
     }
 
     public HomeworkExercise(String axisTitle,
+                            String type,
                             String difficulty,
                             String questionText,
                             String expectedAnswer,
                             String targetMistake,
                             int position) {
+        this(axisTitle, type, difficulty, questionText, expectedAnswer, targetMistake, position, List.of());
+    }
+
+    public HomeworkExercise(String axisTitle,
+                            String type,
+                            String difficulty,
+                            String questionText,
+                            String expectedAnswer,
+                            String targetMistake,
+                            int position,
+                            List<String> options) {
         this.axisTitle = axisTitle;
+        this.type = type;
         this.difficulty = difficulty;
         this.questionText = questionText;
         this.expectedAnswer = expectedAnswer;
         this.targetMistake = targetMistake;
         this.position = position;
+        this.optionsJson = encodeOptions(options);
     }
 
     public Long getId() {
@@ -72,6 +97,10 @@ public class HomeworkExercise {
         return axisTitle;
     }
 
+    public String getType() {
+        return type == null || type.isBlank() ? "OPEN" : type;
+    }
+
     public String getDifficulty() {
         return difficulty;
     }
@@ -88,7 +117,29 @@ public class HomeworkExercise {
         return targetMistake;
     }
 
+    public List<String> getOptions() {
+        if (optionsJson == null || optionsJson.isBlank()) {
+            return List.of();
+        }
+        try {
+            return OBJECT_MAPPER.readValue(optionsJson, new TypeReference<List<String>>() { });
+        } catch (Exception exception) {
+            throw new IllegalStateException("Impossible de lire les options de l'exercice.", exception);
+        }
+    }
+
     public int getPosition() {
         return position;
+    }
+
+    private String encodeOptions(List<String> options) {
+        if (options == null || options.isEmpty()) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.writeValueAsString(options);
+        } catch (Exception exception) {
+            throw new IllegalStateException("Impossible d'enregistrer les options de l'exercice.", exception);
+        }
     }
 }

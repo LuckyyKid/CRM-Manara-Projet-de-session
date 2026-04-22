@@ -14,6 +14,10 @@
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
   <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
+  <div *ngIf="saving()" class="alert alert-info d-flex align-items-center gap-3" aria-live="polite">
+    <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+    <div>{{ submissionMessage() }}</div>
+  </div>
   <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
@@ -54,12 +58,35 @@
               <label class="form-label fw-semibold" [for]="'question' + current.question.id">
                 {{ current.question.questionText }}
               </label>
-              <textarea class="form-control"
-                        rows="6"
-                        [id]="'question' + current.question.id"
-                        [ngModel]="answers()[current.question.id] || ''"
-                        (ngModelChange)="setAnswer(current.question.id, $event)"
-                        placeholder="Votre reponse"></textarea>
+              <ng-container *ngIf="current.question.type === 'CHOICE' && current.question.options.length; else openAnswer">
+                <div class="vstack gap-2">
+                  <label class="border rounded p-3"
+                         *ngFor="let option of current.question.options; let optionIndex = index"
+                         [for]="optionControlId(current.question.id, optionIndex)">
+                    <div class="form-check mb-0">
+                      <input class="form-check-input"
+                             type="radio"
+                             [id]="optionControlId(current.question.id, optionIndex)"
+                             [name]="'question' + current.question.id"
+                             [value]="option"
+                             [disabled]="saving()"
+                             [ngModel]="answers()[current.question.id] || ''"
+                             (ngModelChange)="setAnswer(current.question.id, $event)">
+                      <span class="form-check-label font-monospace d-block w-100 text-break" style="white-space: normal;">{{ option }}</span>
+                    </div>
+                  </label>
+                </div>
+                <div class="form-text">Choisissez la formule correcte apres avoir fait votre calcul.</div>
+              </ng-container>
+              <ng-template #openAnswer>
+                <textarea class="form-control"
+                          rows="6"
+                          [id]="'question' + current.question.id"
+                          [ngModel]="answers()[current.question.id] || ''"
+                          [disabled]="saving()"
+                          (ngModelChange)="setAnswer(current.question.id, $event)"
+                          placeholder="Votre reponse"></textarea>
+              </ng-template>
             </div>
 
             <div class="quiz-carousel-dots" aria-label="Questions du quiz">
@@ -69,17 +96,18 @@
                       [class.active]="i === currentQuestionIndex()"
                       [class.answered]="(answers()[question.question.id] || '').trim().length > 0"
                       [attr.aria-label]="'Aller a la question ' + (i + 1)"
+                      [disabled]="saving()"
                       (click)="currentQuestionIndex.set(i)">
               </button>
             </div>
           </div>
 
           <div class="d-flex justify-content-between align-items-center gap-3 mt-4">
-            <button class="btn btn-outline-secondary" type="button" [disabled]="isFirstQuestion()" (click)="previousQuestion()">
+            <button class="btn btn-outline-secondary" type="button" [disabled]="saving() || isFirstQuestion()" (click)="previousQuestion()">
               Precedent
             </button>
 
-            <button *ngIf="!isLastQuestion()" class="btn btn-primary" type="button" [disabled]="!currentQuestionAnswered()" (click)="nextQuestion()">
+            <button *ngIf="!isLastQuestion()" class="btn btn-primary" type="button" [disabled]="saving() || !currentQuestionAnswered()" (click)="nextQuestion()">
               Question suivante
             </button>
 

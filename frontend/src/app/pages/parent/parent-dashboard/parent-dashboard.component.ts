@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/auth/auth.service';
 import { ParentService } from '../../../core/services/parent.service';
 import { EnfantDto, InscriptionDto } from '../../../core/models/api.models';
 
@@ -10,6 +11,7 @@ import { EnfantDto, InscriptionDto } from '../../../core/models/api.models';
   templateUrl: './parent-dashboard.component.html',
 })
 export class ParentDashboardComponent implements OnInit {
+  readonly authService = inject(AuthService);
   private parentService = inject(ParentService);
 
   enfants = signal<EnfantDto[]>([]);
@@ -22,6 +24,8 @@ export class ParentDashboardComponent implements OnInit {
     () => this.inscriptions().filter((i) => this.normalizeStatus(i.statusInscription) === 'EN_ATTENTE').length,
   );
   recentInscriptions = computed(() => this.inscriptions().slice(0, 5));
+  canAccessTutoringTools = computed(() => this.authService.currentUser()?.canAccessTutoringTools === true);
+  canAccessSportPracticeTools = computed(() => this.authService.currentUser()?.canAccessSportPracticeTools === true);
 
   ngOnInit() {
     this.parentService.getEnfants().subscribe((data) => this.enfants.set(data));

@@ -160,6 +160,7 @@ public class ApiDtoMapper {
                 activity.getId(),
                 activity.getActivyName(),
                 activity.getDescription(),
+                activity.getImageUrl(),
                 activity.getAgeMin(),
                 activity.getAgeMax(),
                 activity.getCapacity(),

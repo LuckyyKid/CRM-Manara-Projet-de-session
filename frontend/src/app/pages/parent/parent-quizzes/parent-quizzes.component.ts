@@ -3,11 +3,15 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ParentQuizDto, QuizAttemptDto } from '../../../core/models/api.models';
 import { ParentService } from '../../../core/services/parent.service';
-import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import {
+  ListHeadDirective,
+  ListPageComponent,
+  ListRowDirective,
+} from '../../../shared/list-page/list-page.component';
 
 @Component({
   selector: 'app-parent-quizzes',
-  imports: [CommonModule, DatePipe, PaginationComponent, RouterLink],
+  imports: [CommonModule, DatePipe, ListPageComponent, ListHeadDirective, ListRowDirective, RouterLink],
   templateUrl: './parent-quizzes.component.html',
   styleUrl: './parent-quizzes.component.css',
 })

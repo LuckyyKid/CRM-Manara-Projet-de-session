@@ -15,89 +15,64 @@
 
   <div *ngIf="!loading()" class="row g-4">
     <div class="col-12">
-      <div class="card mm-card-shadow">
-        <div class="card-body">
-          <div class="row g-2 align-items-end mb-3">
-            <div class="col-12 col-lg-7">
-              <label class="form-label" for="quizSearch">Recherche</label>
-              <input
-                id="quizSearch"
-                #searchInput
-                type="search"
-                class="form-control"
-                placeholder="Quiz, activite ou enfant"
-                [value]="search()"
-                (input)="setSearch(searchInput.value)"
-              />
+      <app-list-page
+        [items]="visibleQuizzes()"
+        [searchId]="'quizSearch'"
+        [searchLabel]="'Recherche'"
+        [searchPlaceholder]="'Quiz, activite ou enfant'"
+        [searchValue]="search()"
+        [resultLabel]="filteredQuizzes().length + ' quiz disponible(s)'"
+        [emptyColspan]="5"
+        [emptyMessage]="'Aucun quiz disponible pour les seances de vos enfants.'"
+        [page]="quizPage()"
+        [totalPages]="quizTotalPages()"
+        [totalItems]="filteredQuizzes().length"
+        [pageSize]="pageSize"
+        (searchChange)="setSearch($event)"
+        (previous)="previousQuizPage()"
+        (next)="nextQuizPage()">
+        <ng-template appListHead>
+          <th>Quiz</th>
+          <th>Animation / activite</th>
+          <th>Enfants admissibles</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </ng-template>
+        <ng-template appListRow let-parentQuiz>
+          <td>
+            <div class="fw-semibold">{{ parentQuiz.quiz.title }}</div>
+            <div class="text-secondary small">{{ parentQuiz.quiz.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+          </td>
+          <td>{{ parentQuiz.quiz.activityName || 'Activite' }}</td>
+          <td>
+            <span *ngFor="let child of parentQuiz.eligibleChildren; let last = last">
+              {{ child.prenom }} {{ child.nom }}<span *ngIf="!last">, </span>
+            </span>
+          </td>
+          <td>
+            <span class="badge" [class.text-bg-success]="parentQuiz.alreadySubmitted" [class.text-bg-primary]="!parentQuiz.alreadySubmitted">
+              {{ parentQuiz.alreadySubmitted ? 'Soumis' : 'A faire' }}
+            </span>
+          </td>
+          <td>
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-primary" type="button" (click)="openQuiz(parentQuiz)">
+                Repondre
+              </button>
+              <button
+                class="btn btn-sm btn-primary"
+                type="button"
+                [disabled]="!latestAttemptForQuiz(parentQuiz)"
+                (click)="openQuizDetails(parentQuiz)">
+                Details
+              </button>
             </div>
-            <div class="col-12 col-lg-5 text-lg-end text-secondary small">
-              {{ filteredQuizzes().length }} quiz disponible(s)
+            <div *ngIf="latestAttemptForQuiz(parentQuiz) as attempt" class="text-secondary small mt-1">
+              Note: {{ scoreLabel(attempt.scorePercent) }} - Temps: {{ timeLabel(attempt.elapsedSeconds) }}
             </div>
-          </div>
-
-          <div class="table-responsive">
-            <table class="table table-sm align-middle">
-              <thead>
-                <tr>
-                  <th>Quiz</th>
-                  <th>Animation / activite</th>
-                  <th>Enfants admissibles</th>
-                  <th>Statut</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngIf="!visibleQuizzes().length">
-                  <td colspan="5" class="text-secondary">Aucun quiz disponible pour les seances de vos enfants.</td>
-                </tr>
-                <tr *ngFor="let parentQuiz of visibleQuizzes()">
-                  <td>
-                    <div class="fw-semibold">{{ parentQuiz.quiz.title }}</div>
-                    <div class="text-secondary small">{{ parentQuiz.quiz.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
-                  </td>
-                  <td>{{ parentQuiz.quiz.activityName || 'Activite' }}</td>
-                  <td>
-                    <span *ngFor="let child of parentQuiz.eligibleChildren; let last = last">
-                      {{ child.prenom }} {{ child.nom }}<span *ngIf="!last">, </span>
-                    </span>
-                  </td>
-                  <td>
-                    <span class="badge" [class.text-bg-success]="parentQuiz.alreadySubmitted" [class.text-bg-primary]="!parentQuiz.alreadySubmitted">
-                      {{ parentQuiz.alreadySubmitted ? 'Soumis' : 'A faire' }}
-                    </span>
-                  </td>
-                  <td>
-                    <div class="d-flex gap-2 flex-wrap">
-                      <button class="btn btn-sm btn-outline-primary" type="button" (click)="openQuiz(parentQuiz)">
-                        Repondre
-                      </button>
-                      <button
-                        class="btn btn-sm btn-primary"
-                        type="button"
-                        [disabled]="!latestAttemptForQuiz(parentQuiz)"
-                        (click)="openQuizDetails(parentQuiz)">
-                        Details
-                      </button>
-                    </div>
-                    <div *ngIf="latestAttemptForQuiz(parentQuiz) as attempt" class="text-secondary small mt-1">
-                      Note: {{ scoreLabel(attempt.scorePercent) }} - Temps: {{ timeLabel(attempt.elapsedSeconds) }}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <app-pagination
-            [page]="quizPage()"
-            [totalPages]="quizTotalPages()"
-            [totalItems]="filteredQuizzes().length"
-            [pageSize]="pageSize"
-            (previous)="previousQuizPage()"
-            (next)="nextQuizPage()"
-          />
-        </div>
-      </div>
+          </td>
+        </ng-template>
+      </app-list-page>
     </div>
   </div>
 </div>

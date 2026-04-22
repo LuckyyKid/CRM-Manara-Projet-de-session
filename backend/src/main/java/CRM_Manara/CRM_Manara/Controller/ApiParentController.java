@@ -20,8 +20,10 @@ import CRM_Manara.CRM_Manara.dto.ParentQuizAttemptDetailDto;
 import CRM_Manara.CRM_Manara.dto.ParentQuizDto;
 import CRM_Manara.CRM_Manara.dto.QuizAttemptDto;
 import CRM_Manara.CRM_Manara.dto.QuizAttemptSubmitDto;
+import CRM_Manara.CRM_Manara.dto.SportPracticePlanDto;
 import CRM_Manara.CRM_Manara.service.HomeworkService;
 import CRM_Manara.CRM_Manara.service.ParentQuizService;
+import CRM_Manara.CRM_Manara.service.SportPracticePlanService;
 import CRM_Manara.CRM_Manara.service.parentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,21 +50,24 @@ public class ApiParentController {
     private final parentService parentService;
     private final ParentQuizService parentQuizService;
     private final HomeworkService homeworkService;
+    private final SportPracticePlanService sportPracticePlanService;
     private final ApiDtoMapper apiDtoMapper;
 
     @Autowired
     public ApiParentController(parentService parentService,
                                ParentQuizService parentQuizService,
                                HomeworkService homeworkService,
+                               SportPracticePlanService sportPracticePlanService,
                                ApiDtoMapper apiDtoMapper) {
         this.parentService = parentService;
         this.parentQuizService = parentQuizService;
         this.homeworkService = homeworkService;
+        this.sportPracticePlanService = sportPracticePlanService;
         this.apiDtoMapper = apiDtoMapper;
     }
 
     ApiParentController(parentService parentService, ApiDtoMapper apiDtoMapper) {
-        this(parentService, null, null, apiDtoMapper);
+        this(parentService, null, null, null, apiDtoMapper);
     }
 
     @GetMapping("/enfants")
@@ -110,6 +115,11 @@ public class ApiParentController {
         return parentQuizService.getAttemptDetail(id, requireEmail(authentication));
     }
 
+    @PostMapping("/quiz-attempts/{id}/generate-homework")
+    public HomeworkDto generateHomeworkFromQuizAttempt(@PathVariable Long id, Authentication authentication) {
+        return parentQuizService.generateHomeworkFromAttempt(id, requireEmail(authentication));
+    }
+
     @PostMapping("/quizzes/{id}/attempts")
     public QuizAttemptDto submitQuiz(@PathVariable Long id,
                                      @RequestBody QuizAttemptSubmitDto request,
@@ -142,6 +152,16 @@ public class ApiParentController {
     @GetMapping("/homework-attempts/{id}")
     public HomeworkAttemptDto homeworkAttempt(@PathVariable Long id, Authentication authentication) {
         return homeworkService.getAttemptDetailForParent(id, requireEmail(authentication), parentService);
+    }
+
+    @GetMapping("/sport-practice-plans")
+    public List<SportPracticePlanDto> sportPracticePlans(Authentication authentication) {
+        return sportPracticePlanService.listForParent(requireEmail(authentication));
+    }
+
+    @GetMapping("/sport-practice-plans/{id}")
+    public SportPracticePlanDto sportPracticePlan(@PathVariable Long id, Authentication authentication) {
+        return sportPracticePlanService.getForParent(id, requireEmail(authentication));
     }
 
     @GetMapping("/activities")

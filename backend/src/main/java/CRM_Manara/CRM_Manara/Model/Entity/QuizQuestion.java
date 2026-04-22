@@ -8,10 +8,16 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.List;
 
 @Entity
 @Table(name = "QuizQuestion")
 public class QuizQuestion {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Id
     @Column(name = "ID")
@@ -33,6 +39,9 @@ public class QuizQuestion {
     @Column(name = "ExpectedAnswer", nullable = false, columnDefinition = "TEXT")
     private String expectedAnswer;
 
+    @Column(name = "OptionsJson", columnDefinition = "TEXT")
+    private String optionsJson;
+
     @Column(name = "PositionIndex", nullable = false)
     private int position;
 
@@ -40,11 +49,21 @@ public class QuizQuestion {
     }
 
     public QuizQuestion(String angle, String type, String questionText, String expectedAnswer, int position) {
+        this(angle, type, questionText, expectedAnswer, intPosition(position), List.of());
+    }
+
+    public QuizQuestion(String angle,
+                        String type,
+                        String questionText,
+                        String expectedAnswer,
+                        int position,
+                        List<String> options) {
         this.angle = angle;
         this.type = type;
         this.questionText = questionText;
         this.expectedAnswer = expectedAnswer;
         this.position = position;
+        this.optionsJson = encodeOptions(options);
     }
 
     public Long getId() {
@@ -75,7 +94,33 @@ public class QuizQuestion {
         return expectedAnswer;
     }
 
+    public List<String> getOptions() {
+        if (optionsJson == null || optionsJson.isBlank()) {
+            return List.of();
+        }
+        try {
+            return OBJECT_MAPPER.readValue(optionsJson, new TypeReference<List<String>>() { });
+        } catch (Exception exception) {
+            throw new IllegalStateException("Impossible de lire les options de la question.", exception);
+        }
+    }
+
     public int getPosition() {
+        return position;
+    }
+
+    private String encodeOptions(List<String> options) {
+        if (options == null || options.isEmpty()) {
+            return null;
+        }
+        try {
+            return OBJECT_MAPPER.writeValueAsString(options);
+        } catch (Exception exception) {
+            throw new IllegalStateException("Impossible d'enregistrer les options de la question.", exception);
+        }
+    }
+
+    private static int intPosition(int position) {
         return position;
     }
 }

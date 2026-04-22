@@ -28,6 +28,8 @@ export interface AdminProfileModel {
 export interface CurrentUserModel {
   id: number;
   accountType: string | null;
+  canAccessTutoringTools: boolean;
+  canAccessSportPracticeTools: boolean;
   user: UserModel;
   parent: ParentProfileModel | null;
   animateur: AnimateurProfileModel | null;

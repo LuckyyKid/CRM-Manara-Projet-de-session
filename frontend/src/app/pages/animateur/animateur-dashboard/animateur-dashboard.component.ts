@@ -2,8 +2,9 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../../core/auth/auth.service';
 import { AnimateurService } from '../../../core/services/animateur.service';
-import { AnimationDto, TutorDashboardDto } from '../../../core/models/api.models';
+import { AnimateurHomeworkOverviewDto, AnimationDto, QuizDto, TutorDashboardDto } from '../../../core/models/api.models';
 import { animationTimeStatus, animationTimeStatusLabel, isAnimationActiveOrUpcoming } from '../../../core/utils/animation-time-status';
 
 @Component({
@@ -12,9 +13,12 @@ import { animationTimeStatus, animationTimeStatusLabel, isAnimationActiveOrUpcom
   templateUrl: './animateur-dashboard.component.html',
 })
 export class AnimateurDashboardComponent implements OnInit {
+  readonly authService = inject(AuthService);
   private animateurService = inject(AnimateurService);
 
   animations = signal<AnimationDto[]>([]);
+  quizzes = signal<QuizDto[]>([]);
+  homeworkOverview = signal<AnimateurHomeworkOverviewDto | null>(null);
   tutorDashboard = signal<TutorDashboardDto | null>(null);
   loading = signal(true);
   error = signal('');
@@ -32,6 +36,12 @@ export class AnimateurDashboardComponent implements OnInit {
   countUpcoming = computed(
     () => this.animations().filter((a) => this.isOngoingOrUpcoming(a.endTime, a.startTime)).length,
   );
+  recentQuizzes = computed(() => this.quizzes().slice(0, 5));
+  recentAnimations = computed(() => this.animations().slice(0, 5));
+  tutoringAnimationCount = computed(
+    () => this.animations().filter((animation) => this.normalize(animation.activity.type).includes('TUTOR')).length,
+  );
+  hasTutoringAnimations = computed(() => this.tutoringAnimationCount() > 0);
   responseSummary = computed(() => {
     const dashboard = this.tutorDashboard();
     if (!dashboard) {
@@ -45,10 +55,14 @@ export class AnimateurDashboardComponent implements OnInit {
   ngOnInit() {
     forkJoin({
       animations: this.animateurService.getAnimations(),
+      quizzes: this.animateurService.getQuizzes(),
+      homeworkOverview: this.animateurService.getHomeworkOverview(),
       tutorDashboard: this.animateurService.getTutorDashboard(),
     }).subscribe({
-      next: ({ animations, tutorDashboard }) => {
+      next: ({ animations, quizzes, homeworkOverview, tutorDashboard }) => {
         this.animations.set(animations);
+        this.quizzes.set(quizzes);
+        this.homeworkOverview.set(homeworkOverview);
         this.tutorDashboard.set(tutorDashboard);
         this.loading.set(false);
       },
@@ -68,6 +82,22 @@ export class AnimateurDashboardComponent implements OnInit {
 
   animationTimeLabel(startTime: string | null, endTime: string | null): string {
     return animationTimeStatusLabel(animationTimeStatus(startTime, endTime));
+  }
+
+  isTutoringAnimation(animation: AnimationDto): boolean {
+    return this.normalize(animation.activity.type).includes('TUTOR');
+  }
+
+  isSportAnimation(animation: AnimationDto): boolean {
+    return this.normalize(animation.activity.type).includes('SPORT');
+  }
+
+  canAccessSportPracticeTools(): boolean {
+    return this.authService.currentUser()?.canAccessSportPracticeTools === true;
+  }
+
+  private normalize(value: string | null | undefined): string {
+    return (value ?? '').normalize('NFD').replace(/\p{M}/gu, '').toUpperCase().trim();
   }
 
   private isOngoingOrUpcoming(endTime: string | null, startTime: string | null): boolean {

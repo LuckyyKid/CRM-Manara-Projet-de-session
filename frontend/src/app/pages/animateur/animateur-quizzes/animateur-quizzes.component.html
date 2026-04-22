@@ -14,7 +14,7 @@
   <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
   <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
-  <div *ngIf="!loading()" class="row g-4">
+  <div *ngIf="!loading() && canAccessTutoringTools()" class="row g-4">
     <div class="col-12 col-xl-7">
       <div class="card mm-card-shadow">
         <div class="card-body">

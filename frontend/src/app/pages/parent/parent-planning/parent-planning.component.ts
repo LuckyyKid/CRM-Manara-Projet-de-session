@@ -26,14 +26,22 @@ export class ParentPlanningComponent implements OnInit {
   inscriptions = signal<InscriptionDto[]>([]);
   loading = signal(true);
   error = signal('');
+  search = signal('');
   weekStart = signal(this.startOfWeek(new Date()));
   upcomingPage = signal(1);
   pastPage = signal(1);
   pageSize = 6;
 
-  visibleInscriptions = computed(() =>
-    this.inscriptions().filter((i) => this.isVisiblePlanningStatus(i.statusInscription)),
-  );
+  visibleInscriptions = computed(() => {
+    const search = this.normalize(this.search());
+    return this.inscriptions().filter((i) => {
+      if (!this.isVisiblePlanningStatus(i.statusInscription)) {
+        return false;
+      }
+      const text = `${i.enfant.prenom} ${i.enfant.nom} ${i.animation.activity.name} ${i.animation.animateur.prenom} ${i.animation.animateur.nom}`;
+      return !search || this.normalize(text).includes(search);
+    });
+  });
 
   // Une inscription reste dans les séances à venir jusqu'à la fin de l'animation.
   upcomingInscriptions = computed(() =>
@@ -117,6 +125,12 @@ export class ParentPlanningComponent implements OnInit {
 
   currentWeek(): void {
     this.weekStart.set(this.startOfWeek(new Date()));
+  }
+
+  setSearch(value: string): void {
+    this.search.set(value);
+    this.upcomingPage.set(1);
+    this.pastPage.set(1);
   }
 
   previousUpcomingPage(): void { this.upcomingPage.set(Math.max(1, this.upcomingPage() - 1)); }
@@ -207,5 +221,9 @@ export class ParentPlanningComponent implements OnInit {
     return left.getFullYear() === right.getFullYear()
       && left.getMonth() === right.getMonth()
       && left.getDate() === right.getDate();
+  }
+
+  private normalize(value: string): string {
+    return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
   }
 }

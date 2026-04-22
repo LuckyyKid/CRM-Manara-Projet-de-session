@@ -13,6 +13,24 @@
   <div *ngIf="!loading()">
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
+        <div class="row g-2 align-items-end mb-4">
+          <div class="col-12 col-lg-7">
+            <label class="form-label" for="planningSearch">Recherche</label>
+            <input
+              id="planningSearch"
+              #searchInput
+              type="search"
+              class="form-control"
+              placeholder="Enfant, activite ou animateur"
+              [value]="search()"
+              (input)="setSearch(searchInput.value)"
+            />
+          </div>
+          <div class="col-12 col-lg-5 text-lg-end text-secondary small">
+            {{ visibleInscriptions().length }} inscription(s) visibles
+          </div>
+        </div>
+
         <div class="mm-weekly-shell">
           <div class="mm-weekly-toolbar">
             <div>

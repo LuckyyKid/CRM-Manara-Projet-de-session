@@ -3,6 +3,8 @@ package CRM_Manara.CRM_Manara.service;
 import CRM_Manara.CRM_Manara.Model.Entity.Animateur;
 import CRM_Manara.CRM_Manara.Model.Entity.Animation;
 import CRM_Manara.CRM_Manara.Model.Entity.Enfant;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
+import CRM_Manara.CRM_Manara.Model.Entity.HomeworkAssignment;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Quiz;
 import CRM_Manara.CRM_Manara.Model.Entity.QuizAnswer;
@@ -11,6 +13,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.QuizAxis;
 import CRM_Manara.CRM_Manara.Model.Entity.QuizQuestion;
 import CRM_Manara.CRM_Manara.Repository.QuizAttemptRepo;
 import CRM_Manara.CRM_Manara.Repository.QuizRepo;
+import CRM_Manara.CRM_Manara.Repository.HomeworkAssignmentRepo;
 import CRM_Manara.CRM_Manara.service.AnthropicQuizGenerationService.GeneratedAxis;
 import CRM_Manara.CRM_Manara.service.AnthropicQuizGenerationService.GeneratedQuestion;
 import CRM_Manara.CRM_Manara.service.AnthropicQuizGenerationService.GeneratedQuiz;
@@ -22,6 +25,9 @@ import CRM_Manara.CRM_Manara.dto.TutorAxisProgressDto;
 import CRM_Manara.CRM_Manara.dto.TutorDashboardDto;
 import CRM_Manara.CRM_Manara.dto.TutorQuizAnswerDto;
 import CRM_Manara.CRM_Manara.dto.TutorQuizSubmissionDto;
+import CRM_Manara.CRM_Manara.dto.ActionResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +37,7 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,10 +55,13 @@ import java.util.regex.Pattern;
 @Service
 public class QuizService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(QuizService.class);
+
     private static final int MIN_NOTES_LENGTH = 20;
     private static final int MIN_AXES = 3;
     private static final int MAX_AXES = 7;
     private static final Pattern WORD_PATTERN = Pattern.compile("\\p{L}[\\p{L}'-]{2,}");
+    private static final Pattern FORMULA_COMPLEXITY_PATTERN = Pattern.compile("[=^()+\\-*/]|\\b[fg]\\s*\\(x\\)|\\bx\\b");
     private static final Pattern FORMULA_PATTERN = Pattern.compile("[A-Za-z]\\s*\\([^)]*\\)\\s*=\\s*[^\\r\\n,;.!?]+|[A-Za-z0-9²³]+\\s*=\\s*[^\\r\\n,;.!?]+");
     private static final Pattern DERIVATIVE_POWER_PATTERN = Pattern.compile(
             "(?iu)d[ée]riv[ée]e\\s+de\\s+([+-]?\\d*)\\s*x(?:\\s*\\^\\s*(\\d+)|([²³]))\\s*=\\s*([^\\r\\n,;.!?]+)"
@@ -74,17 +84,23 @@ public class QuizService {
 
     private final QuizRepo quizRepo;
     private final QuizAttemptRepo quizAttemptRepo;
+    private final HomeworkAssignmentRepo homeworkAssignmentRepo;
     private final AnimateurService animateurService;
     private final AnthropicQuizGenerationService anthropicQuizGenerationService;
+    private final HomeworkService homeworkService;
 
     public QuizService(QuizRepo quizRepo,
                        QuizAttemptRepo quizAttemptRepo,
+                       HomeworkAssignmentRepo homeworkAssignmentRepo,
                        AnimateurService animateurService,
-                       AnthropicQuizGenerationService anthropicQuizGenerationService) {
+                       AnthropicQuizGenerationService anthropicQuizGenerationService,
+                       HomeworkService homeworkService) {
         this.quizRepo = quizRepo;
         this.quizAttemptRepo = quizAttemptRepo;
+        this.homeworkAssignmentRepo = homeworkAssignmentRepo;
         this.animateurService = animateurService;
         this.anthropicQuizGenerationService = anthropicQuizGenerationService;
+        this.homeworkService = homeworkService;
     }
 
     @Transactional
@@ -99,6 +115,12 @@ public class QuizService {
         Animation animation = null;
         if (request.animationId() != null) {
             animation = animateurService.getAnimationForAnimateur(request.animationId(), animateurEmail);
+            if (!isTutoringAnimation(animation)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Les quiz sont reserves aux animations de tutorat.");
+            }
+        }
+        if (animation == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Un quiz doit etre lie a une animation de tutorat.");
         }
 
         String notes = request.sourceNotes().trim();
@@ -112,8 +134,7 @@ public class QuizService {
         if (generatedQuiz.isPresent()) {
             addGeneratedAxes(quiz, generatedQuiz.get());
         } else {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
-                    "Generation IA indisponible. Aucun quiz fallback n'a ete cree.");
+            addLocalAxes(quiz, notes);
         }
 
         return toDto(quizRepo.save(quiz));
@@ -123,6 +144,7 @@ public class QuizService {
     public List<QuizDto> listForAnimateur(String animateurEmail) {
         Animateur animateur = animateurService.getAnimateurByEmail(animateurEmail);
         return quizRepo.findByAnimateurIdOrderByCreatedAtDesc(animateur.getId()).stream()
+                .filter(quiz -> isTutoringAnimation(quiz.getAnimation()))
                 .map(this::toDto)
                 .toList();
     }
@@ -132,6 +154,9 @@ public class QuizService {
         Animateur animateur = animateurService.getAnimateurByEmail(animateurEmail);
         Quiz quiz = quizRepo.findByIdAndAnimateurId(quizId, animateur.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz introuvable."));
+        if (!isTutoringAnimation(quiz.getAnimation())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz introuvable.");
+        }
         return toDto(quiz);
     }
 
@@ -139,6 +164,7 @@ public class QuizService {
     public List<TutorQuizSubmissionDto> listSubmissionsForAnimateur(String animateurEmail) {
         Animateur animateur = animateurService.getAnimateurByEmail(animateurEmail);
         return quizAttemptRepo.findByQuizAnimateurIdOrderBySubmittedAtDesc(animateur.getId()).stream()
+                .filter(attempt -> isTutoringAnimation(attempt.getQuiz() == null ? null : attempt.getQuiz().getAnimation()))
                 .map(this::toSubmissionDto)
                 .toList();
     }
@@ -148,14 +174,62 @@ public class QuizService {
         Animateur animateur = animateurService.getAnimateurByEmail(animateurEmail);
         Quiz quiz = quizRepo.findByIdAndAnimateurId(quizId, animateur.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz introuvable."));
+        if (!isTutoringAnimation(quiz.getAnimation())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz introuvable.");
+        }
+        List<HomeworkAssignment> linkedAssignments = homeworkAssignmentRepo.findBySourceQuizId(quizId);
+        if (!linkedAssignments.isEmpty()) {
+            LOGGER.info("Suppression du quiz {}: suppression prealable de {} devoir(s) lies.", quizId, linkedAssignments.size());
+            homeworkAssignmentRepo.deleteAll(linkedAssignments);
+            homeworkAssignmentRepo.flush();
+        }
+        LOGGER.info("Suppression du quiz {} par l'animateur {}.", quizId, animateur.getId());
         quizRepo.delete(quiz);
+    }
+
+    @Transactional
+    public ActionResponseDto backfillMissingHomeworksForAnimateur(String animateurEmail) {
+        Animateur animateur = animateurService.getAnimateurByEmail(animateurEmail);
+        List<QuizAttempt> attempts = quizAttemptRepo.findByQuizAnimateurIdOrderBySubmittedAtDesc(animateur.getId()).stream()
+                .filter(attempt -> isTutoringAnimation(attempt.getQuiz() == null ? null : attempt.getQuiz().getAnimation()))
+                .toList();
+        int created = 0;
+        int skipped = 0;
+        int failed = 0;
+
+        for (QuizAttempt attempt : attempts) {
+            try {
+                boolean generated = homeworkService.createAutomaticHomeworkFromQuizAttempt(attempt);
+                if (generated) {
+                    created++;
+                } else {
+                    skipped++;
+                }
+            } catch (Exception exception) {
+                failed++;
+                LOGGER.error("Backfill devoir echoue pour attemptId={} quizId={} enfantId={}.",
+                        attempt.getId(),
+                        attempt.getQuiz() == null ? null : attempt.getQuiz().getId(),
+                        attempt.getEnfant() == null ? null : attempt.getEnfant().getId(),
+                        exception);
+            }
+        }
+
+        String message = "Backfill termine: " + created + " devoir(s) crees, "
+                + skipped + " ignore(s), " + failed + " echec(s).";
+        LOGGER.info("Backfill des devoirs manquants termine pour animateurId={}. {}", animateur.getId(), message);
+        return new ActionResponseDto(failed == 0, message, (long) created);
     }
 
     @Transactional(readOnly = true)
     public TutorDashboardDto getTutorDashboard(String animateurEmail) {
         Animateur animateur = animateurService.getAnimateurByEmail(animateurEmail);
-        List<Quiz> quizzes = quizRepo.findByAnimateurIdOrderByCreatedAtDesc(animateur.getId());
-        List<QuizAttempt> attempts = quizAttemptRepo.findByQuizAnimateurIdOrderBySubmittedAtDesc(animateur.getId());
+        List<Quiz> quizzes = quizRepo.findByAnimateurIdOrderByCreatedAtDesc(animateur.getId()).stream()
+                .filter(quiz -> isTutoringAnimation(quiz.getAnimation()))
+                .toList();
+        List<QuizAttempt> attempts = quizAttemptRepo.findByQuizAnimateurIdOrderBySubmittedAtDesc(animateur.getId()).stream()
+                .filter(attempt -> isTutoringAnimation(attempt.getQuiz() == null ? null : attempt.getQuiz().getAnimation()))
+                .toList();
         List<Inscription> inscriptions = animateurService.getInscriptionsForAnimateur(animateur.getId());
         Map<Long, Enfant> enrolledChildren = uniqueChildren(inscriptions);
         int responderCount = (int) attempts.stream()
@@ -305,10 +379,11 @@ public class QuizService {
                 GeneratedQuestion generatedQuestion = generatedAxis.questions().get(j);
                 axis.addQuestion(new QuizQuestion(
                         generatedQuestion.angle(),
-                        generatedQuestion.type(),
+                        resolveQuestionType(generatedQuestion.expectedAnswer(), generatedQuestion.type(), generatedQuestion.options()),
                         generatedQuestion.questionText(),
                         generatedQuestion.expectedAnswer(),
-                        j + 1
+                        j + 1,
+                        resolveQuestionOptions(generatedQuestion.expectedAnswer(), generatedQuestion.options())
                 ));
             }
             quiz.addAxis(axis);
@@ -542,37 +617,32 @@ public class QuizService {
                 : " en utilisant la relation vue \"" + focus.formula() + "\"";
 
         return switch (angle) {
-            case "reconnaissance" -> new QuizQuestion(
+            case "reconnaissance" -> buildQuestionWithOptions(
                     "Reconnaissance",
-                    "OPEN",
                     "Dans l'extrait des notes \"" + evidence + "\", quel concept precis faut-il reconnaitre?",
                     "Le concept attendu est " + axisTitle + ", appuye par l'extrait des notes.",
                     position
             );
-            case "application" -> new QuizQuestion(
+            case "application" -> buildQuestionWithOptions(
                     "Application",
-                    "OPEN",
                     "Resous un exemple similaire a celui des notes sur " + axisTitle + formula + ".",
                     "La reponse doit appliquer " + axisTitle + " au meme type de situation que dans les notes: " + evidence + ".",
                     position
             );
-            case "piege" -> new QuizQuestion(
+            case "piege" -> buildQuestionWithOptions(
                     "Piege",
-                    "OPEN",
                     "Quelle erreur frequente pourrait arriver avec " + axisTitle + " dans ce contexte: \"" + evidence + "\"?",
                     "La reponse doit nommer une confusion liee a cet extrait et donner une verification concrete.",
                     position
             );
-            case "transfert" -> new QuizQuestion(
+            case "transfert" -> buildQuestionWithOptions(
                     "Transfert",
-                    "OPEN",
                     "Propose un nouveau cas ou la meme idee que \"" + evidence + "\" s'applique.",
                     "La reponse doit transferer " + axisTitle + " dans un contexte nouveau sans changer le principe.",
                     position
             );
-            default -> new QuizQuestion(
+            default -> buildQuestionWithOptions(
                     "Justification",
-                    "OPEN",
                     "Pourquoi la demarche utilisee pour " + axisTitle + " fonctionne-t-elle dans les notes?",
                     "La justification doit citer la regle ou le lien logique montre dans les notes: " + evidence + ".",
                     position
@@ -582,43 +652,151 @@ public class QuizService {
 
     private QuizQuestion buildDerivativeQuestion(DerivativeExample example, String angle, int position) {
         return switch (angle) {
-            case "reconnaissance" -> new QuizQuestion(
+            case "reconnaissance" -> buildQuestionWithOptions(
                     "Reconnaissance",
-                    "OPEN",
                     "Dans les notes, quelle derivee est associee a " + example.originalExpression() + "?",
                     "La derivee attendue est " + example.derivative() + ".",
                     position
             );
-            case "application" -> new QuizQuestion(
+            case "application" -> buildQuestionWithOptions(
                     "Application",
-                    "OPEN",
                     "Calcule la derivee de f(x) = " + example.similarExpression() + ".",
                     "f'(x) = " + example.similarDerivative() + ", avec la regle de puissance.",
                     position
             );
-            case "piege" -> new QuizQuestion(
+            case "piege" -> buildQuestionWithOptions(
                     "Piege",
-                    "OPEN",
                     "Pour f(x) = " + example.similarExpression() + ", quelle erreur d'exposant faut-il eviter en derivant?",
                     "Il ne faut pas garder le meme exposant: on multiplie par l'exposant puis on diminue l'exposant de 1, donc f'(x) = "
                             + example.similarDerivative() + ".",
                     position
             );
-            case "transfert" -> new QuizQuestion(
+            case "transfert" -> buildQuestionWithOptions(
                     "Transfert",
-                    "OPEN",
                     "Si g(x) = " + example.similarExpression() + " + 5, calcule g'(x).",
                     "g'(x) = " + example.similarDerivative() + ", car la derivee de la constante 5 est 0.",
                     position
             );
-            default -> new QuizQuestion(
+            default -> buildQuestionWithOptions(
                     "Justification",
-                    "OPEN",
                     "Pourquoi la derivee de " + example.similarExpression() + " vaut-elle " + example.similarDerivative() + "?",
                     "On applique la regle de puissance: le coefficient est multiplie par l'exposant, puis l'exposant diminue de 1.",
                     position
             );
         };
+    }
+
+    private QuizQuestion buildQuestionWithOptions(String angle,
+                                                  String questionText,
+                                                  String expectedAnswer,
+                                                  int position) {
+        List<String> options = resolveQuestionOptions(expectedAnswer, List.of());
+        return new QuizQuestion(
+                angle,
+                options.isEmpty() ? "OPEN" : "CHOICE",
+                questionText,
+                expectedAnswer,
+                position,
+                options
+        );
+    }
+
+    private String resolveQuestionType(String expectedAnswer, String generatedType, List<String> generatedOptions) {
+        if ("CHOICE".equalsIgnoreCase(generatedType) || (generatedOptions != null && !generatedOptions.isEmpty())) {
+            return "CHOICE";
+        }
+        return resolveQuestionOptions(expectedAnswer, List.of()).isEmpty() ? "OPEN" : "CHOICE";
+    }
+
+    private List<String> resolveQuestionOptions(String expectedAnswer, List<String> generatedOptions) {
+        List<String> sanitizedGenerated = generatedOptions == null ? List.of() : generatedOptions.stream()
+                .map(option -> option == null ? "" : option.trim())
+                .filter(option -> !option.isBlank())
+                .distinct()
+                .toList();
+        if (sanitizedGenerated.size() >= 4) {
+            return sanitizedGenerated.stream().limit(4).toList();
+        }
+        if (!shouldUseChoice(expectedAnswer)) {
+            return List.of();
+        }
+        return buildFormulaOptions(expectedAnswer);
+    }
+
+    private boolean shouldUseChoice(String expectedAnswer) {
+        String formula = extractPrimaryFormula(expectedAnswer);
+        return !formula.isBlank() && formula.length() >= 6 && FORMULA_COMPLEXITY_PATTERN.matcher(formula).find();
+    }
+
+    private List<String> buildFormulaOptions(String expectedAnswer) {
+        String correct = extractPrimaryFormula(expectedAnswer);
+        if (correct.isBlank()) {
+            return List.of();
+        }
+
+        LinkedHashSet<String> options = new LinkedHashSet<>();
+        options.add(correct);
+        options.add(tweakExponent(correct));
+        options.add(tweakSign(correct));
+        options.add(tweakCoefficient(correct));
+        if (options.size() < 4) {
+            options.add(correct + " + 1");
+        }
+        if (options.size() < 4) {
+            options.add(correct.replace("=", "= "));
+        }
+
+        List<String> shuffled = new ArrayList<>(options.stream()
+                .map(String::trim)
+                .filter(option -> !option.isBlank())
+                .distinct()
+                .limit(4)
+                .toList());
+        Collections.shuffle(shuffled);
+        return shuffled.size() >= 4 ? shuffled : List.of();
+    }
+
+    private String extractPrimaryFormula(String text) {
+        String formula = extractFormula(text);
+        if (!formula.isBlank()) {
+            return formula;
+        }
+        String cleaned = text == null ? "" : text.trim();
+        return FORMULA_COMPLEXITY_PATTERN.matcher(cleaned).find() ? shorten(cleaned, 80) : "";
+    }
+
+    private String tweakExponent(String formula) {
+        Matcher matcher = Pattern.compile("\\^(\\d+)").matcher(formula);
+        if (matcher.find()) {
+            int exponent = Integer.parseInt(matcher.group(1));
+            return matcher.replaceFirst("^" + Math.max(1, exponent + 1));
+        }
+        if (formula.contains("x")) {
+            return formula.replaceFirst("x", "x^2");
+        }
+        return formula + "^2";
+    }
+
+    private String tweakSign(String formula) {
+        if (formula.contains(" = -")) {
+            return formula.replace(" = -", " = ");
+        }
+        if (formula.contains("=")) {
+            return formula.replaceFirst("=\\s*", "= -");
+        }
+        return "-" + formula;
+    }
+
+    private String tweakCoefficient(String formula) {
+        Matcher matcher = Pattern.compile("(?<![A-Za-z])(\\d+)").matcher(formula);
+        if (matcher.find()) {
+            int value = Integer.parseInt(matcher.group(1));
+            return matcher.replaceFirst(String.valueOf(value + 1));
+        }
+        if (formula.contains("x")) {
+            return formula.replaceFirst("x", "2x");
+        }
+        return formula + " + 2";
     }
 
     private String shorten(String value, int maxLength) {
@@ -646,7 +824,8 @@ public class QuizService {
                                         question.getType(),
                                         question.getQuestionText(),
                                         question.getExpectedAnswer(),
-                                        question.getPosition()
+                                        question.getPosition(),
+                                        question.getOptions()
                                 ))
                                 .toList()
                 ))
@@ -698,7 +877,8 @@ public class QuizService {
                 question.getAngle(),
                 question.getQuestionText(),
                 question.getExpectedAnswer(),
-                answer.getAnswerText()
+                answer.getAnswerText(),
+                question.getOptions()
         );
     }
 
@@ -719,6 +899,12 @@ public class QuizService {
                 .toLowerCase(Locale.ROOT)
                 .replaceAll("[^a-z0-9]+", " ")
                 .trim();
+    }
+
+    private boolean isTutoringAnimation(Animation animation) {
+        return animation != null
+                && animation.getActivity() != null
+                && animation.getActivity().getType() == typeActivity.TUTORAT;
     }
 
     private String buildNextSessionSuggestion(List<Quiz> quizzes,

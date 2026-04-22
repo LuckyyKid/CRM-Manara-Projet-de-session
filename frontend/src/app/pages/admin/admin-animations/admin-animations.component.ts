@@ -23,6 +23,7 @@ export class AdminAnimationsComponent implements OnInit {
   page = signal(1);
   pageSize = 6;
   loading = signal(true);
+  message = signal('');
   error = signal('');
 
   activities = computed(() => [
@@ -75,6 +76,20 @@ export class AdminAnimationsComponent implements OnInit {
 
   goToEdit(id: number) {
     this.router.navigateByUrl(`/admin/animations/${id}/edit`);
+  }
+
+  deleteAnimation(id: number): void {
+    if (!window.confirm('Supprimer cette animation ?')) {
+      return;
+    }
+    this.adminService.deleteAnimation(id).subscribe({
+      next: (response) => {
+        this.message.set(response.message);
+        this.animations.update((items) => items.filter((row) => row.animation.id !== id));
+        this.page.set(Math.min(this.page(), this.totalPages()));
+      },
+      error: () => this.error.set('Erreur lors de la suppression de l animation.'),
+    });
   }
 
   setSearch(value: string): void {

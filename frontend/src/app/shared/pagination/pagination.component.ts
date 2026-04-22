@@ -1,27 +1,62 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-pagination',
+  standalone: true,
   imports: [CommonModule],
   template: `
-    <div *ngIf="totalItems > pageSize" class="d-flex justify-content-between align-items-center pt-2">
-      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="previous.emit()" [disabled]="page <= 1">
-        Precedent
-      </button>
-      <span class="text-secondary small">Page {{ page }} / {{ totalPages }}</span>
-      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="next.emit()" [disabled]="page >= totalPages">
-        Suivant
-      </button>
-    </div>
+    <nav *ngIf="resolvedTotalPages() > 1" aria-label="Pagination" class="d-flex justify-content-center mt-4">
+      <ul class="pagination mb-0">
+        <li class="page-item" [class.disabled]="resolvedCurrentPage() <= 1">
+          <button class="page-link" type="button" (click)="selectPage(resolvedCurrentPage() - 1)" [disabled]="resolvedCurrentPage() <= 1">
+            Precedent
+          </button>
+        </li>
+        <li class="page-item" *ngFor="let page of pages()" [class.active]="page === resolvedCurrentPage()">
+          <button class="page-link" type="button" (click)="selectPage(page)">{{ page }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="resolvedCurrentPage() >= resolvedTotalPages()">
+          <button class="page-link" type="button" (click)="selectPage(resolvedCurrentPage() + 1)" [disabled]="resolvedCurrentPage() >= resolvedTotalPages()">
+            Suivant
+          </button>
+        </li>
+      </ul>
+    </nav>
   `,
 })
 export class PaginationComponent {
-  @Input({ required: true }) page = 1;
-  @Input({ required: true }) totalPages = 1;
-  @Input({ required: true }) totalItems = 0;
-  @Input() pageSize = 6;
+  readonly page = input(1);
+  readonly currentPage = input<number | undefined>(undefined);
+  readonly totalItems = input(0);
+  readonly pageSize = input(6);
+  readonly totalPages = input<number | undefined>(undefined);
+  readonly pageChange = output<number>();
+  readonly previous = output<void>();
+  readonly next = output<void>();
 
-  @Output() previous = new EventEmitter<void>();
-  @Output() next = new EventEmitter<void>();
+  readonly resolvedCurrentPage = computed(() => this.currentPage() ?? this.page());
+  readonly resolvedTotalPages = computed(() => {
+    const explicitTotalPages = this.totalPages();
+    if (explicitTotalPages !== undefined && explicitTotalPages !== null) {
+      return Math.max(1, explicitTotalPages);
+    }
+    return Math.max(1, Math.ceil(this.totalItems() / Math.max(1, this.pageSize())));
+  });
+  readonly pages = computed(() =>
+    Array.from({ length: this.resolvedTotalPages() }, (_, index) => index + 1),
+  );
+
+  selectPage(page: number): void {
+    if (page < 1 || page > this.resolvedTotalPages() || page === this.resolvedCurrentPage()) {
+      return;
+    }
+    this.pageChange.emit(page);
+    if (page < this.resolvedCurrentPage()) {
+      this.previous.emit();
+    }
+    if (page > this.resolvedCurrentPage()) {
+      this.next.emit();
+    }
+  }
 }

@@ -115,6 +115,12 @@ export class ParentHomeworkAttemptDetailComponent implements OnInit {
   }
 
   statusLabel(status: string): string {
-    return status === 'SCORED_LOCAL' ? 'Corrige localement' : status || 'Soumis';
+    if (status === 'PENDING_AI') {
+      return 'Correction IA en attente';
+    }
+    if (status === 'SCORED_AI') {
+      return 'Corrige par IA';
+    }
+    return status || 'Soumis';
   }
 }

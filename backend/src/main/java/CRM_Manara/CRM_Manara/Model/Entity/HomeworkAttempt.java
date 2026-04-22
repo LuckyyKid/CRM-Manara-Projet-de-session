@@ -108,4 +108,8 @@ public class HomeworkAttempt {
         this.scorePercent = scorePercent;
         this.status = status;
     }
+
+    public void markStatus(String status) {
+        this.status = status;
+    }
 }

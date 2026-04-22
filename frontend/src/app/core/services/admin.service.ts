@@ -39,6 +39,10 @@ export class AdminService {
     return this.http.put<ActivityDto>(`/api/admin/activities/${id}`, request);
   }
 
+  deleteActivity(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/activities/${id}`);
+  }
+
   getAnimations(): Observable<AdminAnimationRowDto[]> {
     return this.http.get<AdminAnimationRowDto[]>('/api/admin/animations');
   }
@@ -57,6 +61,10 @@ export class AdminService {
 
   updateAnimation(id: number, request: AnimationRequestDto): Observable<AnimationDto> {
     return this.http.put<AnimationDto>(`/api/admin/animations/${id}`, request);
+  }
+
+  deleteAnimation(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/animations/${id}`);
   }
 
   getAnimateurs(): Observable<AnimateurDto[]> {
@@ -81,6 +89,10 @@ export class AdminService {
 
   updateAnimateur(id: number, request: AnimateurRequestDto): Observable<AnimateurDto> {
     return this.http.put<AnimateurDto>(`/api/admin/animateurs/${id}`, request);
+  }
+
+  deleteAnimateur(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/animateurs/${id}`);
   }
 
   getOptions(): Observable<AdminOptionsDto> {
@@ -117,8 +129,16 @@ export class AdminService {
     return this.http.post<ActionResponseDto>(`/api/admin/parents/${id}/status?enabled=${enabled}`, {});
   }
 
+  deleteParent(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/parents/${id}`);
+  }
+
   updateEnfantStatus(id: number, active: boolean): Observable<ActionResponseDto> {
     return this.http.post<ActionResponseDto>(`/api/admin/enfants/${id}/status?active=${active}`, {});
+  }
+
+  deleteEnfant(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/enfants/${id}`);
   }
 
   updateAnimateurStatus(id: number, enabled: boolean): Observable<ActionResponseDto> {

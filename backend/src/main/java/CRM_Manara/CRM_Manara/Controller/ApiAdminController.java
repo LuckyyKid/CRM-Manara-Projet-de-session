@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -83,6 +84,7 @@ public class ApiAdminController {
         return apiDtoMapper.toActivityDto(adminService.createActivity(
                 request.name().trim(),
                 request.description().trim(),
+                normalizeImageUrl(request.imageUrl()),
                 request.ageMin(),
                 request.ageMax(),
                 request.capacity(),
@@ -98,12 +100,19 @@ public class ApiAdminController {
                 id,
                 request.name().trim(),
                 request.description().trim(),
+                normalizeImageUrl(request.imageUrl()),
                 request.ageMin(),
                 request.ageMax(),
                 request.capacity(),
                 status.valueOf(request.status()),
                 typeActivity.valueOf(request.type())
         ));
+    }
+
+    @DeleteMapping("/activities/{id}")
+    public ActionResponseDto deleteActivity(@PathVariable Long id) {
+        adminService.deleteActivity(id);
+        return new ActionResponseDto(true, "Activite supprimee.", id);
     }
 
     @GetMapping("/animations")
@@ -160,6 +169,12 @@ public class ApiAdminController {
         ));
     }
 
+    @DeleteMapping("/animations/{id}")
+    public ActionResponseDto deleteAnimation(@PathVariable Long id) {
+        adminService.deleteAnimation(id);
+        return new ActionResponseDto(true, "Animation supprimee.", id);
+    }
+
     @GetMapping("/animateurs")
     @Transactional(readOnly = true)
     public List<AnimateurDto> animateurs() {
@@ -210,6 +225,12 @@ public class ApiAdminController {
                 request.nom().trim(),
                 request.prenom().trim()
         ));
+    }
+
+    @DeleteMapping("/animateurs/{id}")
+    public ActionResponseDto deleteAnimateur(@PathVariable Long id) {
+        adminService.deleteAnimateur(id);
+        return new ActionResponseDto(true, "Animateur supprime.", id);
     }
 
     @GetMapping("/options")
@@ -291,10 +312,22 @@ public class ApiAdminController {
         return new ActionResponseDto(true, enabled ? "Compte parent confirme." : "Compte parent desactive.", id);
     }
 
+    @DeleteMapping("/parents/{id}")
+    public ActionResponseDto deleteParent(@PathVariable Long id) {
+        adminService.deleteParent(id);
+        return new ActionResponseDto(true, "Parent supprime.", id);
+    }
+
     @PostMapping("/enfants/{id}/status")
     public ActionResponseDto updateEnfantStatus(@PathVariable Long id, @RequestParam boolean active) {
         adminService.updateEnfantActive(id, active);
         return new ActionResponseDto(true, active ? "Enfant active." : "Enfant desactive.", id);
+    }
+
+    @DeleteMapping("/enfants/{id}")
+    public ActionResponseDto deleteEnfant(@PathVariable Long id) {
+        adminService.deleteEnfant(id);
+        return new ActionResponseDto(true, "Enfant supprime.", id);
     }
 
     @PostMapping("/animateurs/{id}/status")
@@ -343,7 +376,8 @@ public class ApiAdminController {
                                         question.getType(),
                                         question.getQuestionText(),
                                         question.getExpectedAnswer(),
-                                        question.getPosition()
+                                        question.getPosition(),
+                                        question.getOptions()
                                 ))
                                 .toList()
                 ))
@@ -388,6 +422,16 @@ public class ApiAdminController {
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Statut ou type d'activite invalide.", exception);
         }
+        if (request.imageUrl() != null && !request.imageUrl().isBlank()) {
+            String imageUrl = request.imageUrl().trim();
+            if (!imageUrl.startsWith("data:image/") && !imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le format de l'image de l'activite est invalide.");
+            }
+        }
+    }
+
+    private String normalizeImageUrl(String imageUrl) {
+        return imageUrl == null || imageUrl.isBlank() ? null : imageUrl.trim();
     }
 
     private void validateAnimationRequest(AnimationRequestDto request) {

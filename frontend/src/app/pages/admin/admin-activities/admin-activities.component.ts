@@ -3,11 +3,16 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ActivityDto } from '../../../core/models/api.models';
 import { AdminService } from '../../../core/services/admin.service';
-import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import {
+  ListFiltersDirective,
+  ListHeadDirective,
+  ListPageComponent,
+  ListRowDirective,
+} from '../../../shared/list-page/list-page.component';
 
 @Component({
   selector: 'app-admin-activities',
-  imports: [CommonModule, PaginationComponent],
+  imports: [CommonModule, ListPageComponent, ListFiltersDirective, ListHeadDirective, ListRowDirective],
   templateUrl: './admin-activities.component.html',
 })
 export class AdminActivitiesComponent implements OnInit {
@@ -96,6 +101,20 @@ export class AdminActivitiesComponent implements OnInit {
 
   goToEdit(id: number): void {
     this.router.navigateByUrl(`/admin/activities/${id}/edit`);
+  }
+
+  deleteActivity(id: number): void {
+    if (!window.confirm('Supprimer cette activite ? Les animations liees seront aussi supprimees.')) {
+      return;
+    }
+    this.adminService.deleteActivity(id).subscribe({
+      next: (response) => {
+        this.message.set(response.message);
+        this.activities.update((items) => items.filter((activity) => activity.id !== id));
+        this.page.set(Math.min(this.page(), this.totalPages()));
+      },
+      error: () => this.error.set('Erreur lors de la suppression de l activite.'),
+    });
   }
 
   private normalize(value: string): string {
