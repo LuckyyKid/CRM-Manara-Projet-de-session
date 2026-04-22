@@ -1,4 +1,4 @@
-<div class="container-fluid py-4 px-0 px-lg-3">
+<div class="container-fluid py-4 px-0 px-lg-3" id="tour-parent-messages-page">
   <div class="mm-page-head">
     <div>
       <span class="mm-page-eyebrow">{{ pageEyebrow() }}</span>
@@ -32,6 +32,9 @@
       chatHeader
       [conversation]="activeConversation()"
       [connected]="isConnected()"
+      [currentAccountType]="currentAccountType()"
+      [appointmentPanelOpen]="false"
+      (appointmentToggle)="openAppointmentsSection()"
     />
 
     <app-chat-window

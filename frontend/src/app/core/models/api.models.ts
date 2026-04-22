@@ -178,6 +178,41 @@ export interface ChatParticipantDto {
   email: string;
 }
 
+export interface AppointmentSlotDto {
+  id: number;
+  animateurUserId: number | null;
+  animateurName: string | null;
+  parentUserId: number | null;
+  parentName: string | null;
+  startTime: string;
+  endTime: string;
+  status: string;
+  bookedAt: string | null;
+}
+
+export interface AppointmentSlotCreateDto {
+  startTime: string;
+  endTime: string;
+  status: string;
+}
+
+export interface BookingDto {
+  id: number;
+  slotId: number | null;
+  animateurUserId: number | null;
+  animateurName: string | null;
+  parentUserId: number | null;
+  parentName: string | null;
+  childName: string | null;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string | null;
+  cancelledAt: string | null;
+}
+
 export interface ChatConversationSummaryDto {
   id: number;
   participant: ChatParticipantDto;

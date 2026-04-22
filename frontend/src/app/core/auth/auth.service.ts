@@ -93,7 +93,6 @@ export class AuthService {
     } finally {
       this.currentUserSignal.set(null);
       this.initializedSignal.set(true);
-      localStorage.clear();
       sessionStorage.clear();
       window.location.href = '/login';
     }

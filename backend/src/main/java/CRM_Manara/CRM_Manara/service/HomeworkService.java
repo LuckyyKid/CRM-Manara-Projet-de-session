@@ -69,6 +69,7 @@ public class HomeworkService {
     private final HomeworkTemplateService homeworkTemplateService;
     private final ParentNotificationService parentNotificationService;
     private final EmailService emailService;
+    private final AnimateurNotificationService animateurNotificationService;
 
     public HomeworkService(HomeworkAssignmentRepo homeworkAssignmentRepo,
                            HomeworkAttemptRepo homeworkAttemptRepo,
@@ -77,7 +78,8 @@ public class HomeworkService {
                            AnthropicHomeworkScoringService anthropicHomeworkScoringService,
                            HomeworkTemplateService homeworkTemplateService,
                            ParentNotificationService parentNotificationService,
-                           EmailService emailService) {
+                           EmailService emailService,
+                           AnimateurNotificationService animateurNotificationService) {
         this.homeworkAssignmentRepo = homeworkAssignmentRepo;
         this.homeworkAttemptRepo = homeworkAttemptRepo;
         this.quizAttemptRepo = quizAttemptRepo;
@@ -86,6 +88,7 @@ public class HomeworkService {
         this.homeworkTemplateService = homeworkTemplateService;
         this.parentNotificationService = parentNotificationService;
         this.emailService = emailService;
+        this.animateurNotificationService = animateurNotificationService;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -259,6 +262,8 @@ public class HomeworkService {
             LOGGER.warn("Soumission de devoir en attente de correction IA. assignmentId={}, attemptId={}",
                     assignment.getId(), attempt.getId());
         }
+
+        notifyAnimateurOfHomeworkSubmission(attempt);
 
         return toAttemptDto(attempt);
     }
@@ -739,6 +744,44 @@ public class HomeworkService {
                     activityName
             );
         }
+    }
+
+    private void notifyAnimateurOfHomeworkSubmission(HomeworkAttempt attempt) {
+        if (attempt == null
+                || attempt.getAssignment() == null
+                || attempt.getAssignment().getAnimateur() == null
+                || attempt.getAssignment().getAnimateur().getUser() == null) {
+            return;
+        }
+
+        String animateurEmail = attempt.getAssignment().getAnimateur().getUser().getEmail();
+        if (animateurEmail == null || animateurEmail.isBlank()) {
+            return;
+        }
+
+        String animateurName = attempt.getAssignment().getAnimateur().getPrenom()
+                + " "
+                + attempt.getAssignment().getAnimateur().getNom();
+        String enfantName = attempt.getEnfant().getPrenom() + " " + attempt.getEnfant().getNom();
+        String activityName = attempt.getAssignment().getAnimation() != null
+                && attempt.getAssignment().getAnimation().getActivity() != null
+                ? attempt.getAssignment().getAnimation().getActivity().getActivyName()
+                : null;
+
+        emailService.sendHomeworkSubmissionEmail(
+                animateurEmail,
+                animateurName.trim(),
+                enfantName,
+                attempt.getAssignment().getTitle(),
+                activityName,
+                attempt.getScorePercent()
+        );
+        animateurNotificationService.createForAnimateur(
+                attempt.getAssignment().getAnimateur(),
+                "HOMEWORK_SUBMISSION",
+                "Nouvelle soumission de devoir",
+                enfantName + " a soumis le devoir \"" + attempt.getAssignment().getTitle() + "\"."
+        );
     }
 
     private AnimateurHomeworkStudentRowDto toAnimateurStudentRow(List<HomeworkAssignment> assignments, List<HomeworkAttempt> attempts) {

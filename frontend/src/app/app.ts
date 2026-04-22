@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from './core/auth/auth.service';
 import { ChatbotWidgetComponent } from './shared/chatbot/chatbot-widget.component';
 import { CommunicationService } from './core/services/communication.service';
+import { OnboardingService } from './core/services/onboarding.service';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ import { CommunicationService } from './core/services/communication.service';
 export class App {
   readonly authService = inject(AuthService);
   readonly communicationService = inject(CommunicationService);
+  readonly onboardingService = inject(OnboardingService);
 
   readonly isAdmin = computed(() => this.authService.currentUser()?.accountType === 'ROLE_ADMIN');
   readonly isParent = computed(() => this.authService.currentUser()?.accountType === 'ROLE_PARENT');
@@ -35,6 +37,7 @@ export class App {
       if (this.authService.isAuthenticated()) {
         this.communicationService.connect();
         void this.communicationService.loadSidebarCounts();
+        this.onboardingService.handlePostLogin();
         return;
       }
       this.communicationService.disconnect();

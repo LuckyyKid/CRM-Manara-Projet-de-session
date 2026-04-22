@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -55,14 +56,14 @@ public class ApiAnimateurController {
                 .toList();
     }
 
-    @PostMapping("/notifications/read-all")
+    @RequestMapping(value = "/notifications/read-all", method = {RequestMethod.POST, RequestMethod.PUT})
     public ActionResponseDto markAllNotificationsAsRead(Authentication authentication) {
         Animateur animateur = requireAnimateur(authentication);
         animateurNotificationService.markAllAsReadForAnimateur(animateur.getId());
         return new ActionResponseDto(true, "Notifications marquees comme lues.", null);
     }
 
-    @PostMapping("/notifications/{id}/read")
+    @RequestMapping(value = "/notifications/{id}/read", method = {RequestMethod.POST, RequestMethod.PUT})
     public ActionResponseDto markNotificationAsRead(@PathVariable Long id, Authentication authentication) {
         Animateur animateur = requireAnimateur(authentication);
         animateurNotificationService.markAsRead(animateur.getId(), id);

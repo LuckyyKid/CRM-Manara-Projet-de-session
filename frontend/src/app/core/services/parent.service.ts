@@ -61,7 +61,7 @@ export class ParentService {
   }
 
   markAllNotificationsAsRead(): Observable<ActionResponseDto> {
-    return this.http.post<ActionResponseDto>('/api/parent/notifications/read-all', {}).pipe(
+    return this.http.put<ActionResponseDto>('/api/parent/notifications/read-all', {}).pipe(
       tap(() => {
         this.notifications$ = undefined;
       }),
@@ -69,7 +69,7 @@ export class ParentService {
   }
 
   markNotificationAsRead(notificationId: number): Observable<ActionResponseDto> {
-    return this.http.post<ActionResponseDto>(`/api/parent/notifications/${notificationId}/read`, {}).pipe(
+    return this.http.put<ActionResponseDto>(`/api/parent/notifications/${notificationId}/read`, {}).pipe(
       tap(() => {
         this.notifications$ = undefined;
       }),

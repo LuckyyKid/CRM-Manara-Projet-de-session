@@ -1,0 +1,117 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Espace parent</span>
+      <h1 class="mm-page-title fs-1">Rendez-vous</h1>
+      <p class="mm-page-subtitle">Consultez vos reservations avec les animateurs et annulez-les si necessaire.</p>
+    </div>
+  </div>
+
+  <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement des rendez-vous...</div>
+
+  <app-list-page
+    *ngIf="!loading()"
+    [items]="pagedBookings()"
+    searchLabel="Rechercher un rendez-vous"
+    searchPlaceholder="Animateur, date, heure..."
+    [searchValue]="search()"
+    [resultLabel]="resultLabel()"
+    emptyMessage="Aucun rendez-vous trouve."
+    [emptyColspan]="5"
+    [page]="page()"
+    [totalPages]="totalPages()"
+    [totalItems]="filteredBookings().length"
+    [pageSize]="pageSize"
+    (searchChange)="setSearch($event)"
+    (previous)="previousPage()"
+    (next)="nextPage()">
+    <ng-template appListHead>
+      <th>Animateur</th>
+      <th>Date</th>
+      <th>Statut</th>
+      <th>Maj</th>
+      <th class="text-end">Action</th>
+    </ng-template>
+
+    <ng-template appListRow let-booking>
+      <td>
+        <div class="fw-semibold">{{ booking.animateurName || 'Animateur' }}</div>
+        <div class="small text-secondary">{{ booking.startTime | date:'HH:mm' }} - {{ booking.endTime | date:'HH:mm' }}</div>
+      </td>
+      <td>{{ booking.startTime | date:'EEEE dd MMMM yyyy' }}</td>
+      <td>
+        <span class="badge rounded-pill" [class]="statusBadgeClass(booking.status)">
+          {{ statusLabel(booking.status) }}
+        </span>
+      </td>
+      <td>
+        <span class="small text-secondary">
+          {{ (booking.updatedAt || booking.cancelledAt || booking.createdAt) | date:'dd/MM/yyyy HH:mm' }}
+        </span>
+      </td>
+      <td class="text-end">
+        <div class="d-inline-flex gap-2 flex-wrap justify-content-end">
+          <button
+            *ngIf="booking.status === 'CONFIRMED'"
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            (click)="openRescheduleModal(booking)">
+            Deplacer
+          </button>
+          <button
+            *ngIf="booking.status === 'CONFIRMED'"
+            type="button"
+            class="btn btn-sm btn-outline-danger"
+            [disabled]="cancellingId() === booking.id"
+            (click)="cancelBooking(booking.id)">
+            {{ cancellingId() === booking.id ? 'Annulation...' : 'Annuler' }}
+          </button>
+        </div>
+      </td>
+    </ng-template>
+  </app-list-page>
+
+  <div class="mm-modal-backdrop" *ngIf="rescheduleModalOpen()" (click)="closeRescheduleModal()">
+    <section class="mm-modal-card" (click)="$event.stopPropagation()">
+      <div class="mm-modal-head">
+        <div>
+          <div class="mm-page-eyebrow">Deplacer le rendez-vous</div>
+          <h2 class="mm-modal-title">Choisissez un nouveau creneau</h2>
+        </div>
+        <button type="button" class="btn-close" aria-label="Fermer" (click)="closeRescheduleModal()"></button>
+      </div>
+
+      <p class="text-secondary mb-3" *ngIf="rescheduleBooking()">
+        Rendez-vous actuel avec {{ rescheduleBooking()!.animateurName }}
+        le {{ rescheduleBooking()!.startTime | date:'EEEE dd MMMM yyyy' }}
+        a {{ rescheduleBooking()!.startTime | date:'HH:mm' }}.
+      </p>
+
+      <div *ngIf="rescheduleLoading()" class="text-secondary py-2">Chargement des creneaux disponibles...</div>
+
+      <div class="mm-reschedule-list" *ngIf="!rescheduleLoading() && availableRescheduleSlots().length; else noRescheduleSlots">
+        <article class="mm-reschedule-card" *ngFor="let slot of availableRescheduleSlots(); trackBy: trackSlot">
+          <div>
+            <div class="fw-semibold">{{ slot.startTime | date:'EEEE dd MMMM yyyy' }}</div>
+            <div class="small text-secondary">{{ slot.startTime | date:'HH:mm' }} - {{ slot.endTime | date:'HH:mm' }}</div>
+          </div>
+          <button
+            type="button"
+            class="btn btn-sm btn-primary"
+            [disabled]="reschedulingId() === slot.id"
+            (click)="confirmReschedule(slot.id)">
+            {{ reschedulingId() === slot.id ? 'Deplacement...' : 'Choisir ce creneau' }}
+          </button>
+        </article>
+      </div>
+
+      <ng-template #noRescheduleSlots>
+        <div class="text-secondary" *ngIf="!rescheduleLoading()">
+          Aucun autre creneau disponible pour le moment.
+        </div>
+      </ng-template>
+    </section>
+  </div>
+</div>

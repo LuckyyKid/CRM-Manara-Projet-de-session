@@ -19,21 +19,16 @@ export class AnimateurNotificationsComponent implements OnInit {
   page = signal(1);
   pageSize = 6;
   loading = signal(true);
+  markingAll = signal(false);
   error = signal('');
   totalPages = computed(() => Math.max(1, Math.ceil(this.notifications().length / this.pageSize)));
   visibleNotifications = computed(() => {
     const start = (Math.min(this.page(), this.totalPages()) - 1) * this.pageSize;
     return this.notifications().slice(start, start + this.pageSize);
   });
+  unreadCount = computed(() => this.notifications().filter((notification) => !notification.readStatus).length);
 
   async ngOnInit() {
-    try {
-      await firstValueFrom(this.animateurService.markAllNotificationsAsRead());
-      this.communicationService.setNotificationsCount(0);
-    } catch {
-      // keep page usable even if the read-all request fails
-    }
-
     this.animateurService.getNotifications(true).subscribe({
       next: (data) => {
         this.notifications.set(data);
@@ -66,6 +61,26 @@ export class AnimateurNotificationsComponent implements OnInit {
       );
     } catch {
       this.error.set("Impossible de marquer cette notification comme lue.");
+    }
+  }
+
+  async markAllAsRead(): Promise<void> {
+    if (!this.unreadCount() || this.markingAll()) {
+      return;
+    }
+
+    this.markingAll.set(true);
+    this.error.set('');
+    try {
+      await firstValueFrom(this.animateurService.markAllNotificationsAsRead());
+      this.notifications.update((current) =>
+        current.map((notification) => ({ ...notification, readStatus: true })),
+      );
+      this.communicationService.setNotificationsCount(0);
+    } catch {
+      this.error.set("Impossible de marquer toutes les notifications comme lues.");
+    } finally {
+      this.markingAll.set(false);
     }
   }
 

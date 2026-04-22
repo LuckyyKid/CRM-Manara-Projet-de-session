@@ -19,6 +19,14 @@
     <span class="mm-chat-header-pill">
       {{ conversation.messages.length }} message(s)
     </span>
+    <button
+      *ngIf="showAppointmentAction()"
+      type="button"
+      class="btn btn-sm mm-chat-header-action"
+      [class.mm-chat-header-action-active]="appointmentPanelOpen"
+      (click)="appointmentToggle.emit()">
+      {{ appointmentActionLabel() }}
+    </button>
   </div>
 </div>
 

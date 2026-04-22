@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
-import { CommunicationService } from '../../core/services/communication.service';
+import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ChatConversationSummaryDto, ChatParticipantDto } from '../../core/models/api.models';
-import { firstValueFrom } from 'rxjs';
+import { CommunicationService } from '../../core/services/communication.service';
+import { ChatHeaderComponent } from './components/chat-header/chat-header.component';
 import { ChatLayoutComponent } from './components/chat-layout/chat-layout.component';
 import { ChatSidebarComponent } from './components/chat-sidebar/chat-sidebar.component';
-import { ChatHeaderComponent } from './components/chat-header/chat-header.component';
 import { ChatWindowComponent } from './components/chat-window/chat-window.component';
 import { MessageInputComponent } from './components/message-input/message-input.component';
 
@@ -28,6 +29,7 @@ import { MessageInputComponent } from './components/message-input/message-input.
 export class MessagesPageComponent implements OnInit {
   readonly communicationService = inject(CommunicationService);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   readonly loading = signal(true);
   readonly sending = signal(false);
@@ -94,6 +96,7 @@ export class MessagesPageComponent implements OnInit {
   readonly activeConversation = computed(() => this.communicationService.activeConversation());
   readonly isConnected = computed(() => this.communicationService.isRealtimeConnected());
   readonly selectedConversationId = computed(() => this.communicationService.activeConversationId());
+  readonly currentAccountType = computed(() => this.authService.currentUser()?.accountType ?? null);
 
   async ngOnInit(): Promise<void> {
     try {
@@ -154,6 +157,20 @@ export class MessagesPageComponent implements OnInit {
     } finally {
       this.sending.set(false);
     }
+  }
+
+  async openAppointmentsSection(): Promise<void> {
+    const destination = this.currentAccountType() === 'ROLE_ANIMATEUR'
+      ? '/animateur/appointments'
+      : this.currentAccountType() === 'ROLE_PARENT'
+        ? '/parent/appointments'
+        : null;
+
+    if (!destination) {
+      return;
+    }
+
+    await this.router.navigateByUrl(destination);
   }
 
   isConversationSelected(conversation: ChatConversationSummaryDto): boolean {

@@ -1,0 +1,104 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Espace parent</span>
+      <h1 class="mm-page-title fs-1">Prendre un rendez-vous</h1>
+      <p class="mm-page-subtitle">Une experience de reservation proche de Calendly: choisissez un animateur, un jour, puis un creneau.</p>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement du calendrier...</div>
+
+  <div *ngIf="!loading()" class="row g-4">
+    <div class="col-12 col-xxl-3">
+      <section class="mm-booking-panel">
+        <div class="mm-page-eyebrow">Animateurs</div>
+        <h2 class="mm-booking-panel-title">Choisissez votre contact</h2>
+        <p class="mm-booking-panel-copy">Le calendrier se recharge automatiquement selon l'animateur selectionne.</p>
+
+        <div class="mm-animateur-list" *ngIf="animateurs().length; else noAnimateurs">
+          <button
+            *ngFor="let animateur of animateurs(); trackBy: trackAnimateur"
+            type="button"
+            class="mm-animateur-card"
+            [class.mm-animateur-card-active]="selectedAnimateurUserId() === animateur.userId"
+            (click)="selectAnimateur(animateur.userId)">
+            <div class="fw-semibold">{{ animateur.displayName }}</div>
+            <div class="small">{{ animateur.email }}</div>
+          </button>
+        </div>
+
+        <ng-template #noAnimateurs>
+          <div class="text-secondary">Aucun animateur disponible.</div>
+        </ng-template>
+      </section>
+    </div>
+
+    <div class="col-12 col-xxl-9">
+      <app-availability-calendar
+        [monthAnchor]="monthAnchor()"
+        [selectedDate]="selectedDate()"
+        [entries]="calendarEntries()"
+        title="Calendrier de reservation"
+        [subtitle]="selectedAnimateur() ? ('Disponibilites de ' + selectedAnimateur()!.displayName) : 'Choisissez un animateur pour afficher ses creneaux.'"
+        (previousMonth)="previousMonth()"
+        (nextMonth)="nextMonth()"
+        (daySelect)="selectDay($event)"
+        (entrySelect)="selectCalendarEntry($event)"
+      />
+    </div>
+  </div>
+
+  <div class="mm-modal-backdrop" *ngIf="confirmModalOpen()" (click)="closeBookingModal()">
+    <section class="mm-modal-card" (click)="$event.stopPropagation()">
+      <div class="mm-modal-head">
+        <div>
+          <div class="mm-page-eyebrow">Confirmation</div>
+          <h2 class="mm-modal-title">Confirmer la reservation</h2>
+        </div>
+        <button type="button" class="btn-close" aria-label="Fermer" (click)="closeBookingModal()"></button>
+      </div>
+
+      <p class="mb-2">
+        Vous allez reserver un rendez-vous avec
+        <strong>{{ selectedAnimateur()?.displayName }}</strong>.
+      </p>
+      <p class="text-secondary mb-0" *ngIf="selectedSlot()">
+        {{ selectedSlot()!.startTime | date:'EEEE dd MMMM yyyy' }} de
+        {{ selectedSlot()!.startTime | date:'HH:mm' }} a {{ selectedSlot()!.endTime | date:'HH:mm' }}.
+      </p>
+
+      <div class="mm-modal-actions">
+        <button type="button" class="btn btn-light" (click)="closeBookingModal()">Annuler</button>
+        <button type="button" class="btn btn-primary" [disabled]="booking()" (click)="confirmBooking()">
+          {{ booking() ? 'Reservation...' : 'Confirmer' }}
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="mm-modal-backdrop" *ngIf="noAvailabilityModalOpen()" (click)="closeNoAvailabilityModal()">
+    <section class="mm-modal-card" (click)="$event.stopPropagation()">
+      <div class="mm-modal-head">
+        <div>
+          <div class="mm-page-eyebrow">Aucune disponibilite</div>
+          <h2 class="mm-modal-title">{{ selectedAnimateur()?.displayName || 'Animateur selectionne' }}</h2>
+        </div>
+        <button type="button" class="btn-close" aria-label="Fermer" (click)="closeNoAvailabilityModal()"></button>
+      </div>
+
+      <p class="mb-2">
+        Cet animateur n'a aucune disponibilite actuellement.
+      </p>
+      <p class="text-secondary mb-0">
+        Envoyez-lui un message pour convenir d'une date ou lui demander d'ajouter des creneaux de rendez-vous.
+      </p>
+
+      <div class="mm-modal-actions">
+        <button type="button" class="btn btn-light" (click)="closeNoAvailabilityModal()">Fermer</button>
+        <button type="button" class="btn btn-primary" (click)="contactSelectedAnimateur()">Envoyer un message</button>
+      </div>
+    </section>
+  </div>
+</div>

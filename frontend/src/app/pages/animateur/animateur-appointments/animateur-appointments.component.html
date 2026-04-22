@@ -1,0 +1,199 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Espace animateur</span>
+      <h1 class="mm-page-title fs-1">Gestion des disponibilites</h1>
+      <p class="mm-page-subtitle">Cliquez sur un jour pour le selectionner, puis ajoutez des creneaux comme dans un agenda moderne.</p>
+    </div>
+
+    <div class="mm-page-actions">
+      <button type="button" class="btn btn-primary" (click)="openCreateModal()">
+        Ajouter un creneau
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="success()" class="alert alert-success mm-feedback-alert" role="status">{{ success() }}</div>
+  <div *ngIf="error()" class="alert alert-danger mm-feedback-alert">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement du calendrier...</div>
+
+  <div *ngIf="!loading()" class="row g-4">
+    <div class="col-12">
+      <app-availability-calendar
+        [monthAnchor]="monthAnchor()"
+        [selectedDate]="selectedDate()"
+        [entries]="calendarEntries()"
+        title="Calendrier des disponibilites"
+        subtitle="Disponible en vert, rendez-vous en bleu, indisponible en gris."
+        (previousMonth)="previousMonth()"
+        (nextMonth)="nextMonth()"
+        (daySelect)="selectDay($event)"
+        (entrySelect)="selectCalendarEntry($event)"
+      />
+    </div>
+  </div>
+
+  <div class="mm-modal-backdrop" *ngIf="dayActionsOpen()" (click)="closeDayActions()">
+    <section class="mm-modal-card mm-modal-card-wide" (click)="$event.stopPropagation()">
+      <div class="mm-modal-head">
+        <div>
+          <div class="mm-page-eyebrow">Actions du jour</div>
+          <h2 class="mm-modal-title">{{ selectedDayLabel() }}</h2>
+          <p class="mm-side-panel-copy mb-0">
+            Cliquez sur une disponibilite pour agir dessus. Une disponibilite simple peut etre modifiee, supprimee ou deplacee. Un rendez-vous reserve peut seulement etre reporte.
+          </p>
+        </div>
+        <button type="button" class="btn-close" aria-label="Fermer" (click)="closeDayActions()"></button>
+      </div>
+
+      <div *ngIf="selectedDaySlots().length; else noSlotsForDay" class="mm-side-panel-stack">
+        <article
+          *ngFor="let slot of selectedDaySlots(); trackBy: trackSlot"
+          class="mm-slot-card"
+          [class.mm-slot-card-active]="selectedSlot()?.id === slot.id">
+          <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+              <span class="badge" [ngClass]="badgeClass(slot.status)">{{ actionLabel(slot.status) }}</span>
+              <span class="small text-secondary">{{ slot.startTime | date:'HH:mm' }} - {{ slot.endTime | date:'HH:mm' }}</span>
+            </div>
+
+            <div class="fw-semibold">
+              {{ slot.status === 'BOOKED' ? (slot.parentName || 'Parent reserve') : 'Creneau de disponibilite' }}
+            </div>
+            <div class="small text-secondary">
+              {{ slot.status === 'BOOKED'
+                ? 'Ce rendez-vous ne peut pas etre supprime. Utilisez le report.'
+                : 'Vous pouvez modifier, supprimer ou deplacer ce creneau.' }}
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 justify-content-end">
+            <button
+              type="button"
+              class="btn btn-light"
+              (click)="openActionForSlot(slot)">
+              {{ selectedSlot()?.id === slot.id ? 'Selectionne' : 'Selectionner' }}
+            </button>
+
+            <button
+              *ngIf="canMutate(slot)"
+              type="button"
+              class="btn btn-outline-primary"
+              (click)="openEditModal(slot)">
+              Modifier
+            </button>
+
+            <button
+              *ngIf="canDelete(slot)"
+              type="button"
+              class="btn btn-outline-danger"
+              [disabled]="actionLoading()"
+              (click)="deleteSlot(slot.id)">
+              {{ actionLoading() && selectedSlot()?.id === slot.id ? 'Suppression...' : 'Supprimer' }}
+            </button>
+
+            <button
+              *ngIf="canReschedule(slot)"
+              type="button"
+              class="btn btn-primary"
+              (click)="openRescheduleModal(slot)">
+              {{ slot.status === 'BOOKED' ? 'Reporter' : 'Deplacer' }}
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <ng-template #noSlotsForDay>
+        <div class="mm-side-panel-empty">Aucun creneau disponible sur cette journee.</div>
+      </ng-template>
+    </section>
+  </div>
+
+  <div class="mm-modal-backdrop" *ngIf="modalOpen()" (click)="closeModal()">
+    <section class="mm-modal-card" (click)="$event.stopPropagation()">
+      <div class="mm-modal-head">
+        <div>
+          <div class="mm-page-eyebrow">{{ editingSlotId() ? 'Modifier' : 'Nouveau creneau' }}</div>
+          <h2 class="mm-modal-title">{{ selectedDate() | date:'EEEE dd MMMM yyyy' }}</h2>
+        </div>
+        <button type="button" class="btn-close" aria-label="Fermer" (click)="closeModal()"></button>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label">Heure de debut</label>
+          <input type="time" class="form-control" [ngModel]="slotStart()" (ngModelChange)="slotStart.set($event)">
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label">Heure de fin</label>
+          <input type="time" class="form-control" [ngModel]="slotEnd()" (ngModelChange)="slotEnd.set($event)">
+        </div>
+        <div class="col-12">
+          <label class="form-label">Etat du creneau</label>
+          <select class="form-select" [ngModel]="slotStatus()" (ngModelChange)="slotStatus.set($event)">
+            <option value="AVAILABLE">Disponible</option>
+            <option value="BLOCKED">Indisponible</option>
+          </select>
+        </div>
+        <div class="col-12" *ngIf="slotTimeInvalid()">
+          <div class="alert alert-warning mb-0">
+            L'heure de fin doit etre apres l'heure de debut.
+          </div>
+        </div>
+      </div>
+
+      <div class="mm-modal-actions">
+        <button type="button" class="btn btn-light" (click)="closeModal()">Annuler</button>
+        <button type="button" class="btn btn-primary" [disabled]="saving() || slotTimeInvalid()" (click)="saveSlot()">
+          {{ saving() ? 'Enregistrement...' : (editingSlotId() ? 'Mettre a jour' : 'Creer le creneau') }}
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="mm-modal-backdrop" *ngIf="rescheduleModalOpen()" (click)="closeRescheduleModal()">
+    <section class="mm-modal-card" (click)="$event.stopPropagation()">
+      <div class="mm-modal-head">
+        <div>
+          <div class="mm-page-eyebrow">{{ selectedSlot()?.status === 'BOOKED' ? 'Reporter le rendez-vous' : 'Deplacer la disponibilite' }}</div>
+          <h2 class="mm-modal-title">{{ selectedSlot()?.status === 'BOOKED' ? (selectedSlot()?.parentName || 'Rendez-vous reserve') : 'Disponibilite selectionnee' }}</h2>
+          <p class="mm-side-panel-copy mb-0">
+            {{ selectedSlot()?.status === 'BOOKED'
+              ? 'Choisissez une nouvelle date et un nouvel horaire. Le rendez-vous actuel sera deplace.'
+              : 'Choisissez une nouvelle date et un nouvel horaire pour deplacer ce creneau.' }}
+          </p>
+        </div>
+        <button type="button" class="btn-close" aria-label="Fermer" (click)="closeRescheduleModal()"></button>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label">Nouvelle date</label>
+          <input type="date" class="form-control" [ngModel]="rescheduleDate()" (ngModelChange)="rescheduleDate.set($event)">
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label">Heure de debut</label>
+          <input type="time" class="form-control" [ngModel]="rescheduleStart()" (ngModelChange)="rescheduleStart.set($event)">
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label">Heure de fin</label>
+          <input type="time" class="form-control" [ngModel]="rescheduleEnd()" (ngModelChange)="rescheduleEnd.set($event)">
+        </div>
+        <div class="col-12" *ngIf="rescheduleTimeInvalid()">
+          <div class="alert alert-warning mb-0">
+            L'heure de fin doit etre apres l'heure de debut.
+          </div>
+        </div>
+      </div>
+
+      <div class="mm-modal-actions">
+        <button type="button" class="btn btn-light" (click)="closeRescheduleModal()">Annuler</button>
+        <button type="button" class="btn btn-primary" [disabled]="actionLoading() || rescheduleTimeInvalid()" (click)="rescheduleSelectedSlot()">
+          {{ actionLoading()
+            ? (selectedSlot()?.status === 'BOOKED' ? 'Report...' : 'Deplacement...')
+            : (selectedSlot()?.status === 'BOOKED' ? 'Reporter le rendez-vous' : 'Deplacer la disponibilite') }}
+        </button>
+      </div>
+    </section>
+  </div>
+</div>

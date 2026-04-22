@@ -154,7 +154,8 @@ public class AnimateurService {
                                 + inscription.getEnfant().getPrenom()
                                 + " dans l'activite "
                                 + inscription.getAnimation().getActivity().getActivyName()
-                                + ". Consultez l'application pour les details."
+                                + " : "
+                                + inscription.getIncidentNote().trim()
                 );
             }
             adminNotificationService.create(
@@ -168,9 +169,12 @@ public class AnimateurService {
             );
 
             boolean hasIncidentNote = inscription.getIncidentNote() != null && !inscription.getIncidentNote().isBlank();
-            if ((presenceStatus == PresenceStatus.ABSENT || hasIncidentNote)
-                    && inscription.getEnfant().getParent().getUser() != null) {
-                emailService.sendPresenceUpdate(inscription.getEnfant().getParent().getUser().getEmail(), inscription);
+            if (inscription.getEnfant().getParent().getUser() != null) {
+                if (hasIncidentNote) {
+                    emailService.sendIncidentNoteEmail(inscription.getEnfant().getParent().getUser().getEmail(), inscription);
+                } else if (presenceStatus == PresenceStatus.ABSENT) {
+                    emailService.sendPresenceUpdate(inscription.getEnfant().getParent().getUser().getEmail(), inscription);
+                }
             }
         }
     }

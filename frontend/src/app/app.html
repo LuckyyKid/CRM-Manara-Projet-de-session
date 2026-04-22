@@ -97,26 +97,30 @@
       <!-- Liens PARENT — sec:authorize="hasRole('PARENT')" -->
       <ng-container *ngIf="isParent()">
         <a class="mm-side-link" routerLink="/parent/dashboard"
-           routerLinkActive="mm-side-link-active">Espace parent</a>
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-dashboard">Espace parent</a>
         <a class="mm-side-link" routerLink="/parent/enfants"
-           routerLinkActive="mm-side-link-active">Enfants</a>
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-enfants">Enfants</a>
         <a class="mm-side-link" routerLink="/parent/activities"
-           routerLinkActive="mm-side-link-active">Activités</a>
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-activities">Activités</a>
         <a class="mm-side-link" routerLink="/parent/planning"
-           routerLinkActive="mm-side-link-active">Calendrier</a>
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-planning">Calendrier</a>
         <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/parent/quizzes"
-           routerLinkActive="mm-side-link-active">Quiz</a>
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-quizzes">Quiz</a>
         <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/parent/homeworks"
-           routerLinkActive="mm-side-link-active">Devoirs</a>
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-homeworks">Devoirs</a>
         <a *ngIf="canAccessSportPracticeTools()" class="mm-side-link" routerLink="/parent/sport-practice-plans"
-           routerLinkActive="mm-side-link-active">Pratique maison</a>
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-practice">Pratique maison</a>
+        <a class="mm-side-link" routerLink="/parent/appointments"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-appointments">Prendre un rendez-vous</a>
+        <a class="mm-side-link" routerLink="/parent/bookings"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-bookings">Rendez-vous</a>
         <a class="mm-side-link mm-side-link-with-badge" routerLink="/parent/messages"
-           routerLinkActive="mm-side-link-active">
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-messages">
           <span>Messages</span>
           <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{ sidebarCounts().messages }}</span>
         </a>
         <a class="mm-side-link mm-side-link-with-badge" routerLink="/parent/notifications"
-           routerLinkActive="mm-side-link-active">
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-notifications">
           <span>Notifications</span>
           <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{ sidebarCounts().notifications }}</span>
         </a>
@@ -136,6 +140,10 @@
            routerLinkActive="mm-side-link-active">Devoirs</a>
         <a *ngIf="canAccessSportPracticeTools()" class="mm-side-link" routerLink="/animateur/sport-practice-plans/history"
            routerLinkActive="mm-side-link-active">Pratique maison</a>
+        <a class="mm-side-link" routerLink="/animateur/appointments"
+           routerLinkActive="mm-side-link-active">Disponibilites</a>
+        <a class="mm-side-link" routerLink="/animateur/bookings"
+           routerLinkActive="mm-side-link-active">Rendez-vous</a>
         <a class="mm-side-link mm-side-link-with-badge" routerLink="/animateur/messages"
            routerLinkActive="mm-side-link-active">
           <span>Messages</span>

@@ -1,6 +1,9 @@
 import { computed, inject, Injectable, NgZone, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
+  AppointmentSlotCreateDto,
+  AppointmentSlotDto,
+  BookingDto,
   ChatConversationDetailDto,
   ChatConversationSummaryDto,
   ChatMessageDto,
@@ -107,6 +110,54 @@ export class CommunicationService {
 
   sendMessage(request: SendChatMessageRequestDto) {
     return this.http.post<ChatMessageDto>('/api/communication/messages', request);
+  }
+
+  getMyAppointmentSlots() {
+    return this.http.get<AppointmentSlotDto[]>('/api/communication/appointments/my-slots');
+  }
+
+  createAppointmentSlot(request: AppointmentSlotCreateDto) {
+    return this.http.post<AppointmentSlotDto>('/api/communication/appointments/my-slots', request);
+  }
+
+  updateAppointmentSlot(slotId: number, request: AppointmentSlotCreateDto) {
+    return this.http.put<AppointmentSlotDto>(`/api/communication/appointments/my-slots/${slotId}`, request);
+  }
+
+  rescheduleBookedAppointmentSlot(slotId: number, request: AppointmentSlotCreateDto) {
+    return this.http.put<AppointmentSlotDto>(`/api/communication/appointments/my-slots/${slotId}/reschedule`, request);
+  }
+
+  deleteAppointmentSlot(slotId: number) {
+    return this.http.delete<void>(`/api/communication/appointments/my-slots/${slotId}`);
+  }
+
+  getAnimateurAvailableSlots(animateurUserId: number) {
+    return this.http.get<AppointmentSlotDto[]>(`/api/communication/appointments/animateur/${animateurUserId}/slots`);
+  }
+
+  getAvailabilityCalendar(animateurUserId: number) {
+    return this.http.get<AppointmentSlotDto[]>(`/api/communication/availability/${animateurUserId}`);
+  }
+
+  reserveAppointmentSlot(slotId: number) {
+    return this.http.post<AppointmentSlotDto>(`/api/communication/appointments/slots/${slotId}/reserve`, {});
+  }
+
+  getAnimateurBookings(animateurUserId: number) {
+    return this.http.get<BookingDto[]>(`/api/communication/booking/animateur/${animateurUserId}`);
+  }
+
+  getParentBookings(parentUserId: number) {
+    return this.http.get<BookingDto[]>(`/api/communication/booking/parent/${parentUserId}`);
+  }
+
+  cancelBooking(bookingId: number) {
+    return this.http.delete<BookingDto>(`/api/communication/booking/${bookingId}`);
+  }
+
+  rescheduleBooking(bookingId: number, slotId: number) {
+    return this.http.post<BookingDto>(`/api/communication/booking/${bookingId}/reschedule`, { slotId });
   }
 
   connect(): void {
