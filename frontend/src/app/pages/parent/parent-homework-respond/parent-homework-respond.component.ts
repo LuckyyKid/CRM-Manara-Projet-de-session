@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -8,56 +9,7 @@ import { ParentService } from '../../../core/services/parent.service';
 @Component({
   selector: 'app-parent-homework-respond',
   imports: [CommonModule, FormsModule, RouterLink],
-  template: `
-    <div class="container py-4">
-      <div class="mm-page-head">
-        <div>
-          <span class="mm-page-eyebrow">Faire le devoir</span>
-          <h1 class="mm-page-title fs-1">{{ homework()?.title || 'Devoir' }}</h1>
-          <p class="mm-page-subtitle" *ngIf="homework() as item">
-            {{ item.enfantName }} - {{ item.activityName || 'Activite' }} - {{ item.exercises.length }} exercice(s)
-          </p>
-        </div>
-        <div class="mm-page-actions">
-          <a class="btn btn-outline-primary" routerLink="/parent/homeworks">Retour aux devoirs</a>
-        </div>
-      </div>
-
-      <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
-
-      <div *ngIf="!loading() && homework() as item" class="card mm-card-shadow">
-        <div class="card-body">
-          <p class="mb-4">{{ item.summary }}</p>
-
-          <div class="vstack gap-4">
-            <article *ngFor="let exercise of item.exercises" class="border rounded p-3">
-              <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
-                <div class="fw-semibold">{{ exercise.axisTitle }}</div>
-                <span class="badge text-bg-light">{{ exercise.difficulty }}</span>
-              </div>
-              <p class="mb-2">{{ exercise.questionText }}</p>
-              <div *ngIf="exercise.targetMistake" class="small text-secondary mb-2">
-                Point d'attention: {{ exercise.targetMistake }}
-              </div>
-              <textarea
-                class="form-control"
-                rows="5"
-                [ngModel]="answers()[exercise.id] || ''"
-                (ngModelChange)="setAnswer(exercise.id, $event)"
-                placeholder="Votre reponse"></textarea>
-            </article>
-          </div>
-
-          <div class="d-flex justify-content-end mt-4">
-            <button class="btn btn-primary" type="button" [disabled]="saving() || !canSubmit()" (click)="submit()">
-              {{ saving() ? 'Soumission...' : 'Soumettre le devoir' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './parent-homework-respond.component.html',
 })
 export class ParentHomeworkRespondComponent implements OnInit {
   private readonly parentService = inject(ParentService);
@@ -104,6 +56,10 @@ export class ParentHomeworkRespondComponent implements OnInit {
     this.answers.set({ ...this.answers(), [exerciseId]: value });
   }
 
+  optionControlId(exerciseId: number, optionIndex: number): string {
+    return `exercise${exerciseId}option${optionIndex}`;
+  }
+
   submit(): void {
     const item = this.homework();
     if (!item || !this.canSubmit()) {
@@ -120,10 +76,21 @@ export class ParentHomeworkRespondComponent implements OnInit {
     this.error.set('');
     this.parentService.submitHomework(item.id, { elapsedSeconds, answers }).subscribe({
       next: (attempt) => this.router.navigateByUrl(`/parent/homeworks/attempts/${attempt.id}`),
-      error: () => {
-        this.error.set('Erreur lors de la soumission du devoir.');
+      error: (error: HttpErrorResponse) => {
+        this.error.set(this.resolveErrorMessage(error, 'Erreur lors de la soumission du devoir.'));
         this.saving.set(false);
       },
     });
+  }
+
+  private resolveErrorMessage(error: HttpErrorResponse, fallback: string): string {
+    const payload = error.error;
+    if (typeof payload?.message === 'string' && payload.message.trim()) {
+      return payload.message;
+    }
+    if (typeof payload === 'string' && payload.trim()) {
+      return payload;
+    }
+    return fallback;
   }
 }

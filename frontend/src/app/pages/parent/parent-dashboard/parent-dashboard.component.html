@@ -6,7 +6,9 @@
       <p class="mm-page-subtitle">Bienvenue sur votre espace Manara.</p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-primary" routerLink="/parent/quizzes">Quiz</a>
+      <a *ngIf="canAccessTutoringTools()" class="btn btn-primary" routerLink="/parent/quizzes">Quiz</a>
+      <a *ngIf="canAccessTutoringTools()" class="btn btn-outline-primary" routerLink="/parent/homeworks">Devoirs</a>
+      <a *ngIf="canAccessSportPracticeTools()" class="btn btn-outline-primary" routerLink="/parent/sport-practice-plans">Pratique maison</a>
       <a class="btn btn-outline-primary" routerLink="/parent/enfants">Mes enfants</a>
       <a class="btn btn-outline-primary" routerLink="/parent/activities">Activités</a>
       <a class="btn btn-outline-primary" routerLink="/parent/planning">Planning</a>
@@ -79,6 +81,35 @@
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="canAccessTutoringTools()" class="card mm-card-shadow mt-4">
+      <div class="card-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+        <div>
+          <h2 class="mm-panel-title mb-1">Historique des devoirs</h2>
+          <p class="text-secondary mb-0">
+            Les devoirs personnalises sont consultables separement des quiz pour voir plus facilement les details et les corrections.
+          </p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <a class="btn btn-primary" routerLink="/parent/homeworks">Voir les devoirs</a>
+          <a class="btn btn-outline-primary" routerLink="/parent/quizzes">Voir les quiz</a>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="canAccessSportPracticeTools()" class="card mm-card-shadow mt-4">
+      <div class="card-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+        <div>
+          <h2 class="mm-panel-title mb-1">Pratique maison sportive</h2>
+          <p class="text-secondary mb-0">
+            Retrouvez les fiches sportives partagees apres les seances pour refaire les gestes et habitudes avec votre enfant.
+          </p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <a class="btn btn-primary" routerLink="/parent/sport-practice-plans">Voir les fiches</a>
         </div>
       </div>
     </div>

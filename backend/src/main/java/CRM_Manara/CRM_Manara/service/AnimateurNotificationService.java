@@ -14,11 +14,14 @@ public class AnimateurNotificationService {
 
     private final AnimateurNotificationRepo animateurNotificationRepo;
     private final AnimateurRepo animateurRepo;
+    private final RealtimeService realtimeService;
 
     public AnimateurNotificationService(AnimateurNotificationRepo animateurNotificationRepo,
-                                        AnimateurRepo animateurRepo) {
+                                        AnimateurRepo animateurRepo,
+                                        RealtimeService realtimeService) {
         this.animateurNotificationRepo = animateurNotificationRepo;
         this.animateurRepo = animateurRepo;
+        this.realtimeService = realtimeService;
     }
 
     @Transactional
@@ -27,6 +30,9 @@ public class AnimateurNotificationService {
             return;
         }
         animateurNotificationRepo.save(new AnimateurNotification(animateur, category, title, message));
+        if (animateur.getUser() != null && animateur.getUser().getEmail() != null) {
+            realtimeService.sendSidebarCounts(animateur.getUser().getEmail());
+        }
     }
 
     @Transactional(readOnly = true)
@@ -64,6 +70,10 @@ public class AnimateurNotificationService {
             notification.setReadStatus(true);
         }
         animateurNotificationRepo.saveAll(notifications);
+        animateurRepo.findById(animateurId)
+                .map(Animateur::getUser)
+                .map(user -> user.getEmail())
+                .ifPresent(realtimeService::sendSidebarCounts);
     }
 
     @Transactional
@@ -71,6 +81,9 @@ public class AnimateurNotificationService {
         AnimateurNotification notification = getNotificationForAnimateur(animateurId, notificationId);
         notification.setReadStatus(true);
         animateurNotificationRepo.save(notification);
+        if (notification.getAnimateur() != null && notification.getAnimateur().getUser() != null) {
+            realtimeService.sendSidebarCounts(notification.getAnimateur().getUser().getEmail());
+        }
     }
 
     @Transactional
@@ -79,6 +92,9 @@ public class AnimateurNotificationService {
         notification.setArchivedStatus(true);
         notification.setReadStatus(true);
         animateurNotificationRepo.save(notification);
+        if (notification.getAnimateur() != null && notification.getAnimateur().getUser() != null) {
+            realtimeService.sendSidebarCounts(notification.getAnimateur().getUser().getEmail());
+        }
     }
 
     @Transactional
@@ -86,6 +102,9 @@ public class AnimateurNotificationService {
         AnimateurNotification notification = getNotificationForAnimateur(animateurId, notificationId);
         notification.setArchivedStatus(false);
         animateurNotificationRepo.save(notification);
+        if (notification.getAnimateur() != null && notification.getAnimateur().getUser() != null) {
+            realtimeService.sendSidebarCounts(notification.getAnimateur().getUser().getEmail());
+        }
     }
 
     private AnimateurNotification getNotificationForAnimateur(Long animateurId, Long notificationId) {

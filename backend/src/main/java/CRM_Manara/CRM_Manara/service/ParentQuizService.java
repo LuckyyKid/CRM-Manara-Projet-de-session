@@ -1,6 +1,7 @@
 package CRM_Manara.CRM_Manara.service;
 
 import CRM_Manara.CRM_Manara.Model.Entity.Enfant;
+import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.statusInscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
@@ -13,6 +14,7 @@ import CRM_Manara.CRM_Manara.Repository.InscriptionRepo;
 import CRM_Manara.CRM_Manara.Repository.QuizAttemptRepo;
 import CRM_Manara.CRM_Manara.Repository.QuizRepo;
 import CRM_Manara.CRM_Manara.dto.EnfantSummaryDto;
+import CRM_Manara.CRM_Manara.dto.HomeworkDto;
 import CRM_Manara.CRM_Manara.dto.ParentQuizAttemptDetailDto;
 import CRM_Manara.CRM_Manara.dto.ParentQuizDto;
 import CRM_Manara.CRM_Manara.dto.QuizAttemptDto;
@@ -21,6 +23,9 @@ import CRM_Manara.CRM_Manara.dto.QuizAxisDto;
 import CRM_Manara.CRM_Manara.dto.QuizDto;
 import CRM_Manara.CRM_Manara.dto.QuizQuestionDto;
 import CRM_Manara.CRM_Manara.dto.TutorQuizAnswerDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +43,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ParentQuizService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParentQuizService.class);
 
     private final parentService parentService;
     private final QuizRepo quizRepo;
@@ -89,7 +96,12 @@ public class ParentQuizService {
         Parent parent = parentService.getParentByEmail(parentEmail);
         Quiz quiz = quizRepo.findById(quizId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz introuvable."));
+        if (!isTutoringQuiz(quiz)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz introuvable.");
+        }
         Enfant enfant = parentService.getEnfantForParent(request.enfantId(), parentEmail);
+        LOGGER.info("Soumission de quiz recue. quizId={}, enfantId={}, parentId={}, answerCount={}",
+                quizId, enfant.getId(), parent.getId(), request.answers().size());
 
         if (!isEligibleForQuiz(parent.getId(), enfant, quiz)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cet enfant ne peut pas faire ce quiz.");
@@ -121,7 +133,14 @@ public class ParentQuizService {
         AnthropicQuizScoringService.ScoringResult scoringResult = anthropicQuizScoringService.scoreAttempt(attempt);
         attempt.markScored(scoringResult.scorePercent(), scoringResult.status());
         QuizAttempt savedAttempt = quizAttemptRepo.save(attempt);
-        homeworkService.createAutomaticHomeworkFromQuizAttempt(savedAttempt);
+        LOGGER.info("QuizAttempt sauvegarde. attemptId={}, quizId={}, enfantId={}, score={}, status={}",
+                savedAttempt.getId(), quizId, enfant.getId(), savedAttempt.getScorePercent(), savedAttempt.getStatus());
+        try {
+            homeworkService.createAutomaticHomeworkFromQuizAttempt(savedAttempt);
+        } catch (Exception exception) {
+            LOGGER.error("Creation automatique du devoir echouee apres la soumission du quiz {} et de l'attempt {}.",
+                    quizId, savedAttempt.getId(), exception);
+        }
         return toAttemptDto(savedAttempt);
     }
 
@@ -138,12 +157,36 @@ public class ParentQuizService {
         Parent parent = parentService.getParentByEmail(parentEmail);
         QuizAttempt attempt = quizAttemptRepo.findByIdAndEnfantParentId(attemptId, parent.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Soumission introuvable."));
+        if (!isTutoringQuiz(attempt.getQuiz())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Soumission introuvable.");
+        }
         return toAttemptDetailDto(attempt);
+    }
+
+    @Transactional
+    public HomeworkDto generateHomeworkFromAttempt(Long attemptId, String parentEmail) {
+        Parent parent = parentService.getParentByEmail(parentEmail);
+        QuizAttempt attempt = quizAttemptRepo.findByIdAndEnfantParentId(attemptId, parent.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Soumission introuvable."));
+        if (!isTutoringQuiz(attempt.getQuiz())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Soumission introuvable.");
+        }
+        LOGGER.info("Generation manuelle demandee depuis une soumission existante. attemptId={}, parentId={}, enfantId={}",
+                attemptId, parent.getId(), attempt.getEnfant().getId());
+        try {
+            return homeworkService.generateHomeworkForExistingQuizAttempt(attempt);
+        } catch (Exception exception) {
+            LOGGER.error("Generation manuelle du devoir echouee pour la soumission {}.", attemptId, exception);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le devoir n'a pas pu etre genere pour cette soumission.");
+        }
     }
 
     private List<Inscription> eligibleInscriptions(Long parentId) {
         return inscriptionRepo.findByParentId(parentId).stream()
                 .filter(inscription -> isVisibleInscriptionStatus(inscription.getStatusInscription()))
+                .filter(inscription -> inscription.getAnimation() != null
+                        && inscription.getAnimation().getActivity() != null
+                        && inscription.getAnimation().getActivity().getType() == typeActivity.TUTORAT)
                 .toList();
     }
 
@@ -181,9 +224,18 @@ public class ParentQuizService {
     private Map<Long, QuizAttempt> latestAttemptByQuiz(Long parentId) {
         Map<Long, QuizAttempt> result = new LinkedHashMap<>();
         for (QuizAttempt attempt : quizAttemptRepo.findByEnfantParentIdOrderBySubmittedAtDesc(parentId)) {
-            result.putIfAbsent(attempt.getQuiz().getId(), attempt);
+            if (isTutoringQuiz(attempt.getQuiz())) {
+                result.putIfAbsent(attempt.getQuiz().getId(), attempt);
+            }
         }
         return result;
+    }
+
+    private boolean isTutoringQuiz(Quiz quiz) {
+        return quiz != null
+                && quiz.getAnimation() != null
+                && quiz.getAnimation().getActivity() != null
+                && quiz.getAnimation().getActivity().getType() == typeActivity.TUTORAT;
     }
 
     private ParentQuizDto toParentQuizDto(Quiz quiz,
@@ -245,7 +297,8 @@ public class ParentQuizService {
                                 answer.getQuestion().getAngle(),
                                 answer.getQuestion().getQuestionText(),
                                 answer.getQuestion().getExpectedAnswer(),
-                                answer.getAnswerText()
+                                answer.getAnswerText(),
+                                answer.getQuestion().getOptions()
                         ))
                         .toList()
         );
@@ -278,7 +331,8 @@ public class ParentQuizService {
                                                 question.getType(),
                                                 question.getQuestionText(),
                                                 "",
-                                                question.getPosition()
+                                                question.getPosition(),
+                                                question.getOptions()
                                         ))
                                         .toList()
                         ))

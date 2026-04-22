@@ -1,5 +1,6 @@
 package CRM_Manara.CRM_Manara.Controller;
 
+import CRM_Manara.CRM_Manara.dto.ActionResponseDto;
 import CRM_Manara.CRM_Manara.dto.QuizCreateRequestDto;
 import CRM_Manara.CRM_Manara.dto.QuizDto;
 import CRM_Manara.CRM_Manara.dto.TutorDashboardDto;
@@ -53,6 +54,11 @@ public class ApiQuizController {
     @ResponseStatus(HttpStatus.CREATED)
     public QuizDto create(@RequestBody QuizCreateRequestDto request, Authentication authentication) {
         return quizService.createForAnimateur(requireEmail(authentication), request);
+    }
+
+    @PostMapping("/backfill-homeworks")
+    public ActionResponseDto backfillHomeworks(Authentication authentication) {
+        return quizService.backfillMissingHomeworksForAnimateur(requireEmail(authentication));
     }
 
     @DeleteMapping("/{id}")

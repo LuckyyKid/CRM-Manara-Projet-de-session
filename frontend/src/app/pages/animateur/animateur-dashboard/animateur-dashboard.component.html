@@ -3,12 +3,18 @@
     <div>
       <span class="mm-page-eyebrow">Espace animateur</span>
       <h1 class="mm-page-title">Tableau de bord</h1>
-      <p class="mm-page-subtitle">Vue globale des inscriptions, quiz, axes et prochaines seances.</p>
+      <p class="mm-page-subtitle" *ngIf="hasTutoringAnimations(); else standardSubtitle">
+        Vue pedagogique des animations de tutorat, des quiz, des devoirs et des prochaines seances.
+      </p>
+      <ng-template #standardSubtitle>
+        <p class="mm-page-subtitle">Vue globale de vos animations et des prochaines seances.</p>
+      </ng-template>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-primary" routerLink="/animateur/quizzes">Creer un quiz</a>
-      <a class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">Quiz generes</a>
-      <a class="btn btn-outline-primary" routerLink="/animateur/inscriptions">Mes seances</a>
+      <a class="btn btn-outline-primary" routerLink="/animateur/animations">Mes animations</a>
+      <a *ngIf="hasTutoringAnimations()" class="btn btn-primary" routerLink="/animateur/quizzes">Creer un quiz</a>
+      <a *ngIf="hasTutoringAnimations()" class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">Quiz generes</a>
+      <a *ngIf="canAccessSportPracticeTools()" class="btn btn-outline-primary" routerLink="/animateur/sport-practice-plans/history">Pratique maison</a>
     </div>
   </div>
 
@@ -16,146 +22,263 @@
   <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()">
-    <div class="row g-3">
-      <div class="col-12 col-md-3">
-        <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Enfants inscrits</span>
-          <span class="mm-kpi-value">{{ tutorDashboard()?.enrolledChildrenCount ?? 0 }}</span>
-          <span class="mm-kpi-meta">Inscriptions approuvees ou actives</span>
-        </div>
-      </div>
-      <div class="col-12 col-md-3">
-        <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Repondants quiz</span>
-          <span class="mm-kpi-value">{{ responseSummary() }}</span>
-          <span class="mm-kpi-meta">{{ tutorDashboard()?.quizAttemptCount ?? 0 }} soumission(s)</span>
-        </div>
-      </div>
-      <div class="col-12 col-md-3">
-        <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Participation</span>
-          <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.quizParticipationPercent, '%') }}</span>
-          <span class="mm-kpi-meta">Enfants ayant soumis au moins un quiz</span>
-        </div>
-      </div>
-      <div class="col-12 col-md-3">
-        <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Age moyen</span>
-          <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.averageStudentAge, ' ans') }}</span>
-          <span class="mm-kpi-meta">Sur les enfants inscrits</span>
-        </div>
-      </div>
-      <div class="col-12 col-md-3">
-        <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Progression globale</span>
-          <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.globalProgressPercent, '%') }}</span>
-          <span class="mm-kpi-meta">{{ tutorDashboard()?.progressStatus }}</span>
-        </div>
-      </div>
-      <div class="col-12 col-md-3">
-        <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Axes suivis</span>
-          <span class="mm-kpi-value">{{ tutorDashboard()?.axisCount ?? 0 }}</span>
-          <span class="mm-kpi-meta">{{ tutorDashboard()?.questionCount ?? 0 }} questions generees</span>
-        </div>
-      </div>
-      <div class="col-12 col-md-3">
-        <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Temps moyen</span>
-          <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.averageResponseTimeSeconds, 's') }}</span>
-          <span class="mm-kpi-meta">Disponible apres les tentatives</span>
-        </div>
-      </div>
-      <div class="col-12 col-md-3">
-        <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">A venir</span>
-          <span class="mm-kpi-value">{{ countUpcoming() }}</span>
-          <span class="mm-kpi-meta">Seances planifiees</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card mm-card-shadow mt-4">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start gap-3">
-          <div>
-            <h2 class="mm-panel-title mb-1">Suggestion prochaine seance</h2>
-            <p class="mm-panel-subtitle mb-0">{{ tutorDashboard()?.nextSessionSuggestion }}</p>
+    <ng-container *ngIf="hasTutoringAnimations(); else standardDashboard">
+      <div class="row g-3">
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">Animations</span>
+            <span class="mm-kpi-value">{{ countTotal() }}</span>
+            <span class="mm-kpi-meta">{{ tutoringAnimationCount() }} en tutorat</span>
           </div>
-          <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/quizzes">Nouveau quiz</a>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">Enfants inscrits</span>
+            <span class="mm-kpi-value">{{ tutorDashboard()?.enrolledChildrenCount ?? 0 }}</span>
+            <span class="mm-kpi-meta">Inscriptions approuvees ou actives</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">Repondants quiz</span>
+            <span class="mm-kpi-value">{{ responseSummary() }}</span>
+            <span class="mm-kpi-meta">{{ tutorDashboard()?.quizAttemptCount ?? 0 }} soumission(s)</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">Participation</span>
+            <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.quizParticipationPercent, '%') }}</span>
+            <span class="mm-kpi-meta">Enfants ayant soumis au moins un quiz</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">Quiz crees</span>
+            <span class="mm-kpi-value">{{ quizzes().length }}</span>
+            <span class="mm-kpi-meta">Sur vos animations</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">Devoirs attribues</span>
+            <span class="mm-kpi-value">{{ homeworkOverview()?.assignedCount ?? 0 }}</span>
+            <span class="mm-kpi-meta">Generes depuis les quiz</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">Devoirs remis</span>
+            <span class="mm-kpi-value">{{ homeworkOverview()?.submittedCount ?? 0 }}</span>
+            <span class="mm-kpi-meta">Avec soumission</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">A venir</span>
+            <span class="mm-kpi-value">{{ countUpcoming() }}</span>
+            <span class="mm-kpi-meta">Seances planifiees</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="row g-4 mt-1">
-      <div class="col-12 col-xl-7">
-        <div class="card mm-card-shadow h-100">
-          <div class="card-body">
-            <h2 class="mm-panel-title mb-1">Progression par axe</h2>
-            <p class="mm-panel-subtitle">Les scores seront alimentes par les micro-diagnostics.</p>
-
-            <div class="table-responsive">
-              <table class="table table-sm align-middle">
-                <thead>
-                  <tr>
-                    <th>Axe</th>
-                    <th>Quiz</th>
-                    <th>Score</th>
-                    <th>Temps</th>
-                    <th>Statut</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngIf="!axesPreview().length">
-                    <td colspan="5" class="text-secondary">Aucun axe suivi. Creez un quiz pour initialiser le suivi.</td>
-                  </tr>
-                  <tr *ngFor="let axis of axesPreview()">
-                    <td>
-                      <div class="fw-semibold">{{ axis.axisTitle }}</div>
-                      <div class="text-secondary small">{{ axis.questionCount }} questions</div>
-                    </td>
-                    <td>{{ axis.quizCount }}</td>
-                    <td>{{ formatMetric(axis.scorePercent, '%') }}</td>
-                    <td>{{ formatMetric(axis.averageResponseTimeSeconds, 's') }}</td>
-                    <td><span class="badge text-bg-light">{{ axis.status }}</span></td>
-                  </tr>
-                </tbody>
-              </table>
+      <div class="card mm-card-shadow mt-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              <h2 class="mm-panel-title mb-1">Suivi tutorat</h2>
+              <p class="mm-panel-subtitle mb-0">
+                Les animations de tutorat activent un suivi supplementaire base sur quiz, devoirs et axes de progression.
+              </p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/homeworks">Voir les devoirs</a>
+              <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/quizzes/history">Voir les quiz</a>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="col-12 col-xl-5">
-        <div class="card mm-card-shadow h-100">
-          <div class="card-body">
-            <h2 class="mm-panel-title">Axes persistants</h2>
-            <p class="mm-panel-subtitle">Axes revenus dans plusieurs quiz ou a surveiller en priorite.</p>
+      <div class="row g-4 mt-1">
+        <div class="col-12 col-xl-7">
+          <div class="card mm-card-shadow h-100">
+            <div class="card-body">
+              <h2 class="mm-panel-title mb-1">Progression par axe</h2>
+              <p class="mm-panel-subtitle">Les scores sont alimentes par les micro-diagnostics de tutorat.</p>
 
-            <div class="list-group list-group-flush">
-              <div class="list-group-item px-0" *ngFor="let axis of persistentAxesPreview()">
-                <div class="d-flex justify-content-between gap-3">
-                  <div>
-                    <div class="fw-semibold">{{ axis.axisTitle }}</div>
-                    <div class="text-secondary small">Dernier quiz: {{ axis.latestQuizTitle }}</div>
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>Axe</th>
+                      <th>Quiz</th>
+                      <th>Score</th>
+                      <th>Temps</th>
+                      <th>Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngIf="!axesPreview().length">
+                      <td colspan="5" class="text-secondary">Aucun axe suivi. Creez un quiz pour initialiser le suivi.</td>
+                    </tr>
+                    <tr *ngFor="let axis of axesPreview()">
+                      <td>
+                        <div class="fw-semibold">{{ axis.axisTitle }}</div>
+                        <div class="text-secondary small">{{ axis.questionCount }} questions</div>
+                      </td>
+                      <td>{{ axis.quizCount }}</td>
+                      <td>{{ formatMetric(axis.scorePercent, '%') }}</td>
+                      <td>{{ formatMetric(axis.averageResponseTimeSeconds, 's') }}</td>
+                      <td><span class="badge text-bg-light">{{ axis.status }}</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <div class="card mm-card-shadow h-100">
+            <div class="card-body">
+              <h2 class="mm-panel-title">Axes persistants</h2>
+              <p class="mm-panel-subtitle">Axes revenus dans plusieurs quiz ou a surveiller en priorite.</p>
+
+              <div class="list-group list-group-flush">
+                <div class="list-group-item px-0" *ngFor="let axis of persistentAxesPreview()">
+                  <div class="d-flex justify-content-between gap-3">
+                    <div>
+                      <div class="fw-semibold">{{ axis.axisTitle }}</div>
+                      <div class="text-secondary small">Dernier quiz: {{ axis.latestQuizTitle }}</div>
+                    </div>
+                    <span class="badge text-bg-warning align-self-start">{{ axis.quizCount }}x</span>
                   </div>
-                  <span class="badge text-bg-warning align-self-start">{{ axis.quizCount }}x</span>
+                </div>
+                <div *ngIf="!persistentAxesPreview().length" class="text-secondary py-2">
+                  Aucun axe persistant detecte pour l'instant.
                 </div>
               </div>
-              <div *ngIf="!persistentAxesPreview().length" class="text-secondary py-2">
-                Aucun axe persistant detecte pour l'instant.
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #standardDashboard>
+      <div class="row g-3">
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">Animations</span>
+            <span class="mm-kpi-value">{{ countTotal() }}</span>
+            <span class="mm-kpi-meta">Toutes vos animations</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">A venir</span>
+            <span class="mm-kpi-value">{{ countUpcoming() }}</span>
+            <span class="mm-kpi-meta">Seances planifiees</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">En cours</span>
+            <span class="mm-kpi-value">{{ recentAnimations().length }}</span>
+            <span class="mm-kpi-meta">Animations les plus proches</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="mm-kpi-card h-100">
+            <span class="mm-kpi-label">Tutorat</span>
+            <span class="mm-kpi-value">{{ tutoringAnimationCount() }}</span>
+            <span class="mm-kpi-meta">Animations de type tutorat</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mm-card-shadow mt-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start gap-3">
+            <div>
+              <h2 class="mm-panel-title mb-1">Pilotage animateur</h2>
+              <p class="mm-panel-subtitle mb-0">
+                Les animations non tutorat gardent un dashboard general centre sur les seances et l'organisation.
+              </p>
+            </div>
+            <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/animations">Voir mes animations</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-1">
+        <div class="col-12 col-xl-7">
+          <div class="card mm-card-shadow h-100">
+            <div class="card-body">
+              <h2 class="mm-panel-title mb-1">Animations recentes</h2>
+              <p class="mm-panel-subtitle">Apercu recent de vos animations pour acceder aux presences.</p>
+
+              <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>Animation</th>
+                      <th>Activite</th>
+                      <th>Date</th>
+                      <th>Situation</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngIf="!recentAnimations().length">
+                      <td colspan="5" class="text-secondary">Aucune animation recente pour le moment.</td>
+                    </tr>
+                    <tr *ngFor="let animation of recentAnimations()">
+                      <td>{{ animation.activity.name }}</td>
+                      <td>{{ animation.activity.type || '-' }}</td>
+                      <td>{{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+                      <td>{{ animationTimeLabel(animation.startTime, animation.endTime) }}</td>
+                      <td>
+                        <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Presences</a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <div class="card mm-card-shadow h-100">
+            <div class="card-body">
+              <h2 class="mm-panel-title">Organisation</h2>
+              <p class="mm-panel-subtitle">Acces rapide a vos animations sans fonctionnalites tutorat.</p>
+
+              <div class="list-group list-group-flush">
+                <div class="list-group-item px-0" *ngFor="let animation of recentAnimations()">
+                  <div class="d-flex justify-content-between gap-3">
+                    <div>
+                      <div class="fw-semibold">{{ animation.activity.name }}</div>
+                      <div class="text-secondary small">{{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}</div>
+                    </div>
+                    <span class="badge text-bg-light align-self-start">{{ animation.activity.type || 'Activite' }}</span>
+                  </div>
+                </div>
+                <div *ngIf="!recentAnimations().length" class="text-secondary py-2">
+                  Aucune animation disponible.
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ng-template>
 
     <div class="card mm-card-shadow mt-4">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h2 class="mm-panel-title mb-0">Prochaines seances</h2>
-          <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/inscriptions">Voir tout</a>
+          <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/animations">Voir tout</a>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
@@ -180,7 +303,8 @@
                 <td>
                   <div class="d-flex gap-2">
                     <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Presences</a>
-                    <a class="btn btn-sm btn-outline-primary" routerLink="/animateur/quizzes" [queryParams]="{ animationId: animation.id }">Quiz</a>
+                    <a *ngIf="isTutoringAnimation(animation)" class="btn btn-sm btn-outline-primary" routerLink="/animateur/quizzes" [queryParams]="{ animationId: animation.id }">Quiz</a>
+                    <a *ngIf="isSportAnimation(animation)" class="btn btn-sm btn-outline-primary" routerLink="/animateur/sport-practice-plans" [queryParams]="{ animationId: animation.id }">Pratique maison</a>
                   </div>
                 </td>
               </tr>

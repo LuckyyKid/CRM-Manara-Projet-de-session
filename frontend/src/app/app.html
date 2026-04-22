@@ -82,8 +82,16 @@
            routerLinkActive="mm-side-link-active">Parents / Enfants</a>
         <a class="mm-side-link" routerLink="/admin/demandes"
            routerLinkActive="mm-side-link-active">Demandes</a>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/admin/messages"
+           routerLinkActive="mm-side-link-active">
+          <span>Messages</span>
+          <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{ sidebarCounts().messages }}</span>
+        </a>
         <a class="mm-side-link" routerLink="/admin/notifications"
-           routerLinkActive="mm-side-link-active">Notifications</a>
+           routerLinkActive="mm-side-link-active">
+          <span>Notifications</span>
+          <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{ sidebarCounts().notifications }}</span>
+        </a>
       </ng-container>
 
       <!-- Liens PARENT — sec:authorize="hasRole('PARENT')" -->
@@ -96,10 +104,22 @@
            routerLinkActive="mm-side-link-active">Activités</a>
         <a class="mm-side-link" routerLink="/parent/planning"
            routerLinkActive="mm-side-link-active">Calendrier</a>
-        <a class="mm-side-link" routerLink="/parent/quizzes"
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/parent/quizzes"
            routerLinkActive="mm-side-link-active">Quiz</a>
-        <a class="mm-side-link" routerLink="/parent/notifications"
-           routerLinkActive="mm-side-link-active">Notifications</a>
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/parent/homeworks"
+           routerLinkActive="mm-side-link-active">Devoirs</a>
+        <a *ngIf="canAccessSportPracticeTools()" class="mm-side-link" routerLink="/parent/sport-practice-plans"
+           routerLinkActive="mm-side-link-active">Pratique maison</a>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/parent/messages"
+           routerLinkActive="mm-side-link-active">
+          <span>Messages</span>
+          <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{ sidebarCounts().messages }}</span>
+        </a>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/parent/notifications"
+           routerLinkActive="mm-side-link-active">
+          <span>Notifications</span>
+          <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{ sidebarCounts().notifications }}</span>
+        </a>
       </ng-container>
 
       <!-- Liens ANIMATEUR — sec:authorize="hasRole('ANIMATEUR')" -->
@@ -108,12 +128,24 @@
            routerLinkActive="mm-side-link-active">Espace animateur</a>
         <a class="mm-side-link" routerLink="/animateur/inscriptions"
            routerLinkActive="mm-side-link-active">Présences</a>
-        <a class="mm-side-link" routerLink="/animateur/quizzes"
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/animateur/quizzes"
            routerLinkActive="mm-side-link-active">Quiz</a>
-        <a class="mm-side-link" routerLink="/animateur/quizzes/history"
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/animateur/quizzes/history"
            routerLinkActive="mm-side-link-active">Quiz generes</a>
-        <a class="mm-side-link" routerLink="/animateur/notifications"
-           routerLinkActive="mm-side-link-active">Notifications</a>
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/animateur/homeworks"
+           routerLinkActive="mm-side-link-active">Devoirs</a>
+        <a *ngIf="canAccessSportPracticeTools()" class="mm-side-link" routerLink="/animateur/sport-practice-plans/history"
+           routerLinkActive="mm-side-link-active">Pratique maison</a>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/animateur/messages"
+           routerLinkActive="mm-side-link-active">
+          <span>Messages</span>
+          <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{ sidebarCounts().messages }}</span>
+        </a>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/animateur/notifications"
+           routerLinkActive="mm-side-link-active">
+          <span>Notifications</span>
+          <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{ sidebarCounts().notifications }}</span>
+        </a>
       </ng-container>
 
     </nav>

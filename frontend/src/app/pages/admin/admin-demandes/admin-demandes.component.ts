@@ -39,6 +39,7 @@ export class AdminDemandesComponent implements OnInit, OnDestroy {
   searching = signal(false);
   message = signal('');
   error = signal('');
+  activeSection = signal<'search' | 'pending' | 'processed'>('pending');
 
   filters = signal({
     animateurId: null as number | null,
@@ -181,6 +182,10 @@ export class AdminDemandesComponent implements OnInit, OnDestroy {
 
   search(): void {
     this.searchChanges.next();
+  }
+
+  setSection(section: 'search' | 'pending' | 'processed'): void {
+    this.activeSection.set(section);
   }
 
   ngOnDestroy(): void {

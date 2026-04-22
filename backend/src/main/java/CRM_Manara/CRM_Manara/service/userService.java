@@ -9,6 +9,8 @@ import CRM_Manara.CRM_Manara.Repository.VerificationTokenRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -58,6 +60,9 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
 
     @Autowired
     private AdminNotificationService adminNotificationService;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -146,8 +151,16 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
                 "COMPTE",
                 "Nouveau compte parent Google en attente: " + fullName + " (" + savedUser.getEmail() + ")."
         );
+        evictCache("parents");
 
         return savedUser;
+    }
+
+    private void evictCache(String cacheName) {
+        Cache cache = cacheManager.getCache(cacheName);
+        if (cache != null) {
+            cache.clear();
+        }
     }
 
     // ADDED

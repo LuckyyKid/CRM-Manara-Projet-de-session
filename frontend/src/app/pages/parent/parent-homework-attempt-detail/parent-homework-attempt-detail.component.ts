@@ -7,70 +7,7 @@ import { ParentService } from '../../../core/services/parent.service';
 @Component({
   selector: 'app-parent-homework-attempt-detail',
   imports: [CommonModule, DatePipe, RouterLink],
-  template: `
-    <div class="container py-4">
-      <div class="mm-page-head">
-        <div>
-          <span class="mm-page-eyebrow">Resultat du devoir</span>
-          <h1 class="mm-page-title fs-1">{{ attempt()?.assignmentTitle || 'Detail du devoir' }}</h1>
-          <p class="mm-page-subtitle" *ngIf="attempt() as item">
-            {{ item.enfantName }} - soumis le {{ item.submittedAt | date:'dd/MM/yyyy HH:mm' }}
-          </p>
-        </div>
-        <div class="mm-page-actions">
-          <a class="btn btn-outline-primary" routerLink="/parent/homeworks">Retour aux devoirs</a>
-        </div>
-      </div>
-
-      <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
-
-      <ng-container *ngIf="!loading() && attempt() as item">
-        <div class="row g-3 mb-4">
-          <div class="col-12 col-md-4">
-            <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Note</span>
-              <span class="mm-kpi-value">{{ scoreLabel() }}</span>
-              <span class="mm-kpi-meta">{{ statusLabel(item.status) }}</span>
-            </div>
-          </div>
-          <div class="col-12 col-md-4">
-            <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Temps pris</span>
-              <span class="mm-kpi-value">{{ formatTime(item.elapsedSeconds) }}</span>
-              <span class="mm-kpi-meta">Temps de reponse</span>
-            </div>
-          </div>
-          <div class="col-12 col-md-4">
-            <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Exercices</span>
-              <span class="mm-kpi-value">{{ item.answers.length }}</span>
-              <span class="mm-kpi-meta">Reponses soumises</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card mm-card-shadow">
-          <div class="card-body">
-            <h2 class="mm-panel-title">Reponses detaillees</h2>
-            <div class="vstack gap-3">
-              <article class="border rounded p-3" *ngFor="let answer of item.answers">
-                <div class="fw-semibold">{{ answer.axisTitle }}</div>
-                <div class="text-secondary small mb-2">{{ answer.angle }}</div>
-                <p class="mb-2">{{ answer.questionText }}</p>
-                <div class="bg-light rounded p-3 mb-2">
-                  <div class="small text-secondary mb-1">Reponse de l'etudiant</div>
-                  <div>{{ answer.answerText || '-' }}</div>
-                </div>
-                <div class="small text-secondary">Reponse attendue</div>
-                <div>{{ answer.expectedAnswer }}</div>
-              </article>
-            </div>
-          </div>
-        </div>
-      </ng-container>
-    </div>
-  `,
+  templateUrl: './parent-homework-attempt-detail.component.html',
 })
 export class ParentHomeworkAttemptDetailComponent implements OnInit {
   private readonly parentService = inject(ParentService);
@@ -115,6 +52,12 @@ export class ParentHomeworkAttemptDetailComponent implements OnInit {
   }
 
   statusLabel(status: string): string {
-    return status === 'SCORED_LOCAL' ? 'Corrige localement' : status || 'Soumis';
+    if (status === 'PENDING_AI') {
+      return 'Correction IA en attente';
+    }
+    if (status === 'SCORED_AI') {
+      return 'Corrige par IA';
+    }
+    return status || 'Soumis';
   }
 }

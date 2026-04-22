@@ -1,0 +1,65 @@
+    <div class="container py-4">
+      <div class="mm-page-head">
+        <div>
+          <span class="mm-page-eyebrow">Suivi sport</span>
+          <h1 class="mm-page-title fs-1">Pratique maison</h1>
+          <p class="mm-page-subtitle">Generez une checklist simple que le parent pourra refaire avec son enfant a la maison ou au parc.</p>
+        </div>
+        <div class="mm-page-actions">
+          <a class="btn btn-outline-primary" routerLink="/animateur/sport-practice-plans/history">Historique</a>
+        </div>
+      </div>
+
+      <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+      <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
+      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+      <div *ngIf="!loading() && canAccessSportPracticeTools()" class="row g-4">
+        <div class="col-12 col-xl-7">
+          <div class="card mm-card-shadow">
+            <div class="card-body">
+              <h2 class="mm-panel-title">Nouvelle fiche</h2>
+              <p class="mm-panel-subtitle">Basez-vous sur les points vus pendant la seance pour produire une pratique maison exploitable par le parent.</p>
+
+              <form class="d-grid gap-3" (ngSubmit)="createPlan()">
+                <div>
+                  <label class="form-label" for="planTitle">Titre</label>
+                  <input id="planTitle" class="form-control" name="title" [(ngModel)]="form.title" placeholder="Pratique maison - Soccer">
+                </div>
+
+                <div>
+                  <label class="form-label" for="animationId">Seance liee</label>
+                  <select id="animationId" class="form-select" name="animationId" [(ngModel)]="form.animationId" (ngModelChange)="onAnimationChange()">
+                    <option [ngValue]="null">Choisir une animation sportive</option>
+                    <option *ngFor="let animation of animations()" [ngValue]="animation.id">
+                      {{ animation.activity.name }} - {{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="form-label" for="sourceNotes">Notes de seance</label>
+                  <textarea id="sourceNotes" class="form-control" rows="12" name="sourceNotes" [(ngModel)]="form.sourceNotes" placeholder="Ex.: conduite de balle, controle interieur, passes courtes, placement du corps, coordination, rythme..."></textarea>
+                </div>
+
+                <button class="btn btn-primary btn-lg" type="submit" [disabled]="saving()">
+                  {{ saving() ? 'Generation...' : 'Generer la fiche' }}
+                </button>
+
+                <div *ngIf="saving()" class="border rounded p-3 bg-light">
+                  <div class="fw-semibold mb-2">Generation en cours</div>
+                  <div class="progress" role="progressbar" aria-label="Progression generation pratique maison" [attr.aria-valuenow]="generationProgress()" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" [style.width.%]="generationProgress()">
+                      {{ generationProgress() }}%
+                    </div>
+                  </div>
+                  <div class="text-secondary small mt-2">L'IA structure la fiche en consignes simples et utilisables par le parent.</div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  

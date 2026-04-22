@@ -3,11 +3,16 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { QuizDto } from '../../../core/models/api.models';
 import { AnimateurService } from '../../../core/services/animateur.service';
-import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import {
+  ListFiltersDirective,
+  ListHeadDirective,
+  ListPageComponent,
+  ListRowDirective,
+} from '../../../shared/list-page/list-page.component';
 
 @Component({
   selector: 'app-animateur-quiz-history',
-  imports: [CommonModule, DatePipe, RouterLink, PaginationComponent],
+  imports: [CommonModule, DatePipe, RouterLink, ListPageComponent, ListFiltersDirective, ListHeadDirective, ListRowDirective],
   templateUrl: './animateur-quiz-history.component.html',
 })
 export class AnimateurQuizHistoryComponent implements OnInit {
@@ -21,6 +26,7 @@ export class AnimateurQuizHistoryComponent implements OnInit {
   page = signal(1);
   pageSize = 6;
   loading = signal(true);
+  backfilling = signal(false);
   error = signal('');
   success = signal('');
 
@@ -94,8 +100,35 @@ export class AnimateurQuizHistoryComponent implements OnInit {
         this.quizzes.update((items) => items.filter((item) => item.id !== quiz.id));
         this.success.set('Quiz supprime.');
       },
-      error: () => this.error.set('Erreur lors de la suppression du quiz.'),
+      error: (error) => this.error.set(this.resolveErrorMessage(error, 'Erreur lors de la suppression du quiz.')),
     });
+  }
+
+  backfillHomeworks(): void {
+    if (this.backfilling()) {
+      return;
+    }
+    this.error.set('');
+    this.success.set('');
+    this.backfilling.set(true);
+    this.animateurService.backfillHomeworks().subscribe({
+      next: (response) => {
+        this.backfilling.set(false);
+        this.success.set(response.message);
+      },
+      error: (error) => {
+        this.backfilling.set(false);
+        this.error.set(this.resolveErrorMessage(error, 'Erreur lors du backfill des devoirs.'));
+      },
+    });
+  }
+
+  private resolveErrorMessage(error: unknown, fallback: string): string {
+    const apiMessage = (error as { error?: { message?: string } })?.error?.message;
+    if (typeof apiMessage === 'string' && apiMessage.trim()) {
+      return apiMessage.trim();
+    }
+    return fallback;
   }
 
   private normalize(value: string): string {

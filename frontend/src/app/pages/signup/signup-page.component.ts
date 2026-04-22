@@ -1,18 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, of, Subject } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
+import { SignupService } from '../../core/services/signup.service';
 
 @Component({
   selector: 'app-signup-page',
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './signup-page.component.html',
 })
-export class SignupPageComponent {
-  private readonly http = inject(HttpClient);
+export class SignupPageComponent implements OnDestroy {
+  private readonly signupService = inject(SignupService);
   private readonly router = inject(Router);
+  private readonly emailChanges$ = new Subject<string>();
+  private readonly destroy$ = new Subject<void>();
 
   nom = signal('');
   prenom = signal('');
@@ -26,17 +30,28 @@ export class SignupPageComponent {
   loading = signal(false);
   emailAvailableMsg = signal('');
 
-  checkEmail(): void {
-    const val = this.email();
-    if (!val || !val.includes('@')) {
-      this.emailAvailableMsg.set('');
-      return;
-    }
-    this.http
-      .get<{ available: boolean; message: string }>(`/api/signUp/email-availability?email=${val}`)
-      .subscribe((res) => {
-        this.emailAvailableMsg.set(res.message);
+  constructor() {
+    this.emailChanges$
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((email) => {
+          if (!email || !email.includes('@')) {
+            return of({ available: false, message: '' });
+          }
+          return this.signupService.checkEmailAvailability(email).pipe(
+            catchError(() => of({ available: false, message: '' })),
+          );
+        }),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((response) => {
+        this.emailAvailableMsg.set(response.message);
       });
+  }
+
+  checkEmail(): void {
+    this.emailChanges$.next(this.email().trim());
   }
 
   validate(): boolean {
@@ -66,7 +81,7 @@ export class SignupPageComponent {
 
     try {
       const response = await firstValueFrom(
-        this.http.post<{ success: boolean; message: string }>('/api/signUp', {
+        this.signupService.signUp({
           nom: this.nom(),
           prenom: this.prenom(),
           adresse: this.adresse(),
@@ -86,5 +101,11 @@ export class SignupPageComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.emailChanges$.complete();
   }
 }

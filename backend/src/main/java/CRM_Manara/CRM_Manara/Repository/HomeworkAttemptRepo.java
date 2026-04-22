@@ -13,4 +13,13 @@ public interface HomeworkAttemptRepo extends JpaRepository<HomeworkAttempt, Long
 
     @EntityGraph(attributePaths = {"assignment", "assignment.animation", "assignment.animation.activity", "answers", "answers.exercise"})
     Optional<HomeworkAttempt> findByIdAndEnfantParentId(Long id, Long parentId);
+
+    @EntityGraph(attributePaths = {"assignment", "assignment.enfant"})
+    List<HomeworkAttempt> findByAssignmentAnimateurIdOrderBySubmittedAtDesc(Long animateurId);
+
+    @EntityGraph(attributePaths = {"assignment", "assignment.animation", "assignment.animation.activity", "assignment.enfant", "answers", "answers.exercise"})
+    List<HomeworkAttempt> findByAssignmentAnimateurIdAndEnfantIdOrderBySubmittedAtDesc(Long animateurId, Long enfantId);
+
+    @EntityGraph(attributePaths = {"assignment", "assignment.animation", "assignment.animation.activity", "assignment.enfant", "answers", "answers.exercise"})
+    Optional<HomeworkAttempt> findTopByAssignmentIdAndAssignmentAnimateurIdOrderBySubmittedAtDesc(Long assignmentId, Long animateurId);
 }

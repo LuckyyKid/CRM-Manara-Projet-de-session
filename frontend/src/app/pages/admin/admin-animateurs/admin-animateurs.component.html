@@ -66,10 +66,13 @@
                 </span>
               </td>
               <td>
-                <button class="btn btn-sm btn-outline-secondary me-2" (click)="goToEdit(animateur.id)">Modifier</button>
-                <button class="btn btn-sm btn-outline-primary" (click)="toggleStatus(animateur.id, !!animateur.user?.enabled)">
-                  {{ animateur.user?.enabled ? 'Desactiver' : 'Activer' }}
-                </button>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(animateur.id)">Modifier</button>
+                  <button class="btn btn-sm btn-outline-primary" (click)="toggleStatus(animateur.id, !!animateur.user?.enabled)">
+                    {{ animateur.user?.enabled ? 'Desactiver' : 'Activer' }}
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteAnimateur(animateur.id)">Supprimer</button>
+                </div>
               </td>
             </tr>
           </tbody>

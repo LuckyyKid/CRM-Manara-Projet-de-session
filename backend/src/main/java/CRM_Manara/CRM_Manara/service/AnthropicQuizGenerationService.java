@@ -110,12 +110,16 @@ public class AnthropicQuizGenerationService {
                    - "Methodes et etapes"
                    - Le nom de l'activite comme axe
 
-                2. Pour chaque axe, genere exactement 5 questions basees sur le contenu reel :
-                   - Reconnaissance : l'etudiant doit identifier un concept VU dans les notes
-                   - Application : l'etudiant doit resoudre un exercice SIMILAIRE a ceux vus en classe
-                   - Piege : une erreur FREQUENTE liee a ce concept specifique
-                   - Transfert : appliquer le concept dans un NOUVEAU contexte
-                   - Justification : expliquer POURQUOI la methode fonctionne
+                 2. Pour chaque axe, genere exactement 5 questions basees sur le contenu reel :
+                    - Reconnaissance : l'etudiant doit identifier un concept VU dans les notes
+                    - Application : l'etudiant doit resoudre un exercice SIMILAIRE a ceux vus en classe
+                    - Piege : une erreur FREQUENTE liee a ce concept specifique
+                    - Transfert : appliquer le concept dans un NOUVEAU contexte
+                    - Justification : expliquer POURQUOI la methode fonctionne
+
+                 2.b Si une reponse attendue est une formule mathematique difficile a taper au clavier,
+                    utilise "type": "CHOICE" et fournis exactement 4 valeurs dans "options".
+                    Une seule option doit etre correcte. Sinon, utilise "type": "OPEN".
 
                 3. Chaque question doit etre SPECIFIQUE au contenu.
                    Exemple BON : "Calcule la derivee de f(x) = 4x^2 - 3x + 1"
@@ -135,9 +139,10 @@ public class AnthropicQuizGenerationService {
                       "questions": [
                         {
                           "angle": "Reconnaissance",
-                          "type": "OPEN",
+                          "type": "OPEN ou CHOICE",
                           "questionText": "Question precise",
-                          "expectedAnswer": "Vraie reponse attendue"
+                          "expectedAnswer": "Vraie reponse attendue",
+                          "options": ["Option A", "Option B", "Option C", "Option D"]
                         }
                       ]
                     }
@@ -211,9 +216,10 @@ public class AnthropicQuizGenerationService {
             JsonNode matchingQuestion = findQuestionForAngle(questionsNode, requiredAngle);
             questions.add(new GeneratedQuestion(
                     requiredAngle,
-                    "OPEN",
+                    optionalQuestionType(matchingQuestion),
                     requiredText(matchingQuestion, "questionText"),
-                    requiredText(matchingQuestion, "expectedAnswer")
+                    requiredText(matchingQuestion, "expectedAnswer"),
+                    parseOptions(matchingQuestion)
             ));
         }
         return new GeneratedAxis(title, summary, questions);
@@ -236,6 +242,25 @@ public class AnthropicQuizGenerationService {
         return value;
     }
 
+    private String optionalQuestionType(JsonNode node) {
+        return "CHOICE".equalsIgnoreCase(node.path("type").asText()) ? "CHOICE" : "OPEN";
+    }
+
+    private List<String> parseOptions(JsonNode node) {
+        JsonNode optionsNode = node.path("options");
+        if (!optionsNode.isArray()) {
+            return List.of();
+        }
+        List<String> options = new ArrayList<>();
+        for (JsonNode optionNode : optionsNode) {
+            String option = optionNode.asText("").trim();
+            if (!option.isBlank()) {
+                options.add(option);
+            }
+        }
+        return options;
+    }
+
     private String blankToDefault(String value, String fallback) {
         return value == null || value.isBlank() ? fallback : value.trim();
     }
@@ -246,6 +271,10 @@ public class AnthropicQuizGenerationService {
     public record GeneratedAxis(String title, String summary, List<GeneratedQuestion> questions) {
     }
 
-    public record GeneratedQuestion(String angle, String type, String questionText, String expectedAnswer) {
+    public record GeneratedQuestion(String angle,
+                                    String type,
+                                    String questionText,
+                                    String expectedAnswer,
+                                    List<String> options) {
     }
 }

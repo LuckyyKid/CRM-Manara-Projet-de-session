@@ -22,6 +22,9 @@ public class Activity {
     @Column(name = "Description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "ImageUrl", columnDefinition = "TEXT")
+    private String imageUrl;
+
     @Column(name = "AgeMin")
     private int ageMin;
 
@@ -52,9 +55,15 @@ public class Activity {
     }
 
     public Activity (String activyName, String description, int ageMin, int ageMax, int capacity,
+                     status status, typeActivity type ) {
+        this(activyName, description, null, ageMin, ageMax, capacity, status, type);
+    }
+
+    public Activity (String activyName, String description, String imageUrl, int ageMin, int ageMax, int capacity,
                       status status, typeActivity type ) {
     this.activyName = activyName;
     this.description = description;
+    this.imageUrl = imageUrl;
     this.ageMin = ageMin;
     this.ageMax = ageMax;
     this.capacity = capacity;
@@ -78,6 +87,12 @@ public class Activity {
     }
     public void setDescription(String description) {
         this.description = description;
+    }
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
     public int getAgeMin() {
         return ageMin;

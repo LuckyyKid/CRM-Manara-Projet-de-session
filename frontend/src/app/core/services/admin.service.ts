@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { shareReplay, tap } from 'rxjs/operators';
 import {
   ActionResponseDto,
   ActivityRequestDto,
@@ -23,8 +24,20 @@ import {
 export class AdminService {
   private http = inject(HttpClient);
 
-  getActivities(): Observable<ActivityDto[]> {
-    return this.http.get<ActivityDto[]>('/api/admin/activities');
+  private activities$?: Observable<ActivityDto[]>;
+  private animations$?: Observable<AdminAnimationRowDto[]>;
+  private animateurs$?: Observable<AnimateurDto[]>;
+  private parents$?: Observable<ParentDto[]>;
+  private enfants$?: Observable<EnfantDto[]>;
+  private options$?: Observable<AdminOptionsDto>;
+  private demandes$?: Observable<AdminDemandesDto>;
+  private notifications$?: Observable<AdminNotificationDto[]>;
+
+  getActivities(forceRefresh = false): Observable<ActivityDto[]> {
+    if (!this.activities$ || forceRefresh) {
+      this.activities$ = this.http.get<ActivityDto[]>('/api/admin/activities').pipe(shareReplay(1));
+    }
+    return this.activities$;
   }
 
   getActivity(id: number): Observable<ActivityDto> {
@@ -32,15 +45,28 @@ export class AdminService {
   }
 
   createActivity(request: ActivityRequestDto): Observable<ActivityDto> {
-    return this.http.post<ActivityDto>('/api/admin/activities', request);
+    return this.http.post<ActivityDto>('/api/admin/activities', request).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
   updateActivity(id: number, request: ActivityRequestDto): Observable<ActivityDto> {
-    return this.http.put<ActivityDto>(`/api/admin/activities/${id}`, request);
+    return this.http.put<ActivityDto>(`/api/admin/activities/${id}`, request).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
-  getAnimations(): Observable<AdminAnimationRowDto[]> {
-    return this.http.get<AdminAnimationRowDto[]>('/api/admin/animations');
+  deleteActivity(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/activities/${id}`).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
+  }
+
+  getAnimations(forceRefresh = false): Observable<AdminAnimationRowDto[]> {
+    if (!this.animations$ || forceRefresh) {
+      this.animations$ = this.http.get<AdminAnimationRowDto[]>('/api/admin/animations').pipe(shareReplay(1));
+    }
+    return this.animations$;
   }
 
   getAnimation(id: number): Observable<AnimationDto> {
@@ -52,43 +78,78 @@ export class AdminService {
   }
 
   createAnimation(request: AnimationRequestDto): Observable<AnimationDto> {
-    return this.http.post<AnimationDto>('/api/admin/animations', request);
+    return this.http.post<AnimationDto>('/api/admin/animations', request).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
   updateAnimation(id: number, request: AnimationRequestDto): Observable<AnimationDto> {
-    return this.http.put<AnimationDto>(`/api/admin/animations/${id}`, request);
+    return this.http.put<AnimationDto>(`/api/admin/animations/${id}`, request).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
-  getAnimateurs(): Observable<AnimateurDto[]> {
-    return this.http.get<AnimateurDto[]>('/api/admin/animateurs');
+  deleteAnimation(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/animations/${id}`).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
+  }
+
+  getAnimateurs(forceRefresh = false): Observable<AnimateurDto[]> {
+    if (!this.animateurs$ || forceRefresh) {
+      this.animateurs$ = this.http.get<AnimateurDto[]>('/api/admin/animateurs').pipe(shareReplay(1));
+    }
+    return this.animateurs$;
   }
 
   getAnimateur(id: number): Observable<AnimateurDto> {
     return this.http.get<AnimateurDto>(`/api/admin/animateurs/${id}`);
   }
 
-  getParents(): Observable<ParentDto[]> {
-    return this.http.get<ParentDto[]>('/api/admin/parents');
+  getParents(forceRefresh = false): Observable<ParentDto[]> {
+    if (!this.parents$ || forceRefresh) {
+      this.parents$ = this.http.get<ParentDto[]>('/api/admin/parents').pipe(shareReplay(1));
+    }
+    return this.parents$;
   }
 
-  getEnfants(): Observable<EnfantDto[]> {
-    return this.http.get<EnfantDto[]>('/api/admin/enfants');
+  getEnfants(forceRefresh = false): Observable<EnfantDto[]> {
+    if (!this.enfants$ || forceRefresh) {
+      this.enfants$ = this.http.get<EnfantDto[]>('/api/admin/enfants').pipe(shareReplay(1));
+    }
+    return this.enfants$;
   }
 
   createAnimateur(request: AnimateurRequestDto): Observable<AnimateurDto> {
-    return this.http.post<AnimateurDto>('/api/admin/animateurs', request);
+    return this.http.post<AnimateurDto>('/api/admin/animateurs', request).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
   updateAnimateur(id: number, request: AnimateurRequestDto): Observable<AnimateurDto> {
-    return this.http.put<AnimateurDto>(`/api/admin/animateurs/${id}`, request);
+    return this.http.put<AnimateurDto>(`/api/admin/animateurs/${id}`, request).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
-  getOptions(): Observable<AdminOptionsDto> {
-    return this.http.get<AdminOptionsDto>('/api/admin/options');
+  deleteAnimateur(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/animateurs/${id}`).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
-  getDemandes(): Observable<AdminDemandesDto> {
-    return this.http.get<AdminDemandesDto>('/api/admin/demandes');
+  getOptions(forceRefresh = false): Observable<AdminOptionsDto> {
+    if (!this.options$ || forceRefresh) {
+      this.options$ = this.http.get<AdminOptionsDto>('/api/admin/options').pipe(shareReplay(1));
+    }
+    return this.options$;
+  }
+
+  getDemandes(forceRefresh = false): Observable<AdminDemandesDto> {
+    if (!this.demandes$ || forceRefresh) {
+      this.demandes$ = this.http.get<AdminDemandesDto>('/api/admin/demandes').pipe(shareReplay(1));
+    }
+    return this.demandes$;
   }
 
   searchInscriptions(filters: {
@@ -109,27 +170,90 @@ export class AdminService {
     return this.http.get<AdminInscriptionReviewDto[]>('/api/admin/inscriptions', { params });
   }
 
-  getNotifications(): Observable<AdminNotificationDto[]> {
-    return this.http.get<AdminNotificationDto[]>('/api/admin/notifications');
+  getNotifications(forceRefresh = false): Observable<AdminNotificationDto[]> {
+    if (!this.notifications$ || forceRefresh) {
+      this.notifications$ = this.http.get<AdminNotificationDto[]>('/api/admin/notifications').pipe(shareReplay(1));
+    }
+    return this.notifications$;
   }
 
   updateParentStatus(id: number, enabled: boolean): Observable<ActionResponseDto> {
-    return this.http.post<ActionResponseDto>(`/api/admin/parents/${id}/status?enabled=${enabled}`, {});
+    return this.http.post<ActionResponseDto>(`/api/admin/parents/${id}/status?enabled=${enabled}`, {}).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
+  }
+
+  deleteParent(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/parents/${id}`).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
   updateEnfantStatus(id: number, active: boolean): Observable<ActionResponseDto> {
-    return this.http.post<ActionResponseDto>(`/api/admin/enfants/${id}/status?active=${active}`, {});
+    return this.http.post<ActionResponseDto>(`/api/admin/enfants/${id}/status?active=${active}`, {}).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
+  }
+
+  deleteEnfant(id: number): Observable<ActionResponseDto> {
+    return this.http.delete<ActionResponseDto>(`/api/admin/enfants/${id}`).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
   updateAnimateurStatus(id: number, enabled: boolean): Observable<ActionResponseDto> {
-    return this.http.post<ActionResponseDto>(`/api/admin/animateurs/${id}/status?enabled=${enabled}`, {});
+    return this.http.post<ActionResponseDto>(`/api/admin/animateurs/${id}/status?enabled=${enabled}`, {}).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
   approveInscription(id: number): Observable<ActionResponseDto> {
-    return this.http.post<ActionResponseDto>(`/api/admin/inscriptions/${id}/approve`, {});
+    return this.http.post<ActionResponseDto>(`/api/admin/inscriptions/${id}/approve`, {}).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
   }
 
   rejectInscription(id: number): Observable<ActionResponseDto> {
-    return this.http.post<ActionResponseDto>(`/api/admin/inscriptions/${id}/reject`, {});
+    return this.http.post<ActionResponseDto>(`/api/admin/inscriptions/${id}/reject`, {}).pipe(
+      tap(() => this.invalidateAdminLists()),
+    );
+  }
+
+  invalidateActivities(): void {
+    this.activities$ = undefined;
+  }
+
+  invalidateAnimations(): void {
+    this.animations$ = undefined;
+  }
+
+  invalidateAnimateurs(): void {
+    this.animateurs$ = undefined;
+  }
+
+  invalidateParents(): void {
+    this.parents$ = undefined;
+  }
+
+  invalidateEnfants(): void {
+    this.enfants$ = undefined;
+  }
+
+  invalidateDemandes(): void {
+    this.demandes$ = undefined;
+  }
+
+  invalidateNotifications(): void {
+    this.notifications$ = undefined;
+  }
+
+  invalidateAdminLists(): void {
+    this.invalidateActivities();
+    this.invalidateAnimations();
+    this.invalidateAnimateurs();
+    this.invalidateParents();
+    this.invalidateEnfants();
+    this.invalidateDemandes();
+    this.invalidateNotifications();
   }
 }

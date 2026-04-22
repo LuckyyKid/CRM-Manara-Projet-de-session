@@ -1,0 +1,75 @@
+    <div class="container py-4">
+      <div class="mm-page-head">
+        <div>
+          <span class="mm-page-eyebrow">Suivi sport</span>
+          <h1 class="mm-page-title fs-1">Historique pratique maison</h1>
+          <p class="mm-page-subtitle">Consultez, recherchez et ouvrez les details des fiches deja generees.</p>
+        </div>
+        <div class="mm-page-actions">
+          <a class="btn btn-primary" routerLink="/animateur/sport-practice-plans">Nouvelle fiche</a>
+        </div>
+      </div>
+
+      <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+      <div *ngIf="!loading() && canAccessSportPracticeTools()">
+        <div class="card mm-card-shadow">
+          <div class="card-body">
+            <div class="row g-3 align-items-end">
+              <div class="col-12 col-lg-8">
+                <label class="form-label" for="historySearch">Rechercher</label>
+                <input
+                  id="historySearch"
+                  class="form-control"
+                  name="historySearch"
+                  [ngModel]="historySearch()"
+                  (ngModelChange)="onSearchChange($event)"
+                  placeholder="Ex.: soccer, passes, coordination..."
+                >
+              </div>
+              <div class="col-12 col-lg-4 text-secondary small">
+                {{ filteredPlans().length }} fiche(s) • page {{ currentPage() }}/{{ totalPages() }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+          <div class="col-12 col-lg-6" *ngFor="let plan of paginatedPlans()">
+            <div class="card mm-card-shadow h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between gap-3 align-items-start">
+                  <div>
+                    <h2 class="mm-panel-title mb-1">{{ plan.title }}</h2>
+                    <p class="mm-panel-subtitle mb-2">{{ plan.activityName || 'Sport' }} • {{ plan.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+                  </div>
+                  <span class="badge text-bg-light">{{ plan.items.length }} etape(s)</span>
+                </div>
+                <p>{{ plan.summary }}</p>
+                <a class="btn btn-outline-primary" [routerLink]="['/animateur/sport-practice-plans', plan.id]">Details</a>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="!filteredPlans().length && plans().length" class="col-12">
+            <div class="card mm-card-shadow">
+              <div class="card-body text-secondary">Aucune fiche ne correspond a votre recherche.</div>
+            </div>
+          </div>
+
+          <div *ngIf="!plans().length" class="col-12">
+            <div class="card mm-card-shadow">
+              <div class="card-body text-secondary">Aucune pratique maison sportive disponible pour le moment.</div>
+            </div>
+          </div>
+        </div>
+
+        <app-pagination
+          [currentPage]="currentPage()"
+          [totalPages]="totalPages()"
+          (pageChange)="currentPage.set($event)"
+        />
+      </div>
+    </div>
+  

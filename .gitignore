@@ -1,6 +1,7 @@
 HELP.md
 target/
 backend/target/
+backend/backend/target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -32,7 +33,6 @@ build/
 
 ### VS Code ###
 .vscode/
-<<<<<<< HEAD
 backend/src/main/resources/application-local.properties
 backend/src/main/resources/application-secret.properties
 **/application-secret.properties
@@ -40,12 +40,18 @@ backend/src/main/resources/application-secret.properties
 .env.*
 backend/.env
 frontend/.env
-=======
-backend/src/main/resources/application.properties
-backend/src/main/resources/application-local.properties
->>>>>>> origin/main
 
 .codex/
 .codex
 storage/
 frontend/node_modules/
+frontend/.angular/
+frontend/dist/
+CheckDb*.java
+CheckDb*.class
+CheckHomeworkBackfill.java
+CheckHomeworkBackfill.class
+FixHomeworkSchema.java
+FixHomeworkSchema.class
+VerifyHomeworkBackfill.java
+VerifyHomeworkBackfill.class

@@ -1,0 +1,89 @@
+    <div class="container py-4">
+      <div class="mm-page-head">
+        <div>
+          <span class="mm-page-eyebrow">Devoirs de l'etudiant</span>
+          <h1 class="mm-page-title fs-1">{{ detail()?.enfantName || 'Detail etudiant' }}</h1>
+          <p class="mm-page-subtitle">Statistiques, devoirs attribues et soumissions de cet etudiant.</p>
+        </div>
+        <div class="mm-page-actions">
+          <a class="btn btn-outline-primary" routerLink="/animateur/homeworks">Retour aux devoirs</a>
+        </div>
+      </div>
+
+      <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+
+      <ng-container *ngIf="!loading() && detail() as item">
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-md-3">
+            <div class="mm-kpi-card h-100">
+              <span class="mm-kpi-label">Devoirs attribues</span>
+              <span class="mm-kpi-value">{{ item.assignedCount }}</span>
+              <span class="mm-kpi-meta">Total de l'etudiant</span>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="mm-kpi-card h-100">
+              <span class="mm-kpi-label">Devoirs remis</span>
+              <span class="mm-kpi-value">{{ item.submittedCount }}</span>
+              <span class="mm-kpi-meta">Soumissions completes</span>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="mm-kpi-card h-100">
+              <span class="mm-kpi-label">Restants</span>
+              <span class="mm-kpi-value">{{ item.remainingCount }}</span>
+              <span class="mm-kpi-meta">A rendre</span>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="mm-kpi-card h-100">
+              <span class="mm-kpi-label">Moyenne</span>
+              <span class="mm-kpi-value">{{ formatScore(item.averageScorePercent) }}</span>
+              <span class="mm-kpi-meta">Sur devoirs corriges</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mm-card-shadow">
+          <div class="card-body">
+            <h2 class="mm-panel-title">Devoirs attribues</h2>
+            <p class="mm-panel-subtitle">Cliquez sur Details pour voir le devoir, la soumission et les reponses de l'etudiant.</p>
+
+            <div class="table-responsive">
+              <table class="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Devoir</th>
+                    <th>Statut</th>
+                    <th>Derniere remise</th>
+                    <th>Score</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngIf="!item.assignments.length">
+                    <td colspan="5" class="text-secondary">Aucun devoir attribue.</td>
+                  </tr>
+                  <tr *ngFor="let assignment of item.assignments">
+                    <td>
+                      <div class="fw-semibold">{{ assignment.title }}</div>
+                      <div class="text-secondary small">{{ assignment.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+                    </td>
+                    <td>{{ assignment.latestSubmittedAt ? 'Soumis' : 'A faire' }}</td>
+                    <td>{{ assignment.latestSubmittedAt ? (assignment.latestSubmittedAt | date:'dd/MM/yyyy HH:mm') : 'Aucune' }}</td>
+                    <td>{{ formatScore(latestAttemptForAssignment(assignment)?.scorePercent ?? null) }}</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary" type="button" (click)="openAssignmentDetail(assignment.id)">
+                        Details
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  

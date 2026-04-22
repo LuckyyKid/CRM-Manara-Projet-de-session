@@ -25,3 +25,10 @@
     padding-left: 1rem;
   }
 }
+
+.mm-side-link-with-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}

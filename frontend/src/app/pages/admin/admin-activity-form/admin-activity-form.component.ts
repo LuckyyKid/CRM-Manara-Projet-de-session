@@ -18,11 +18,13 @@ export class AdminActivityFormComponent implements OnInit {
   id: number | null = null;
   name = '';
   description = '';
+  imageUrl: string | null = null;
   ageMin = 0;
   ageMax = 12;
   capacity = 1;
   status = '';
   type = '';
+  imagePreview = signal<string | null>(null);
 
   options = signal<AdminOptionsDto | null>(null);
   loading = signal(true);
@@ -52,6 +54,8 @@ export class AdminActivityFormComponent implements OnInit {
           next: (activity) => {
             this.name = activity.name;
             this.description = activity.description;
+            this.imageUrl = activity.imageUrl;
+            this.imagePreview.set(activity.imageUrl);
             this.ageMin = activity.ageMin;
             this.ageMax = activity.ageMax;
             this.capacity = activity.capacity;
@@ -97,6 +101,39 @@ export class AdminActivityFormComponent implements OnInit {
     this.router.navigateByUrl('/admin/activities');
   }
 
+  onImageChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      this.error.set("Le fichier selectionne doit etre une image.");
+      input.value = '';
+      return;
+    }
+    const maxSizeBytes = 5 * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      this.error.set("L'image doit faire au maximum 5 Mo.");
+      input.value = '';
+      return;
+    }
+
+    this.error.set('');
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : null;
+      this.imageUrl = result;
+      this.imagePreview.set(result);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  clearImage(): void {
+    this.imageUrl = null;
+    this.imagePreview.set(null);
+  }
+
   label(value: string): string {
     const labels: Record<string, string> = {
       OUVERTE: 'Ouverte',
@@ -126,6 +163,7 @@ export class AdminActivityFormComponent implements OnInit {
     return {
       name: this.name.trim(),
       description: this.description.trim(),
+      imageUrl: this.imageUrl,
       ageMin: Number(this.ageMin),
       ageMax: Number(this.ageMax),
       capacity: Number(this.capacity),

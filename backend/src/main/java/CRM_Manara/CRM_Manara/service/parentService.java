@@ -18,6 +18,9 @@ import CRM_Manara.CRM_Manara.Repository.ParentNotificationRepo;
 import CRM_Manara.CRM_Manara.Repository.UserRepo;
 import CRM_Manara.CRM_Manara.Repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,6 +89,9 @@ public class parentService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "parents", allEntries = true)
+    })
     public void createNewParent(String nom, String prenom, String adresse, String email, String password) {
         if (userRepo.existsByEmail(email.trim())) {
             throw new IllegalArgumentException("Un compte existe deja avec cet email.");
@@ -160,6 +166,9 @@ public class parentService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "parents", allEntries = true)
+    })
     public Parent updateParentProfile(String email, String nom, String prenom, String adresse) {
         Parent parent = getParentByEmail(email);
         parent.setNom(nom);
@@ -194,6 +203,10 @@ public class parentService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "parents", allEntries = true),
+            @CacheEvict(value = "enfants", allEntries = true)
+    })
     public Enfant createEnfantForParent(String email, String nom, String prenom, Date dateNaissance) {
         Parent parent = getParentByEmail(email);
         Enfant enfant = new Enfant(nom, prenom, dateNaissance);
@@ -222,6 +235,10 @@ public class parentService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "parents", allEntries = true),
+            @CacheEvict(value = "enfants", allEntries = true)
+    })
     public Enfant updateEnfantForParent(Long enfantId, String email, String nom, String prenom, Date dateNaissance) {
         Enfant enfant = getEnfantForParent(enfantId, email);
         enfant.setNom(nom);
@@ -243,6 +260,10 @@ public class parentService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "parents", allEntries = true),
+            @CacheEvict(value = "enfants", allEntries = true)
+    })
     public void deleteEnfantForParent(Long enfantId, String email) {
         Enfant enfant = getEnfantForParent(enfantId, email);
         Parent parent = enfant.getParent();
@@ -262,8 +283,9 @@ public class parentService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable("activities")
     public List<Activity> getAllActivities() {
-        return activityRepo.findAll();
+        return activityRepo.findAllOrderedByName();
     }
 
     @Transactional(readOnly = true)
@@ -274,6 +296,14 @@ public class parentService {
     @Transactional(readOnly = true)
     public List<Animation> getAnimationsForActivity(Long activityId) {
         return animationRepo.findByActivityId(activityId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Animation> getAnimationsForActivities(List<Long> activityIds) {
+        if (activityIds == null || activityIds.isEmpty()) {
+            return List.of();
+        }
+        return animationRepo.findByActivityIds(activityIds);
     }
 
     @Transactional
@@ -366,13 +396,13 @@ public class parentService {
     @Transactional(readOnly = true)
     public long countEnfantsForParent(String email) {
         Parent parent = getParentByEmail(email);
-        return enfantRepo.findByParentId(parent.getId()).size();
+        return enfantRepo.countByParentId(parent.getId());
     }
 
     @Transactional(readOnly = true)
     public long countInscriptionsForParent(String email) {
         Parent parent = getParentByEmail(email);
-        return inscriptionRepo.findByParentId(parent.getId()).size();
+        return inscriptionRepo.countByEnfantParentId(parent.getId());
     }
 
     @Transactional(readOnly = true)
@@ -443,18 +473,47 @@ public class parentService {
 
     @Transactional(readOnly = true)
     public Map<Long, Map<String, Object>> getAnimationCapacitySnapshotsForActivities(List<Activity> activities) {
+        if (activities == null || activities.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Animation> animations = getAnimationsForActivities(
+                activities.stream().map(Activity::getId).toList()
+        );
+        return getAnimationCapacitySnapshotsForAnimations(animations);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Map<String, Object>> getAnimationCapacitySnapshotsForAnimations(List<Animation> animations) {
+        if (animations == null || animations.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Long> animationIds = animations.stream()
+                .map(Animation::getId)
+                .filter(id -> id != null)
+                .toList();
+        List<Inscription> inscriptions = animationIds.isEmpty() ? List.of() : inscriptionRepo.findByAnimationIdIn(animationIds);
+        Map<Long, List<Inscription>> inscriptionsByAnimationId = inscriptions.stream()
+                .filter(inscription -> inscription.getAnimation() != null && inscription.getAnimation().getId() != null)
+                .collect(Collectors.groupingBy(inscription -> inscription.getAnimation().getId()));
+
         Map<Long, Map<String, Object>> snapshots = new LinkedHashMap<>();
-        for (Activity activity : activities) {
-            for (Animation animation : getAnimationsForActivity(activity.getId())) {
-                snapshots.put(animation.getId(), getAnimationCapacitySnapshot(animation));
-            }
+        for (Animation animation : animations) {
+            snapshots.put(
+                    animation.getId(),
+                    buildAnimationCapacitySnapshot(animation, inscriptionsByAnimationId.getOrDefault(animation.getId(), List.of()))
+            );
         }
         return snapshots;
     }
 
     @Transactional(readOnly = true)
     public Map<String, Object> getAnimationCapacitySnapshot(Animation animation) {
-        List<Inscription> inscriptions = inscriptionRepo.findByAnimationId(animation.getId());
+        return buildAnimationCapacitySnapshot(animation, inscriptionRepo.findByAnimationId(animation.getId()));
+    }
+
+    private Map<String, Object> buildAnimationCapacitySnapshot(Animation animation, List<Inscription> inscriptions) {
         int approved = (int) inscriptions.stream()
                 .filter(i -> i.getStatusInscription() == statusInscription.APPROUVEE || i.getStatusInscription() == statusInscription.ACTIF)
                 .count();

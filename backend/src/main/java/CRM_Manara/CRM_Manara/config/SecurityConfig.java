@@ -63,6 +63,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/api/**", configuration);
         source.registerCorsConfiguration("/oauth2/**", configuration);
         source.registerCorsConfiguration("/login/oauth2/**", configuration);
+        source.registerCorsConfiguration("/ws/**", configuration);
         return source;
     }
 
@@ -125,6 +126,7 @@ public class SecurityConfig {
                                 "/api/login",
                                 "/api/signUp/**",
                                 "/api/chatbot/**",
+                                "/ws/**",
                                 "/oauth2/**",
                                 "/login/oauth2/**"
                         ).permitAll()

@@ -66,9 +66,12 @@
                   </span>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-outline-secondary" (click)="toggleParentStatus(parent.id, !!parent.user?.enabled)">
-                    {{ parent.user?.enabled ? 'Desactiver' : 'Activer' }}
-                  </button>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-sm btn-outline-secondary" (click)="toggleParentStatus(parent.id, !!parent.user?.enabled)">
+                      {{ parent.user?.enabled ? 'Desactiver' : 'Activer' }}
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteParent(parent.id)">Supprimer</button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -118,9 +121,12 @@
                   </span>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-outline-secondary" (click)="toggleEnfantStatus(enfant.id, enfant.active)">
-                    {{ enfant.active ? 'Desactiver' : 'Activer' }}
-                  </button>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-sm btn-outline-secondary" (click)="toggleEnfantStatus(enfant.id, enfant.active)">
+                      {{ enfant.active ? 'Desactiver' : 'Activer' }}
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteEnfant(enfant.id)">Supprimer</button>
+                  </div>
                 </td>
               </tr>
             </tbody>

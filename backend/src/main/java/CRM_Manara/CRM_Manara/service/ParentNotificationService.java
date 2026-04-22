@@ -14,15 +14,22 @@ public class ParentNotificationService {
 
     private final ParentNotificationRepo parentNotificationRepo;
     private final ParentRepo parentRepo;
+    private final RealtimeService realtimeService;
 
-    public ParentNotificationService(ParentNotificationRepo parentNotificationRepo, ParentRepo parentRepo) {
+    public ParentNotificationService(ParentNotificationRepo parentNotificationRepo,
+                                     ParentRepo parentRepo,
+                                     RealtimeService realtimeService) {
         this.parentNotificationRepo = parentNotificationRepo;
         this.parentRepo = parentRepo;
+        this.realtimeService = realtimeService;
     }
 
     @Transactional
     public void createForParent(Parent parent, String category, String title, String message) {
         parentNotificationRepo.save(new ParentNotification(parent, category, title, message));
+        if (parent != null && parent.getUser() != null && parent.getUser().getEmail() != null) {
+            realtimeService.sendSidebarCounts(parent.getUser().getEmail());
+        }
     }
 
     @Transactional(readOnly = true)
@@ -51,6 +58,10 @@ public class ParentNotificationService {
             notification.setReadStatus(true);
         }
         parentNotificationRepo.saveAll(notifications);
+        parentRepo.findById(parentId)
+                .map(Parent::getUser)
+                .map(user -> user.getEmail())
+                .ifPresent(realtimeService::sendSidebarCounts);
     }
 
     @Transactional
@@ -58,6 +69,9 @@ public class ParentNotificationService {
         ParentNotification notification = getNotificationForParent(parentId, notificationId);
         notification.setReadStatus(true);
         parentNotificationRepo.save(notification);
+        if (notification.getParent() != null && notification.getParent().getUser() != null) {
+            realtimeService.sendSidebarCounts(notification.getParent().getUser().getEmail());
+        }
     }
 
     @Transactional
@@ -66,6 +80,9 @@ public class ParentNotificationService {
         notification.setReadStatus(true);
         notification.setArchivedStatus(true);
         parentNotificationRepo.save(notification);
+        if (notification.getParent() != null && notification.getParent().getUser() != null) {
+            realtimeService.sendSidebarCounts(notification.getParent().getUser().getEmail());
+        }
     }
 
     @Transactional
@@ -73,6 +90,9 @@ public class ParentNotificationService {
         ParentNotification notification = getNotificationForParent(parentId, notificationId);
         notification.setArchivedStatus(false);
         parentNotificationRepo.save(notification);
+        if (notification.getParent() != null && notification.getParent().getUser() != null) {
+            realtimeService.sendSidebarCounts(notification.getParent().getUser().getEmail());
+        }
     }
 
     @Transactional(readOnly = true)

@@ -10,6 +10,7 @@
     </div>
   </div>
 
+  <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
   <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
@@ -87,8 +88,11 @@
                 </span>
               </td>
               <td>
-                <button class="btn btn-sm btn-outline-primary me-2" (click)="goToDetail(row.animation.id)">Details</button>
-                <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(row.animation.id)">Modifier</button>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-sm btn-outline-primary" (click)="goToDetail(row.animation.id)">Details</button>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(row.animation.id)">Modifier</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteAnimation(row.animation.id)">Supprimer</button>
+                </div>
               </td>
             </tr>
           </tbody>

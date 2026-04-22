@@ -145,6 +145,18 @@ public class AnimateurService {
                     "Présence mise à jour",
                     message
             );
+            if (hasIncidentNote(inscription)) {
+                parentNotificationService.createForParent(
+                        inscription.getEnfant().getParent(),
+                        "INCIDENT",
+                        "Nouvelle note d'incident",
+                        "Une note d'incident a ete ajoutee pour "
+                                + inscription.getEnfant().getPrenom()
+                                + " dans l'activite "
+                                + inscription.getAnimation().getActivity().getActivyName()
+                                + ". Consultez l'application pour les details."
+                );
+            }
             adminNotificationService.create(
                     "ANIMATEUR",
                     "PRESENCE",

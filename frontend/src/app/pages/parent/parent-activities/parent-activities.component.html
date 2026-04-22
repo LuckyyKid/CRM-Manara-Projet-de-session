@@ -14,12 +14,30 @@
   <div *ngIf="!loading()">
     <div class="card mm-card-shadow mb-4" *ngIf="enfants.length > 0">
       <div class="card-body">
-        <label class="form-label fw-semibold">Inscrire pour :</label>
-        <select class="form-select w-auto" [(ngModel)]="selectedEnfantId" name="selectedEnfant">
-          <option *ngFor="let enfant of enfants" [ngValue]="enfant.id">
-            {{ enfant.prenom }} {{ enfant.nom }}
-          </option>
-        </select>
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-lg-4">
+            <label class="form-label fw-semibold">Inscrire pour</label>
+            <select class="form-select" [(ngModel)]="selectedEnfantId" name="selectedEnfant">
+              <option *ngFor="let enfant of enfants" [ngValue]="enfant.id">
+                {{ enfant.prenom }} {{ enfant.nom }}
+              </option>
+            </select>
+          </div>
+          <div class="col-12 col-lg-5">
+            <label class="form-label">Recherche</label>
+            <input
+              #searchInput
+              type="search"
+              class="form-control"
+              placeholder="Activite, description ou animateur"
+              [value]="search()"
+              (input)="setSearch(searchInput.value)"
+            />
+          </div>
+          <div class="col-12 col-lg-3 text-lg-end text-secondary small">
+            {{ filteredActivityViews().length }} activite(s)
+          </div>
+        </div>
       </div>
     </div>
 
@@ -27,7 +45,7 @@
       Vous devez d'abord ajouter un enfant approuve avant de pouvoir vous inscrire a une activite.
     </div>
 
-    <div *ngIf="activityViews.length === 0" class="alert alert-info">
+    <div *ngIf="filteredActivityViews().length === 0" class="alert alert-info">
       Aucune activite disponible pour le moment.
     </div>
 
@@ -83,7 +101,7 @@
     <app-pagination
       [page]="page()"
       [totalPages]="totalPages()"
-      [totalItems]="activityViews.length"
+      [totalItems]="filteredActivityViews().length"
       [pageSize]="pageSize"
       (previous)="previousPage()"
       (next)="nextPage()"

@@ -1,7 +1,9 @@
 import { CommonModule, DatePipe } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/auth/auth.service';
 import { AnimationDto } from '../../../core/models/api.models';
 import { AnimateurService } from '../../../core/services/animateur.service';
 
@@ -11,6 +13,7 @@ import { AnimateurService } from '../../../core/services/animateur.service';
   templateUrl: './animateur-quizzes.component.html',
 })
 export class AnimateurQuizzesComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
   private animateurService = inject(AnimateurService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -31,7 +34,17 @@ export class AnimateurQuizzesComponent implements OnInit, OnDestroy {
     sourceNotes: '',
   };
 
+  canAccessTutoringTools(): boolean {
+    return this.authService.currentUser()?.canAccessTutoringTools === true;
+  }
+
   ngOnInit(): void {
+    if (!this.canAccessTutoringTools()) {
+      this.error.set('Les quiz sont reserves aux animateurs ayant au moins une animation de tutorat.');
+      this.loading.set(false);
+      return;
+    }
+
     const animationId = Number(this.route.snapshot.queryParamMap.get('animationId'));
     if (!Number.isNaN(animationId) && animationId > 0) {
       this.form.animationId = animationId;
@@ -39,7 +52,7 @@ export class AnimateurQuizzesComponent implements OnInit, OnDestroy {
 
     this.animateurService.getAnimations().subscribe({
       next: (animations) => {
-        this.animations.set(animations);
+        this.animations.set(animations.filter((animation) => (animation.activity.type ?? '').toUpperCase() === 'TUTORAT'));
         const selected = this.selectedAnimation();
         if (selected && !this.form.title) {
           this.form.title = `Quiz - ${selected.activity.name}`;
@@ -82,8 +95,8 @@ export class AnimateurQuizzesComponent implements OnInit, OnDestroy {
         this.finishGenerationProgress();
         this.router.navigateByUrl(`/animateur/quizzes/${quiz.id}/detail`);
       },
-      error: () => {
-        this.error.set('Erreur lors de la creation du quiz.');
+      error: (error: HttpErrorResponse) => {
+        this.error.set(this.resolveErrorMessage(error, 'Erreur lors de la creation du quiz.'));
         this.stopGenerationProgress();
       },
     });
@@ -126,5 +139,16 @@ export class AnimateurQuizzesComponent implements OnInit, OnDestroy {
 
   private selectedAnimation(): AnimationDto | null {
     return this.animations().find((animation) => animation.id === this.form.animationId) ?? null;
+  }
+
+  private resolveErrorMessage(error: HttpErrorResponse, fallback: string): string {
+    const payload = error.error;
+    if (typeof payload?.message === 'string' && payload.message.trim()) {
+      return payload.message;
+    }
+    if (typeof payload === 'string' && payload.trim()) {
+      return payload;
+    }
+    return fallback;
   }
 }

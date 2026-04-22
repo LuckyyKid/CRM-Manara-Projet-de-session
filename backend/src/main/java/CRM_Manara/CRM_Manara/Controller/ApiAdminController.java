@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +43,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -83,6 +86,7 @@ public class ApiAdminController {
         return apiDtoMapper.toActivityDto(adminService.createActivity(
                 request.name().trim(),
                 request.description().trim(),
+                normalizeImageUrl(request.imageUrl()),
                 request.ageMin(),
                 request.ageMax(),
                 request.capacity(),
@@ -98,6 +102,7 @@ public class ApiAdminController {
                 id,
                 request.name().trim(),
                 request.description().trim(),
+                normalizeImageUrl(request.imageUrl()),
                 request.ageMin(),
                 request.ageMax(),
                 request.capacity(),
@@ -106,14 +111,23 @@ public class ApiAdminController {
         ));
     }
 
+    @DeleteMapping("/activities/{id}")
+    public ActionResponseDto deleteActivity(@PathVariable Long id) {
+        adminService.deleteActivity(id);
+        return new ActionResponseDto(true, "Activite supprimee.", id);
+    }
+
     @GetMapping("/animations")
     @Transactional(readOnly = true)
     public List<AdminAnimationRowDto> animations() {
-        return adminService.getAllAnimations().stream()
+        List<CRM_Manara.CRM_Manara.Model.Entity.Animation> animations = adminService.getAllAnimations().stream()
                 .sorted(Comparator.comparing(animation -> animation.getStartTime(), Comparator.nullsLast(Comparator.naturalOrder())))
+                .toList();
+        Map<Long, Map<String, Object>> capacitySnapshots = adminService.getAnimationCapacitySnapshotsForAnimations(animations);
+        return animations.stream()
                 .map(animation -> new AdminAnimationRowDto(
                         apiDtoMapper.toAnimationDto(animation),
-                        apiDtoMapper.toAnimationCapacityDto(animation.getId(), adminService.getAnimationCapacitySnapshot(animation))
+                        apiDtoMapper.toAnimationCapacityDto(animation.getId(), capacitySnapshots.get(animation.getId()))
                 ))
                 .toList();
     }
@@ -158,6 +172,12 @@ public class ApiAdminController {
                 request.startTime(),
                 request.endTime()
         ));
+    }
+
+    @DeleteMapping("/animations/{id}")
+    public ActionResponseDto deleteAnimation(@PathVariable Long id) {
+        adminService.deleteAnimation(id);
+        return new ActionResponseDto(true, "Animation supprimee.", id);
     }
 
     @GetMapping("/animateurs")
@@ -212,6 +232,12 @@ public class ApiAdminController {
         ));
     }
 
+    @DeleteMapping("/animateurs/{id}")
+    public ActionResponseDto deleteAnimateur(@PathVariable Long id) {
+        adminService.deleteAnimateur(id);
+        return new ActionResponseDto(true, "Animateur supprime.", id);
+    }
+
     @GetMapping("/options")
     public AdminOptionsDto options() {
         return new AdminOptionsDto(
@@ -225,11 +251,21 @@ public class ApiAdminController {
     @GetMapping("/demandes")
     @Transactional(readOnly = true)
     public AdminDemandesDto demandes() {
-        List<AdminInscriptionReviewDto> pending = adminService.getPendingInscriptions().stream()
-                .map(this::toReviewDto)
+        List<Inscription> pendingInscriptions = adminService.getPendingInscriptions();
+        List<Inscription> processedInscriptions = adminService.getProcessedInscriptions();
+        Set<Long> animationIds = java.util.stream.Stream.concat(
+                        pendingInscriptions.stream(),
+                        processedInscriptions.stream()
+                )
+                .map(inscription -> inscription.getAnimation() == null ? null : inscription.getAnimation().getId())
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toSet());
+        Map<Long, Map<String, Object>> capacitySnapshots = adminService.getAnimationCapacitySnapshotsForAnimationIds(animationIds);
+        List<AdminInscriptionReviewDto> pending = pendingInscriptions.stream()
+                .map(inscription -> toReviewDto(inscription, capacitySnapshots))
                 .toList();
-        List<AdminInscriptionReviewDto> processed = adminService.getProcessedInscriptions().stream()
-                .map(this::toReviewDto)
+        List<AdminInscriptionReviewDto> processed = processedInscriptions.stream()
+                .map(inscription -> toReviewDto(inscription, capacitySnapshots))
                 .toList();
 
         return new AdminDemandesDto(
@@ -251,7 +287,7 @@ public class ApiAdminController {
                                                         @RequestParam(required = false, defaultValue = "") String search) {
         String normalizedStatus = status == null ? "" : status.trim().toUpperCase();
         String normalizedSearch = normalize(search);
-        return adminService.getAllInscriptions().stream()
+        List<Inscription> matches = adminService.getAllInscriptions().stream()
                 .filter(inscription -> animateurId == null
                         || inscription.getAnimation().getAnimateur().getId().equals(animateurId))
                 .filter(inscription -> activityId == null
@@ -274,7 +310,15 @@ public class ApiAdminController {
                         || normalize(inscription.getAnimation().getActivity().getActivyName()).contains(normalizedSearch)
                         || normalize(inscription.getAnimation().getAnimateur().getPrenom() + " " + inscription.getAnimation().getAnimateur().getNom()).contains(normalizedSearch))
                 .sorted(Comparator.comparing(Inscription::getId).reversed())
-                .map(this::toReviewDto)
+                .toList();
+        Map<Long, Map<String, Object>> capacitySnapshots = adminService.getAnimationCapacitySnapshotsForAnimationIds(
+                matches.stream()
+                        .map(inscription -> inscription.getAnimation() == null ? null : inscription.getAnimation().getId())
+                        .filter(java.util.Objects::nonNull)
+                        .collect(java.util.stream.Collectors.toSet())
+        );
+        return matches.stream()
+                .map(inscription -> toReviewDto(inscription, capacitySnapshots))
                 .toList();
     }
 
@@ -291,10 +335,22 @@ public class ApiAdminController {
         return new ActionResponseDto(true, enabled ? "Compte parent confirme." : "Compte parent desactive.", id);
     }
 
+    @DeleteMapping("/parents/{id}")
+    public ActionResponseDto deleteParent(@PathVariable Long id) {
+        adminService.deleteParent(id);
+        return new ActionResponseDto(true, "Parent supprime.", id);
+    }
+
     @PostMapping("/enfants/{id}/status")
     public ActionResponseDto updateEnfantStatus(@PathVariable Long id, @RequestParam boolean active) {
         adminService.updateEnfantActive(id, active);
         return new ActionResponseDto(true, active ? "Enfant active." : "Enfant desactive.", id);
+    }
+
+    @DeleteMapping("/enfants/{id}")
+    public ActionResponseDto deleteEnfant(@PathVariable Long id) {
+        adminService.deleteEnfant(id);
+        return new ActionResponseDto(true, "Enfant supprime.", id);
     }
 
     @PostMapping("/animateurs/{id}/status")
@@ -319,12 +375,13 @@ public class ApiAdminController {
         return new ActionResponseDto(true, "Demande refusee.", id);
     }
 
-    private AdminInscriptionReviewDto toReviewDto(Inscription inscription) {
+    private AdminInscriptionReviewDto toReviewDto(Inscription inscription, Map<Long, Map<String, Object>> capacitySnapshots) {
+        Long animationId = inscription.getAnimation() == null ? null : inscription.getAnimation().getId();
         return new AdminInscriptionReviewDto(
                 apiDtoMapper.toInscriptionDto(inscription),
                 apiDtoMapper.toAnimationCapacityDto(
-                        inscription.getAnimation() == null ? null : inscription.getAnimation().getId(),
-                        inscription.getAnimation() == null ? null : adminService.getAnimationCapacitySnapshot(inscription.getAnimation())
+                        animationId,
+                        animationId == null ? null : capacitySnapshots.get(animationId)
                 )
         );
     }
@@ -343,7 +400,8 @@ public class ApiAdminController {
                                         question.getType(),
                                         question.getQuestionText(),
                                         question.getExpectedAnswer(),
-                                        question.getPosition()
+                                        question.getPosition(),
+                                        question.getOptions()
                                 ))
                                 .toList()
                 ))
@@ -388,6 +446,16 @@ public class ApiAdminController {
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Statut ou type d'activite invalide.", exception);
         }
+        if (request.imageUrl() != null && !request.imageUrl().isBlank()) {
+            String imageUrl = request.imageUrl().trim();
+            if (!imageUrl.startsWith("data:image/") && !imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le format de l'image de l'activite est invalide.");
+            }
+        }
+    }
+
+    private String normalizeImageUrl(String imageUrl) {
+        return imageUrl == null || imageUrl.isBlank() ? null : imageUrl.trim();
     }
 
     private void validateAnimationRequest(AnimationRequestDto request) {

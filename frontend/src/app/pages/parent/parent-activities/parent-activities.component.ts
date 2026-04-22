@@ -19,6 +19,7 @@ export class ParentActivitiesComponent implements OnInit {
   private parentService = inject(ParentService);
 
   data = signal<ParentActivitiesResponseDto | null>(null);
+  search = signal('');
   page = signal(1);
   pageSize = 6;
   loading = signal(true);
@@ -36,11 +37,22 @@ export class ParentActivitiesComponent implements OnInit {
     return this.data()?.activities ?? [];
   }
 
+  filteredActivityViews = computed(() => {
+    const search = this.normalize(this.search());
+    return this.activityViews.filter((view) => {
+      const animationText = view.animations
+        .map((row) => `${row.animation.animateur.prenom} ${row.animation.animateur.nom} ${row.animation.startTime}`)
+        .join(' ');
+      const text = `${view.activity.name} ${view.activity.description} ${animationText}`;
+      return !search || this.normalize(text).includes(search);
+    });
+  });
+
   visibleActivityViews = computed(() => {
     const start = (Math.min(this.page(), this.totalPages()) - 1) * this.pageSize;
-    return this.activityViews.slice(start, start + this.pageSize);
+    return this.filteredActivityViews().slice(start, start + this.pageSize);
   });
-  totalPages = computed(() => Math.max(1, Math.ceil(this.activityViews.length / this.pageSize)));
+  totalPages = computed(() => Math.max(1, Math.ceil(this.filteredActivityViews().length / this.pageSize)));
 
   get inscriptions(): InscriptionDto[] {
     return this.data()?.inscriptions ?? [];
@@ -93,6 +105,15 @@ export class ParentActivitiesComponent implements OnInit {
     });
   }
 
+  setSearch(value: string): void {
+    this.search.set(value);
+    this.page.set(1);
+  }
+
   previousPage(): void { this.page.set(Math.max(1, this.page() - 1)); }
   nextPage(): void { this.page.set(Math.min(this.totalPages(), this.page() + 1)); }
+
+  private normalize(value: string): string {
+    return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
+  }
 }

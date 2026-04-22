@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="title desc">
+  <title id="title">Logo Manara</title>
+  <desc id="desc">Un phare stylise avec une plume au centre au-dessus d'un livre ouvert, aux couleurs bleu petrole et or.</desc>
+  <rect width="320" height="320" rx="20" fill="#f8f7f2"/>
+  <g fill="#f7c62f">
+    <rect x="56" y="90" width="44" height="10" rx="5" transform="rotate(28 78 95)"/>
+    <rect x="44" y="120" width="54" height="10" rx="5"/>
+    <rect x="56" y="150" width="48" height="10" rx="5" transform="rotate(-28 80 155)"/>
+    <rect x="220" y="90" width="44" height="10" rx="5" transform="rotate(-28 242 95)"/>
+    <rect x="222" y="120" width="54" height="10" rx="5"/>
+    <rect x="216" y="150" width="48" height="10" rx="5" transform="rotate(28 240 155)"/>
+  </g>
+  <g fill="#0e4b68">
+    <path d="M160 54c9 0 16 7 16 16v6c11 5 18 16 18 29v82h-68v-82c0-13 7-24 18-29v-6c0-9 7-16 16-16z"/>
+    <rect x="150" y="178" width="20" height="42" rx="8" fill="#f8f7f2"/>
+    <path d="M102 226c20-18 37-28 58-28s38 10 58 28l20 18c-31-3-54 5-78 21-24-16-47-24-78-21z"/>
+  </g>
+  <path d="M160 92l18 40h-36z" fill="#f7c62f"/>
+  <path d="M160 86c7 6 11 13 11 23 0 14-11 26-11 26s-11-12-11-26c0-10 4-17 11-23z" fill="#f7c62f"/>
+  <circle cx="160" cy="115" r="4.8" fill="#0e4b68"/>
+  <rect x="157.6" y="108" width="4.8" height="29" rx="2.4" fill="#0e4b68"/>
+  <g fill="#f7c62f">
+    <path d="M82 242c26 0 48 4 78 22-10 2-19 4-28 6-23-11-43-15-68-15-8 0-10-13-2-13 7 0 13 0 20 0z"/>
+    <path d="M238 242c-26 0-48 4-78 22 10 2 19 4 28 6 23-11 43-15 68-15 8 0 10-13 2-13-7 0-13 0-20 0z"/>
+    <path d="M76 262c27 0 49 4 84 22-11 2-23 4-34 5-20-9-39-14-63-14-8 0-10-13-2-13 5 0 10 0 15 0z"/>
+    <path d="M244 262c-27 0-49 4-84 22 11 2 23 4 34 5 20-9 39-14 63-14 8 0 10-13 2-13-5 0-10 0-15 0z"/>
+  </g>
+  <path d="M72 302h176" stroke="#0e4b68" stroke-width="0"/>
+</svg>

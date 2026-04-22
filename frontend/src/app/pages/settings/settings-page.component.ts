@@ -1,5 +1,6 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { SettingsService } from '../../core/services/settings.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -56,10 +57,21 @@ export class SettingsPageComponent {
           if (res.errors) this.errors.set(res.errors);
         }
       },
-      error: () => {
+      error: (error: HttpErrorResponse) => {
         this.loading.set(false);
-        this.error.set('Erreur lors de la sauvegarde de la photo de profil.');
+        this.error.set(this.resolveErrorMessage(error, 'Erreur lors de la sauvegarde de la photo de profil.'));
       },
     });
+  }
+
+  private resolveErrorMessage(error: HttpErrorResponse, fallback: string): string {
+    const payload = error.error;
+    if (typeof payload?.message === 'string' && payload.message.trim()) {
+      return payload.message;
+    }
+    if (typeof payload === 'string' && payload.trim()) {
+      return payload;
+    }
+    return fallback;
   }
 }

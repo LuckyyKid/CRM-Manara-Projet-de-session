@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { AdminService } from '../../../core/services/admin.service';
 import { AdminNotificationDto } from '../../../core/models/api.models';
 import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import { CommunicationService } from '../../../core/services/communication.service';
 
 @Component({
   selector: 'app-admin-notifications',
@@ -11,6 +12,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 })
 export class AdminNotificationsComponent implements OnInit {
   private adminService = inject(AdminService);
+  private communicationService = inject(CommunicationService);
 
   notifications = signal<AdminNotificationDto[]>([]);
   page = signal(1);
@@ -24,7 +26,8 @@ export class AdminNotificationsComponent implements OnInit {
   });
 
   ngOnInit() {
-    this.adminService.getNotifications().subscribe({
+    this.communicationService.setNotificationsCount(0);
+    this.adminService.getNotifications(true).subscribe({
       next: (data) => {
         this.notifications.set(data);
         this.loading.set(false);

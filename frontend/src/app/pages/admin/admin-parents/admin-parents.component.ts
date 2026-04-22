@@ -119,6 +119,32 @@ export class AdminParentsComponent implements OnInit {
     });
   }
 
+  deleteParent(id: number): void {
+    if (!window.confirm('Supprimer ce parent et ses donnees associees ?')) {
+      return;
+    }
+    this.adminService.deleteParent(id).subscribe({
+      next: (res) => {
+        this.message.set(res.message);
+        this.load();
+      },
+      error: () => this.error.set('Erreur lors de la suppression du parent.'),
+    });
+  }
+
+  deleteEnfant(id: number): void {
+    if (!window.confirm('Supprimer cet enfant ?')) {
+      return;
+    }
+    this.adminService.deleteEnfant(id).subscribe({
+      next: (res) => {
+        this.message.set(res.message);
+        this.load();
+      },
+      error: () => this.error.set('Erreur lors de la suppression de l enfant.'),
+    });
+  }
+
   private normalize(value: string): string {
     return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
   }

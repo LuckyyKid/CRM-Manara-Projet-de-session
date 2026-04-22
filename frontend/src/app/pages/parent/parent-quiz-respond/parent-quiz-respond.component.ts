@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -32,6 +33,11 @@ export class ParentQuizRespondComponent implements OnInit {
   saving = signal(false);
   error = signal('');
   success = signal('');
+  submissionMessage = computed(() =>
+    this.saving()
+      ? 'Soumission du quiz en cours. La correction et la generation du devoir peuvent prendre quelques secondes.'
+      : '',
+  );
 
   quizQuestionCount = computed(() => {
     const selected = this.parentQuiz();
@@ -94,6 +100,10 @@ export class ParentQuizRespondComponent implements OnInit {
     this.answers.set({ ...this.answers(), [questionId]: value });
   }
 
+  optionControlId(questionId: number, optionIndex: number): string {
+    return `question${questionId}option${optionIndex}`;
+  }
+
   previousQuestion(): void {
     this.currentQuestionIndex.update((index) => Math.max(0, index - 1));
     this.error.set('');
@@ -134,10 +144,21 @@ export class ParentQuizRespondComponent implements OnInit {
         this.saving.set(false);
         this.router.navigateByUrl(`/parent/quizzes/attempts/${attempt.id}`);
       },
-      error: () => {
-        this.error.set('Erreur lors de la soumission du quiz.');
+      error: (error: HttpErrorResponse) => {
+        this.error.set(this.resolveErrorMessage(error, 'Erreur lors de la soumission du quiz.'));
         this.saving.set(false);
       },
     });
+  }
+
+  private resolveErrorMessage(error: HttpErrorResponse, fallback: string): string {
+    const payload = error.error;
+    if (typeof payload?.message === 'string' && payload.message.trim()) {
+      return payload.message;
+    }
+    if (typeof payload === 'string' && payload.trim()) {
+      return payload;
+    }
+    return fallback;
   }
 }
