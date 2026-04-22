@@ -1,0 +1,54 @@
+<section class="mm-calendar-shell">
+  <header class="mm-calendar-head">
+    <div>
+      <div class="mm-page-eyebrow">{{ title }}</div>
+      <h2 class="mm-calendar-title">{{ monthLabel }}</h2>
+      <p *ngIf="subtitle" class="mm-calendar-subtitle">{{ subtitle }}</p>
+    </div>
+
+    <div class="mm-calendar-nav">
+      <button type="button" class="btn btn-light mm-calendar-nav-btn" (click)="previousMonth.emit()">
+        Mois precedent
+      </button>
+      <button type="button" class="btn btn-light mm-calendar-nav-btn" (click)="nextMonth.emit()">
+        Mois suivant
+      </button>
+    </div>
+  </header>
+
+  <div class="mm-calendar-grid">
+    <div class="mm-calendar-weekday" *ngFor="let weekday of weekdays">{{ weekday }}</div>
+
+    <ng-container *ngFor="let week of weeks; trackBy: trackWeek">
+      <button
+        type="button"
+        class="mm-calendar-day"
+        *ngFor="let day of week; trackBy: trackDay"
+        [class.mm-calendar-day-muted]="!day.inCurrentMonth"
+        [class.mm-calendar-day-today]="day.today"
+        [class.mm-calendar-day-selected]="day.selected"
+        (click)="daySelect.emit(day.date)">
+        <div class="mm-calendar-day-top">
+          <span class="mm-calendar-day-number">{{ day.date | date:'d' }}</span>
+          <span class="mm-calendar-day-count" *ngIf="day.entries.length">{{ day.entries.length }}</span>
+        </div>
+
+        <div class="mm-calendar-day-events">
+          <button
+            type="button"
+            class="mm-calendar-entry"
+            *ngFor="let entry of visibleEntries(day); trackBy: trackEntry"
+            [class]="statusClass(entry.status)"
+            (click)="entrySelect.emit(entry); $event.stopPropagation()">
+            <span class="mm-calendar-entry-time">{{ entry.startTime | date:'HH:mm' }}</span>
+            <span class="mm-calendar-entry-label">{{ entry.label }}</span>
+          </button>
+
+          <div *ngIf="remainingEntryCount(day)" class="mm-calendar-more">
+            +{{ remainingEntryCount(day) }} autre(s)
+          </div>
+        </div>
+      </button>
+    </ng-container>
+  </div>
+</section>

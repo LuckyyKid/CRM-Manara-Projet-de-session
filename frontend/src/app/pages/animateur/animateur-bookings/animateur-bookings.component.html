@@ -1,0 +1,78 @@
+<div class="container py-4">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">Espace animateur</span>
+      <h1 class="mm-page-title fs-1">Rendez-vous</h1>
+      <p class="mm-page-subtitle">Retrouvez vos appels reserves, avec annulation possible tant que le rendez-vous est confirme.</p>
+    </div>
+  </div>
+
+  <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement des rendez-vous...</div>
+
+  <app-list-page
+    *ngIf="!loading()"
+    [items]="pagedBookings()"
+    searchLabel="Rechercher un rendez-vous"
+    searchPlaceholder="Parent, enfant, date, heure..."
+    [searchValue]="search()"
+    [resultLabel]="resultLabel()"
+    emptyMessage="Aucun rendez-vous trouve."
+    [emptyColspan]="6"
+    [page]="page()"
+    [totalPages]="totalPages()"
+    [totalItems]="filteredBookings().length"
+    [pageSize]="pageSize"
+    (searchChange)="setSearch($event)"
+    (previous)="previousPage()"
+    (next)="nextPage()">
+    <ng-template appListHead>
+      <th>Parent</th>
+      <th>Enfant</th>
+      <th>Date</th>
+      <th>Statut</th>
+      <th>Maj</th>
+      <th class="text-end">Action</th>
+    </ng-template>
+
+    <ng-template appListRow let-booking>
+      <td>
+        <div class="fw-semibold">{{ booking.parentName || 'Parent' }}</div>
+        <div class="small text-secondary">{{ booking.startTime | date:'HH:mm' }} - {{ booking.endTime | date:'HH:mm' }}</div>
+      </td>
+      <td>{{ booking.childName || 'Non precise' }}</td>
+      <td>{{ booking.startTime | date:'EEEE dd MMMM yyyy' }}</td>
+      <td>
+        <span class="badge rounded-pill" [class]="statusBadgeClass(booking.status)">
+          {{ statusLabel(booking.status) }}
+        </span>
+      </td>
+      <td>
+        <span class="small text-secondary">
+          {{ (booking.updatedAt || booking.cancelledAt || booking.createdAt) | date:'dd/MM/yyyy HH:mm' }}
+        </span>
+      </td>
+      <td class="text-end">
+        <div class="d-inline-flex gap-2 flex-wrap justify-content-end">
+          <button
+            *ngIf="booking.status === 'CONFIRMED'"
+            type="button"
+            class="btn btn-sm btn-outline-primary"
+            (click)="openRescheduleModal(booking)">
+            Reporter
+          </button>
+          <button
+            *ngIf="booking.status === 'CONFIRMED'"
+            type="button"
+            class="btn btn-sm btn-outline-danger"
+            [disabled]="cancellingId() === booking.id"
+            (click)="cancelBooking(booking.id)">
+            {{ cancellingId() === booking.id ? 'Annulation...' : 'Annuler' }}
+          </button>
+        </div>
+      </td>
+    </ng-template>
+  </app-list-page>
+
+</div>

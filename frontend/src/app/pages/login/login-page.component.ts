@@ -4,6 +4,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { OnboardingService } from '../../core/services/onboarding.service';
 
 @Component({
   selector: 'app-login-page',
@@ -12,6 +13,7 @@ import { AuthService } from '../../core/auth/auth.service';
 })
 export class LoginPageComponent implements OnInit {
   readonly authService = inject(AuthService);
+  private readonly onboardingService = inject(OnboardingService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -58,6 +60,7 @@ export class LoginPageComponent implements OnInit {
       await this.authService.loginWithCredentials(email, password);
       const redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
       await this.router.navigateByUrl(redirectTo || this.authService.dashboardPath());
+      this.onboardingService.handlePostLogin();
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 403) {
         this.serverMessage.set("Votre compte est en attente d'approbation par l'administration.");

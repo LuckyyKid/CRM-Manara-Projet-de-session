@@ -90,6 +90,10 @@ public class EmailService {
         sendEmail(to, "Mise a jour de presence - CRM Manara", buildPresenceUpdateBody(inscription));
     }
 
+    public void sendIncidentNoteEmail(String to, Inscription inscription) {
+        sendEmail(to, "Nouvelle note d'incident - CRM Manara", buildIncidentNoteBody(inscription));
+    }
+
     public void sendNotificationEmail(String to, String title, String message) {
         sendEmail(to, title + " - CRM Manara", message + "\n\nCette notification a ete envoyee par l'equipe CRM Manara.");
     }
@@ -122,6 +126,38 @@ public class EmailService {
                 + "\nConnectez-vous a la plateforme pour voir les exercices a refaire a la maison.\n\n"
                 + "Cordialement,\nCRM Manara";
         sendEmail(to, "Nouvelle pratique maison - CRM Manara", body);
+    }
+
+    public void sendQuizSubmissionEmail(String to,
+                                        String animateurName,
+                                        String enfantName,
+                                        String quizTitle,
+                                        String activityName,
+                                        Double scorePercent) {
+        String body = "Bonjour " + animateurName + ",\n\n"
+                + "Un quiz a ete soumis par le parent pour l'enfant " + enfantName + ".\n\n"
+                + "Quiz : " + quizTitle + "\n"
+                + (activityName == null || activityName.isBlank() ? "" : "Activite : " + activityName + "\n")
+                + (scorePercent == null ? "" : "Score : " + Math.round(scorePercent) + "%\n")
+                + "\nConnectez-vous a la plateforme pour consulter la soumission.\n\n"
+                + "Cordialement,\nCRM Manara";
+        sendEmail(to, "Nouvelle soumission de quiz - CRM Manara", body);
+    }
+
+    public void sendHomeworkSubmissionEmail(String to,
+                                            String animateurName,
+                                            String enfantName,
+                                            String homeworkTitle,
+                                            String activityName,
+                                            Double scorePercent) {
+        String body = "Bonjour " + animateurName + ",\n\n"
+                + "Un devoir a ete soumis par le parent pour l'enfant " + enfantName + ".\n\n"
+                + "Devoir : " + homeworkTitle + "\n"
+                + (activityName == null || activityName.isBlank() ? "" : "Activite : " + activityName + "\n")
+                + (scorePercent == null ? "" : "Score : " + Math.round(scorePercent) + "%\n")
+                + "\nConnectez-vous a la plateforme pour consulter la soumission.\n\n"
+                + "Cordialement,\nCRM Manara";
+        sendEmail(to, "Nouvelle soumission de devoir - CRM Manara", body);
     }
 
     public void notifyAdminsOfInscriptionRequest(Inscription inscription) {
@@ -221,6 +257,17 @@ public class EmailService {
                 ? "Note de l'animateur : " + inscription.getIncidentNote().trim() + "\n"
                 : "")
                 + "\nVous pouvez consulter votre espace parent pour voir le suivi complet.\n\n"
+                + "Cordialement,\nCRM Manara";
+    }
+
+    private String buildIncidentNoteBody(Inscription inscription) {
+        return "Bonjour,\n\n"
+                + "Une note d'incident a ete ajoutee en lien avec votre enfant.\n\n"
+                + "Enfant : " + inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom() + "\n"
+                + "Activite : " + inscription.getAnimation().getActivity().getActivyName() + "\n"
+                + "Animation : " + formatDateTime(inscription) + "\n"
+                + "Note d'incident : " + (inscription.getIncidentNote() == null ? "" : inscription.getIncidentNote().trim()) + "\n"
+                + "\nVeuillez consulter votre espace parent pour le suivi complet.\n\n"
                 + "Cordialement,\nCRM Manara";
     }
 
@@ -378,23 +425,21 @@ public class EmailService {
                     .append("</p>");
         }
 
-        return """
-                <div style="background:#f4f7fb;padding:32px 16px;font-family:Inter,Arial,sans-serif;">
-                    <div style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 20px 48px rgba(15,23,42,0.08);border:1px solid #e5edf6;">
-                        <div style="padding:24px 28px;background:linear-gradient(135deg,#0b3b5c 0%,#114e73 100%);color:#ffffff;">
-                            <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.78;margin-bottom:8px;">CRM Manara</div>
-                            <h1 style="margin:0;font-size:24px;line-height:1.2;">%s</h1>
-                        </div>
-                        <div style="padding:28px;">
-                            %s
-                            <div style="margin-top:28px;padding-top:18px;border-top:1px solid #e5edf6;color:#667085;font-size:13px;line-height:1.7;">
-                                Centre Manara<br>
-                                Portail famille, animation et administration
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                """.formatted(escapeHtml(title), content);
+        return "<div style=\"background:#f4f7fb;padding:32px 16px;font-family:Inter,Arial,sans-serif;\">"
+                + "<div style=\"max-width:680px;margin:0 auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 20px 48px rgba(15,23,42,0.08);border:1px solid #e5edf6;\">"
+                + "<div style=\"padding:24px 28px;background:linear-gradient(135deg,#0b3b5c 0%,#114e73 100%);color:#ffffff;\">"
+                + "<div style=\"font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.78;margin-bottom:8px;\">CRM Manara</div>"
+                + "<h1 style=\"margin:0;font-size:24px;line-height:1.2;\">" + escapeHtml(title) + "</h1>"
+                + "</div>"
+                + "<div style=\"padding:28px;\">"
+                + content
+                + "<div style=\"margin-top:28px;padding-top:18px;border-top:1px solid #e5edf6;color:#667085;font-size:13px;line-height:1.7;\">"
+                + "Centre Manara<br>"
+                + "Portail famille, animation et administration"
+                + "</div>"
+                + "</div>"
+                + "</div>"
+                + "</div>";
     }
 
     private String formatDateTime(Inscription inscription) {

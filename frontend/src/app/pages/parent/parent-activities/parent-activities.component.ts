@@ -2,6 +2,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ParentService } from '../../../core/services/parent.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
 import {
   ParentActivitiesResponseDto,
   ParentActivityViewDto,
@@ -17,6 +18,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 })
 export class ParentActivitiesComponent implements OnInit {
   private parentService = inject(ParentService);
+  private onboardingService = inject(OnboardingService);
 
   data = signal<ParentActivitiesResponseDto | null>(null);
   search = signal('');
@@ -87,7 +89,7 @@ export class ParentActivitiesComponent implements OnInit {
     );
   }
 
-  inscrire(animationId: number) {
+  inscrire(animationId: number, activityType: string | null) {
     if (!this.selectedEnfantId) return;
     this.inscribing.set(true);
     this.message.set('');
@@ -96,6 +98,7 @@ export class ParentActivitiesComponent implements OnInit {
       next: (res) => {
         this.message.set(res.message);
         this.inscribing.set(false);
+        this.onboardingService.triggerSpecificOnboarding(activityType);
         this.load();
       },
       error: (err) => {

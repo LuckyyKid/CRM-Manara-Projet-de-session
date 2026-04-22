@@ -1,0 +1,142 @@
+.mm-booking-panel {
+  height: 100%;
+  padding: 1.2rem;
+  border: 1px solid rgba(117, 139, 173, 0.16);
+  border-radius: 1.5rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 249, 252, 0.98) 100%);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+}
+
+.mm-booking-panel-title,
+.mm-modal-title {
+  margin: 0.2rem 0 0;
+  font-size: 1.18rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.mm-booking-panel-copy {
+  margin: 0.4rem 0 1rem;
+  color: var(--mm-text-soft);
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+
+.mm-animateur-list,
+.mm-slot-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.mm-animateur-card,
+.mm-slot-card {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(117, 139, 173, 0.14);
+  background: rgba(255, 255, 255, 0.9);
+  text-align: left;
+  transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+
+.mm-animateur-card {
+  overflow: hidden;
+}
+
+.mm-animateur-card .fw-semibold,
+.mm-animateur-card .small {
+  overflow-wrap: anywhere;
+}
+
+.mm-animateur-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(10, 102, 255, 0.22);
+  background: rgba(10, 102, 255, 0.05);
+}
+
+.mm-animateur-card-active {
+  background: rgba(10, 102, 255, 0.11);
+  border-color: rgba(10, 102, 255, 0.24);
+}
+
+.mm-slot-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.mm-slot-card > :first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.mm-slot-card .fw-semibold,
+.mm-slot-card .small {
+  overflow-wrap: anywhere;
+}
+
+.mm-booking-empty {
+  color: var(--mm-text-soft);
+  overflow-wrap: anywhere;
+}
+
+.mm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.34);
+  backdrop-filter: blur(6px);
+  z-index: 1050;
+}
+
+.mm-modal-card {
+  width: min(34rem, 100%);
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  background: #fff;
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.22);
+}
+
+.mm-modal-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.mm-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.2rem;
+}
+
+@media (max-width: 991px) {
+  .mm-slot-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mm-slot-card .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .mm-booking-panel,
+  .mm-modal-card {
+    padding: 1rem;
+  }
+
+  .mm-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .mm-modal-actions .btn {
+    width: 100%;
+  }
+}

@@ -1,4 +1,4 @@
-<div class="container py-4">
+<div class="container py-4" id="tour-parent-activities-page">
   <div class="mm-page-head">
     <div>
       <span class="mm-page-eyebrow">Catalogue</span>
@@ -17,7 +17,7 @@
         <div class="row g-2 align-items-end">
           <div class="col-12 col-lg-4">
             <label class="form-label fw-semibold">Inscrire pour</label>
-            <select class="form-select" [(ngModel)]="selectedEnfantId" name="selectedEnfant">
+            <select class="form-select" [(ngModel)]="selectedEnfantId" name="selectedEnfant" id="tour-parent-activities-child-select">
               <option *ngFor="let enfant of enfants" [ngValue]="enfant.id">
                 {{ enfant.prenom }} {{ enfant.nom }}
               </option>
@@ -49,7 +49,7 @@
       Aucune activite disponible pour le moment.
     </div>
 
-    <div *ngFor="let view of visibleActivityViews()" class="card mm-card-shadow mb-4">
+    <div *ngFor="let view of visibleActivityViews()" class="card mm-card-shadow mb-4" id="tour-parent-activities-list">
       <div class="card-body">
         <div class="mb-3">
           <h2 class="mm-panel-title">{{ view.activity.name }}</h2>
@@ -88,7 +88,7 @@
                     *ngIf="!isInscrit(row.animation.id)"
                     class="btn btn-sm btn-primary"
                     [disabled]="inscribing() || !selectedEnfantId"
-                    (click)="inscrire(row.animation.id)">
+                    (click)="inscrire(row.animation.id, view.activity.type)">
                     {{ row.capacity.full ? "Liste d'attente" : "S'inscrire" }}
                   </button>
                 </td>

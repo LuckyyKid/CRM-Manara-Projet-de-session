@@ -45,7 +45,7 @@ export class AnimateurService {
   }
 
   markAllNotificationsAsRead(): Observable<ActionResponseDto> {
-    return this.http.post<ActionResponseDto>('/api/animateur/notifications/read-all', {}).pipe(
+    return this.http.put<ActionResponseDto>('/api/animateur/notifications/read-all', {}).pipe(
       tap(() => {
         this.notifications$ = undefined;
       }),
@@ -53,7 +53,7 @@ export class AnimateurService {
   }
 
   markNotificationAsRead(notificationId: number): Observable<ActionResponseDto> {
-    return this.http.post<ActionResponseDto>(`/api/animateur/notifications/${notificationId}/read`, {}).pipe(
+    return this.http.put<ActionResponseDto>(`/api/animateur/notifications/${notificationId}/read`, {}).pipe(
       tap(() => {
         this.notifications$ = undefined;
       }),

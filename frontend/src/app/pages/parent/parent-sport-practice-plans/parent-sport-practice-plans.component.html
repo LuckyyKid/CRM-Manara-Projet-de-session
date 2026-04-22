@@ -10,7 +10,7 @@
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
       <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
-      <div *ngIf="!loading() && canAccessSportPracticeTools()" class="row g-4">
+      <div *ngIf="!loading() && canAccessSportPracticeTools()" class="row g-4" id="tour-parent-practice-list">
         <div class="col-12">
           <div class="card mm-card-shadow">
             <div class="card-body">

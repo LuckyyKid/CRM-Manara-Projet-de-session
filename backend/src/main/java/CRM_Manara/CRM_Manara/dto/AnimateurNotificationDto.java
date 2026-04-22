@@ -8,7 +8,7 @@ public record AnimateurNotificationDto(
         String title,
         String message,
         LocalDateTime createdAt,
-        boolean read,
-        boolean archived
+        boolean readStatus,
+        boolean archivedStatus
 ) {
 }

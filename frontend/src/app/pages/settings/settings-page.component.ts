@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { SettingsService } from '../../core/services/settings.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { OnboardingService } from '../../core/services/onboarding.service';
 
 @Component({
   selector: 'app-settings-page',
@@ -13,6 +14,7 @@ import { AuthService } from '../../core/auth/auth.service';
 export class SettingsPageComponent {
   private settingsService = inject(SettingsService);
   readonly authService = inject(AuthService);
+  readonly onboardingService = inject(OnboardingService);
 
   message = signal('');
   error = signal('');
@@ -23,6 +25,14 @@ export class SettingsPageComponent {
   avatarPreview = signal<string | null>(null);
 
   currentUser = computed(() => this.authService.currentUser());
+  canReplayTutoringTour = computed(() =>
+    this.authService.currentUser()?.accountType === 'ROLE_PARENT'
+    && this.authService.currentUser()?.canAccessTutoringTools === true,
+  );
+  canReplaySportTour = computed(() =>
+    this.authService.currentUser()?.accountType === 'ROLE_PARENT'
+    && this.authService.currentUser()?.canAccessSportPracticeTools === true,
+  );
 
   onFileChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -73,5 +83,17 @@ export class SettingsPageComponent {
       return payload;
     }
     return fallback;
+  }
+
+  replayGlobalGuide(): void {
+    this.onboardingService.replayGlobalTour();
+  }
+
+  replayTutoringGuide(): void {
+    this.onboardingService.replayTutoringTour();
+  }
+
+  replaySportGuide(): void {
+    this.onboardingService.replaySportTour();
   }
 }

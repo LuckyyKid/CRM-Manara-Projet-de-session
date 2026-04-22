@@ -52,19 +52,25 @@ public class ParentQuizService {
     private final InscriptionRepo inscriptionRepo;
     private final AnthropicQuizScoringService anthropicQuizScoringService;
     private final HomeworkService homeworkService;
+    private final EmailService emailService;
+    private final AnimateurNotificationService animateurNotificationService;
 
     public ParentQuizService(parentService parentService,
                              QuizRepo quizRepo,
                              QuizAttemptRepo quizAttemptRepo,
                              InscriptionRepo inscriptionRepo,
                              AnthropicQuizScoringService anthropicQuizScoringService,
-                             HomeworkService homeworkService) {
+                             HomeworkService homeworkService,
+                             EmailService emailService,
+                             AnimateurNotificationService animateurNotificationService) {
         this.parentService = parentService;
         this.quizRepo = quizRepo;
         this.quizAttemptRepo = quizAttemptRepo;
         this.inscriptionRepo = inscriptionRepo;
         this.anthropicQuizScoringService = anthropicQuizScoringService;
         this.homeworkService = homeworkService;
+        this.emailService = emailService;
+        this.animateurNotificationService = animateurNotificationService;
     }
 
     @Transactional(readOnly = true)
@@ -135,6 +141,7 @@ public class ParentQuizService {
         QuizAttempt savedAttempt = quizAttemptRepo.save(attempt);
         LOGGER.info("QuizAttempt sauvegarde. attemptId={}, quizId={}, enfantId={}, score={}, status={}",
                 savedAttempt.getId(), quizId, enfant.getId(), savedAttempt.getScorePercent(), savedAttempt.getStatus());
+        notifyAnimateurOfQuizSubmission(savedAttempt);
         try {
             homeworkService.createAutomaticHomeworkFromQuizAttempt(savedAttempt);
         } catch (Exception exception) {
@@ -345,6 +352,41 @@ public class ParentQuizService {
             return null;
         }
         return elapsedSeconds;
+    }
+
+    private void notifyAnimateurOfQuizSubmission(QuizAttempt attempt) {
+        if (attempt == null
+                || attempt.getQuiz() == null
+                || attempt.getQuiz().getAnimateur() == null
+                || attempt.getQuiz().getAnimateur().getUser() == null) {
+            return;
+        }
+
+        String animateurEmail = attempt.getQuiz().getAnimateur().getUser().getEmail();
+        if (animateurEmail == null || animateurEmail.isBlank()) {
+            return;
+        }
+
+        String animateurName = attempt.getQuiz().getAnimateur().getPrenom() + " " + attempt.getQuiz().getAnimateur().getNom();
+        String enfantName = attempt.getEnfant().getPrenom() + " " + attempt.getEnfant().getNom();
+        String activityName = attempt.getQuiz().getAnimation() != null && attempt.getQuiz().getAnimation().getActivity() != null
+                ? attempt.getQuiz().getAnimation().getActivity().getActivyName()
+                : null;
+
+        emailService.sendQuizSubmissionEmail(
+                animateurEmail,
+                animateurName.trim(),
+                enfantName,
+                attempt.getQuiz().getTitle(),
+                activityName,
+                attempt.getScorePercent()
+        );
+        animateurNotificationService.createForAnimateur(
+                attempt.getQuiz().getAnimateur(),
+                "QUIZ_SUBMISSION",
+                "Nouvelle soumission de quiz",
+                enfantName + " a soumis le quiz \"" + attempt.getQuiz().getTitle() + "\"."
+        );
     }
 
     private java.time.LocalDate toLocalDate(Date date) {

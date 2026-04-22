@@ -53,4 +53,22 @@
       </form>
     </div>
   </div>
+
+  <div class="card mm-card-shadow mt-4" style="max-width: 520px;">
+    <div class="card-body">
+      <h2 class="mm-panel-title mb-3">Guides interactifs</h2>
+      <p class="text-secondary mb-3">Relancez un guide si vous voulez revoir le fonctionnement de la plateforme.</p>
+      <div class="d-flex flex-column gap-2">
+        <button type="button" class="btn btn-outline-primary" (click)="replayGlobalGuide()">
+          Revoir le guide general
+        </button>
+        <button *ngIf="canReplayTutoringTour()" type="button" class="btn btn-outline-primary" (click)="replayTutoringGuide()">
+          Revoir le guide tutorat
+        </button>
+        <button *ngIf="canReplaySportTour()" type="button" class="btn btn-outline-primary" (click)="replaySportGuide()">
+          Revoir le guide sport
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ParentService } from '../../../core/services/parent.service';
+import { OnboardingService } from '../../../core/services/onboarding.service';
 import { EnfantDto, InscriptionDto } from '../../../core/models/api.models';
 
 @Component({
@@ -12,6 +13,7 @@ import { EnfantDto, InscriptionDto } from '../../../core/models/api.models';
 })
 export class ParentDashboardComponent implements OnInit {
   readonly authService = inject(AuthService);
+  readonly onboardingService = inject(OnboardingService);
   private parentService = inject(ParentService);
 
   enfants = signal<EnfantDto[]>([]);
@@ -26,6 +28,7 @@ export class ParentDashboardComponent implements OnInit {
   recentInscriptions = computed(() => this.inscriptions().slice(0, 5));
   canAccessTutoringTools = computed(() => this.authService.currentUser()?.canAccessTutoringTools === true);
   canAccessSportPracticeTools = computed(() => this.authService.currentUser()?.canAccessSportPracticeTools === true);
+  showOnboardingLauncher = computed(() => !this.onboardingService.hasCompletedGlobalTour());
 
   ngOnInit() {
     this.parentService.getEnfants().subscribe((data) => this.enfants.set(data));
@@ -55,6 +58,10 @@ export class ParentDashboardComponent implements OnInit {
 
   normalizedStatus(status: string | null): string | null {
     return this.normalizeStatus(status);
+  }
+
+  startOnboarding(): void {
+    this.onboardingService.replayGlobalTour();
   }
 
   private normalizeStatus(status: string | null): string | null {

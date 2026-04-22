@@ -38,6 +38,8 @@ import { ParentHomeworkRespondComponent } from './pages/parent/parent-homework-r
 import { ParentHomeworkAttemptDetailComponent } from './pages/parent/parent-homework-attempt-detail/parent-homework-attempt-detail.component';
 import { ParentSportPracticePlansComponent } from './pages/parent/parent-sport-practice-plans/parent-sport-practice-plans.component';
 import { ParentSportPracticePlanDetailComponent } from './pages/parent/parent-sport-practice-plan-detail/parent-sport-practice-plan-detail.component';
+import { ParentAppointmentsComponent } from './pages/parent/parent-appointments/parent-appointments.component';
+import { ParentBookingsComponent } from './pages/parent/parent-bookings/parent-bookings.component';
 
 import { AnimateurDashboardComponent } from './pages/animateur/animateur-dashboard/animateur-dashboard.component';
 import { AnimateurAnimationsComponent } from './pages/animateur/animateur-animations/animateur-animations.component';
@@ -53,6 +55,8 @@ import { AnimateurHomeworkAssignmentDetailComponent } from './pages/animateur/an
 import { AnimateurSportPracticePlansComponent } from './pages/animateur/animateur-sport-practice-plans/animateur-sport-practice-plans.component';
 import { AnimateurSportPracticePlanHistoryComponent } from './pages/animateur/animateur-sport-practice-plan-history/animateur-sport-practice-plan-history.component';
 import { AnimateurSportPracticePlanDetailComponent } from './pages/animateur/animateur-sport-practice-plan-detail/animateur-sport-practice-plan-detail.component';
+import { AnimateurAppointmentsComponent } from './pages/animateur/animateur-appointments/animateur-appointments.component';
+import { AnimateurBookingsComponent } from './pages/animateur/animateur-bookings/animateur-bookings.component';
 import { AnimateurSubmissionDetailComponent } from './pages/animateur/animateur-submission-detail/animateur-submission-detail.component';
 import { SettingsPageComponent } from './pages/settings/settings-page.component';
 import { MessagesPageComponent } from './pages/messages/messages-page.component';
@@ -99,6 +103,8 @@ export const routes: Routes = [
   { path: 'parent/homeworks/attempts/:attemptId', component: ParentHomeworkAttemptDetailComponent, canActivate: [parentGuard] },
   { path: 'parent/sport-practice-plans', component: ParentSportPracticePlansComponent, canActivate: [parentGuard] },
   { path: 'parent/sport-practice-plans/:id', component: ParentSportPracticePlanDetailComponent, canActivate: [parentGuard] },
+  { path: 'parent/appointments', component: ParentAppointmentsComponent, canActivate: [parentGuard] },
+  { path: 'parent/bookings', component: ParentBookingsComponent, canActivate: [parentGuard] },
   { path: 'parent/notifications', component: ParentNotificationsComponent, canActivate: [parentGuard] },
   { path: 'parent/messages', component: MessagesPageComponent, canActivate: [parentGuard] },
 
@@ -114,6 +120,8 @@ export const routes: Routes = [
   { path: 'animateur/sport-practice-plans', component: AnimateurSportPracticePlansComponent, canActivate: [animateurGuard] },
   { path: 'animateur/sport-practice-plans/history', component: AnimateurSportPracticePlanHistoryComponent, canActivate: [animateurGuard] },
   { path: 'animateur/sport-practice-plans/:id', component: AnimateurSportPracticePlanDetailComponent, canActivate: [animateurGuard] },
+  { path: 'animateur/appointments', component: AnimateurAppointmentsComponent, canActivate: [animateurGuard] },
+  { path: 'animateur/bookings', component: AnimateurBookingsComponent, canActivate: [animateurGuard] },
   { path: 'quiz/:quizId/submission/:studentId', component: AnimateurSubmissionDetailComponent, canActivate: [animateurGuard] },
   { path: 'animateur/presence/:id', component: AnimateurPresenceComponent, canActivate: [animateurGuard] },
   { path: 'animateur/notifications', component: AnimateurNotificationsComponent, canActivate: [animateurGuard] },
