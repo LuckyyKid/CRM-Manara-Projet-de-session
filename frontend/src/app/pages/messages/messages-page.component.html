@@ -1,0 +1,52 @@
+<div class="container-fluid py-4 px-0 px-lg-3">
+  <div class="mm-page-head">
+    <div>
+      <span class="mm-page-eyebrow">{{ pageEyebrow() }}</span>
+      <h1 class="mm-page-title fs-1">{{ pageTitle() }}</h1>
+      <p class="mm-page-subtitle">{{ pageSubtitle() }}</p>
+    </div>
+    <div class="mm-page-actions">
+      <span class="badge" [class.text-bg-success]="isConnected()" [class.text-bg-secondary]="!isConnected()">
+        {{ isConnected() ? 'Temps reel actif' : 'Connexion...' }}
+      </span>
+    </div>
+  </div>
+
+  <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement de la messagerie...</div>
+
+  <app-chat-layout *ngIf="!loading()">
+    <app-chat-sidebar
+      chatSidebar
+      [search]="search()"
+      [conversations]="filteredConversations()"
+      [contacts]="filteredContacts()"
+      [selectedConversationId]="selectedConversationId()"
+      [connected]="isConnected()"
+      (searchChange)="search.set($event)"
+      (conversationSelect)="openConversation($event)"
+      (contactSelect)="startConversation($event)"
+    />
+
+    <app-chat-header
+      chatHeader
+      [conversation]="activeConversation()"
+      [connected]="isConnected()"
+    />
+
+    <app-chat-window
+      chatWindow
+      [conversation]="activeConversation()"
+    />
+
+    <app-message-input
+      chatInput
+      [draft]="draft()"
+      [sending]="sending()"
+      [disabled]="!activeConversation()"
+      [placeholder]="activeConversation() ? 'Ecrivez un message a ' + activeConversation()!.participant.displayName : 'Choisissez une conversation avant d ecrire'"
+      (draftChange)="draft.set($event)"
+      (send)="send()"
+    />
+  </app-chat-layout>
+</div>

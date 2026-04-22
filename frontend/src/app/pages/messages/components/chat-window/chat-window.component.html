@@ -1,0 +1,42 @@
+<div class="mm-chat-window" #threadContainer>
+  <ng-container *ngIf="conversation; else emptyState">
+    <div *ngIf="!messageGroups.length" class="mm-chat-window-empty">
+      <div class="mm-chat-window-empty-title">Aucun message pour le moment</div>
+      <div class="mm-chat-window-empty-copy">
+        Lancez la conversation avec {{ conversation.participant.displayName }}.
+      </div>
+    </div>
+
+    <div *ngFor="let group of messageGroups; trackBy: trackGroup" class="mm-chat-group" [class.mm-chat-group-mine]="group.mine">
+      <div class="mm-chat-group-avatar" *ngIf="!group.mine">
+        {{ participantInitial(group.senderName) }}
+      </div>
+
+      <div class="mm-chat-group-copy">
+        <div class="mm-chat-group-head">
+          <span class="mm-chat-group-author">{{ group.senderName }}</span>
+          <span class="mm-chat-group-time">{{ group.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+
+        <div class="mm-chat-group-stack">
+          <div
+            *ngFor="let message of group.messages; trackBy: trackMessage"
+            class="mm-chat-line"
+            [class.mm-chat-line-mine]="message.mine"
+          >
+            {{ message.body }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #emptyState>
+  <div class="mm-chat-window-empty">
+    <div class="mm-chat-window-empty-title">Choisissez une conversation</div>
+    <div class="mm-chat-window-empty-copy">
+      La conversation active apparaitra ici avec un affichage continu type messagerie.
+    </div>
+  </div>
+</ng-template>

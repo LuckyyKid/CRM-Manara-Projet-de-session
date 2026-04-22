@@ -1,0 +1,89 @@
+<div class="mm-chat-sidebar">
+  <header class="mm-chat-sidebar-top">
+    <div>
+      <div class="mm-chat-sidebar-title">Messages</div>
+      <div class="mm-chat-sidebar-meta">
+        {{ connected ? 'Temps reel actif' : 'Connexion en cours' }}
+      </div>
+    </div>
+
+    <span class="mm-chat-status-dot" [class.mm-chat-status-dot-live]="connected"></span>
+  </header>
+
+  <div class="mm-chat-sidebar-search">
+    <input
+      type="search"
+      class="form-control"
+      [ngModel]="search"
+      (ngModelChange)="searchChange.emit($event)"
+      placeholder="Rechercher une conversation"
+    />
+  </div>
+
+  <div class="mm-chat-sidebar-body">
+    <section class="mm-chat-sidebar-section">
+      <div class="mm-chat-sidebar-section-head">
+        <span>Conversations</span>
+        <span>{{ conversations.length }}</span>
+      </div>
+
+      <div *ngIf="!conversations.length" class="mm-chat-empty-copy">
+        Aucune conversation active.
+      </div>
+
+      <button
+        *ngFor="let conversation of conversations; trackBy: trackConversation"
+        type="button"
+        class="mm-chat-thread-item"
+        [class.mm-chat-thread-item-active]="selectedConversationId === conversation.id"
+        (click)="conversationSelect.emit(conversation.id)"
+      >
+        <div class="mm-chat-avatar">{{ participantInitial(conversation.participant.displayName) }}</div>
+
+        <div class="mm-chat-thread-copy">
+          <div class="mm-chat-thread-head">
+            <span class="mm-chat-thread-name">{{ conversation.participant.displayName }}</span>
+            <span class="mm-chat-thread-time" *ngIf="conversation.lastMessageAt">
+              {{ conversation.lastMessageAt | date:'HH:mm' }}
+            </span>
+          </div>
+
+          <div class="mm-chat-thread-foot">
+            <span class="mm-chat-thread-preview">
+              {{ conversation.lastMessagePreview || 'Conversation demarree.' }}
+            </span>
+            <span *ngIf="conversation.unreadCount" class="mm-chat-thread-badge">
+              {{ conversation.unreadCount }}
+            </span>
+          </div>
+        </div>
+      </button>
+    </section>
+
+    <section class="mm-chat-sidebar-section">
+      <div class="mm-chat-sidebar-section-head">
+        <span>Nouveaux contacts</span>
+        <span>{{ contacts.length }}</span>
+      </div>
+
+      <div *ngIf="!contacts.length" class="mm-chat-empty-copy">
+        Aucun nouveau contact disponible.
+      </div>
+
+      <button
+        *ngFor="let contact of contacts; trackBy: trackContact"
+        type="button"
+        class="mm-chat-contact-item"
+        (click)="contactSelect.emit(contact)"
+      >
+        <div class="mm-chat-avatar mm-chat-avatar-secondary">
+          {{ participantInitial(contact.displayName) }}
+        </div>
+        <div class="mm-chat-contact-copy">
+          <div class="mm-chat-thread-name">{{ contact.displayName }}</div>
+          <div class="mm-chat-contact-role">{{ contact.accountType.replace('ROLE_', '') }}</div>
+        </div>
+      </button>
+    </section>
+  </div>
+</div>

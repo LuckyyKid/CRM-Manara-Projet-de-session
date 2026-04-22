@@ -4,9 +4,11 @@ import CRM_Manara.CRM_Manara.Model.Entity.Animateur;
 import CRM_Manara.CRM_Manara.Model.Entity.Animation;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.statusInscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
+import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
 import CRM_Manara.CRM_Manara.Model.Entity.SportPracticePlan;
 import CRM_Manara.CRM_Manara.Model.Entity.SportPracticePlanItem;
+import CRM_Manara.CRM_Manara.Repository.InscriptionRepo;
 import CRM_Manara.CRM_Manara.Repository.SportPracticePlanRepo;
 import CRM_Manara.CRM_Manara.dto.SportPracticePlanCreateRequestDto;
 import CRM_Manara.CRM_Manara.dto.SportPracticePlanDto;
@@ -45,15 +47,24 @@ public class SportPracticePlanService {
     private final SportPracticePlanRepo sportPracticePlanRepo;
     private final AnimateurService animateurService;
     private final parentService parentService;
+    private final InscriptionRepo inscriptionRepo;
+    private final ParentNotificationService parentNotificationService;
+    private final EmailService emailService;
     private final AnthropicSportPracticePlanGenerationService anthropicSportPracticePlanGenerationService;
 
     public SportPracticePlanService(SportPracticePlanRepo sportPracticePlanRepo,
                                     AnimateurService animateurService,
                                     parentService parentService,
+                                    InscriptionRepo inscriptionRepo,
+                                    ParentNotificationService parentNotificationService,
+                                    EmailService emailService,
                                     AnthropicSportPracticePlanGenerationService anthropicSportPracticePlanGenerationService) {
         this.sportPracticePlanRepo = sportPracticePlanRepo;
         this.animateurService = animateurService;
         this.parentService = parentService;
+        this.inscriptionRepo = inscriptionRepo;
+        this.parentNotificationService = parentNotificationService;
+        this.emailService = emailService;
         this.anthropicSportPracticePlanGenerationService = anthropicSportPracticePlanGenerationService;
     }
 
@@ -105,6 +116,7 @@ public class SportPracticePlanService {
         }
 
         SportPracticePlan saved = sportPracticePlanRepo.save(plan);
+        notifyParentsOfSportPracticePlan(saved);
         LOGGER.info("Pratique maison sportive creee. planId={}, animationId={}, animateurId={}, items={}",
                 saved.getId(), animation.getId(), animateur.getId(), saved.getItems().size());
         return toDto(saved, true);
@@ -302,5 +314,39 @@ public class SportPracticePlanService {
             return cleaned;
         }
         return cleaned.substring(0, 1).toUpperCase(Locale.ROOT) + cleaned.substring(1);
+    }
+
+    private void notifyParentsOfSportPracticePlan(SportPracticePlan plan) {
+        if (plan == null || plan.getAnimation() == null || plan.getAnimation().getId() == null) {
+            return;
+        }
+
+        String activityName = plan.getAnimation().getActivity() == null
+                ? null
+                : plan.getAnimation().getActivity().getActivyName();
+        Set<Long> notifiedParentIds = new LinkedHashSet<>();
+
+        for (Inscription inscription : inscriptionRepo.findByAnimationId(plan.getAnimation().getId())) {
+            if (inscription.getEnfant() == null || inscription.getEnfant().getParent() == null) {
+                continue;
+            }
+
+            Parent parent = inscription.getEnfant().getParent();
+            if (parent.getId() == null || !notifiedParentIds.add(parent.getId())) {
+                continue;
+            }
+
+            parentNotificationService.createForParent(
+                    parent,
+                    "SPORT_PRACTICE",
+                    "Nouvelle pratique maison",
+                    "Une nouvelle fiche \"" + plan.getTitle() + "\" est disponible"
+                            + (activityName == null ? "." : " pour " + activityName + ".")
+            );
+
+            if (parent.getUser() != null && parent.getUser().getEmail() != null && !parent.getUser().getEmail().isBlank()) {
+                emailService.sendSportPracticePlanEmail(parent.getUser().getEmail(), plan.getTitle(), activityName);
+            }
+        }
     }
 }

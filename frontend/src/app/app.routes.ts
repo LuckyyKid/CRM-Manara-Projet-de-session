@@ -55,6 +55,7 @@ import { AnimateurSportPracticePlanHistoryComponent } from './pages/animateur/an
 import { AnimateurSportPracticePlanDetailComponent } from './pages/animateur/animateur-sport-practice-plan-detail/animateur-sport-practice-plan-detail.component';
 import { AnimateurSubmissionDetailComponent } from './pages/animateur/animateur-submission-detail/animateur-submission-detail.component';
 import { SettingsPageComponent } from './pages/settings/settings-page.component';
+import { MessagesPageComponent } from './pages/messages/messages-page.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
@@ -81,6 +82,7 @@ export const routes: Routes = [
   { path: 'admin/demandes', component: AdminDemandesComponent, canActivate: [adminGuard] },
   { path: 'admin/notifications', component: AdminNotificationsComponent, canActivate: [adminGuard] },
   { path: 'admin/parents', component: AdminParentsComponent, canActivate: [adminGuard] },
+  { path: 'admin/messages', component: MessagesPageComponent, canActivate: [adminGuard] },
 
   { path: 'parent/dashboard', component: ParentDashboardComponent, canActivate: [parentGuard] },
   { path: 'parent/enfants', component: ParentEnfantsComponent, canActivate: [parentGuard] },
@@ -98,6 +100,7 @@ export const routes: Routes = [
   { path: 'parent/sport-practice-plans', component: ParentSportPracticePlansComponent, canActivate: [parentGuard] },
   { path: 'parent/sport-practice-plans/:id', component: ParentSportPracticePlanDetailComponent, canActivate: [parentGuard] },
   { path: 'parent/notifications', component: ParentNotificationsComponent, canActivate: [parentGuard] },
+  { path: 'parent/messages', component: MessagesPageComponent, canActivate: [parentGuard] },
 
   { path: 'animateur/dashboard', component: AnimateurDashboardComponent, canActivate: [animateurGuard] },
   { path: 'animateur/animations', component: AnimateurAnimationsComponent, canActivate: [animateurGuard] },
@@ -114,6 +117,7 @@ export const routes: Routes = [
   { path: 'quiz/:quizId/submission/:studentId', component: AnimateurSubmissionDetailComponent, canActivate: [animateurGuard] },
   { path: 'animateur/presence/:id', component: AnimateurPresenceComponent, canActivate: [animateurGuard] },
   { path: 'animateur/notifications', component: AnimateurNotificationsComponent, canActivate: [animateurGuard] },
+  { path: 'animateur/messages', component: MessagesPageComponent, canActivate: [animateurGuard] },
 
   { path: 'settings', component: SettingsPageComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: 'home' },

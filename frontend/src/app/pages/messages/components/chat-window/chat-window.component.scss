@@ -1,0 +1,100 @@
+.mm-chat-window {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1.35rem 1.25rem 1.6rem;
+  color: var(--mm-text);
+  background:
+    radial-gradient(circle at top right, rgba(87, 168, 255, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(243, 244, 245, 0.18));
+}
+
+.mm-chat-window-empty {
+  height: 100%;
+  min-height: 16rem;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.mm-chat-window-empty-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--mm-text);
+}
+
+.mm-chat-window-empty-copy {
+  color: var(--mm-text-soft);
+  max-width: 28rem;
+}
+
+.mm-chat-group {
+  display: grid;
+  grid-template-columns: 2.8rem minmax(0, 1fr);
+  gap: 0.9rem;
+  margin-bottom: 1.15rem;
+}
+
+.mm-chat-group-mine {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.mm-chat-group-avatar {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--mm-primary) 0%, var(--mm-primary-soft) 100%);
+  box-shadow: 0 12px 24px rgba(10, 102, 255, 0.16);
+}
+
+.mm-chat-group-copy {
+  min-width: 0;
+}
+
+.mm-chat-group-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.4rem;
+}
+
+.mm-chat-group-author {
+  font-weight: 700;
+  color: var(--mm-text);
+}
+
+.mm-chat-group-time {
+  color: rgba(61, 74, 61, 0.62);
+  font-size: 0.78rem;
+}
+
+.mm-chat-group-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.mm-chat-line {
+  max-width: min(80%, 42rem);
+  border: 1px solid rgba(117, 139, 173, 0.14);
+  border-radius: 1rem 1rem 1rem 0.4rem;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 0.8rem 0.95rem;
+  line-height: 1.45;
+  color: var(--mm-text);
+  white-space: pre-wrap;
+  box-shadow: 0 10px 24px rgba(32, 74, 135, 0.06);
+}
+
+.mm-chat-line-mine {
+  align-self: flex-end;
+  margin-left: auto;
+  border-radius: 1rem 1rem 0.4rem 1rem;
+  background: linear-gradient(135deg, rgba(10, 102, 255, 0.96), rgba(87, 168, 255, 0.9));
+  color: #fff;
+  border-color: transparent;
+}

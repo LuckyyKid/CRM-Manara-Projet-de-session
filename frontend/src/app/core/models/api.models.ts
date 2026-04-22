@@ -157,6 +157,7 @@ export interface ParentNotificationDto {
   message: string;
   createdAt: string;
   readStatus: boolean;
+  archivedStatus?: boolean;
 }
 
 export interface AnimateurNotificationDto {
@@ -166,6 +167,52 @@ export interface AnimateurNotificationDto {
   message: string;
   createdAt: string;
   readStatus: boolean;
+  archivedStatus?: boolean;
+}
+
+export interface ChatParticipantDto {
+  userId: number;
+  profileId: number | null;
+  accountType: string;
+  displayName: string;
+  email: string;
+}
+
+export interface ChatConversationSummaryDto {
+  id: number;
+  participant: ChatParticipantDto;
+  lastMessagePreview: string | null;
+  lastMessageAt: string | null;
+  unreadCount: number;
+}
+
+export interface ChatMessageDto {
+  id: number;
+  conversationId: number;
+  sender: ChatParticipantDto;
+  recipient: ChatParticipantDto;
+  body: string;
+  createdAt: string;
+  mine: boolean;
+  readStatus: boolean;
+}
+
+export interface ChatConversationDetailDto {
+  id: number;
+  participant: ChatParticipantDto;
+  unreadCount: number;
+  messages: ChatMessageDto[];
+}
+
+export interface SendChatMessageRequestDto {
+  conversationId: number | null;
+  recipientUserId: number | null;
+  body: string;
+}
+
+export interface SidebarCountsDto {
+  notifications: number;
+  messages: number;
 }
 
 export interface AnimationWithCapacityDto {

@@ -67,19 +67,25 @@ public class HomeworkService {
     private final AnthropicHomeworkGenerationService anthropicHomeworkGenerationService;
     private final AnthropicHomeworkScoringService anthropicHomeworkScoringService;
     private final HomeworkTemplateService homeworkTemplateService;
+    private final ParentNotificationService parentNotificationService;
+    private final EmailService emailService;
 
     public HomeworkService(HomeworkAssignmentRepo homeworkAssignmentRepo,
                            HomeworkAttemptRepo homeworkAttemptRepo,
                            QuizAttemptRepo quizAttemptRepo,
                            AnthropicHomeworkGenerationService anthropicHomeworkGenerationService,
                            AnthropicHomeworkScoringService anthropicHomeworkScoringService,
-                           HomeworkTemplateService homeworkTemplateService) {
+                           HomeworkTemplateService homeworkTemplateService,
+                           ParentNotificationService parentNotificationService,
+                           EmailService emailService) {
         this.homeworkAssignmentRepo = homeworkAssignmentRepo;
         this.homeworkAttemptRepo = homeworkAttemptRepo;
         this.quizAttemptRepo = quizAttemptRepo;
         this.anthropicHomeworkGenerationService = anthropicHomeworkGenerationService;
         this.anthropicHomeworkScoringService = anthropicHomeworkScoringService;
         this.homeworkTemplateService = homeworkTemplateService;
+        this.parentNotificationService = parentNotificationService;
+        this.emailService = emailService;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -118,6 +124,7 @@ public class HomeworkService {
                 false
         );
         HomeworkAssignment savedAssignment = homeworkAssignmentRepo.save(assignment);
+        notifyParentOfHomework(savedAssignment);
         LOGGER.info("Devoir automatique sauvegarde. assignmentId={}, attemptId={}, exerciseCount={}",
                 savedAssignment.getId(), sourceAttempt.getId(), savedAssignment.getExercises().size());
         return true;
@@ -156,6 +163,7 @@ public class HomeworkService {
                 false
         );
         HomeworkAssignment savedAssignment = homeworkAssignmentRepo.save(assignment);
+        notifyParentOfHomework(savedAssignment);
         LOGGER.info("Devoir manuel sauvegarde. assignmentId={}, attemptId={}, exerciseCount={}",
                 savedAssignment.getId(), sourceAttempt.getId(), savedAssignment.getExercises().size());
         return toHomeworkDto(savedAssignment);
@@ -702,6 +710,35 @@ public class HomeworkService {
 
     private Integer normalizeElapsedSeconds(Integer elapsedSeconds) {
         return elapsedSeconds == null || elapsedSeconds < 0 ? null : elapsedSeconds;
+    }
+
+    private void notifyParentOfHomework(HomeworkAssignment assignment) {
+        if (assignment == null || assignment.getEnfant() == null || assignment.getEnfant().getParent() == null) {
+            return;
+        }
+
+        String enfantName = assignment.getEnfant().getPrenom() + " " + assignment.getEnfant().getNom();
+        String activityName = assignment.getAnimation() != null && assignment.getAnimation().getActivity() != null
+                ? assignment.getAnimation().getActivity().getActivyName()
+                : null;
+
+        parentNotificationService.createForParent(
+                assignment.getEnfant().getParent(),
+                "HOMEWORK",
+                "Nouveau devoir disponible",
+                "Un nouveau devoir \"" + assignment.getTitle() + "\" a ete genere pour " + enfantName + "."
+        );
+
+        if (assignment.getEnfant().getParent().getUser() != null
+                && assignment.getEnfant().getParent().getUser().getEmail() != null
+                && !assignment.getEnfant().getParent().getUser().getEmail().isBlank()) {
+            emailService.sendHomeworkAvailableEmail(
+                    assignment.getEnfant().getParent().getUser().getEmail(),
+                    enfantName,
+                    assignment.getTitle(),
+                    activityName
+            );
+        }
     }
 
     private AnimateurHomeworkStudentRowDto toAnimateurStudentRow(List<HomeworkAssignment> assignments, List<HomeworkAttempt> attempts) {

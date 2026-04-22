@@ -1,0 +1,63 @@
+.mm-chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  color: var(--mm-text);
+}
+
+.mm-chat-header-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.mm-chat-header-avatar {
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--mm-primary) 0%, var(--mm-primary-soft) 100%);
+  box-shadow: 0 12px 24px rgba(10, 102, 255, 0.16);
+}
+
+.mm-chat-header-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.mm-chat-header-meta {
+  color: var(--mm-text-soft);
+  font-size: 0.85rem;
+}
+
+.mm-chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.mm-chat-header-pill {
+  border: 1px solid rgba(117, 139, 173, 0.16);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  color: var(--mm-text-soft);
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.mm-chat-header-pill-live {
+  color: var(--mm-primary-strong);
+  border-color: rgba(10, 102, 255, 0.18);
+  background: rgba(10, 102, 255, 0.08);
+}
+
+.mm-chat-header-empty {
+  min-height: 5rem;
+}

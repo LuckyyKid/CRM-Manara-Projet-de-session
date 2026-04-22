@@ -25,6 +25,9 @@ import CRM_Manara.CRM_Manara.Repository.ParentNotificationRepo;
 import CRM_Manara.CRM_Manara.Repository.UserRepo;
 import CRM_Manara.CRM_Manara.Repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +37,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,8 +93,9 @@ public class AdminService {
 
 
     @Transactional(readOnly = true)
+    @Cacheable("activities")
     public List<Activity> getAllActivities() {
-        return activityRepo.findAll();
+        return activityRepo.findAllOrderedByName();
     }
 
     @Transactional(readOnly = true)
@@ -105,6 +110,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "activities", allEntries = true)
+    })
     public Activity createActivity(String name, String description, String imageUrl, int ageMin, int ageMax, int capacity,
                                    status status, typeActivity type) {
         Activity activity = new Activity(name, description, imageUrl, ageMin, ageMax, capacity, status, type);
@@ -112,6 +120,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "activities", allEntries = true)
+    })
     public Activity updateActivity(Long id, String name, String description, String imageUrl, int ageMin, int ageMax, int capacity,
                                    status status, typeActivity type) {
         Activity activity = getActivityById(id);
@@ -127,12 +138,17 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "activities", allEntries = true),
+            @CacheEvict(value = "animations", allEntries = true)
+    })
     public void deleteActivity(Long id) {
         animationRepo.findByActivityId(id).forEach(a -> deleteAnimation(a.getId()));
         activityRepo.deleteById(id);
     }
 
     @Transactional(readOnly = true)
+    @Cacheable("animations")
     public List<Animation> getAllAnimations() {
         return animationRepo.findAll();
     }
@@ -149,6 +165,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "animations", allEntries = true)
+    })
     public Animation createAnimation(Long activityId, Long animateurId, AnimationRole role,
                                      animationStatus status, LocalDateTime start, LocalDateTime end) {
         Activity activity = getActivityById(activityId);
@@ -173,6 +192,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "animations", allEntries = true)
+    })
     public Animation updateAnimation(Long id, Long activityId, Long animateurId, AnimationRole role,
                                      animationStatus status, LocalDateTime start, LocalDateTime end) {
         Animation animation = getAnimationById(id);
@@ -217,6 +239,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "animations", allEntries = true)
+    })
     public void deleteAnimation(Long id) {
         Animation animation = getAnimationById(id);
         List<Inscription> inscriptions = inscriptionRepo.findByAnimationId(id);
@@ -238,6 +263,7 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable("animateurs")
     public List<Animateur> getAllAnimateurs() {
         return animateurRepo.findAll();
     }
@@ -254,16 +280,12 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public long countPendingInscriptions() {
-        return inscriptionRepo.findAll().stream()
-                .filter(inscription -> inscription.getStatusInscription() == statusInscription.EN_ATTENTE)
-                .count();
+        return inscriptionRepo.countByStatusInscription(statusInscription.EN_ATTENTE);
     }
 
     @Transactional(readOnly = true)
     public long countPendingParents() {
-        return parentRepo.findAll().stream()
-                .filter(parent -> parent.getUser() != null && !parent.getUser().isEnabled())
-                .count();
+        return parentRepo.countByUserEnabled(false);
     }
 
     @Transactional(readOnly = true)
@@ -275,16 +297,12 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public long countActiveParents() {
-        return parentRepo.findAll().stream()
-                .filter(parent -> parent.getUser() != null && parent.getUser().isEnabled())
-                .count();
+        return parentRepo.countByUserEnabled(true);
     }
 
     @Transactional(readOnly = true)
     public long countPendingChildren() {
-        return enfantRepo.findAll().stream()
-                .filter(enfant -> !enfant.isActive())
-                .count();
+        return enfantRepo.countByActive(false);
     }
 
     @Transactional(readOnly = true)
@@ -327,6 +345,10 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "animateurs", allEntries = true),
+            @CacheEvict(value = "animations", allEntries = true)
+    })
     public Animateur createAnimateur(String nom, String prenom, String email, String password) {
         String hash = passwordEncoder.encode(password);
         User user = new User(email, hash);
@@ -341,6 +363,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "animateurs", allEntries = true)
+    })
     public Animateur updateAnimateur(Long id, String nom, String prenom) {
         Animateur animateur = getAnimateurById(id);
         animateur.setNom(nom);
@@ -349,6 +374,10 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "animateurs", allEntries = true),
+            @CacheEvict(value = "animations", allEntries = true)
+    })
     public void deleteAnimateur(Long id) {
         animationRepo.findByAnimateurId(id).forEach(a -> deleteAnimation(a.getId()));
         animateurRepo.deleteById(id);
@@ -360,8 +389,9 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable("parents")
     public List<Parent> getAllParents() {
-        return parentRepo.findAll().stream()
+        return parentRepo.findAllWithUserAndEnfants().stream()
                 .sorted(Comparator.comparing(Parent::getNom).thenComparing(Parent::getPrenom))
                 .collect(Collectors.toList());
     }
@@ -394,6 +424,7 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable("enfants")
     public List<Enfant> getAllEnfants() {
         return enfantRepo.findAll().stream()
                 .sorted(Comparator.comparing(Enfant::getNom).thenComparing(Enfant::getPrenom))
@@ -401,6 +432,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "parents", allEntries = true)
+    })
     public Parent updateParentEnabled(Long id, boolean enabled) {
         Parent parent = getParentById(id);
         if (parent.getUser() == null) {
@@ -434,6 +468,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "enfants", allEntries = true)
+    })
     public Enfant updateEnfantActive(Long id, boolean active) {
         Enfant enfant = getEnfantById(id);
         enfant.setActive(active);
@@ -466,6 +503,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "animateurs", allEntries = true)
+    })
     public Animateur updateAnimateurEnabled(Long id, boolean enabled) {
         Animateur animateur = getAnimateurById(id);
         if (animateur.getUser() == null) {
@@ -491,6 +531,10 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "parents", allEntries = true),
+            @CacheEvict(value = "enfants", allEntries = true)
+    })
     public void deleteParent(Long id) {
         Parent parent = getParentById(id);
         User user = parent.getUser();
@@ -503,6 +547,9 @@ public class AdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "enfants", allEntries = true)
+    })
     public void deleteEnfant(Long id) {
         Enfant enfant = getEnfantById(id);
         Parent parent = enfant.getParent();
@@ -607,14 +654,55 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public long countOpenActivities() {
-        return activityRepo.findAll().stream()
-                .filter(a -> a.getStatus() == status.OUVERTE)
-                .count();
+        return activityRepo.countByStatus(status.OUVERTE);
     }
 
     @Transactional(readOnly = true)
     public Map<String, Object> getAnimationCapacitySnapshot(Animation animation) {
-        List<Inscription> inscriptions = inscriptionRepo.findByAnimationId(animation.getId());
+        return buildAnimationCapacitySnapshot(animation, inscriptionRepo.findByAnimationId(animation.getId()));
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Map<String, Object>> getAnimationCapacitySnapshots() {
+        return getAnimationCapacitySnapshotsForAnimations(getAllAnimations());
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Map<String, Object>> getAnimationCapacitySnapshotsForAnimations(List<Animation> animations) {
+        if (animations == null || animations.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Long> animationIds = animations.stream()
+                .map(Animation::getId)
+                .filter(id -> id != null)
+                .toList();
+        List<Inscription> inscriptions = animationIds.isEmpty() ? List.of() : inscriptionRepo.findByAnimationIdIn(animationIds);
+        Map<Long, List<Inscription>> inscriptionsByAnimationId = inscriptions.stream()
+                .filter(inscription -> inscription.getAnimation() != null && inscription.getAnimation().getId() != null)
+                .collect(Collectors.groupingBy(inscription -> inscription.getAnimation().getId()));
+
+        Map<Long, Map<String, Object>> snapshots = new LinkedHashMap<>();
+        for (Animation animation : animations) {
+            snapshots.put(
+                    animation.getId(),
+                    buildAnimationCapacitySnapshot(animation, inscriptionsByAnimationId.getOrDefault(animation.getId(), List.of()))
+            );
+        }
+        return snapshots;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, Map<String, Object>> getAnimationCapacitySnapshotsForAnimationIds(Set<Long> animationIds) {
+        if (animationIds == null || animationIds.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Animation> animations = animationRepo.findAllById(animationIds);
+        return getAnimationCapacitySnapshotsForAnimations(animations);
+    }
+
+    private Map<String, Object> buildAnimationCapacitySnapshot(Animation animation, List<Inscription> inscriptions) {
         int approved = (int) inscriptions.stream()
                 .filter(i -> i.getStatusInscription() == statusInscription.APPROUVEE || i.getStatusInscription() == statusInscription.ACTIF)
                 .count();
@@ -634,14 +722,5 @@ public class AdminService {
         snapshot.put("waitlist", waitlist);
         snapshot.put("fillRate", fillRate);
         return snapshot;
-    }
-
-    @Transactional(readOnly = true)
-    public Map<Long, Map<String, Object>> getAnimationCapacitySnapshots() {
-        Map<Long, Map<String, Object>> snapshots = new LinkedHashMap<>();
-        for (Animation animation : getAllAnimations()) {
-            snapshots.put(animation.getId(), getAnimationCapacitySnapshot(animation));
-        }
-        return snapshots;
     }
 }

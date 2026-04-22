@@ -1,0 +1,17 @@
+<form class="mm-chat-input" (ngSubmit)="submit()">
+  <div class="mm-chat-input-shell">
+    <textarea
+      class="mm-chat-input-field"
+      rows="1"
+      [ngModel]="draft"
+      (ngModelChange)="draftChange.emit($event)"
+      name="chatDraft"
+      [placeholder]="placeholder"
+      [disabled]="disabled || sending"
+    ></textarea>
+
+    <button class="mm-chat-input-send" type="submit" [disabled]="disabled || sending || !draft.trim()">
+      {{ sending ? 'Envoi...' : 'Envoyer' }}
+    </button>
+  </div>
+</form>

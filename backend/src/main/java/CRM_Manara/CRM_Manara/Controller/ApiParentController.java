@@ -95,6 +95,20 @@ public class ApiParentController {
                 .toList();
     }
 
+    @PostMapping("/notifications/read-all")
+    public ActionResponseDto markAllNotificationsAsRead(Authentication authentication) {
+        String email = requireEmail(authentication);
+        parentService.markNotificationsAsRead(email);
+        return new ActionResponseDto(true, "Notifications marquees comme lues.", null);
+    }
+
+    @PostMapping("/notifications/{id}/read")
+    public ActionResponseDto markNotificationAsRead(@PathVariable Long id, Authentication authentication) {
+        String email = requireEmail(authentication);
+        parentService.markNotificationAsRead(email, id);
+        return new ActionResponseDto(true, "Notification marquee comme lue.", id);
+    }
+
     @GetMapping("/quizzes")
     public List<ParentQuizDto> quizzes(Authentication authentication) {
         return parentQuizService.listAvailableQuizzes(requireEmail(authentication));
@@ -170,12 +184,20 @@ public class ApiParentController {
         List<Activity> activities = parentService.getAllActivities().stream()
                 .sorted(Comparator.comparing(Activity::getActivyName, Comparator.nullsLast(String::compareToIgnoreCase)))
                 .toList();
+        List<Animation> animations = parentService.getAnimationsForActivities(
+                activities.stream().map(Activity::getId).toList()
+        );
         List<Enfant> enfants = parentService.getActiveEnfantsForParent(email).stream()
                 .sorted(Comparator.comparing(Enfant::getPrenom, Comparator.nullsLast(String::compareToIgnoreCase)))
                 .toList();
         List<Inscription> inscriptions = parentService.getInscriptionsForParent(email).stream()
                 .sorted(Comparator.comparing(Inscription::getId).reversed())
                 .toList();
+        Map<Long, List<Animation>> animationsByActivity = animations.stream()
+                .filter(animation -> animation.getActivity() != null && animation.getActivity().getId() != null)
+                .collect(Collectors.groupingBy(animation -> animation.getActivity().getId()));
+        Map<Long, Map<String, Object>> capacitySnapshots =
+                parentService.getAnimationCapacitySnapshotsForAnimations(animations);
 
         Map<Long, List<CRM_Manara.CRM_Manara.dto.EnfantSummaryDto>> childrenByAnimation = inscriptions.stream()
                 .filter(inscription -> inscription.getAnimation() != null && inscription.getEnfant() != null)
@@ -186,12 +208,13 @@ public class ApiParentController {
 
         List<ParentActivityViewDto> activityViews = activities.stream()
                 .map(activity -> {
-                    List<AnimationWithCapacityDto> animationViews = parentService.getAnimationsForActivity(activity.getId()).stream()
+                    List<AnimationWithCapacityDto> animationViews = animationsByActivity
+                            .getOrDefault(activity.getId(), Collections.emptyList()).stream()
                             .sorted(Comparator.comparing(Animation::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())))
                             .map(animation -> {
                                 AnimationCapacityDto capacityDto = apiDtoMapper.toAnimationCapacityDto(
                                         animation.getId(),
-                                        parentService.getAnimationCapacitySnapshot(animation)
+                                        capacitySnapshots.get(animation.getId())
                                 );
                                 return new AnimationWithCapacityDto(
                                         apiDtoMapper.toAnimationDto(animation),

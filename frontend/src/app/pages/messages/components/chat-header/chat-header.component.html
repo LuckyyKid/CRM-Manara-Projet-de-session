@@ -1,0 +1,32 @@
+<div class="mm-chat-header" *ngIf="conversation; else emptyHeader">
+  <div class="mm-chat-header-profile">
+    <div class="mm-chat-header-avatar">
+      {{ participantInitial(conversation.participant.displayName) }}
+    </div>
+
+    <div>
+      <div class="mm-chat-header-title">{{ conversation.participant.displayName }}</div>
+      <div class="mm-chat-header-meta">
+        {{ conversation.participant.email }}
+      </div>
+    </div>
+  </div>
+
+  <div class="mm-chat-header-actions">
+    <span class="mm-chat-header-pill" [class.mm-chat-header-pill-live]="connected">
+      {{ connected ? 'En ligne' : 'Reconnexion...' }}
+    </span>
+    <span class="mm-chat-header-pill">
+      {{ conversation.messages.length }} message(s)
+    </span>
+  </div>
+</div>
+
+<ng-template #emptyHeader>
+  <div class="mm-chat-header mm-chat-header-empty">
+    <div>
+      <div class="mm-chat-header-title">Messagerie</div>
+      <div class="mm-chat-header-meta">Choisissez un contact pour afficher la conversation.</div>
+    </div>
+  </div>
+</ng-template>

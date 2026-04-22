@@ -43,6 +43,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -118,11 +120,14 @@ public class ApiAdminController {
     @GetMapping("/animations")
     @Transactional(readOnly = true)
     public List<AdminAnimationRowDto> animations() {
-        return adminService.getAllAnimations().stream()
+        List<CRM_Manara.CRM_Manara.Model.Entity.Animation> animations = adminService.getAllAnimations().stream()
                 .sorted(Comparator.comparing(animation -> animation.getStartTime(), Comparator.nullsLast(Comparator.naturalOrder())))
+                .toList();
+        Map<Long, Map<String, Object>> capacitySnapshots = adminService.getAnimationCapacitySnapshotsForAnimations(animations);
+        return animations.stream()
                 .map(animation -> new AdminAnimationRowDto(
                         apiDtoMapper.toAnimationDto(animation),
-                        apiDtoMapper.toAnimationCapacityDto(animation.getId(), adminService.getAnimationCapacitySnapshot(animation))
+                        apiDtoMapper.toAnimationCapacityDto(animation.getId(), capacitySnapshots.get(animation.getId()))
                 ))
                 .toList();
     }
@@ -246,11 +251,21 @@ public class ApiAdminController {
     @GetMapping("/demandes")
     @Transactional(readOnly = true)
     public AdminDemandesDto demandes() {
-        List<AdminInscriptionReviewDto> pending = adminService.getPendingInscriptions().stream()
-                .map(this::toReviewDto)
+        List<Inscription> pendingInscriptions = adminService.getPendingInscriptions();
+        List<Inscription> processedInscriptions = adminService.getProcessedInscriptions();
+        Set<Long> animationIds = java.util.stream.Stream.concat(
+                        pendingInscriptions.stream(),
+                        processedInscriptions.stream()
+                )
+                .map(inscription -> inscription.getAnimation() == null ? null : inscription.getAnimation().getId())
+                .filter(java.util.Objects::nonNull)
+                .collect(java.util.stream.Collectors.toSet());
+        Map<Long, Map<String, Object>> capacitySnapshots = adminService.getAnimationCapacitySnapshotsForAnimationIds(animationIds);
+        List<AdminInscriptionReviewDto> pending = pendingInscriptions.stream()
+                .map(inscription -> toReviewDto(inscription, capacitySnapshots))
                 .toList();
-        List<AdminInscriptionReviewDto> processed = adminService.getProcessedInscriptions().stream()
-                .map(this::toReviewDto)
+        List<AdminInscriptionReviewDto> processed = processedInscriptions.stream()
+                .map(inscription -> toReviewDto(inscription, capacitySnapshots))
                 .toList();
 
         return new AdminDemandesDto(
@@ -272,7 +287,7 @@ public class ApiAdminController {
                                                         @RequestParam(required = false, defaultValue = "") String search) {
         String normalizedStatus = status == null ? "" : status.trim().toUpperCase();
         String normalizedSearch = normalize(search);
-        return adminService.getAllInscriptions().stream()
+        List<Inscription> matches = adminService.getAllInscriptions().stream()
                 .filter(inscription -> animateurId == null
                         || inscription.getAnimation().getAnimateur().getId().equals(animateurId))
                 .filter(inscription -> activityId == null
@@ -295,7 +310,15 @@ public class ApiAdminController {
                         || normalize(inscription.getAnimation().getActivity().getActivyName()).contains(normalizedSearch)
                         || normalize(inscription.getAnimation().getAnimateur().getPrenom() + " " + inscription.getAnimation().getAnimateur().getNom()).contains(normalizedSearch))
                 .sorted(Comparator.comparing(Inscription::getId).reversed())
-                .map(this::toReviewDto)
+                .toList();
+        Map<Long, Map<String, Object>> capacitySnapshots = adminService.getAnimationCapacitySnapshotsForAnimationIds(
+                matches.stream()
+                        .map(inscription -> inscription.getAnimation() == null ? null : inscription.getAnimation().getId())
+                        .filter(java.util.Objects::nonNull)
+                        .collect(java.util.stream.Collectors.toSet())
+        );
+        return matches.stream()
+                .map(inscription -> toReviewDto(inscription, capacitySnapshots))
                 .toList();
     }
 
@@ -352,12 +375,13 @@ public class ApiAdminController {
         return new ActionResponseDto(true, "Demande refusee.", id);
     }
 
-    private AdminInscriptionReviewDto toReviewDto(Inscription inscription) {
+    private AdminInscriptionReviewDto toReviewDto(Inscription inscription, Map<Long, Map<String, Object>> capacitySnapshots) {
+        Long animationId = inscription.getAnimation() == null ? null : inscription.getAnimation().getId();
         return new AdminInscriptionReviewDto(
                 apiDtoMapper.toInscriptionDto(inscription),
                 apiDtoMapper.toAnimationCapacityDto(
-                        inscription.getAnimation() == null ? null : inscription.getAnimation().getId(),
-                        inscription.getAnimation() == null ? null : adminService.getAnimationCapacitySnapshot(inscription.getAnimation())
+                        animationId,
+                        animationId == null ? null : capacitySnapshots.get(animationId)
                 )
         );
     }

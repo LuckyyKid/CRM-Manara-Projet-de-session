@@ -80,14 +80,10 @@ public class CurrentUserService {
             return true;
         }
         if (animateur != null) {
-            return animationRepo.findByAnimateurId(animateur.getId()).stream()
-                    .anyMatch(animation -> animation.getActivity() != null && animation.getActivity().getType() == typeActivity.TUTORAT);
+            return animationRepo.existsByAnimateurIdAndActivityType(animateur.getId(), typeActivity.TUTORAT);
         }
         if (parent != null) {
-            return inscriptionRepo.findByParentId(parent.getId()).stream()
-                    .anyMatch(inscription -> inscription.getAnimation() != null
-                            && inscription.getAnimation().getActivity() != null
-                            && inscription.getAnimation().getActivity().getType() == typeActivity.TUTORAT);
+            return inscriptionRepo.existsByParentIdAndActivityType(parent.getId(), typeActivity.TUTORAT);
         }
         return false;
     }
@@ -97,14 +93,10 @@ public class CurrentUserService {
             return true;
         }
         if (animateur != null) {
-            return animationRepo.findByAnimateurId(animateur.getId()).stream()
-                    .anyMatch(animation -> animation.getActivity() != null && animation.getActivity().getType() == typeActivity.SPORT);
+            return animationRepo.existsByAnimateurIdAndActivityType(animateur.getId(), typeActivity.SPORT);
         }
         if (parent != null) {
-            return inscriptionRepo.findByParentId(parent.getId()).stream()
-                    .anyMatch(inscription -> inscription.getAnimation() != null
-                            && inscription.getAnimation().getActivity() != null
-                            && inscription.getAnimation().getActivity().getType() == typeActivity.SPORT);
+            return inscriptionRepo.existsByParentIdAndActivityType(parent.getId(), typeActivity.SPORT);
         }
         return false;
     }

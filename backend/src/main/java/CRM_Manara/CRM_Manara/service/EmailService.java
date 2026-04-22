@@ -4,11 +4,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Administrateurs;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Repository.AdminRepo;
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-
+import jakarta.mail.internet.MimeMessage;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -17,40 +13,63 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.core.env.Environment;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
     private static final String DEFAULT_DEMO_COPY_EMAIL = "ahmedbelm51@gmail.com";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy 'à' HH:mm", Locale.CANADA_FRENCH);
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("EEEE d MMMM yyyy 'a' HH:mm", Locale.CANADA_FRENCH);
 
     private final Environment environment;
     private final AdminRepo adminRepo;
+    private final JavaMailSender javaMailSender;
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
-    public EmailService(Environment environment, AdminRepo adminRepo) {
+    public EmailService(Environment environment,
+                        AdminRepo adminRepo,
+                        ObjectProvider<JavaMailSender> javaMailSenderProvider) {
         this.environment = environment;
         this.adminRepo = adminRepo;
+        this.javaMailSender = javaMailSenderProvider.getIfAvailable();
     }
 
     @PostConstruct
     void logEmailConfiguration() {
-        if (isResendConfigured()) {
-            log.info("EMAIL CONFIGURATION: Resend actif avec expéditeur {}", getFromEmail());
+        if (isSmtpConfigured()) {
+            log.info("EMAIL CONFIGURATION: SMTP actif avec expediteur {}", getFromEmail());
+        } else if (isResendConfigured()) {
+            log.info("EMAIL CONFIGURATION: Resend actif avec expediteur {}", getFromEmail());
         } else {
-            log.warn("EMAIL CONFIGURATION: Resend inactif, aucune clé API détectée.");
+            log.warn("EMAIL CONFIGURATION: aucun transport email actif. Configurez SMTP ou Resend.");
         }
     }
 
     public void sendEmail(String to, String subject, String text) {
         log.info("EMAIL PREPARE to={} subject={}", to, subject);
         try {
-            if (!isResendConfigured()) {
-                log.error("EMAIL NON ENVOYE: RESEND_API_KEY manquante.");
+            ResendRecipients recipients = resolveRecipients(to);
+            if (isSmtpConfigured()) {
+                sendWithSmtp(recipients, subject, text);
+                log.info("EMAIL ENVOYE via SMTP to={} cc={} subject={}",
+                        recipients.to, recipients.cc, subject);
                 return;
             }
 
-            ResendRecipients recipients = resolveRecipients(to);
+            if (!isResendConfigured()) {
+                log.error("EMAIL NON ENVOYE: aucun transport configure. smtpHost={} resendConfigured={}",
+                        environment.getProperty("spring.mail.host"),
+                        isResendConfigured());
+                return;
+            }
+
             String responseBody = sendWithResend(recipients, subject, text);
             log.info("EMAIL ENVOYE via Resend to={} cc={} subject={} response={}",
                     recipients.to, recipients.cc, subject, responseBody);
@@ -64,27 +83,57 @@ public class EmailService {
     }
 
     public void sendInscriptionRejected(String to, Inscription inscription) {
-        sendEmail(to, "Demande d'inscription refusée - CRM Manara", buildInscriptionRejectedBody(inscription));
+        sendEmail(to, "Demande d'inscription refusee - CRM Manara", buildInscriptionRejectedBody(inscription));
     }
 
     public void sendPresenceUpdate(String to, Inscription inscription) {
-        sendEmail(to, "Mise à jour de présence - CRM Manara", buildPresenceUpdateBody(inscription));
+        sendEmail(to, "Mise a jour de presence - CRM Manara", buildPresenceUpdateBody(inscription));
     }
 
     public void sendNotificationEmail(String to, String title, String message) {
-        sendEmail(to, title + " - CRM Manara", message + "\n\nCette notification a été envoyée par l'équipe CRM Manara.");
+        sendEmail(to, title + " - CRM Manara", message + "\n\nCette notification a ete envoyee par l'equipe CRM Manara.");
+    }
+
+    public void sendHomeworkAvailableEmail(String to, String enfantName, String title, String activityName) {
+        String body = "Bonjour,\n\n"
+                + "Un nouveau devoir est disponible pour " + enfantName + ".\n\n"
+                + "Devoir : " + title + "\n"
+                + (activityName == null || activityName.isBlank() ? "" : "Activite : " + activityName + "\n")
+                + "\nConnectez-vous a la plateforme pour le consulter.\n\n"
+                + "Cordialement,\nCRM Manara";
+        sendEmail(to, "Nouveau devoir disponible - CRM Manara", body);
+    }
+
+    public void sendQuizAvailableEmail(String to, String quizTitle, String activityName) {
+        String body = "Bonjour,\n\n"
+                + "Un nouveau quiz vient d'etre publie pour votre enfant.\n\n"
+                + "Quiz : " + quizTitle + "\n"
+                + (activityName == null || activityName.isBlank() ? "" : "Activite : " + activityName + "\n")
+                + "\nConnectez-vous a la plateforme pour le consulter et le soumettre.\n\n"
+                + "Cordialement,\nCRM Manara";
+        sendEmail(to, "Nouveau quiz disponible - CRM Manara", body);
+    }
+
+    public void sendSportPracticePlanEmail(String to, String title, String activityName) {
+        String body = "Bonjour,\n\n"
+                + "Une nouvelle pratique maison a ete ajoutee apres la seance.\n\n"
+                + "Fiche : " + title + "\n"
+                + (activityName == null || activityName.isBlank() ? "" : "Activite : " + activityName + "\n")
+                + "\nConnectez-vous a la plateforme pour voir les exercices a refaire a la maison.\n\n"
+                + "Cordialement,\nCRM Manara";
+        sendEmail(to, "Nouvelle pratique maison - CRM Manara", body);
     }
 
     public void notifyAdminsOfInscriptionRequest(Inscription inscription) {
         String subject = "Nouvelle demande d'inscription - CRM Manara";
         String body = "Bonjour,\n\n"
-                + "Une nouvelle demande d'inscription a été soumise par un parent et requiert une validation.\n\n"
+                + "Une nouvelle demande d'inscription a ete soumise par un parent et requiert une validation.\n\n"
                 + "Parent : " + inscription.getEnfant().getParent().getPrenom() + " " + inscription.getEnfant().getParent().getNom() + "\n"
                 + "Enfant : " + inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom() + "\n"
-                + "Activité : " + inscription.getAnimation().getActivity().getActivyName() + "\n"
-                + "Début : " + formatDateTime(inscription) + "\n"
+                + "Activite : " + inscription.getAnimation().getActivity().getActivyName() + "\n"
+                + "Debut : " + formatDateTime(inscription) + "\n"
                 + "Fin : " + inscription.getAnimation().getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + "\n\n"
-                + "Veuillez consulter la page Demandes de l'administration pour approuver ou refuser cette requête.\n\n"
+                + "Veuillez consulter la page Demandes de l'administration pour approuver ou refuser cette requete.\n\n"
                 + "CRM Manara";
 
         for (Administrateurs admin : adminRepo.findAll()) {
@@ -97,10 +146,10 @@ public class EmailService {
     public void notifyAdminsOfParentSignup(String nomComplet, String email, String provider) {
         String subject = "Nouveau compte parent en attente - CRM Manara";
         String body = "Bonjour,\n\n"
-                + "Un nouveau compte parent a été créé et demeure en attente d'approbation.\n\n"
+                + "Un nouveau compte parent a ete cree et demeure en attente d'approbation.\n\n"
                 + "Parent : " + nomComplet + "\n"
                 + "Courriel : " + email + "\n"
-                + "Méthode d'inscription : " + provider + "\n\n"
+                + "Methode d'inscription : " + provider + "\n\n"
                 + "Veuillez consulter la page Demandes pour approuver ou refuser ce compte.\n\n"
                 + "CRM Manara";
 
@@ -114,23 +163,23 @@ public class EmailService {
     public void sendAccountUpdatedConfirmation(String to, String displayName, String roleLabel, String changeSummary) {
         String subject = "Confirmation de modification du compte - CRM Manara";
         String body = "Bonjour " + displayName + ",\n\n"
-                + "Nous vous confirmons que les paramètres de votre compte ont été mis à jour avec succès.\n\n"
-                + "Rôle : " + roleLabel + "\n"
-                + "Résumé des changements :\n- " + normalizeBulletList(changeSummary) + "\n\n"
-                + "Si vous n'êtes pas à l'origine de cette modification, veuillez contacter l'administration dès que possible.\n\n"
+                + "Nous vous confirmons que les parametres de votre compte ont ete mis a jour avec succes.\n\n"
+                + "Role : " + roleLabel + "\n"
+                + "Resume des changements :\n- " + normalizeBulletList(changeSummary) + "\n\n"
+                + "Si vous n'etes pas a l'origine de cette modification, veuillez contacter l'administration des que possible.\n\n"
                 + "CRM Manara";
         sendEmail(to, subject, body);
     }
 
     public void notifyAdminsOfAccountUpdate(String displayName, String email, String roleLabel, String changeSummary) {
-        String subject = "Compte modifié - CRM Manara";
+        String subject = "Compte modifie - CRM Manara";
         String body = "Bonjour,\n\n"
-                + "Un compte utilisateur a été modifié dans la plateforme.\n\n"
+                + "Un compte utilisateur a ete modifie dans la plateforme.\n\n"
                 + "Utilisateur : " + displayName + "\n"
                 + "Courriel : " + email + "\n"
-                + "Rôle : " + roleLabel + "\n"
-                + "Résumé des changements :\n- " + normalizeBulletList(changeSummary) + "\n\n"
-                + "Consultez l'application si une vérification complémentaire est nécessaire.\n\n"
+                + "Role : " + roleLabel + "\n"
+                + "Resume des changements :\n- " + normalizeBulletList(changeSummary) + "\n\n"
+                + "Consultez l'application si une verification complementaire est necessaire.\n\n"
                 + "CRM Manara";
 
         for (Administrateurs admin : adminRepo.findAll()) {
@@ -142,10 +191,10 @@ public class EmailService {
 
     private String buildInscriptionBody(Inscription inscription) {
         return "Bonjour,\n\n"
-                + "La demande d'inscription a été approuvée avec succès.\n\n"
+                + "La demande d'inscription a ete approuvee avec succes.\n\n"
                 + "Enfant : " + inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom() + "\n"
-                + "Activité : " + inscription.getAnimation().getActivity().getActivyName() + "\n"
-                + "Début : " + formatDateTime(inscription) + "\n"
+                + "Activite : " + inscription.getAnimation().getActivity().getActivyName() + "\n"
+                + "Debut : " + formatDateTime(inscription) + "\n"
                 + "Fin : " + inscription.getAnimation().getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + "\n\n"
                 + "Vous pouvez consulter le planning et les notifications dans votre espace parent.\n\n"
                 + "Cordialement,\nCRM Manara";
@@ -153,21 +202,21 @@ public class EmailService {
 
     private String buildInscriptionRejectedBody(Inscription inscription) {
         return "Bonjour,\n\n"
-                + "Nous vous informons que la demande d'inscription suivante a été refusée.\n\n"
+                + "Nous vous informons que la demande d'inscription suivante a ete refusee.\n\n"
                 + "Enfant : " + inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom() + "\n"
-                + "Activité : " + inscription.getAnimation().getActivity().getActivyName() + "\n"
-                + "Début : " + formatDateTime(inscription) + "\n\n"
-                + "Veuillez consulter vos notifications pour prendre connaissance des détails utiles.\n\n"
+                + "Activite : " + inscription.getAnimation().getActivity().getActivyName() + "\n"
+                + "Debut : " + formatDateTime(inscription) + "\n\n"
+                + "Veuillez consulter vos notifications pour prendre connaissance des details utiles.\n\n"
                 + "Cordialement,\nCRM Manara";
     }
 
     private String buildPresenceUpdateBody(Inscription inscription) {
         return "Bonjour,\n\n"
-                + "Une mise à jour a été apportée au suivi de présence de votre enfant.\n\n"
+                + "Une mise a jour a ete apportee au suivi de presence de votre enfant.\n\n"
                 + "Enfant : " + inscription.getEnfant().getPrenom() + " " + inscription.getEnfant().getNom() + "\n"
-                + "Activité : " + inscription.getAnimation().getActivity().getActivyName() + "\n"
+                + "Activite : " + inscription.getAnimation().getActivity().getActivyName() + "\n"
                 + "Animation : " + formatDateTime(inscription) + "\n"
-                + "Statut de présence : " + UiLabelService.presenceStatus(inscription.getPresenceStatus()) + "\n"
+                + "Statut de presence : " + UiLabelService.presenceStatus(inscription.getPresenceStatus()) + "\n"
                 + (inscription.getIncidentNote() != null && !inscription.getIncidentNote().isBlank()
                 ? "Note de l'animateur : " + inscription.getIncidentNote().trim() + "\n"
                 : "")
@@ -175,9 +224,30 @@ public class EmailService {
                 + "Cordialement,\nCRM Manara";
     }
 
+    private boolean isSmtpConfigured() {
+        return javaMailSender != null
+                && environment.getProperty("spring.mail.host") != null
+                && !environment.getProperty("spring.mail.host", "").isBlank();
+    }
+
     private boolean isResendConfigured() {
         String apiKey = getResendApiKey();
-        return apiKey != null && !apiKey.isBlank();
+        return apiKey != null
+                && !apiKey.isBlank()
+                && !"replace-with-resend-api-key".equalsIgnoreCase(apiKey.trim());
+    }
+
+    private void sendWithSmtp(ResendRecipients recipients, String subject, String text) throws Exception {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        helper.setFrom(getFromEmail());
+        helper.setTo(recipients.to.toArray(String[]::new));
+        if (!recipients.cc.isEmpty()) {
+            helper.setCc(recipients.cc.toArray(String[]::new));
+        }
+        helper.setSubject(subject);
+        helper.setText(text, buildEmailHtml(subject, text));
+        javaMailSender.send(message);
     }
 
     private String sendWithResend(ResendRecipients recipients, String subject, String text) throws Exception {
@@ -229,7 +299,8 @@ public class EmailService {
     }
 
     private String getFromEmail() {
-        return firstConfigured("resend.from.email", "RESEND_FROM_EMAIL", "onboarding@resend.dev");
+        return firstConfigured("spring.mail.username", "SPRING_MAIL_USERNAME",
+                firstConfigured("resend.from.email", "RESEND_FROM_EMAIL", "onboarding@resend.dev"));
     }
 
     private String getDemoCopyEmail() {
@@ -332,7 +403,7 @@ public class EmailService {
 
     private String normalizeBulletList(String changeSummary) {
         if (changeSummary == null || changeSummary.isBlank()) {
-            return "Paramètres du compte enregistrés.";
+            return "Parametres du compte enregistres.";
         }
         return changeSummary.trim().replace("\n- ", "\n- ");
     }

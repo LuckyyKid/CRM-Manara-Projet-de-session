@@ -1,0 +1,19 @@
+<section class="mm-chat-layout">
+  <div class="mm-chat-layout-sidebar">
+    <ng-content select="[chatSidebar]"></ng-content>
+  </div>
+
+  <div class="mm-chat-layout-main">
+    <div class="mm-chat-layout-header">
+      <ng-content select="[chatHeader]"></ng-content>
+    </div>
+
+    <div class="mm-chat-layout-window">
+      <ng-content select="[chatWindow]"></ng-content>
+    </div>
+
+    <div class="mm-chat-layout-input">
+      <ng-content select="[chatInput]"></ng-content>
+    </div>
+  </div>
+</section>

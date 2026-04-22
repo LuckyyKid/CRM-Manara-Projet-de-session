@@ -55,6 +55,20 @@ public class ApiAnimateurController {
                 .toList();
     }
 
+    @PostMapping("/notifications/read-all")
+    public ActionResponseDto markAllNotificationsAsRead(Authentication authentication) {
+        Animateur animateur = requireAnimateur(authentication);
+        animateurNotificationService.markAllAsReadForAnimateur(animateur.getId());
+        return new ActionResponseDto(true, "Notifications marquees comme lues.", null);
+    }
+
+    @PostMapping("/notifications/{id}/read")
+    public ActionResponseDto markNotificationAsRead(@PathVariable Long id, Authentication authentication) {
+        Animateur animateur = requireAnimateur(authentication);
+        animateurNotificationService.markAsRead(animateur.getId(), id);
+        return new ActionResponseDto(true, "Notification marquee comme lue.", id);
+    }
+
     @GetMapping("/animations/{id}/inscriptions")
     public List<InscriptionDto> animationInscriptions(@PathVariable Long id, Authentication authentication) {
         String email = requireEmail(authentication);

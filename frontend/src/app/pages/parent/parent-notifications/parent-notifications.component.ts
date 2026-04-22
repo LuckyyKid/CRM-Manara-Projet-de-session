@@ -3,6 +3,8 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { ParentService } from '../../../core/services/parent.service';
 import { ParentNotificationDto } from '../../../core/models/api.models';
 import { PaginationComponent } from '../../../shared/pagination/pagination.component';
+import { CommunicationService } from '../../../core/services/communication.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-parent-notifications',
@@ -11,6 +13,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 })
 export class ParentNotificationsComponent implements OnInit {
   private parentService = inject(ParentService);
+  private communicationService = inject(CommunicationService);
 
   notifications = signal<ParentNotificationDto[]>([]);
   page = signal(1);
@@ -23,8 +26,15 @@ export class ParentNotificationsComponent implements OnInit {
     return this.notifications().slice(start, start + this.pageSize);
   });
 
-  ngOnInit() {
-    this.parentService.getNotifications().subscribe({
+  async ngOnInit() {
+    try {
+      await firstValueFrom(this.parentService.markAllNotificationsAsRead());
+      this.communicationService.setNotificationsCount(0);
+    } catch {
+      // keep page usable even if the read-all request fails
+    }
+
+    this.parentService.getNotifications(true).subscribe({
       next: (data) => {
         this.notifications.set(data);
         this.loading.set(false);
@@ -34,6 +44,29 @@ export class ParentNotificationsComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  async markAsRead(notificationId: number): Promise<void> {
+    const target = this.notifications().find((notification) => notification.id === notificationId);
+    if (!target || target.readStatus) {
+      return;
+    }
+
+    try {
+      await firstValueFrom(this.parentService.markNotificationAsRead(notificationId));
+      this.notifications.update((current) =>
+        current.map((notification) =>
+          notification.id === notificationId
+            ? { ...notification, readStatus: true }
+            : notification,
+        ),
+      );
+      this.communicationService.setNotificationsCount(
+        this.notifications().filter((notification) => !notification.readStatus).length,
+      );
+    } catch {
+      this.error.set("Impossible de marquer cette notification comme lue.");
+    }
   }
 
   previousPage(): void { this.page.set(Math.max(1, this.page() - 1)); }

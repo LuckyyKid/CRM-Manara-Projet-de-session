@@ -6,6 +6,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.Enfant;
 import CRM_Manara.CRM_Manara.Model.Entity.Enum.typeActivity;
 import CRM_Manara.CRM_Manara.Model.Entity.HomeworkAssignment;
 import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
+import CRM_Manara.CRM_Manara.Model.Entity.Parent;
 import CRM_Manara.CRM_Manara.Model.Entity.Quiz;
 import CRM_Manara.CRM_Manara.Model.Entity.QuizAnswer;
 import CRM_Manara.CRM_Manara.Model.Entity.QuizAttempt;
@@ -14,6 +15,7 @@ import CRM_Manara.CRM_Manara.Model.Entity.QuizQuestion;
 import CRM_Manara.CRM_Manara.Repository.QuizAttemptRepo;
 import CRM_Manara.CRM_Manara.Repository.QuizRepo;
 import CRM_Manara.CRM_Manara.Repository.HomeworkAssignmentRepo;
+import CRM_Manara.CRM_Manara.Repository.InscriptionRepo;
 import CRM_Manara.CRM_Manara.service.AnthropicQuizGenerationService.GeneratedAxis;
 import CRM_Manara.CRM_Manara.service.AnthropicQuizGenerationService.GeneratedQuestion;
 import CRM_Manara.CRM_Manara.service.AnthropicQuizGenerationService.GeneratedQuiz;
@@ -85,22 +87,31 @@ public class QuizService {
     private final QuizRepo quizRepo;
     private final QuizAttemptRepo quizAttemptRepo;
     private final HomeworkAssignmentRepo homeworkAssignmentRepo;
+    private final InscriptionRepo inscriptionRepo;
     private final AnimateurService animateurService;
     private final AnthropicQuizGenerationService anthropicQuizGenerationService;
     private final HomeworkService homeworkService;
+    private final ParentNotificationService parentNotificationService;
+    private final EmailService emailService;
 
     public QuizService(QuizRepo quizRepo,
                        QuizAttemptRepo quizAttemptRepo,
                        HomeworkAssignmentRepo homeworkAssignmentRepo,
+                       InscriptionRepo inscriptionRepo,
                        AnimateurService animateurService,
                        AnthropicQuizGenerationService anthropicQuizGenerationService,
-                       HomeworkService homeworkService) {
+                       HomeworkService homeworkService,
+                       ParentNotificationService parentNotificationService,
+                       EmailService emailService) {
         this.quizRepo = quizRepo;
         this.quizAttemptRepo = quizAttemptRepo;
         this.homeworkAssignmentRepo = homeworkAssignmentRepo;
+        this.inscriptionRepo = inscriptionRepo;
         this.animateurService = animateurService;
         this.anthropicQuizGenerationService = anthropicQuizGenerationService;
         this.homeworkService = homeworkService;
+        this.parentNotificationService = parentNotificationService;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -137,7 +148,43 @@ public class QuizService {
             addLocalAxes(quiz, notes);
         }
 
-        return toDto(quizRepo.save(quiz));
+        Quiz savedQuiz = quizRepo.save(quiz);
+        notifyParentsOfQuiz(savedQuiz);
+        return toDto(savedQuiz);
+    }
+
+    private void notifyParentsOfQuiz(Quiz quiz) {
+        if (quiz == null || quiz.getAnimation() == null || quiz.getAnimation().getId() == null) {
+            return;
+        }
+
+        String activityName = quiz.getAnimation().getActivity() == null
+                ? null
+                : quiz.getAnimation().getActivity().getActivyName();
+        Set<Long> notifiedParentIds = new HashSet<>();
+
+        for (Inscription inscription : inscriptionRepo.findByAnimationId(quiz.getAnimation().getId())) {
+            if (inscription.getEnfant() == null || inscription.getEnfant().getParent() == null) {
+                continue;
+            }
+
+            Parent parent = inscription.getEnfant().getParent();
+            if (parent.getId() == null || !notifiedParentIds.add(parent.getId())) {
+                continue;
+            }
+
+            parentNotificationService.createForParent(
+                    parent,
+                    "QUIZ",
+                    "Nouveau quiz disponible",
+                    "Un nouveau quiz \"" + quiz.getTitle() + "\" est disponible"
+                            + (activityName == null ? "." : " pour " + activityName + ".")
+            );
+
+            if (parent.getUser() != null && parent.getUser().getEmail() != null && !parent.getUser().getEmail().isBlank()) {
+                emailService.sendQuizAvailableEmail(parent.getUser().getEmail(), quiz.getTitle(), activityName);
+            }
+        }
     }
 
     @Transactional(readOnly = true)
