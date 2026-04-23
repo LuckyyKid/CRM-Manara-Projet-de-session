@@ -81,6 +81,18 @@ export class ParentQuizAttemptDetailComponent implements OnInit {
     return status || 'Soumis';
   }
 
+  answerStatusLabel(correct: boolean): string {
+    return correct ? 'Reussie' : 'Ratee';
+  }
+
+  answerBadgeClass(correct: boolean): string {
+    return correct ? 'text-bg-success' : 'text-bg-danger';
+  }
+
+  answerBoxClass(correct: boolean): string {
+    return correct ? 'border-success bg-success-subtle' : 'border-danger bg-danger-subtle';
+  }
+
   generateHomework(): void {
     const attemptId = this.attempt()?.id;
     if (!attemptId || this.generatingHomework()) {

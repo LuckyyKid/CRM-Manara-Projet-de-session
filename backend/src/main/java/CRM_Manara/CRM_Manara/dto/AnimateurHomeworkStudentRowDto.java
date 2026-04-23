@@ -9,6 +9,9 @@ public record AnimateurHomeworkStudentRowDto(
         long submittedCount,
         long remainingCount,
         Double averageScorePercent,
-        LocalDateTime latestSubmittedAt
+        LocalDateTime latestSubmittedAt,
+        String difficultyStatus,
+        String difficultyLabel,
+        String weakestAxisTitle
 ) {
 }

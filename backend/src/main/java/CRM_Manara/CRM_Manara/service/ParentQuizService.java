@@ -31,20 +31,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
 public class ParentQuizService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParentQuizService.class);
+    private static final double ANSWER_SUCCESS_THRESHOLD = 66.0;
+    private static final Pattern WORD_PATTERN = Pattern.compile("\\p{L}[\\p{L}'-]{2,}|\\d+(?:[.,]\\d+)?");
+    private static final Set<String> STOP_WORDS = Set.of(
+            "avec", "dans", "des", "les", "une", "pour", "que", "qui", "sur", "aux", "par",
+            "plus", "moins", "comme", "cette", "cela", "donc", "mais", "car", "est", "sont",
+            "reponse", "etudiant", "etudiante", "doit", "question", "axe", "notes"
+    );
 
     private final parentService parentService;
     private final QuizRepo quizRepo;
@@ -305,10 +317,52 @@ public class ParentQuizService {
                                 answer.getQuestion().getQuestionText(),
                                 answer.getQuestion().getExpectedAnswer(),
                                 answer.getAnswerText(),
-                                answer.getQuestion().getOptions()
+                                answer.getQuestion().getOptions(),
+                                scoreQuizAnswer(answer),
+                                scoreQuizAnswer(answer) >= ANSWER_SUCCESS_THRESHOLD,
+                                quizFeedback(scoreQuizAnswer(answer))
                         ))
                         .toList()
         );
+    }
+
+    private double scoreQuizAnswer(QuizAnswer answer) {
+        Set<String> expectedTokens = keywords(answer.getQuestion().getExpectedAnswer());
+        Set<String> answerTokens = keywords(answer.getAnswerText());
+        if (answerTokens.isEmpty()) {
+            return 0;
+        }
+        if (expectedTokens.isEmpty()) {
+            return answer.getAnswerText().trim().length() >= 20 ? 60 : 35;
+        }
+        long matches = expectedTokens.stream().filter(answerTokens::contains).count();
+        double overlap = (double) matches / expectedTokens.size();
+        return Math.max(0, Math.min(100, 20 + (overlap * 80)));
+    }
+
+    private Set<String> keywords(String value) {
+        Set<String> tokens = new LinkedHashSet<>();
+        Matcher matcher = WORD_PATTERN.matcher(value == null ? "" : value.toLowerCase());
+        while (matcher.find()) {
+            String token = Normalizer.normalize(matcher.group(), Normalizer.Form.NFD)
+                    .replaceAll("\\p{M}", "")
+                    .replace("'", "")
+                    .replace("-", "");
+            if (token.length() >= 2 && !STOP_WORDS.contains(token)) {
+                tokens.add(token);
+            }
+        }
+        return tokens;
+    }
+
+    private String quizFeedback(double score) {
+        if (score >= ANSWER_SUCCESS_THRESHOLD) {
+            return "Reponse suffisante: l'idee principale est presente.";
+        }
+        if (score < 35) {
+            return "La reponse ne reprend pas les notions attendues. Revoir la definition ou la methode avant de refaire l'exercice.";
+        }
+        return "La piste est partielle. Il fallait expliciter les mots cles de la reponse attendue et justifier davantage.";
     }
 
     private QuizDto toQuizDto(Quiz quiz) {

@@ -51,4 +51,18 @@ export class AnimateurHomeworkStudentDetailComponent implements OnInit {
   formatScore(score: number | null | undefined): string {
     return score === null || score === undefined ? 'En attente IA' : `${Math.round(score)}%`;
   }
+
+  difficultyBadgeClass(status: string | null | undefined): string {
+    if (status === 'HIGH') {
+      return 'text-bg-danger';
+    }
+    if (status === 'MEDIUM') {
+      return 'text-bg-warning';
+    }
+    return 'text-bg-success';
+  }
+
+  answerBorderClass(correct: boolean): string {
+    return correct ? 'border-success' : 'border-danger';
+  }
 }
