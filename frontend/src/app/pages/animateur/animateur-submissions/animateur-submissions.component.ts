@@ -46,4 +46,16 @@ export class AnimateurSubmissionsComponent implements OnInit {
     }
     return `${Math.round(value)}${suffix}`;
   }
+
+  answerStatusLabel(correct: boolean): string {
+    return correct ? 'Reussie' : 'Ratee';
+  }
+
+  answerBadgeClass(correct: boolean): string {
+    return correct ? 'text-bg-success' : 'text-bg-danger';
+  }
+
+  answerBoxClass(correct: boolean): string {
+    return correct ? 'border-success bg-success-subtle' : 'border-danger bg-danger-subtle';
+  }
 }

@@ -9,6 +9,9 @@ public record TutorQuizAnswerDto(
         String questionText,
         String expectedAnswer,
         String answerText,
-        List<String> options
+        List<String> options,
+        Double scorePercent,
+        boolean correct,
+        String feedback
 ) {
 }

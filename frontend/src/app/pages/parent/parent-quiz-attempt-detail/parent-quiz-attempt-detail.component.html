@@ -60,16 +60,27 @@
         <p class="mm-panel-subtitle">Consultez chaque reponse et l'attendu utilise pour la correction.</p>
 
         <div class="vstack gap-3">
-          <article class="border rounded p-3" *ngFor="let answer of item.answers">
-            <div class="fw-semibold">{{ answer.axisTitle }}</div>
-            <div class="text-secondary small mb-2">{{ answer.angle }}</div>
+          <article class="border rounded p-3" [ngClass]="answerBoxClass(answer.correct)" *ngFor="let answer of item.answers">
+            <div class="d-flex justify-content-between gap-2 mb-2">
+              <div>
+                <div class="fw-semibold">{{ answer.axisTitle }}</div>
+                <div class="text-secondary small">{{ answer.angle }}</div>
+              </div>
+              <span class="badge align-self-start" [ngClass]="answerBadgeClass(answer.correct)">
+                {{ answerStatusLabel(answer.correct) }}
+              </span>
+            </div>
             <p class="mb-2">{{ answer.questionText }}</p>
-            <div class="bg-light rounded p-3 mb-2">
+            <div class="bg-white rounded p-3 mb-2">
               <div class="small text-secondary mb-1">Reponse de l'etudiant</div>
               <div>{{ answer.answerText || '-' }}</div>
             </div>
-            <div class="small text-secondary">Reponse attendue</div>
-            <div>{{ answer.expectedAnswer }}</div>
+            <div *ngIf="!answer.correct" class="bg-white rounded p-3 mb-2">
+              <div class="small text-secondary mb-1">Bonne reponse</div>
+              <div>{{ answer.expectedAnswer }}</div>
+            </div>
+            <div class="small text-secondary">Feedback</div>
+            <div>{{ answer.feedback }}</div>
           </article>
         </div>
       </div>

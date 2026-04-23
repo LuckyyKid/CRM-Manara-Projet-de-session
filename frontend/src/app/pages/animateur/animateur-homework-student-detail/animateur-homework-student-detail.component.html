@@ -38,9 +38,75 @@
           </div>
           <div class="col-12 col-md-3">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Moyenne</span>
-              <span class="mm-kpi-value">{{ formatScore(item.averageScorePercent) }}</span>
-              <span class="mm-kpi-meta">Sur devoirs corriges</span>
+              <span class="mm-kpi-label">Difficulte globale</span>
+              <span class="mm-kpi-value fs-4">{{ item.difficultyLabel }}</span>
+              <span class="mm-kpi-meta">Moyenne: {{ formatScore(item.averageScorePercent) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-lg-4">
+            <div class="card mm-card-shadow h-100">
+              <div class="card-body">
+                <h2 class="mm-panel-title">Statut</h2>
+                <span class="badge" [ngClass]="difficultyBadgeClass(item.difficultyStatus)">
+                  {{ item.difficultyLabel }}
+                </span>
+                <p class="mm-panel-subtitle mt-3 mb-0">Statut calcule avec la moyenne et les devoirs restants.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4">
+            <div class="card mm-card-shadow h-100">
+              <div class="card-body">
+                <h2 class="mm-panel-title">Axes faibles</h2>
+                <div class="d-flex flex-wrap gap-2" *ngIf="item.weakAxes.length; else noWeakAxes">
+                  <span class="badge text-bg-warning" *ngFor="let axis of item.weakAxes">{{ axis }}</span>
+                </div>
+                <ng-template #noWeakAxes>
+                  <p class="text-secondary mb-0">Aucun axe faible detecte.</p>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-lg-4">
+            <div class="card mm-card-shadow h-100">
+              <div class="card-body">
+                <h2 class="mm-panel-title">Quiz lies</h2>
+                <div class="fs-3 fw-bold">{{ item.quizAttempts.length }}</div>
+                <p class="mm-panel-subtitle mb-0">Soumission(s) de quiz utilisees pour situer la difficulte.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mm-card-shadow mb-4">
+          <div class="card-body">
+            <h2 class="mm-panel-title">Questions ratees</h2>
+            <p class="mm-panel-subtitle">Reponses a revoir en priorite avec l'attendu et un feedback court.</p>
+            <div *ngIf="!item.failedQuestions.length" class="text-secondary">Aucune question ratee detectee.</div>
+            <div class="vstack gap-3">
+              <article class="border rounded p-3" [ngClass]="answerBorderClass(answer.correct)" *ngFor="let answer of item.failedQuestions">
+                <div class="d-flex justify-content-between gap-2 mb-2">
+                  <div>
+                    <div class="fw-semibold">{{ answer.axisTitle }}</div>
+                    <div class="text-secondary small">{{ answer.angle }}</div>
+                  </div>
+                  <span class="badge text-bg-danger">Ratee</span>
+                </div>
+                <p class="mb-2">{{ answer.questionText }}</p>
+                <div class="bg-danger-subtle rounded p-3 mb-2">
+                  <div class="small text-secondary mb-1">Reponse de l'eleve</div>
+                  <div>{{ answer.answerText || '-' }}</div>
+                </div>
+                <div class="bg-success-subtle rounded p-3 mb-2">
+                  <div class="small text-secondary mb-1">Bonne reponse</div>
+                  <div>{{ answer.expectedAnswer }}</div>
+                </div>
+                <div class="small text-secondary">Feedback</div>
+                <div>{{ answer.feedback }}</div>
+              </article>
             </div>
           </div>
         </div>

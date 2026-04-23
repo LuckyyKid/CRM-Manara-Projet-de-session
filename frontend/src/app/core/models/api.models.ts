@@ -371,6 +371,9 @@ export interface TutorQuizAnswerDto {
   expectedAnswer: string;
   answerText: string;
   options: string[];
+  scorePercent: number | null;
+  correct: boolean;
+  feedback: string;
 }
 
 export interface TutorQuizSubmissionDto {
@@ -483,6 +486,9 @@ export interface AnimateurHomeworkStudentRowDto {
   remainingCount: number;
   averageScorePercent: number | null;
   latestSubmittedAt: string | null;
+  difficultyStatus: string;
+  difficultyLabel: string;
+  weakestAxisTitle: string | null;
 }
 
 export interface AnimateurHomeworkOverviewDto {
@@ -490,6 +496,11 @@ export interface AnimateurHomeworkOverviewDto {
   submittedCount: number;
   remainingCount: number;
   studentCount: number;
+  strugglingStudentCount: number;
+  weakestAxisTitle: string | null;
+  weakestAxisScorePercent: number | null;
+  mostFailedQuestionText: string | null;
+  mostFailedQuestionCount: number;
   students: AnimateurHomeworkStudentRowDto[];
 }
 
@@ -500,6 +511,11 @@ export interface AnimateurHomeworkStudentDetailDto {
   submittedCount: number;
   remainingCount: number;
   averageScorePercent: number | null;
+  difficultyStatus: string;
+  difficultyLabel: string;
+  weakAxes: string[];
+  quizAttempts: QuizAttemptDto[];
+  failedQuestions: TutorQuizAnswerDto[];
   assignments: HomeworkDto[];
   attempts: HomeworkAttemptDto[];
 }

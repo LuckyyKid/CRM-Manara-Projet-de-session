@@ -7,6 +7,11 @@ public record AnimateurHomeworkOverviewDto(
         long submittedCount,
         long remainingCount,
         long studentCount,
+        long strugglingStudentCount,
+        String weakestAxisTitle,
+        Double weakestAxisScorePercent,
+        String mostFailedQuestionText,
+        Long mostFailedQuestionCount,
         List<AnimateurHomeworkStudentRowDto> students
 ) {
 }

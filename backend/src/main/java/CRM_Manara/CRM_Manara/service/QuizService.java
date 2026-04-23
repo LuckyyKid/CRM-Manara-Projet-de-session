@@ -918,6 +918,7 @@ public class QuizService {
 
     private TutorQuizAnswerDto toSubmissionAnswerDto(QuizAnswer answer) {
         QuizQuestion question = answer.getQuestion();
+        double score = scoreQuizAnswer(answer);
         return new TutorQuizAnswerDto(
                 question.getId(),
                 question.getAxis().getTitle(),
@@ -925,8 +926,47 @@ public class QuizService {
                 question.getQuestionText(),
                 question.getExpectedAnswer(),
                 answer.getAnswerText(),
-                question.getOptions()
+                question.getOptions(),
+                score,
+                score >= 66.0,
+                quizFeedback(score)
         );
+    }
+
+    private double scoreQuizAnswer(QuizAnswer answer) {
+        Set<String> expectedTokens = answerKeywords(answer.getQuestion().getExpectedAnswer());
+        Set<String> answerTokens = answerKeywords(answer.getAnswerText());
+        if (answerTokens.isEmpty()) {
+            return 0;
+        }
+        if (expectedTokens.isEmpty()) {
+            return answer.getAnswerText().trim().length() >= 20 ? 60 : 35;
+        }
+        long matches = expectedTokens.stream().filter(answerTokens::contains).count();
+        double overlap = (double) matches / expectedTokens.size();
+        return Math.max(0, Math.min(100, 20 + (overlap * 80)));
+    }
+
+    private Set<String> answerKeywords(String value) {
+        Set<String> tokens = new LinkedHashSet<>();
+        Matcher matcher = WORD_PATTERN.matcher(value == null ? "" : value.toLowerCase(Locale.ROOT));
+        while (matcher.find()) {
+            String token = stripAccents(matcher.group()).replace("'", "").replace("-", "");
+            if (token.length() >= 2 && !STOP_WORDS.contains(token)) {
+                tokens.add(token);
+            }
+        }
+        return tokens;
+    }
+
+    private String quizFeedback(double score) {
+        if (score >= 66.0) {
+            return "Reponse suffisante: l'idee principale est presente.";
+        }
+        if (score < 35) {
+            return "La reponse ne reprend pas les notions attendues. Revoir la definition ou la methode avant de refaire l'exercice.";
+        }
+        return "La piste est partielle. Il fallait expliciter les mots cles de la reponse attendue et justifier davantage.";
     }
 
     private String capitalize(String value) {

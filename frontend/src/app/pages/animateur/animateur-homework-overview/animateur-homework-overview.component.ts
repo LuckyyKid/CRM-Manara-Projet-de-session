@@ -70,6 +70,16 @@ export class AnimateurHomeworkOverviewComponent implements OnInit {
     return score === null || score === undefined ? 'En attente' : `${Math.round(score)}%`;
   }
 
+  difficultyBadgeClass(status: string | null | undefined): string {
+    if (status === 'HIGH') {
+      return 'text-bg-danger';
+    }
+    if (status === 'MEDIUM') {
+      return 'text-bg-warning';
+    }
+    return 'text-bg-success';
+  }
+
   private normalize(value: string): string {
     return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
   }

@@ -20,6 +20,7 @@ import CRM_Manara.CRM_Manara.dto.HomeworkAttemptDto;
 import CRM_Manara.CRM_Manara.dto.HomeworkAttemptSubmitDto;
 import CRM_Manara.CRM_Manara.dto.HomeworkDto;
 import CRM_Manara.CRM_Manara.dto.HomeworkExerciseDto;
+import CRM_Manara.CRM_Manara.dto.QuizAttemptDto;
 import CRM_Manara.CRM_Manara.dto.TutorQuizAnswerDto;
 import java.text.Normalizer;
 import java.time.LocalDate;
@@ -297,21 +298,32 @@ public class HomeworkService {
         List<HomeworkAttempt> attempts = homeworkAttemptRepo.findByAssignmentAnimateurIdOrderBySubmittedAtDesc(animateurId).stream()
                 .filter(attempt -> isTutoringAssignment(attempt.getAssignment()))
                 .toList();
+        List<QuizAttempt> quizAttempts = quizAttemptRepo.findByQuizAnimateurIdOrderBySubmittedAtDesc(animateurId).stream()
+                .filter(attempt -> isTutoringQuiz(attempt.getQuiz()))
+                .toList();
 
         List<AnimateurHomeworkStudentRowDto> students = assignments.stream()
                 .collect(Collectors.groupingBy(assignment -> assignment.getEnfant().getId(), LinkedHashMap::new, Collectors.toList()))
                 .values().stream()
-                .map(studentAssignments -> toAnimateurStudentRow(studentAssignments, attempts))
+                .map(studentAssignments -> toAnimateurStudentRow(studentAssignments, attempts,
+                        quizAttemptsForStudent(quizAttempts, studentAssignments.get(0).getEnfant().getId())))
                 .sorted(Comparator.comparing(AnimateurHomeworkStudentRowDto::enfantName, String.CASE_INSENSITIVE_ORDER))
                 .toList();
 
         long assignedCount = assignments.size();
         long submittedCount = assignments.stream().filter(assignment -> !assignment.getAttempts().isEmpty()).count();
+        AxisSummary weakestAxis = weakestAxis(quizAttempts);
+        QuestionFailure mostFailedQuestion = mostFailedQuestion(quizAttempts);
         return new AnimateurHomeworkOverviewDto(
                 assignedCount,
                 submittedCount,
                 Math.max(0, assignedCount - submittedCount),
                 students.size(),
+                students.stream().filter(student -> "HIGH".equals(student.difficultyStatus())).count(),
+                weakestAxis == null ? null : weakestAxis.axisTitle(),
+                weakestAxis == null ? null : weakestAxis.scorePercent(),
+                mostFailedQuestion == null ? null : mostFailedQuestion.questionText(),
+                mostFailedQuestion == null ? 0L : mostFailedQuestion.failureCount(),
                 students
         );
     }
@@ -330,8 +342,14 @@ public class HomeworkService {
         List<HomeworkAttempt> attempts = homeworkAttemptRepo.findByAssignmentAnimateurIdAndEnfantIdOrderBySubmittedAtDesc(animateurId, enfantId).stream()
                 .filter(attempt -> isTutoringAssignment(attempt.getAssignment()))
                 .toList();
+        List<QuizAttempt> quizAttempts = quizAttemptsForStudent(
+                quizAttemptRepo.findByQuizAnimateurIdOrderBySubmittedAtDesc(animateurId).stream()
+                        .filter(attempt -> isTutoringQuiz(attempt.getQuiz()))
+                        .toList(),
+                enfantId
+        );
 
-        AnimateurHomeworkStudentRowDto row = toAnimateurStudentRow(assignments, attempts);
+        AnimateurHomeworkStudentRowDto row = toAnimateurStudentRow(assignments, attempts, quizAttempts);
         return new AnimateurHomeworkStudentDetailDto(
                 row.enfantId(),
                 row.enfantName(),
@@ -339,6 +357,15 @@ public class HomeworkService {
                 row.submittedCount(),
                 row.remainingCount(),
                 row.averageScorePercent(),
+                row.difficultyStatus(),
+                row.difficultyLabel(),
+                weakAxes(quizAttempts),
+                quizAttempts.stream().map(this::toQuizAttemptDto).toList(),
+                quizAttempts.stream()
+                        .flatMap(attempt -> attempt.getAnswers().stream())
+                        .filter(answer -> scoreQuizAnswer(answer) < WEAK_AXIS_THRESHOLD)
+                        .map(this::toQuizAnswerDto)
+                        .toList(),
                 assignments.stream().map(this::toHomeworkDto).toList(),
                 attempts.stream().map(this::toAttemptDto).toList()
         );
@@ -707,7 +734,10 @@ public class HomeworkService {
                                 answer.getExercise().getQuestionText(),
                                 answer.getExercise().getExpectedAnswer(),
                                 answer.getAnswerText(),
-                                answer.getExercise().getOptions()
+                                answer.getExercise().getOptions(),
+                                null,
+                                attempt.getScorePercent() != null && attempt.getScorePercent() >= WEAK_AXIS_THRESHOLD,
+                                homeworkFeedback(answer.getExercise().getTargetMistake())
                         ))
                         .toList()
         );
@@ -784,7 +814,9 @@ public class HomeworkService {
         );
     }
 
-    private AnimateurHomeworkStudentRowDto toAnimateurStudentRow(List<HomeworkAssignment> assignments, List<HomeworkAttempt> attempts) {
+    private AnimateurHomeworkStudentRowDto toAnimateurStudentRow(List<HomeworkAssignment> assignments,
+                                                                 List<HomeworkAttempt> attempts,
+                                                                 List<QuizAttempt> quizAttempts) {
         HomeworkAssignment first = assignments.get(0);
         Long enfantId = first.getEnfant().getId();
         String enfantName = first.getEnfant().getPrenom() + " " + first.getEnfant().getNom();
@@ -801,6 +833,8 @@ public class HomeworkService {
                 .map(HomeworkAttempt::getSubmittedAt)
                 .max(LocalDateTime::compareTo)
                 .orElse(null);
+        AxisSummary weakestAxis = weakestAxis(quizAttempts);
+        Difficulty difficulty = difficulty(Double.isNaN(averageScore) ? null : averageScore, submittedCount, assignments.size());
         return new AnimateurHomeworkStudentRowDto(
                 enfantId,
                 enfantName,
@@ -808,8 +842,119 @@ public class HomeworkService {
                 submittedCount,
                 Math.max(0, assignments.size() - submittedCount),
                 Double.isNaN(averageScore) ? null : averageScore,
-                latestSubmittedAt
+                latestSubmittedAt,
+                difficulty.status(),
+                difficulty.label(),
+                weakestAxis == null ? null : weakestAxis.axisTitle()
         );
+    }
+
+    private List<QuizAttempt> quizAttemptsForStudent(List<QuizAttempt> attempts, Long enfantId) {
+        return attempts.stream()
+                .filter(attempt -> attempt.getEnfant() != null && attempt.getEnfant().getId().equals(enfantId))
+                .toList();
+    }
+
+    private QuizAttemptDto toQuizAttemptDto(QuizAttempt attempt) {
+        String enfantName = attempt.getEnfant().getPrenom() + " " + attempt.getEnfant().getNom();
+        return new QuizAttemptDto(
+                attempt.getId(),
+                attempt.getQuiz().getId(),
+                attempt.getQuiz().getTitle(),
+                attempt.getEnfant().getId(),
+                enfantName,
+                attempt.getSubmittedAt(),
+                attempt.getElapsedSeconds(),
+                attempt.getScorePercent(),
+                attempt.getStatus()
+        );
+    }
+
+    private TutorQuizAnswerDto toQuizAnswerDto(QuizAnswer answer) {
+        double score = scoreQuizAnswer(answer);
+        return new TutorQuizAnswerDto(
+                answer.getQuestion().getId(),
+                answer.getQuestion().getAxis().getTitle(),
+                answer.getQuestion().getAngle(),
+                answer.getQuestion().getQuestionText(),
+                answer.getQuestion().getExpectedAnswer(),
+                answer.getAnswerText(),
+                answer.getQuestion().getOptions(),
+                score,
+                score >= WEAK_AXIS_THRESHOLD,
+                quizFeedback(score)
+        );
+    }
+
+    private List<String> weakAxes(List<QuizAttempt> attempts) {
+        Map<String, AxisSummary> summaries = axisSummaries(attempts);
+        return summaries.values().stream()
+                .filter(axis -> axis.scorePercent() < WEAK_AXIS_THRESHOLD)
+                .sorted(Comparator.comparingDouble(AxisSummary::scorePercent))
+                .map(AxisSummary::axisTitle)
+                .distinct()
+                .limit(4)
+                .toList();
+    }
+
+    private AxisSummary weakestAxis(List<QuizAttempt> attempts) {
+        return axisSummaries(attempts).values().stream()
+                .min(Comparator.comparingDouble(AxisSummary::scorePercent))
+                .orElse(null);
+    }
+
+    private Map<String, AxisSummary> axisSummaries(List<QuizAttempt> attempts) {
+        Map<String, List<QuizAnswer>> answersByAxis = attempts.stream()
+                .flatMap(attempt -> attempt.getAnswers().stream())
+                .collect(Collectors.groupingBy(answer -> normalizeAxis(answer.getQuestion().getAxis().getTitle()), LinkedHashMap::new, Collectors.toList()));
+        Map<String, AxisSummary> summaries = new LinkedHashMap<>();
+        for (List<QuizAnswer> answers : answersByAxis.values()) {
+            if (answers.isEmpty()) {
+                continue;
+            }
+            double average = answers.stream().mapToDouble(this::scoreQuizAnswer).average().orElse(0);
+            summaries.put(normalizeAxis(answers.get(0).getQuestion().getAxis().getTitle()),
+                    new AxisSummary(answers.get(0).getQuestion().getAxis().getTitle(), average));
+        }
+        return summaries;
+    }
+
+    private QuestionFailure mostFailedQuestion(List<QuizAttempt> attempts) {
+        return attempts.stream()
+                .flatMap(attempt -> attempt.getAnswers().stream())
+                .filter(answer -> scoreQuizAnswer(answer) < WEAK_AXIS_THRESHOLD)
+                .collect(Collectors.groupingBy(answer -> answer.getQuestion().getId(), LinkedHashMap::new, Collectors.toList()))
+                .values().stream()
+                .map(answers -> new QuestionFailure(answers.get(0).getQuestion().getQuestionText(), (long) answers.size()))
+                .max(Comparator.comparingLong(QuestionFailure::failureCount))
+                .orElse(null);
+    }
+
+    private Difficulty difficulty(Double averageScore, long submittedCount, long assignedCount) {
+        if (submittedCount == 0 || averageScore == null || averageScore < 60 || assignedCount - submittedCount >= 2) {
+            return new Difficulty("HIGH", "En difficulte");
+        }
+        if (averageScore < 75 || assignedCount - submittedCount == 1) {
+            return new Difficulty("MEDIUM", "Difficulte moyenne");
+        }
+        return new Difficulty("GOOD", "Bon niveau");
+    }
+
+    private String quizFeedback(double score) {
+        if (score >= WEAK_AXIS_THRESHOLD) {
+            return "Reponse suffisante: l'idee principale est presente.";
+        }
+        if (score < 35) {
+            return "La reponse ne reprend pas les notions attendues. Revoir la definition ou la methode avant de refaire l'exercice.";
+        }
+        return "La piste est partielle. Il fallait expliciter les mots cles de la reponse attendue et justifier davantage.";
+    }
+
+    private String homeworkFeedback(String targetMistake) {
+        if (targetMistake == null || targetMistake.isBlank()) {
+            return "Comparez avec l'attendu et reperez la notion manquante.";
+        }
+        return "Point a corriger: " + targetMistake;
     }
 
     private Set<String> keywords(String value) {
@@ -833,6 +978,13 @@ public class HomeworkService {
                 && assignment.getAnimation() != null
                 && assignment.getAnimation().getActivity() != null
                 && assignment.getAnimation().getActivity().getType() == typeActivity.TUTORAT;
+    }
+
+    private boolean isTutoringQuiz(Quiz quiz) {
+        return quiz != null
+                && quiz.getAnimation() != null
+                && quiz.getAnimation().getActivity() != null
+                && quiz.getAnimation().getActivity().getType() == typeActivity.TUTORAT;
     }
 
     private String normalizeAxis(String title) {
@@ -913,5 +1065,14 @@ public class HomeworkService {
                                    double scorePercent,
                                    LocalDateTime submittedAt,
                                    List<String> mistakes) {
+    }
+
+    private record AxisSummary(String axisTitle, double scorePercent) {
+    }
+
+    private record QuestionFailure(String questionText, long failureCount) {
+    }
+
+    private record Difficulty(String status, String label) {
     }
 }
