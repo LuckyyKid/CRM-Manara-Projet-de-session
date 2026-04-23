@@ -814,6 +814,13 @@ textarea.form-control:focus {
     color: rgba(255, 255, 255, 0.88) !important;
 }
 
+.mm-hero-cta {
+    margin-top: 1.2rem;
+    padding: 0.85rem 1.25rem;
+    font-weight: 700;
+    box-shadow: 0 1rem 2rem rgba(6, 45, 67, 0.22);
+}
+
 .mm-hero-stats {
     display: flex;
     gap: 1.3rem;
@@ -859,6 +866,27 @@ textarea.form-control:focus {
 
 .mm-section-sub {
     margin: 0.5rem 0 0;
+}
+
+.mm-finder-feature {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.6rem;
+    border-radius: var(--mm-radius-lg);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(214, 233, 255, 0.8));
+    border: 1px solid rgba(10, 102, 255, 0.12);
+    box-shadow: var(--mm-shadow);
+}
+
+.mm-finder-feature-copy {
+    max-width: 48rem;
+}
+
+.mm-finder-feature-cta {
+    flex-shrink: 0;
+    font-weight: 700;
 }
 
 .mm-activity-filters {
