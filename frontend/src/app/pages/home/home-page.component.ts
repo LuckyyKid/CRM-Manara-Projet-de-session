@@ -37,10 +37,12 @@ export class HomePageComponent implements OnInit {
   ngOnInit(): void {
     this.activityCatalogService.getCatalog().subscribe({
       next: (activities) => {
+        console.log('API RESPONSE home catalog', activities);
         this.activities.set(activities);
         this.loading.set(false);
       },
-      error: () => {
+      error: (error) => {
+        console.error('HOME PAGE LOAD ERROR', error);
         this.error.set("Impossible de charger les activites du moment.");
         this.loading.set(false);
       },

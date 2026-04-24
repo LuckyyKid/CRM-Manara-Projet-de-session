@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ActivityDto } from '../../core/models/api.models';
 import { PublicActivitiesService } from '../../core/services/public-activities.service';
@@ -12,7 +12,10 @@ export class HomeActivityCatalogService {
   getCatalog(): Observable<HomeActivityCard[]> {
     return this.publicActivitiesService.getActivities().pipe(
       map((activities) => this.mapBackendActivities(activities)),
-      catchError(() => of([])),
+      catchError((error) => {
+        console.error('CATALOG ERROR', error);
+        return throwError(() => error);
+      }),
     );
   }
 
