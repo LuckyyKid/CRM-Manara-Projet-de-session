@@ -12,7 +12,10 @@ export const apiBaseInterceptor: HttpInterceptorFn = (request, next) => {
   const normalizedBaseUrl = environment.apiUrl.replace(/\/+$/, '');
   const normalizedPath = request.url.startsWith('/') ? request.url : `/${request.url}`;
 
+  const resolvedUrl = `${normalizedBaseUrl}${normalizedPath}`;
+  console.log('API REQUEST', request.method, resolvedUrl);
+
   return next(request.clone({
-    url: `${normalizedBaseUrl}${normalizedPath}`,
+    url: resolvedUrl,
   }));
 };

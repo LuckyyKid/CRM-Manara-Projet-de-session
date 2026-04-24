@@ -39,8 +39,8 @@ public class SecurityConfig {
     @Value("${app.frontend.base-url:http://localhost:4200}")
     private String frontendBaseUrl;
 
-    @Value("${app.cors.allowed-origin-patterns:http://localhost:4200,http://127.0.0.1:4200,https://*.vercel.app}")
-    private String allowedOriginPatterns;
+    @Value("${app.cors.allowed-origins:https://crm-manara-projet-de-session.vercel.app}")
+    private String allowedOrigins;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -57,14 +57,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(
-                List.of(allowedOriginPatterns.split(",")).stream()
+        configuration.setAllowedOrigins(
+                List.of(allowedOrigins.split(",")).stream()
                         .map(String::trim)
                         .filter(value -> !value.isBlank())
                         .toList()
         );
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("Set-Cookie"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

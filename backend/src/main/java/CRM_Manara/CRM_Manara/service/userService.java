@@ -88,8 +88,10 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
 
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
+        logger.info("Google OAuth login received for email={}", email);
 
         if (email == null || email.isBlank()) {
+            logger.warn("Google OAuth payload without email");
             throw new OAuth2AuthenticationException(
                     new OAuth2Error("invalid_user_info"),
                     "Email Google introuvable"
@@ -97,7 +99,12 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
         }
 
         User user = userRepo.findByEmail(email.trim())
-                .orElseGet(() -> createGoogleParent(email.trim(), name));
+                .orElseGet(() -> {
+                    logger.info("No existing user found for {}, creating Google parent account", email.trim());
+                    return createGoogleParent(email.trim(), name);
+                });
+        logger.info("Google OAuth user resolved in DB: email={}, role={}, enabled={}",
+                user.getEmail(), user.getRole(), user.isEnabled());
 
         avatarService.assignOAuthAvatar(
                 user,
@@ -106,6 +113,7 @@ public class userService implements UserDetailsService, OAuth2UserService<OAuth2
         );
 
         if (!user.isEnabled()) {
+            logger.warn("Google OAuth account pending approval for {}", user.getEmail());
             throw new OAuth2AuthenticationException(
                     new OAuth2Error("account_pending"),
                     "Compte en attente d'approbation par l'administration."

@@ -3,6 +3,8 @@ package CRM_Manara.CRM_Manara.config;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -13,10 +15,12 @@ import java.io.IOException;
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationSuccessHandler.class);
+
     private final String frontendBaseUrl;
 
     public CustomAuthenticationSuccessHandler(@Value("${app.frontend.base-url:http://localhost:4200}") String frontendBaseUrl) {
-        this.frontendBaseUrl = frontendBaseUrl;
+        this.frontendBaseUrl = frontendBaseUrl.replaceAll("/+$", "");
     }
 
     @Override
@@ -24,7 +28,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication) throws IOException {
-        response.sendRedirect(frontendBaseUrl + dashboardPath(authentication));
+        String redirectUrl = frontendBaseUrl + dashboardPath(authentication);
+        logger.info("OAuth success for {} -> {}", authentication == null ? "anonymous" : authentication.getName(), redirectUrl);
+        response.sendRedirect(redirectUrl);
     }
 
     private String dashboardPath(Authentication authentication) {

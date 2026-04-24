@@ -7,6 +7,8 @@ import CRM_Manara.CRM_Manara.service.AvatarService;
 import CRM_Manara.CRM_Manara.service.CurrentUserService;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,8 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api")
 public class ApiMeController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApiMeController.class);
 
     private final CurrentUserService currentUserService;
     private final UserRepo userRepo;
@@ -35,6 +39,7 @@ public class ApiMeController {
 
     @GetMapping("/me")
     public CurrentUserDto me(Authentication authentication) {
+        logger.info("GET /api/me called with principal={}", authentication == null ? null : authentication.getName());
         return currentUserService.currentUser(authentication);
     }
 
