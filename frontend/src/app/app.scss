@@ -13,6 +13,12 @@
   }
 }
 
+.mm-auth-mobile-bar,
+.mm-app-sidebar-mobile-head,
+.mm-app-sidebar-backdrop {
+  display: none;
+}
+
 // ============================================================
 // Décale le contenu vers la droite quand la sidebar est visible
 // Remplace le sélecteur CSS .mm-app-sidebar + .mm-page
@@ -31,4 +37,96 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+}
+
+@media (max-width: 991.98px) {
+  .mm-auth-mobile-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1036;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.75rem 1rem;
+    background: rgba(248, 249, 250, 0.88);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(117, 139, 173, 0.12);
+
+    .navbar-brand {
+      min-width: 0;
+      margin-bottom: 0;
+    }
+
+    .mm-brand-mark {
+      width: 3.2rem;
+      height: 3.2rem;
+      margin-right: 0.65rem;
+    }
+  }
+
+  .mm-mobile-nav-toggle {
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border-radius: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .mm-app-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1034;
+    display: block;
+    background: rgba(15, 23, 42, 0.28);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+  }
+
+  .mm-app-sidebar-backdrop-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mm-app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(22rem, calc(100vw - 1.5rem));
+    padding: 0.75rem;
+    transform: translateX(calc(-100% - 1rem));
+    transition: transform 0.22s ease;
+    overflow-y: auto;
+    background: rgba(243, 244, 245, 0.92);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.16);
+  }
+
+  .mm-app-sidebar.mm-app-sidebar-open {
+    transform: translateX(0);
+  }
+
+  .mm-app-sidebar-inner {
+    min-height: 100%;
+  }
+
+  .mm-app-sidebar-mobile-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .mm-page-with-sidebar {
+    margin-left: 0;
+
+    .mm-main {
+      padding-left: 0;
+    }
+  }
 }
