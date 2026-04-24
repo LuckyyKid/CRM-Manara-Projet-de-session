@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -9,7 +8,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 
 @Component({
   selector: 'app-animateur-quiz-detail',
-  imports: [CommonModule, DatePipe, RouterLink, PaginationComponent, TranslatePipe],
+  imports: [CommonModule, DatePipe, RouterLink, PaginationComponent],
   templateUrl: './animateur-quiz-detail.component.html',
 })
 export class AnimateurQuizDetailComponent implements OnInit {

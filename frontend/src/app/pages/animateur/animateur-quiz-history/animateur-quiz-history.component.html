@@ -1,21 +1,21 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.HISTORIQUE' | translate }}</span>
-      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.QUIZ_GENERES' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_HISTORY.ANIMATEUR_QUIZ_HISTORY.RETROUVEZ_LES_QUIZ_DEJA_CREES_ET_FILTREZ_PAR_DATE' | translate }}</p>
+      <span class="mm-page-eyebrow">Historique</span>
+      <h1 class="mm-page-title fs-1">Quiz generes</h1>
+      <p class="mm-page-subtitle">Retrouvez les quiz deja crees et filtrez par date.</p>
     </div>
     <div class="mm-page-actions">
       <button class="btn btn-outline-primary" type="button" [disabled]="backfilling()" (click)="backfillHomeworks()">
         {{ backfilling() ? 'Regeneration...' : 'Regenerer les devoirs manquants' }}
       </button>
-      <a class="btn btn-primary" routerLink="/animateur/quizzes">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.CREER_UN_QUIZ' | translate }}</a>
+      <a class="btn btn-primary" routerLink="/animateur/quizzes">Creer un quiz</a>
     </div>
   </div>
 
   <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <app-list-page
     *ngIf="!loading()"
@@ -35,20 +35,20 @@
     (next)="nextPage()">
     <ng-template appListFilters>
       <div class="col-12 col-md-6 col-lg-3">
-        <label class="form-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_HISTORY.ANIMATEUR_QUIZ_HISTORY.A_PARTIR_DU' | translate }}</label>
+        <label class="form-label">A partir du</label>
         <input #fromInput type="date" class="form-control" [value]="fromDate()" (input)="setFromDate(fromInput.value)" />
       </div>
       <div class="col-12 col-md-6 col-lg-3">
-        <label class="form-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_HISTORY.ANIMATEUR_QUIZ_HISTORY.JUSQU_AU' | translate }}</label>
+        <label class="form-label">Jusqu'au</label>
         <input #toInput type="date" class="form-control" [value]="toDate()" (input)="setToDate(toInput.value)" />
       </div>
     </ng-template>
     <ng-template appListHead>
-      <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_HISTORY.ANIMATEUR_QUIZ_HISTORY.TITRE' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_HISTORY.ANIMATEUR_QUIZ_HISTORY.AXES' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+      <th>Titre</th>
+      <th>Activite</th>
+      <th>Date</th>
+      <th>Axes</th>
+      <th>Actions</th>
     </ng-template>
     <ng-template appListRow let-quiz>
       <td>{{ quiz.title }}</td>
@@ -57,8 +57,8 @@
       <td>{{ quiz.axes.length }}</td>
       <td>
         <div class="d-flex gap-2 flex-wrap">
-          <button class="btn btn-sm btn-outline-primary" (click)="openDetail(quiz.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.DETAILS' | translate }}</button>
-          <button class="btn btn-sm btn-outline-danger" (click)="deleteQuiz(quiz)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.SUPPRIMER' | translate }}</button>
+          <button class="btn btn-sm btn-outline-primary" (click)="openDetail(quiz.id)">Details</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="deleteQuiz(quiz)">Supprimer</button>
         </div>
       </td>
     </ng-template>

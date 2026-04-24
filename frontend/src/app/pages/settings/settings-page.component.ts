@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -9,7 +8,7 @@ import { OnboardingService } from '../../core/services/onboarding.service';
 
 @Component({
   selector: 'app-settings-page',
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './settings-page.component.html',
 })
 export class SettingsPageComponent {

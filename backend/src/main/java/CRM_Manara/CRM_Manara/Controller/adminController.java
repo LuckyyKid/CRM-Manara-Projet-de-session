@@ -92,7 +92,7 @@ public class adminController {
             model.addAttribute("formData", buildActivityFormData(name, description, ageMin, ageMax, capacity, status, type));
             return "admin/adminActivityNew";
         }
-        adminService.createActivity(name, null, description, null, null, ageMin, ageMax, capacity, status, type);
+        adminService.createActivity(name, description, null, ageMin, ageMax, capacity, status, type);
         redirectAttributes.addFlashAttribute("message", "Activité créée.");
         return "redirect:/admin/activities";
     }
@@ -132,7 +132,7 @@ public class adminController {
             model.addAttribute("errors", errors);
             return "admin/adminActivityEdit";
         }
-        adminService.updateActivity(id, name, null, description, null, null, ageMin, ageMax, capacity, status, type);
+        adminService.updateActivity(id, name, description, null, ageMin, ageMax, capacity, status, type);
         redirectAttributes.addFlashAttribute("message", "Activité mise à jour.");
         return "redirect:/admin/activities";
     }

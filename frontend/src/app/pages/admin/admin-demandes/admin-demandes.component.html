@@ -1,15 +1,15 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.VALIDATION' | translate }}</span>
-      <h1 class="mm-page-title fs-1">{{ 'NAV.REQUESTS' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.UNIFIEZ_LE_TRAITEMENT_DES_DEMANDES_AVEC_UNE_VUE_PAR_SECTION' | translate }}</p>
+      <span class="mm-page-eyebrow">Validation</span>
+      <h1 class="mm-page-title fs-1">Demandes</h1>
+      <p class="mm-page-subtitle">Unifiez le traitement des demandes avec une vue par section.</p>
     </div>
   </div>
 
   <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()">
     <div class="card mm-card-shadow mb-4">
@@ -21,7 +21,7 @@
             [class.btn-primary]="activeSection() === 'pending'"
             [class.btn-outline-primary]="activeSection() !== 'pending'"
             (click)="setSection('pending')">
-            {{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.EN_ATTENTE' | translate }}
+            En attente
           </button>
           <button
             type="button"
@@ -29,7 +29,7 @@
             [class.btn-primary]="activeSection() === 'search'"
             [class.btn-outline-primary]="activeSection() !== 'search'"
             (click)="setSection('search')">
-            {{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE' | translate }}
+            Recherche
           </button>
           <button
             type="button"
@@ -37,7 +37,7 @@
             [class.btn-primary]="activeSection() === 'processed'"
             [class.btn-outline-primary]="activeSection() !== 'processed'"
             (click)="setSection('processed')">
-            {{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.TRAITEES' | translate }}
+            Traitees
           </button>
         </div>
       </div>
@@ -46,70 +46,70 @@
     <div *ngIf="activeSection() === 'search'" class="card mm-card-shadow mb-4">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.RECHERCHE_DES_INSCRIPTIONS' | translate }}</h2>
-          <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.FILTREZ_PAR_ANIMATEUR_ACTIVITE_ANIMATION_PARENT_ENFANT_OU_ST' | translate }}</p>
+          <h2 class="mm-panel-title">Recherche des inscriptions</h2>
+          <p class="mm-panel-subtitle">Filtrez par animateur, activite, animation, parent, enfant ou statut.</p>
         </div>
 
         <div class="row g-3 mb-4">
           <div class="col-12 col-md-4 col-xl-3">
-            <label class="form-label" for="filterAnimateur">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ANIMATEUR' | translate }}</label>
+            <label class="form-label" for="filterAnimateur">Animateur</label>
             <select id="filterAnimateur" class="form-select" (change)="updateFilter('animateurId', $any($event.target).value)">
-              <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUS' | translate }}</option>
+              <option value="">Tous</option>
               <option *ngFor="let animateur of animateurs()" [value]="animateur.id">
                 {{ animateur.prenom }} {{ animateur.nom }}
               </option>
             </select>
           </div>
           <div class="col-12 col-md-4 col-xl-3">
-            <label class="form-label" for="filterActivity">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</label>
+            <label class="form-label" for="filterActivity">Activite</label>
             <select id="filterActivity" class="form-select" (change)="updateFilter('activityId', $any($event.target).value)">
-              <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUTES' | translate }}</option>
+              <option value="">Toutes</option>
               <option *ngFor="let activity of activities()" [value]="activity.id">{{ activity.name }}</option>
             </select>
           </div>
           <div class="col-12 col-md-4 col-xl-3">
-            <label class="form-label" for="filterAnimation">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ANIMATION' | translate }}</label>
+            <label class="form-label" for="filterAnimation">Animation</label>
             <select id="filterAnimation" class="form-select" (change)="updateFilter('animationId', $any($event.target).value)">
-              <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUTES' | translate }}</option>
+              <option value="">Toutes</option>
               <option *ngFor="let row of animations()" [value]="row.animation.id">
                 {{ row.animation.activity.name }} - {{ row.animation.startTime | date:'dd/MM/yyyy HH:mm' }}
               </option>
             </select>
           </div>
           <div class="col-12 col-md-4 col-xl-3">
-            <label class="form-label" for="filterStatus">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</label>
+            <label class="form-label" for="filterStatus">Statut</label>
             <select id="filterStatus" class="form-select" (change)="updateFilter('status', $any($event.target).value)">
-              <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUS' | translate }}</option>
-              <option value="DEMANDE">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DEMANDE' | translate }}</option>
-              <option value="APPROUVE">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.APPROUVE' | translate }}</option>
-              <option value="REFUSER">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.REFUSE' | translate }}</option>
+              <option value="">Tous</option>
+              <option value="DEMANDE">Demande</option>
+              <option value="APPROUVE">Approuve</option>
+              <option value="REFUSER">Refuse</option>
             </select>
           </div>
           <div class="col-12 col-md-4 col-xl-3">
-            <label class="form-label" for="filterParent">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PARENT' | translate }}</label>
+            <label class="form-label" for="filterParent">Parent</label>
             <select id="filterParent" class="form-select" (change)="updateFilter('parentId', $any($event.target).value)">
-              <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUS' | translate }}</option>
+              <option value="">Tous</option>
               <option *ngFor="let parent of parents()" [value]="parent.id">
                 {{ parent.prenom }} {{ parent.nom }}
               </option>
             </select>
           </div>
           <div class="col-12 col-md-4 col-xl-3">
-            <label class="form-label" for="filterEnfant">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</label>
+            <label class="form-label" for="filterEnfant">Enfant</label>
             <select id="filterEnfant" class="form-select" (change)="updateFilter('enfantId', $any($event.target).value)">
-              <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUS' | translate }}</option>
+              <option value="">Tous</option>
               <option *ngFor="let enfant of enfants()" [value]="enfant.id">
                 {{ enfant.prenom }} {{ enfant.nom }}
               </option>
             </select>
           </div>
           <div class="col-12 col-md-8 col-xl-6">
-            <label class="form-label" for="filterSearch">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE' | translate }}</label>
+            <label class="form-label" for="filterSearch">Recherche</label>
             <input
               id="filterSearch"
               class="form-control"
               type="search"
-              placeholder="{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.ENFANT_PARENT_ANIMATEUR_OU_ACTIVITE' | translate }}"
+              placeholder="Enfant, parent, animateur ou activite"
               (input)="updateFilter('search', $any($event.target).value)">
           </div>
         </div>
@@ -118,13 +118,13 @@
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PARENT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ANIMATEUR' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+                <th>Enfant</th>
+                <th>Parent</th>
+                <th>Animateur</th>
+                <th>Activite</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -150,13 +150,13 @@
                       *ngIf="review.inscription.statusInscription === 'EN_ATTENTE'"
                       class="btn btn-sm btn-success"
                       (click)="approve(review.inscription.id)">
-                      {{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.APPROUVER' | translate }}
+                      Approuver
                     </button>
                     <button
                       *ngIf="review.inscription.statusInscription === 'EN_ATTENTE'"
                       class="btn btn-sm btn-danger"
                       (click)="reject(review.inscription.id)">
-                      {{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.REFUSER' | translate }}
+                      Refuser
                     </button>
                   </div>
                 </td>
@@ -180,29 +180,29 @@
         <div class="card mm-card-shadow h-100">
           <div class="card-body">
             <div class="mb-3">
-              <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.COMPTES_PARENTS_EN_ATTENTE' | translate }}</h2>
+              <h2 class="mm-panel-title">Comptes parents en attente</h2>
               <p class="mm-panel-subtitle">{{ pendingParents().length }} compte(s) a traiter.</p>
             </div>
             <div class="table-responsive">
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>{{ 'COMMON.LAST_NAME' | translate }}</th>
-                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEUR_FORM.ADMIN_ANIMATEUR_FORM.EMAIL' | translate }}</th>
-                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngIf="!visiblePendingParents().length">
-                    <td colspan="3" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.AUCUN_COMPTE_PARENT_EN_ATTENTE' | translate }}</td>
+                    <td colspan="3" class="text-secondary">Aucun compte parent en attente.</td>
                   </tr>
                   <tr *ngFor="let parent of visiblePendingParents()">
                     <td>{{ parent.prenom }} {{ parent.nom }}</td>
                     <td class="text-secondary">{{ parent.user?.email }}</td>
                     <td>
                       <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-sm btn-success" (click)="approveParent(parent.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.APPROUVER' | translate }}</button>
-                        <button class="btn btn-sm btn-danger" (click)="rejectParent(parent.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.REFUSER' | translate }}</button>
+                        <button class="btn btn-sm btn-success" (click)="approveParent(parent.id)">Approuver</button>
+                        <button class="btn btn-sm btn-danger" (click)="rejectParent(parent.id)">Refuser</button>
                       </div>
                     </td>
                   </tr>
@@ -225,22 +225,22 @@
         <div class="card mm-card-shadow h-100">
           <div class="card-body">
             <div class="mb-3">
-              <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DEMANDES_D_INSCRIPTION_EN_ATTENTE' | translate }}</h2>
+              <h2 class="mm-panel-title">Demandes d inscription en attente</h2>
               <p class="mm-panel-subtitle">{{ pendingInscriptions().length }} demande(s) a traiter.</p>
             </div>
             <div class="table-responsive">
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
-                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
-                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.DETAILS' | translate }}</th>
-                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+                    <th>Enfant</th>
+                    <th>Activite</th>
+                    <th>Details</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngIf="!visiblePendingInscriptions().length">
-                    <td colspan="4" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.AUCUNE_INSCRIPTION_EN_ATTENTE' | translate }}</td>
+                    <td colspan="4" class="text-secondary">Aucune inscription en attente.</td>
                   </tr>
                   <tr *ngFor="let review of visiblePendingInscriptions()">
                     <td>
@@ -254,13 +254,13 @@
                       <span class="d-block">{{ review.inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</span>
                       <span *ngIf="review.capacity" class="text-secondary small">
                         Places : {{ review.capacity.approved }}/{{ review.capacity.capacity }}
-                        <span class="badge bg-warning text-dark ms-1" *ngIf="review.capacity.full">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.COMPLET' | translate }}</span>
+                        <span class="badge bg-warning text-dark ms-1" *ngIf="review.capacity.full">Complet</span>
                       </span>
                     </td>
                     <td>
                       <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-sm btn-success" (click)="approve(review.inscription.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.APPROUVER' | translate }}</button>
-                        <button class="btn btn-sm btn-danger" (click)="reject(review.inscription.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.REFUSER' | translate }}</button>
+                        <button class="btn btn-sm btn-success" (click)="approve(review.inscription.id)">Approuver</button>
+                        <button class="btn btn-sm btn-danger" (click)="reject(review.inscription.id)">Refuser</button>
                       </div>
                     </td>
                   </tr>
@@ -283,22 +283,22 @@
     <div *ngIf="activeSection() === 'processed'" class="card mm-card-shadow">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.INSCRIPTIONS_TRAITEES' | translate }}</h2>
-          <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.HISTORIQUE_DES_INSCRIPTIONS_APPROUVEES_OU_REFUSEES' | translate }}</p>
+          <h2 class="mm-panel-title">Inscriptions traitees</h2>
+          <p class="mm-panel-subtitle">Historique des inscriptions approuvees ou refusees.</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
+                <th>Enfant</th>
+                <th>Activite</th>
+                <th>Date</th>
+                <th>Statut</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visibleProcessedInscriptions().length">
-                <td colspan="4" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.AUCUNE_INSCRIPTION_TRAITEE' | translate }}</td>
+                <td colspan="4" class="text-secondary">Aucune inscription traitee.</td>
               </tr>
               <tr *ngFor="let review of visibleProcessedInscriptions()">
                 <td>{{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}</td>

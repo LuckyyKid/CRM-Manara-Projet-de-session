@@ -1,7 +1,7 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.DETAIL_QUIZ' | translate }}</span>
+      <span class="mm-page-eyebrow">Detail quiz</span>
       <h1 class="mm-page-title fs-1">{{ quiz()?.title || 'Quiz' }}</h1>
       <p class="mm-page-subtitle" *ngIf="quiz() as item">
         Cree le {{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}
@@ -9,42 +9,42 @@
       </p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.HISTORIQUE' | translate }}</a>
-      <a class="btn btn-primary" routerLink="/animateur/quizzes">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.CREER_UN_QUIZ' | translate }}</a>
+      <a class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">Historique</a>
+      <a class="btn btn-primary" routerLink="/animateur/quizzes">Creer un quiz</a>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <ng-container *ngIf="!loading() && quiz() as item">
     <div class="row g-3 mb-4">
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.ETUDIANTS_REPONDANTS' | translate }}</span>
+          <span class="mm-kpi-label">Etudiants repondants</span>
           <span class="mm-kpi-value">{{ uniqueResponderCount() }}</span>
           <span class="mm-kpi-meta">Sur {{ eligibleCount() }} inscrit(s)</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.COMPLETION' | translate }}</span>
+          <span class="mm-kpi-label">Completion</span>
           <span class="mm-kpi-value">{{ formatMetric(completionRate(), '%') }}</span>
-          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.SOUMISSIONS_UNIQUES' | translate }}</span>
+          <span class="mm-kpi-meta">Soumissions uniques</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.REUSSITE' | translate }}</span>
+          <span class="mm-kpi-label">Reussite</span>
           <span class="mm-kpi-value">{{ formatMetric(successRate(), '%') }}</span>
-          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.SEUIL_60' | translate }}</span>
+          <span class="mm-kpi-meta">Seuil: 60%</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.TEMPS_MOYEN' | translate }}</span>
+          <span class="mm-kpi-label">Temps moyen</span>
           <span class="mm-kpi-value">{{ formatMetric(averageTime(), 's') }}</span>
-          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.TEMPS_DES_SOUMISSIONS' | translate }}</span>
+          <span class="mm-kpi-meta">Temps des soumissions</span>
         </div>
       </div>
     </div>
@@ -53,7 +53,7 @@
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-3">
           <div>
-            <h2 class="mm-panel-title mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.SOUMISSIONS' | translate }}</h2>
+            <h2 class="mm-panel-title mb-1">Soumissions</h2>
             <p class="mm-panel-subtitle mb-0">{{ quizSubmissions().length }} soumission(s) recueillie(s).</p>
           </div>
           <div class="text-secondary small">{{ filteredSubmissions().length }} resultat(s)</div>
@@ -61,12 +61,12 @@
 
         <div class="row g-2 align-items-end mb-3">
           <div class="col-12 col-lg-6">
-            <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE' | translate }}</label>
+            <label class="form-label">Recherche</label>
             <input
               #searchInput
               type="search"
               class="form-control"
-              placeholder="{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.NOM_DE_L_ETUDIANT' | translate }}"
+              placeholder="Nom de l'etudiant"
               [value]="search()"
               (input)="setSearch(searchInput.value)"
             />
@@ -77,16 +77,16 @@
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.ETUDIANT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.DATE_DE_SOUMISSION' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.SCORE' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+                <th>Etudiant</th>
+                <th>Date de soumission</th>
+                <th>Statut</th>
+                <th>Score</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visibleSubmissions().length">
-                <td colspan="5" class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.AUCUNE_SOUMISSION_NE_CORRESPOND_A_LA_RECHERCHE' | translate }}</td>
+                <td colspan="5" class="text-secondary">Aucune soumission ne correspond a la recherche.</td>
               </tr>
               <tr *ngFor="let submission of visibleSubmissions()">
                 <td>{{ submission.enfantName }}</td>
@@ -99,7 +99,7 @@
                 <td>{{ formatMetric(submission.scorePercent, '%') }}</td>
                 <td>
                   <button class="btn btn-sm btn-outline-primary" type="button" (click)="openSubmission(submission)">
-                    {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.VOIR_LES_REPONSES' | translate }}
+                    Voir les reponses
                   </button>
                 </td>
               </tr>

@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
@@ -16,7 +15,7 @@ interface QuizCarouselQuestion {
 
 @Component({
   selector: 'app-parent-quiz-respond',
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './parent-quiz-respond.component.html',
   styleUrl: '../parent-quizzes/parent-quizzes.component.css',
 })

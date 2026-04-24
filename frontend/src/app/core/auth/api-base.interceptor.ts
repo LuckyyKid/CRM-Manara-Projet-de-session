@@ -1,12 +1,9 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { LanguageService } from '../i18n/language.service';
 
 const API_PREFIXES = ['/api', '/oauth2', '/login/oauth2', '/logout'];
 
 export const apiBaseInterceptor: HttpInterceptorFn = (request, next) => {
-  const languageService = inject(LanguageService);
   const shouldPrefix = API_PREFIXES.some((prefix) => request.url.startsWith(prefix));
   if (!shouldPrefix) {
     return next(request);
@@ -20,8 +17,5 @@ export const apiBaseInterceptor: HttpInterceptorFn = (request, next) => {
 
   return next(request.clone({
     url: resolvedUrl,
-    setHeaders: {
-      'X-Language': languageService.getCurrentLanguage(),
-    },
   }));
 };

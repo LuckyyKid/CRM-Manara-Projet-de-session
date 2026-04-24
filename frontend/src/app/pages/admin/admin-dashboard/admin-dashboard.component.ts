@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -13,7 +12,7 @@ import { isAnimationActiveOrUpcoming } from '../../../core/utils/animation-time-
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [CommonModule, RouterLink, DatePipe, TranslatePipe],
+  imports: [CommonModule, RouterLink, DatePipe],
   templateUrl: './admin-dashboard.component.html',
 })
 export class AdminDashboardComponent implements OnInit {

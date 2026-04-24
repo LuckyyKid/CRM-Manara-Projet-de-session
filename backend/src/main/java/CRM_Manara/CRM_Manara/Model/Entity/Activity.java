@@ -19,14 +19,8 @@ public class Activity {
     @Column(name = "ActivyName")
     private String activyName;
 
-    @Column(name = "ActivyNameEn")
-    private String activyNameEn;
-
     @Column(name = "Description", columnDefinition = "TEXT")
     private String description;
-
-    @Column(name = "DescriptionEn", columnDefinition = "TEXT")
-    private String descriptionEn;
 
     @Column(name = "ImageUrl", columnDefinition = "TEXT")
     private String imageUrl;
@@ -62,20 +56,13 @@ public class Activity {
 
     public Activity (String activyName, String description, int ageMin, int ageMax, int capacity,
                      status status, typeActivity type ) {
-        this(activyName, null, description, null, null, ageMin, ageMax, capacity, status, type);
+        this(activyName, description, null, ageMin, ageMax, capacity, status, type);
     }
 
     public Activity (String activyName, String description, String imageUrl, int ageMin, int ageMax, int capacity,
                       status status, typeActivity type ) {
-    this(activyName, null, description, null, imageUrl, ageMin, ageMax, capacity, status, type);
-    }
-
-    public Activity(String activyName, String activyNameEn, String description, String descriptionEn, String imageUrl,
-                    int ageMin, int ageMax, int capacity, status status, typeActivity type) {
     this.activyName = activyName;
-    this.activyNameEn = activyNameEn;
     this.description = description;
-    this.descriptionEn = descriptionEn;
     this.imageUrl = imageUrl;
     this.ageMin = ageMin;
     this.ageMax = ageMax;
@@ -95,23 +82,11 @@ public class Activity {
     public void setActivyName(String activyName) {
         this.activyName = activyName;
     }
-    public String getActivyNameEn() {
-        return activyNameEn;
-    }
-    public void setActivyNameEn(String activyNameEn) {
-        this.activyNameEn = activyNameEn;
-    }
     public String getDescription() {
         return description;
     }
     public void setDescription(String description) {
         this.description = description;
-    }
-    public String getDescriptionEn() {
-        return descriptionEn;
-    }
-    public void setDescriptionEn(String descriptionEn) {
-        this.descriptionEn = descriptionEn;
     }
     public String getImageUrl() {
         return imageUrl;

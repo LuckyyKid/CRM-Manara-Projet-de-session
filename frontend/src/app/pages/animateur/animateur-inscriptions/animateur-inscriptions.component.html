@@ -1,34 +1,34 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_INSCRIPTIONS.ANIMATEUR_INSCRIPTIONS.INSCRIPTIONS' | translate }}</span>
-      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.ENFANTS_INSCRITS' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_INSCRIPTIONS.ANIMATEUR_INSCRIPTIONS.FILTREZ_PAR_ANIMATION_ET_RECHERCHEZ_UN_ENFANT_OU_UN_PARENT' | translate }}</p>
+      <span class="mm-page-eyebrow">Inscriptions</span>
+      <h1 class="mm-page-title fs-1">Enfants inscrits</h1>
+      <p class="mm-page-subtitle">Filtrez par animation et recherchez un enfant ou un parent.</p>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
       <div class="row g-3 align-items-end mb-4">
         <div class="col-12 col-lg-4">
-          <label class="form-label" for="animationFilter">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ANIMATION' | translate }}</label>
+          <label class="form-label" for="animationFilter">Animation</label>
           <select id="animationFilter" class="form-select" (change)="setAnimationFilter($any($event.target).value)">
-            <option value="">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_INSCRIPTIONS.ANIMATEUR_INSCRIPTIONS.TOUTES_MES_ANIMATIONS' | translate }}</option>
+            <option value="">Toutes mes animations</option>
             <option *ngFor="let animation of animations()" [value]="animation.id">
               {{ animation.activity.name }} - {{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}
             </option>
           </select>
         </div>
         <div class="col-12 col-lg-5">
-          <label class="form-label" for="search">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE' | translate }}</label>
+          <label class="form-label" for="search">Recherche</label>
           <input
             id="search"
             class="form-control"
             type="search"
-            placeholder="{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_INSCRIPTIONS.ANIMATEUR_INSCRIPTIONS.NOM_DE_L_ENFANT_OU_DU_PARENT' | translate }}"
+            placeholder="Nom de l'enfant ou du parent"
             (input)="setSearchTerm($any($event.target).value)">
         </div>
         <div class="col-12 col-lg-3">
@@ -42,18 +42,18 @@
         <table class="table table-sm align-middle">
           <thead>
             <tr>
-              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
-              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PARENT' | translate }}</th>
-              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
-              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
-              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
-              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.SITUATION' | translate }}</th>
-              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+              <th>Enfant</th>
+              <th>Parent</th>
+              <th>Activite</th>
+              <th>Date</th>
+              <th>Statut</th>
+              <th>Situation</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="!visibleInscriptions().length">
-              <td colspan="7" class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_INSCRIPTIONS.ANIMATEUR_INSCRIPTIONS.AUCUN_ENFANT_INSCRIT_NE_CORRESPOND_AUX_FILTRES' | translate }}</td>
+              <td colspan="7" class="text-secondary">Aucun enfant inscrit ne correspond aux filtres.</td>
             </tr>
             <tr *ngFor="let inscription of visibleInscriptions()">
               <td>{{ inscription.enfant.prenom }} {{ inscription.enfant.nom }}</td>
@@ -61,7 +61,7 @@
                 <span *ngIf="inscription.enfant.parent; else noParent">
                   {{ inscription.enfant.parent.prenom }} {{ inscription.enfant.parent.nom }}
                 </span>
-                <ng-template #noParent><span class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_INSCRIPTIONS.ANIMATEUR_INSCRIPTIONS.NON_PRECISE' | translate }}</span></ng-template>
+                <ng-template #noParent><span class="text-secondary">Non precise</span></ng-template>
               </td>
               <td>{{ inscription.animation.activity.name }}</td>
               <td>{{ inscription.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
@@ -69,7 +69,7 @@
               <td><span class="badge text-bg-light">{{ timeStatusLabel(timeStatus(inscription.animation.startTime, inscription.animation.endTime)) }}</span></td>
               <td>
                 <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', inscription.animation.id]">
-                  {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.PRESENCES' | translate }}
+                  Presences
                 </a>
               </td>
             </tr>

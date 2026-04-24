@@ -1,23 +1,23 @@
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_RESPOND.PARENT_HOMEWORK_RESPOND.FAIRE_LE_DEVOIR' | translate }}</span>
+          <span class="mm-page-eyebrow">Faire le devoir</span>
           <h1 class="mm-page-title fs-1">{{ homework()?.title || 'Devoir' }}</h1>
           <p class="mm-page-subtitle" *ngIf="homework() as item">
             {{ item.enfantName }} - {{ item.activityName || 'Activite' }} - {{ item.exercises.length }} exercice(s)
           </p>
         </div>
         <div class="mm-page-actions">
-          <a class="btn btn-outline-primary" routerLink="/parent/homeworks">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.RETOUR_AUX_DEVOIRS' | translate }}</a>
+          <a class="btn btn-outline-primary" routerLink="/parent/homeworks">Retour aux devoirs</a>
         </div>
       </div>
 
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
       <div *ngIf="saving()" class="alert alert-info d-flex align-items-center gap-3" aria-live="polite">
         <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
-        <div>{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_RESPOND.PARENT_HOMEWORK_RESPOND.SOUMISSION_DU_DEVOIR_EN_COURS_LA_CORRECTION_PEUT_PRENDRE_QUE' | translate }}</div>
+        <div>Soumission du devoir en cours. La correction peut prendre quelques secondes.</div>
       </div>
-      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
       <div *ngIf="!loading() && homework() as item" class="card mm-card-shadow">
         <div class="card-body">
@@ -55,7 +55,7 @@
                     </div>
                   </label>
                 </div>
-                <div class="form-text">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_RESPOND.PARENT_HOMEWORK_RESPOND.CHOISISSEZ_LA_FORMULE_CORRECTE_SI_L_ECRITURE_EST_TROP_COMPLE' | translate }}</div>
+                <div class="form-text">Choisissez la formule correcte si l'ecriture est trop complexe a saisir.</div>
               </ng-container>
               <ng-template #openAnswer>
                 <textarea
@@ -64,7 +64,7 @@
                   [ngModel]="answers()[exercise.id] || ''"
                   (ngModelChange)="setAnswer(exercise.id, $event)"
                   [disabled]="saving()"
-                  placeholder="{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_RESPOND.PARENT_HOMEWORK_RESPOND.VOTRE_REPONSE' | translate }}"></textarea>
+                  placeholder="Votre reponse"></textarea>
               </ng-template>
             </article>
           </div>

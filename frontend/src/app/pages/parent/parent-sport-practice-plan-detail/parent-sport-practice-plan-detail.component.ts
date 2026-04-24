@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -7,7 +6,7 @@ import { ParentService } from '../../../core/services/parent.service';
 
 @Component({
   selector: 'app-parent-sport-practice-plan-detail',
-  imports: [CommonModule, DatePipe, RouterLink, TranslatePipe],
+  imports: [CommonModule, DatePipe, RouterLink],
   templateUrl: './parent-sport-practice-plan-detail.component.html',
 })
 export class ParentSportPracticePlanDetailComponent implements OnInit {

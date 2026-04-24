@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
@@ -10,7 +9,7 @@ import { AnimateurService } from '../../../core/services/animateur.service';
 
 @Component({
   selector: 'app-animateur-quizzes',
-  imports: [CommonModule, FormsModule, DatePipe, RouterLink, TranslatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, RouterLink],
   templateUrl: './animateur-quizzes.component.html',
 })
 export class AnimateurQuizzesComponent implements OnInit, OnDestroy {

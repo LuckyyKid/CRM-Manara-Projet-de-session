@@ -1,44 +1,44 @@
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.DEVOIRS_DE_L_ETUDIANT' | translate }}</span>
+          <span class="mm-page-eyebrow">Devoirs de l'etudiant</span>
           <h1 class="mm-page-title fs-1">{{ detail()?.enfantName || 'Detail etudiant' }}</h1>
-          <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.STATISTIQUES_DEVOIRS_ATTRIBUES_ET_SOUMISSIONS_DE_CET_ETUDIAN' | translate }}</p>
+          <p class="mm-page-subtitle">Statistiques, devoirs attribues et soumissions de cet etudiant.</p>
         </div>
         <div class="mm-page-actions">
-          <a class="btn btn-outline-primary" routerLink="/animateur/homeworks">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.RETOUR_AUX_DEVOIRS' | translate }}</a>
+          <a class="btn btn-outline-primary" routerLink="/animateur/homeworks">Retour aux devoirs</a>
         </div>
       </div>
 
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
       <ng-container *ngIf="!loading() && detail() as item">
         <div class="row g-3 mb-4">
           <div class="col-12 col-md-3">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.DEVOIRS_ATTRIBUES' | translate }}</span>
+              <span class="mm-kpi-label">Devoirs attribues</span>
               <span class="mm-kpi-value">{{ item.assignedCount }}</span>
-              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.TOTAL_DE_L_ETUDIANT' | translate }}</span>
+              <span class="mm-kpi-meta">Total de l'etudiant</span>
             </div>
           </div>
           <div class="col-12 col-md-3">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.DEVOIRS_REMIS' | translate }}</span>
+              <span class="mm-kpi-label">Devoirs remis</span>
               <span class="mm-kpi-value">{{ item.submittedCount }}</span>
-              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.SOUMISSIONS_COMPLETES' | translate }}</span>
+              <span class="mm-kpi-meta">Soumissions completes</span>
             </div>
           </div>
           <div class="col-12 col-md-3">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.RESTANTS' | translate }}</span>
+              <span class="mm-kpi-label">Restants</span>
               <span class="mm-kpi-value">{{ item.remainingCount }}</span>
-              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.A_RENDRE' | translate }}</span>
+              <span class="mm-kpi-meta">A rendre</span>
             </div>
           </div>
           <div class="col-12 col-md-3">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.DIFFICULTE_GLOBALE' | translate }}</span>
+              <span class="mm-kpi-label">Difficulte globale</span>
               <span class="mm-kpi-value fs-4">{{ item.difficultyLabel }}</span>
               <span class="mm-kpi-meta">Moyenne: {{ formatScore(item.averageScorePercent) }}</span>
             </div>
@@ -49,23 +49,23 @@
           <div class="col-12 col-lg-4">
             <div class="card mm-card-shadow h-100">
               <div class="card-body">
-                <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</h2>
+                <h2 class="mm-panel-title">Statut</h2>
                 <span class="badge" [ngClass]="difficultyBadgeClass(item.difficultyStatus)">
                   {{ item.difficultyLabel }}
                 </span>
-                <p class="mm-panel-subtitle mt-3 mb-0">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.STATUT_CALCULE_AVEC_LA_MOYENNE_ET_LES_DEVOIRS_RESTANTS' | translate }}</p>
+                <p class="mm-panel-subtitle mt-3 mb-0">Statut calcule avec la moyenne et les devoirs restants.</p>
               </div>
             </div>
           </div>
           <div class="col-12 col-lg-4">
             <div class="card mm-card-shadow h-100">
               <div class="card-body">
-                <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.AXES_FAIBLES' | translate }}</h2>
+                <h2 class="mm-panel-title">Axes faibles</h2>
                 <div class="d-flex flex-wrap gap-2" *ngIf="item.weakAxes.length; else noWeakAxes">
                   <span class="badge text-bg-warning" *ngFor="let axis of item.weakAxes">{{ axis }}</span>
                 </div>
                 <ng-template #noWeakAxes>
-                  <p class="text-secondary mb-0">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.AUCUN_AXE_FAIBLE_DETECTE' | translate }}</p>
+                  <p class="text-secondary mb-0">Aucun axe faible detecte.</p>
                 </ng-template>
               </div>
             </div>
@@ -73,9 +73,9 @@
           <div class="col-12 col-lg-4">
             <div class="card mm-card-shadow h-100">
               <div class="card-body">
-                <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.QUIZ_LIES' | translate }}</h2>
+                <h2 class="mm-panel-title">Quiz lies</h2>
                 <div class="fs-3 fw-bold">{{ item.quizAttempts.length }}</div>
-                <p class="mm-panel-subtitle mb-0">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.SOUMISSION_S_DE_QUIZ_UTILISEES_POUR_SITUER_LA_DIFFICULTE' | translate }}</p>
+                <p class="mm-panel-subtitle mb-0">Soumission(s) de quiz utilisees pour situer la difficulte.</p>
               </div>
             </div>
           </div>
@@ -83,9 +83,9 @@
 
         <div class="card mm-card-shadow mb-4">
           <div class="card-body">
-            <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.QUESTIONS_RATEES' | translate }}</h2>
-            <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.REPONSES_A_REVOIR_EN_PRIORITE_AVEC_L_ATTENDU_ET_UN_FEEDBACK_' | translate }}</p>
-            <div *ngIf="!item.failedQuestions.length" class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.AUCUNE_QUESTION_RATEE_DETECTEE' | translate }}</div>
+            <h2 class="mm-panel-title">Questions ratees</h2>
+            <p class="mm-panel-subtitle">Reponses a revoir en priorite avec l'attendu et un feedback court.</p>
+            <div *ngIf="!item.failedQuestions.length" class="text-secondary">Aucune question ratee detectee.</div>
             <div class="vstack gap-3">
               <article class="border rounded p-3" [ngClass]="answerBorderClass(answer.correct)" *ngFor="let answer of item.failedQuestions">
                 <div class="d-flex justify-content-between gap-2 mb-2">
@@ -93,18 +93,18 @@
                     <div class="fw-semibold">{{ answer.axisTitle }}</div>
                     <div class="text-secondary small">{{ answer.angle }}</div>
                   </div>
-                  <span class="badge text-bg-danger">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.RATEE' | translate }}</span>
+                  <span class="badge text-bg-danger">Ratee</span>
                 </div>
                 <p class="mb-2">{{ answer.questionText }}</p>
                 <div class="bg-danger-subtle rounded p-3 mb-2">
-                  <div class="small text-secondary mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.REPONSE_DE_L_ELEVE' | translate }}</div>
+                  <div class="small text-secondary mb-1">Reponse de l'eleve</div>
                   <div>{{ answer.answerText || '-' }}</div>
                 </div>
                 <div class="bg-success-subtle rounded p-3 mb-2">
-                  <div class="small text-secondary mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.BONNE_REPONSE' | translate }}</div>
+                  <div class="small text-secondary mb-1">Bonne reponse</div>
                   <div>{{ answer.expectedAnswer }}</div>
                 </div>
-                <div class="small text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.FEEDBACK' | translate }}</div>
+                <div class="small text-secondary">Feedback</div>
                 <div>{{ answer.feedback }}</div>
               </article>
             </div>
@@ -113,23 +113,23 @@
 
         <div class="card mm-card-shadow">
           <div class="card-body">
-            <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.DEVOIRS_ATTRIBUES' | translate }}</h2>
-            <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.CLIQUEZ_SUR_DETAILS_POUR_VOIR_LE_DEVOIR_LA_SOUMISSION_ET_LES' | translate }}</p>
+            <h2 class="mm-panel-title">Devoirs attribues</h2>
+            <p class="mm-panel-subtitle">Cliquez sur Details pour voir le devoir, la soumission et les reponses de l'etudiant.</p>
 
             <div class="table-responsive">
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.DEVOIR' | translate }}</th>
-                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
-                    <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.DERNIERE_REMISE' | translate }}</th>
-                    <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.SCORE' | translate }}</th>
-                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+                    <th>Devoir</th>
+                    <th>Statut</th>
+                    <th>Derniere remise</th>
+                    <th>Score</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngIf="!item.assignments.length">
-                    <td colspan="5" class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.AUCUN_DEVOIR_ATTRIBUE' | translate }}</td>
+                    <td colspan="5" class="text-secondary">Aucun devoir attribue.</td>
                   </tr>
                   <tr *ngFor="let assignment of item.assignments">
                     <td>
@@ -141,7 +141,7 @@
                     <td>{{ formatScore(latestAttemptForAssignment(assignment)?.scorePercent ?? null) }}</td>
                     <td>
                       <button class="btn btn-sm btn-outline-primary" type="button" (click)="openAssignmentDetail(assignment.id)">
-                        {{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.DETAILS' | translate }}
+                        Details
                       </button>
                     </td>
                   </tr>

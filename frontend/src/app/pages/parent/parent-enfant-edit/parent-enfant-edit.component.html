@@ -3,23 +3,23 @@
     <div class="col-12 col-md-8 col-lg-6">
       <div class="card mm-card-shadow mm-form-card">
         <div class="card-body p-4">
-          <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_EDIT.PARENT_ENFANT_EDIT.EDITION' | translate }}</span>
-          <h1 class="mm-page-title fs-2 mb-3">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_EDIT.PARENT_ENFANT_EDIT.MODIFIER_UN_ENFANT' | translate }}</h1>
+          <span class="mm-page-eyebrow">Édition</span>
+          <h1 class="mm-page-title fs-2 mb-3">Modifier un enfant</h1>
 
-          <div *ngIf="loading()" class="text-secondary py-3">{{ 'COMMON.LOADING' | translate }}</div>
+          <div *ngIf="loading()" class="text-secondary py-3">Chargement...</div>
           <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
 
           <form *ngIf="!loading()" (ngSubmit)="onSubmit()">
             <div class="mb-3">
-              <label class="form-label">{{ 'COMMON.LAST_NAME' | translate }}</label>
+              <label class="form-label">Nom</label>
               <input type="text" class="form-control" [(ngModel)]="nom" name="nom" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">{{ 'COMMON.FIRST_NAME' | translate }}</label>
+              <label class="form-label">Prénom</label>
               <input type="text" class="form-control" [(ngModel)]="prenom" name="prenom" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.DATE_DE_NAISSANCE' | translate }}</label>
+              <label class="form-label">Date de naissance</label>
               <input type="date" class="form-control" [(ngModel)]="dateDeNaissance" name="dateDeNaissance" required>
             </div>
 
@@ -27,7 +27,7 @@
               <button type="submit" class="btn btn-primary" [disabled]="saving()">
                 {{ saving() ? 'Enregistrement...' : 'Enregistrer' }}
               </button>
-              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITY_FORM.ADMIN_ACTIVITY_FORM.ANNULER' | translate }}</button>
+              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">Annuler</button>
             </div>
           </form>
         </div>

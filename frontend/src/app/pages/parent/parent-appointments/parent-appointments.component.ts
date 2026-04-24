@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +13,7 @@ import {
 @Component({
   selector: 'app-parent-appointments',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, AvailabilityCalendarComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, AvailabilityCalendarComponent],
   templateUrl: './parent-appointments.component.html',
   styleUrl: './parent-appointments.component.scss',
 })

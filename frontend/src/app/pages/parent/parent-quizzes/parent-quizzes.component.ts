@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -12,7 +11,7 @@ import {
 
 @Component({
   selector: 'app-parent-quizzes',
-  imports: [CommonModule, DatePipe, ListPageComponent, ListHeadDirective, ListRowDirective, RouterLink, TranslatePipe],
+  imports: [CommonModule, DatePipe, ListPageComponent, ListHeadDirective, ListRowDirective, RouterLink],
   templateUrl: './parent-quizzes.component.html',
   styleUrl: './parent-quizzes.component.css',
 })

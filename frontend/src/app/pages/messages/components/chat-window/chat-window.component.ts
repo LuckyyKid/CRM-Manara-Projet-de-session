@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import {
   AfterViewChecked,
   ChangeDetectionStrategy,
@@ -20,7 +19,7 @@ type MessageGroup = {
 @Component({
   selector: 'app-chat-window',
   standalone: true,
-  imports: [CommonModule, DatePipe, TranslatePipe],
+  imports: [CommonModule, DatePipe],
   templateUrl: './chat-window.component.html',
   styleUrl: './chat-window.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,9 +1,9 @@
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.OUTIL_PUBLIC' | translate }}</span>
-          <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.TROUVER_LA_BONNE_ACTIVITE' | translate }}</h1>
-          <p class="mm-page-subtitle">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.ENTREZ_L_AGE_LA_PERSONNALITE_ET_LE_BESOIN_DE_VOTRE_ENFANT_PO' | translate }}</p>
+          <span class="mm-page-eyebrow">Outil public</span>
+          <h1 class="mm-page-title fs-1">Trouver la bonne activite</h1>
+          <p class="mm-page-subtitle">Entrez l'age, la personnalite et le besoin de votre enfant pour obtenir une orientation claire.</p>
         </div>
       </div>
 
@@ -11,27 +11,27 @@
         <div class="col-12 col-lg-5">
           <div class="card mm-card-shadow h-100">
             <div class="card-body">
-              <h2 class="mm-panel-title mb-4">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.PROFIL_DE_L_ENFANT' | translate }}</h2>
+              <h2 class="mm-panel-title mb-4">Profil de l'enfant</h2>
 
               <div class="mb-3">
-                <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.AGE' | translate }}</label>
+                <label class="form-label">Age</label>
                 <input type="number" min="3" max="29" class="form-control" [(ngModel)]="age" name="age">
               </div>
 
               <div class="mb-3">
-                <label class="form-label">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.PERSONNALITE_ET_INTERETS' | translate }}</label>
+                <label class="form-label">Personnalite et interets</label>
                 <textarea class="form-control" rows="4" [(ngModel)]="profile" name="profile"
-                  placeholder="{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.EXEMPLE_ENERGIQUE_CURIEUX_AIME_DESSINER_PREFERE_LES_PETITS_G' | translate }}"></textarea>
+                  placeholder="Exemple : energique, curieux, aime dessiner, prefere les petits groupes"></textarea>
               </div>
 
               <div class="mb-4">
-                <label class="form-label">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.BESOIN_OU_PROBLEMATIQUE_A_TRAVAILLER' | translate }}</label>
+                <label class="form-label">Besoin ou problematique a travailler</label>
                 <textarea class="form-control" rows="4" [(ngModel)]="goal" name="goal"
-                  placeholder="{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.EXEMPLE_REPRENDRE_CONFIANCE_CANALISER_SON_ENERGIE_BESOIN_D_A' | translate }}"></textarea>
+                  placeholder="Exemple : reprendre confiance, canaliser son energie, besoin d'aide en mathematiques"></textarea>
               </div>
 
               <button type="button" class="btn btn-primary" (click)="recommend()">
-                {{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.VOIR_LES_RECOMMANDATIONS' | translate }}
+                Voir les recommandations
               </button>
 
               <div *ngIf="error()" class="alert alert-warning mt-3 mb-0">
@@ -44,18 +44,18 @@
         <div class="col-12 col-lg-7">
           <div class="card mm-card-shadow h-100">
             <div class="card-body">
-              <h2 class="mm-panel-title mb-3">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.RESULTATS' | translate }}</h2>
+              <h2 class="mm-panel-title mb-3">Resultats</h2>
 
               <div *ngIf="!hasSearched()" class="text-secondary">
-                {{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.RENSEIGNEZ_LE_PROFIL_DE_VOTRE_ENFANT_POUR_VOIR_LES_ACTIVITES' | translate }}
+                Renseignez le profil de votre enfant pour voir les activites les plus adaptees.
               </div>
 
               <div *ngIf="isLoading()" class="text-secondary">
-                {{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.ANALYSE_EN_COURS' | translate }}
+                Analyse en cours...
               </div>
 
               <div *ngIf="hasSearched() && !isLoading() && !error() && !results().length" class="alert alert-info mb-0">
-                {{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.AUCUNE_ACTIVITE_NE_CORRESPOND_CLAIREMENT_A_CE_PROFIL_POUR_LE' | translate }}
+                Aucune activite ne correspond clairement a ce profil pour le moment.
               </div>
 
               <p *ngIf="summary() && results().length" class="text-secondary mb-3">{{ summary() }}</p>
@@ -71,7 +71,7 @@
                     <p class="text-secondary mb-2">{{ activity.reason }}</p>
                     <div class="small text-secondary mb-1">Compatibilite estimee : {{ activity.score }}%</div>
                     <p class="small text-secondary mb-3">{{ activity.description }}</p>
-                    <a class="btn btn-outline-primary btn-sm" [routerLink]="['/activities', activity.id]">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_FINDER.VOIR_LE_DETAIL' | translate }}</a>
+                    <a class="btn btn-outline-primary btn-sm" [routerLink]="['/activities', activity.id]">Voir le detail</a>
                   </div>
                 </article>
               </div>

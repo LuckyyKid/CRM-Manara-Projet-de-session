@@ -1,83 +1,83 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'NAV.ANIMATEUR_SPACE' | translate }}</span>
-      <h1 class="mm-page-title">{{ 'NAV.DASHBOARD' | translate }}</h1>
+      <span class="mm-page-eyebrow">Espace animateur</span>
+      <h1 class="mm-page-title">Tableau de bord</h1>
       <p class="mm-page-subtitle" *ngIf="hasTutoringAnimations(); else standardSubtitle">
-        {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.VUE_PEDAGOGIQUE_DES_ANIMATIONS_DE_TUTORAT_DES_QUIZ_DES_DEVOI' | translate }}
+        Vue pedagogique des animations de tutorat, des quiz, des devoirs et des prochaines seances.
       </p>
       <ng-template #standardSubtitle>
-        <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.VUE_GLOBALE_DE_VOS_ANIMATIONS_ET_DES_PROCHAINES_SEANCES' | translate }}</p>
+        <p class="mm-page-subtitle">Vue globale de vos animations et des prochaines seances.</p>
       </ng-template>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" routerLink="/animateur/animations">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.MES_ANIMATIONS' | translate }}</a>
-      <a *ngIf="hasTutoringAnimations()" class="btn btn-primary" routerLink="/animateur/quizzes">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.CREER_UN_QUIZ' | translate }}</a>
-      <a *ngIf="hasTutoringAnimations()" class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.QUIZ_GENERES' | translate }}</a>
-      <a *ngIf="canAccessSportPracticeTools()" class="btn btn-outline-primary" routerLink="/animateur/sport-practice-plans/history">{{ 'NAV.HOME_PRACTICE' | translate }}</a>
+      <a class="btn btn-outline-primary" routerLink="/animateur/animations">Mes animations</a>
+      <a *ngIf="hasTutoringAnimations()" class="btn btn-primary" routerLink="/animateur/quizzes">Creer un quiz</a>
+      <a *ngIf="hasTutoringAnimations()" class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">Quiz generes</a>
+      <a *ngIf="canAccessSportPracticeTools()" class="btn btn-outline-primary" routerLink="/animateur/sport-practice-plans/history">Pratique maison</a>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()">
     <ng-container *ngIf="hasTutoringAnimations(); else standardDashboard">
       <div class="row g-3">
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'NAV.ANIMATIONS' | translate }}</span>
+            <span class="mm-kpi-label">Animations</span>
             <span class="mm-kpi-value">{{ countTotal() }}</span>
             <span class="mm-kpi-meta">{{ tutoringAnimationCount() }} en tutorat</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.ENFANTS_INSCRITS' | translate }}</span>
+            <span class="mm-kpi-label">Enfants inscrits</span>
             <span class="mm-kpi-value">{{ tutorDashboard()?.enrolledChildrenCount ?? 0 }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.INSCRIPTIONS_APPROUVEES_OU_ACTIVES' | translate }}</span>
+            <span class="mm-kpi-meta">Inscriptions approuvees ou actives</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.REPONDANTS_QUIZ' | translate }}</span>
+            <span class="mm-kpi-label">Repondants quiz</span>
             <span class="mm-kpi-value">{{ responseSummary() }}</span>
             <span class="mm-kpi-meta">{{ tutorDashboard()?.quizAttemptCount ?? 0 }} soumission(s)</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.PARTICIPATION' | translate }}</span>
+            <span class="mm-kpi-label">Participation</span>
             <span class="mm-kpi-value">{{ formatMetric(tutorDashboard()?.quizParticipationPercent, '%') }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.ENFANTS_AYANT_SOUMIS_AU_MOINS_UN_QUIZ' | translate }}</span>
+            <span class="mm-kpi-meta">Enfants ayant soumis au moins un quiz</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.QUIZ_CREES' | translate }}</span>
+            <span class="mm-kpi-label">Quiz crees</span>
             <span class="mm-kpi-value">{{ quizzes().length }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.SUR_VOS_ANIMATIONS' | translate }}</span>
+            <span class="mm-kpi-meta">Sur vos animations</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.DEVOIRS_ATTRIBUES' | translate }}</span>
+            <span class="mm-kpi-label">Devoirs attribues</span>
             <span class="mm-kpi-value">{{ homeworkOverview()?.assignedCount ?? 0 }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.GENERES_DEPUIS_LES_QUIZ' | translate }}</span>
+            <span class="mm-kpi-meta">Generes depuis les quiz</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.DEVOIRS_REMIS' | translate }}</span>
+            <span class="mm-kpi-label">Devoirs remis</span>
             <span class="mm-kpi-value">{{ homeworkOverview()?.submittedCount ?? 0 }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AVEC_SOUMISSION' | translate }}</span>
+            <span class="mm-kpi-meta">Avec soumission</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.A_VENIR' | translate }}</span>
+            <span class="mm-kpi-label">A venir</span>
             <span class="mm-kpi-value">{{ countUpcoming() }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.SEANCES_PLANIFIEES' | translate }}</span>
+            <span class="mm-kpi-meta">Seances planifiees</span>
           </div>
         </div>
       </div>
@@ -86,14 +86,14 @@
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start gap-3">
             <div>
-              <h2 class="mm-panel-title mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.SUIVI_TUTORAT' | translate }}</h2>
+              <h2 class="mm-panel-title mb-1">Suivi tutorat</h2>
               <p class="mm-panel-subtitle mb-0">
-                {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.LES_ANIMATIONS_DE_TUTORAT_ACTIVENT_UN_SUIVI_SUPPLEMENTAIRE_B' | translate }}
+                Les animations de tutorat activent un suivi supplementaire base sur quiz, devoirs et axes de progression.
               </p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
-              <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/homeworks">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.VOIR_LES_DEVOIRS' | translate }}</a>
-              <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/quizzes/history">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.VOIR_LES_QUIZ' | translate }}</a>
+              <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/homeworks">Voir les devoirs</a>
+              <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/quizzes/history">Voir les quiz</a>
             </div>
           </div>
         </div>
@@ -103,23 +103,23 @@
         <div class="col-12 col-xl-7">
           <div class="card mm-card-shadow h-100">
             <div class="card-body">
-              <h2 class="mm-panel-title mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.PROGRESSION_PAR_AXE' | translate }}</h2>
-              <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.LES_SCORES_SONT_ALIMENTES_PAR_LES_MICRO_DIAGNOSTICS_DE_TUTOR' | translate }}</p>
+              <h2 class="mm-panel-title mb-1">Progression par axe</h2>
+              <p class="mm-panel-subtitle">Les scores sont alimentes par les micro-diagnostics de tutorat.</p>
 
               <div class="table-responsive">
                 <table class="table table-sm align-middle">
                   <thead>
                     <tr>
-                      <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AXE' | translate }}</th>
-                      <th>{{ 'NAV.QUIZZES' | translate }}</th>
-                      <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.SCORE' | translate }}</th>
-                      <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.TEMPS' | translate }}</th>
-                      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
+                      <th>Axe</th>
+                      <th>Quiz</th>
+                      <th>Score</th>
+                      <th>Temps</th>
+                      <th>Statut</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngIf="!axesPreview().length">
-                      <td colspan="5" class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AUCUN_AXE_SUIVI_CREEZ_UN_QUIZ_POUR_INITIALISER_LE_SUIVI' | translate }}</td>
+                      <td colspan="5" class="text-secondary">Aucun axe suivi. Creez un quiz pour initialiser le suivi.</td>
                     </tr>
                     <tr *ngFor="let axis of axesPreview()">
                       <td>
@@ -141,8 +141,8 @@
         <div class="col-12 col-xl-5">
           <div class="card mm-card-shadow h-100">
             <div class="card-body">
-              <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AXES_PERSISTANTS' | translate }}</h2>
-              <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AXES_REVENUS_DANS_PLUSIEURS_QUIZ_OU_A_SURVEILLER_EN_PRIORITE' | translate }}</p>
+              <h2 class="mm-panel-title">Axes persistants</h2>
+              <p class="mm-panel-subtitle">Axes revenus dans plusieurs quiz ou a surveiller en priorite.</p>
 
               <div class="list-group list-group-flush">
                 <div class="list-group-item px-0" *ngFor="let axis of persistentAxesPreview()">
@@ -155,7 +155,7 @@
                   </div>
                 </div>
                 <div *ngIf="!persistentAxesPreview().length" class="text-secondary py-2">
-                  {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AUCUN_AXE_PERSISTANT_DETECTE_POUR_L_INSTANT' | translate }}
+                  Aucun axe persistant detecte pour l'instant.
                 </div>
               </div>
             </div>
@@ -168,30 +168,30 @@
       <div class="row g-3">
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'NAV.ANIMATIONS' | translate }}</span>
+            <span class="mm-kpi-label">Animations</span>
             <span class="mm-kpi-value">{{ countTotal() }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.TOUTES_VOS_ANIMATIONS' | translate }}</span>
+            <span class="mm-kpi-meta">Toutes vos animations</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.A_VENIR' | translate }}</span>
+            <span class="mm-kpi-label">A venir</span>
             <span class="mm-kpi-value">{{ countUpcoming() }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.SEANCES_PLANIFIEES' | translate }}</span>
+            <span class="mm-kpi-meta">Seances planifiees</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.EN_COURS' | translate }}</span>
+            <span class="mm-kpi-label">En cours</span>
             <span class="mm-kpi-value">{{ recentAnimations().length }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.ANIMATIONS_LES_PLUS_PROCHES' | translate }}</span>
+            <span class="mm-kpi-meta">Animations les plus proches</span>
           </div>
         </div>
         <div class="col-12 col-md-3">
           <div class="mm-kpi-card h-100">
-            <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.TUTORAT' | translate }}</span>
+            <span class="mm-kpi-label">Tutorat</span>
             <span class="mm-kpi-value">{{ tutoringAnimationCount() }}</span>
-            <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.ANIMATIONS_DE_TYPE_TUTORAT' | translate }}</span>
+            <span class="mm-kpi-meta">Animations de type tutorat</span>
           </div>
         </div>
       </div>
@@ -200,12 +200,12 @@
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start gap-3">
             <div>
-              <h2 class="mm-panel-title mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.PILOTAGE_ANIMATEUR' | translate }}</h2>
+              <h2 class="mm-panel-title mb-1">Pilotage animateur</h2>
               <p class="mm-panel-subtitle mb-0">
-                {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.LES_ANIMATIONS_NON_TUTORAT_GARDENT_UN_DASHBOARD_GENERAL_CENT' | translate }}
+                Les animations non tutorat gardent un dashboard general centre sur les seances et l'organisation.
               </p>
             </div>
-            <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/animations">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.VOIR_MES_ANIMATIONS' | translate }}</a>
+            <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/animations">Voir mes animations</a>
           </div>
         </div>
       </div>
@@ -214,23 +214,23 @@
         <div class="col-12 col-xl-7">
           <div class="card mm-card-shadow h-100">
             <div class="card-body">
-              <h2 class="mm-panel-title mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.ANIMATIONS_RECENTES' | translate }}</h2>
-              <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.APERCU_RECENT_DE_VOS_ANIMATIONS_POUR_ACCEDER_AUX_PRESENCES' | translate }}</p>
+              <h2 class="mm-panel-title mb-1">Animations recentes</h2>
+              <p class="mm-panel-subtitle">Apercu recent de vos animations pour acceder aux presences.</p>
 
               <div class="table-responsive">
                 <table class="table table-sm align-middle">
                   <thead>
                     <tr>
-                      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ANIMATION' | translate }}</th>
-                      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
-                      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
-                      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.SITUATION' | translate }}</th>
-                      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+                      <th>Animation</th>
+                      <th>Activite</th>
+                      <th>Date</th>
+                      <th>Situation</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngIf="!recentAnimations().length">
-                      <td colspan="5" class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AUCUNE_ANIMATION_RECENTE_POUR_LE_MOMENT' | translate }}</td>
+                      <td colspan="5" class="text-secondary">Aucune animation recente pour le moment.</td>
                     </tr>
                     <tr *ngFor="let animation of recentAnimations()">
                       <td>{{ animation.activity.name }}</td>
@@ -238,7 +238,7 @@
                       <td>{{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
                       <td>{{ animationTimeLabel(animation.startTime, animation.endTime) }}</td>
                       <td>
-                        <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.PRESENCES' | translate }}</a>
+                        <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Presences</a>
                       </td>
                     </tr>
                   </tbody>
@@ -251,8 +251,8 @@
         <div class="col-12 col-xl-5">
           <div class="card mm-card-shadow h-100">
             <div class="card-body">
-              <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.ORGANISATION' | translate }}</h2>
-              <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.ACCES_RAPIDE_A_VOS_ANIMATIONS_SANS_FONCTIONNALITES_TUTORAT' | translate }}</p>
+              <h2 class="mm-panel-title">Organisation</h2>
+              <p class="mm-panel-subtitle">Acces rapide a vos animations sans fonctionnalites tutorat.</p>
 
               <div class="list-group list-group-flush">
                 <div class="list-group-item px-0" *ngFor="let animation of recentAnimations()">
@@ -265,7 +265,7 @@
                   </div>
                 </div>
                 <div *ngIf="!recentAnimations().length" class="text-secondary py-2">
-                  {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AUCUNE_ANIMATION_DISPONIBLE' | translate }}
+                  Aucune animation disponible.
                 </div>
               </div>
             </div>
@@ -277,23 +277,23 @@
     <div class="card mm-card-shadow mt-4">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 class="mm-panel-title mb-0">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.PROCHAINES_SEANCES' | translate }}</h2>
-          <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/animations">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.VOIR_TOUT' | translate }}</a>
+          <h2 class="mm-panel-title mb-0">Prochaines seances</h2>
+          <a class="btn btn-outline-primary btn-sm" routerLink="/animateur/animations">Voir tout</a>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.SITUATION' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+                <th>Activite</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Situation</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!upcomingAnimations().length">
-                <td colspan="5" class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AUCUNE_SEANCE_A_VENIR' | translate }}</td>
+                <td colspan="5" class="text-secondary">Aucune seance a venir.</td>
               </tr>
               <tr *ngFor="let animation of upcomingAnimations()">
                 <td>{{ animation.activity.name }}</td>
@@ -302,9 +302,9 @@
                 <td><span class="badge text-bg-light">{{ animationTimeLabel(animation.startTime, animation.endTime) }}</span></td>
                 <td>
                   <div class="d-flex gap-2">
-                    <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.PRESENCES' | translate }}</a>
-                    <a *ngIf="isTutoringAnimation(animation)" class="btn btn-sm btn-outline-primary" routerLink="/animateur/quizzes" [queryParams]="{ animationId: animation.id }">{{ 'NAV.QUIZZES' | translate }}</a>
-                    <a *ngIf="isSportAnimation(animation)" class="btn btn-sm btn-outline-primary" routerLink="/animateur/sport-practice-plans" [queryParams]="{ animationId: animation.id }">{{ 'NAV.HOME_PRACTICE' | translate }}</a>
+                    <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/animateur/presence', animation.id]">Presences</a>
+                    <a *ngIf="isTutoringAnimation(animation)" class="btn btn-sm btn-outline-primary" routerLink="/animateur/quizzes" [queryParams]="{ animationId: animation.id }">Quiz</a>
+                    <a *ngIf="isSportAnimation(animation)" class="btn btn-sm btn-outline-primary" routerLink="/animateur/sport-practice-plans" [queryParams]="{ animationId: animation.id }">Pratique maison</a>
                   </div>
                 </td>
               </tr>

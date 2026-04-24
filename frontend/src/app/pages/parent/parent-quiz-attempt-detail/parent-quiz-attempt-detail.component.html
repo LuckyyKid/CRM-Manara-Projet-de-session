@@ -1,7 +1,7 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_ATTEMPT_DETAIL.PARENT_QUIZ_ATTEMPT_DETAIL.RESULTAT_DU_QUIZ' | translate }}</span>
+      <span class="mm-page-eyebrow">Resultat du quiz</span>
       <h1 class="mm-page-title fs-1">{{ attempt()?.quizTitle || 'Detail du quiz' }}</h1>
       <p class="mm-page-subtitle" *ngIf="attempt() as item">
         {{ item.enfantName }} - soumis le {{ item.submittedAt | date:'dd/MM/yyyy HH:mm' }}
@@ -9,55 +9,55 @@
       </p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" routerLink="/parent/quizzes">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORKS.PARENT_HOMEWORKS.RETOUR_AUX_QUIZ' | translate }}</a>
+      <a class="btn btn-outline-primary" routerLink="/parent/quizzes">Retour aux quiz</a>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <ng-container *ngIf="!loading() && attempt() as item">
     <div class="row g-3 mb-4">
       <div class="col-12 col-md-4">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_ATTEMPT_DETAIL.PARENT_HOMEWORK_ATTEMPT_DETAIL.NOTE' | translate }}</span>
+          <span class="mm-kpi-label">Note</span>
           <span class="mm-kpi-value">{{ scoreLabel() }}</span>
           <span class="mm-kpi-meta">{{ statusLabel(item.status) }}</span>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_ATTEMPT_DETAIL.PARENT_HOMEWORK_ATTEMPT_DETAIL.TEMPS_PRIS' | translate }}</span>
+          <span class="mm-kpi-label">Temps pris</span>
           <span class="mm-kpi-value">{{ formatTime(item.elapsedSeconds) }}</span>
-          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.TEMPS_DE_REPONSE' | translate }}</span>
+          <span class="mm-kpi-meta">Temps de reponse</span>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_ATTEMPT_DETAIL.PARENT_QUIZ_ATTEMPT_DETAIL.QUESTIONS' | translate }}</span>
+          <span class="mm-kpi-label">Questions</span>
           <span class="mm-kpi-value">{{ item.answers.length }}</span>
-          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_ATTEMPT_DETAIL.PARENT_HOMEWORK_ATTEMPT_DETAIL.REPONSES_SOUMISES' | translate }}</span>
+          <span class="mm-kpi-meta">Reponses soumises</span>
         </div>
       </div>
     </div>
 
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
-        <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.ANALYSE' | translate }}</h2>
+        <h2 class="mm-panel-title">Analyse</h2>
         <p class="mb-0">{{ analysis() }}</p>
         <div class="mt-3 d-flex flex-wrap gap-2">
           <button class="btn btn-outline-primary btn-sm" type="button" [disabled]="generatingHomework()" (click)="generateHomework()">
             {{ generatingHomework() ? 'Generation...' : 'Generer un devoir depuis cette soumission' }}
           </button>
-          <a class="btn btn-primary btn-sm" routerLink="/parent/homeworks">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_ATTEMPT_DETAIL.PARENT_QUIZ_ATTEMPT_DETAIL.VOIR_LES_DEVOIRS_PERSONNALISES' | translate }}</a>
+          <a class="btn btn-primary btn-sm" routerLink="/parent/homeworks">Voir les devoirs personnalises</a>
         </div>
       </div>
     </div>
 
     <div class="card mm-card-shadow">
       <div class="card-body">
-        <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.REPONSES_DETAILLEES' | translate }}</h2>
-        <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_ATTEMPT_DETAIL.PARENT_QUIZ_ATTEMPT_DETAIL.CONSULTEZ_CHAQUE_REPONSE_ET_L_ATTENDU_UTILISE_POUR_LA_CORREC' | translate }}</p>
+        <h2 class="mm-panel-title">Reponses detaillees</h2>
+        <p class="mm-panel-subtitle">Consultez chaque reponse et l'attendu utilise pour la correction.</p>
 
         <div class="vstack gap-3">
           <article class="border rounded p-3" [ngClass]="answerBoxClass(answer.correct)" *ngFor="let answer of item.answers">
@@ -72,14 +72,14 @@
             </div>
             <p class="mb-2">{{ answer.questionText }}</p>
             <div class="bg-white rounded p-3 mb-2">
-              <div class="small text-secondary mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.REPONSE_DE_L_ETUDIANT' | translate }}</div>
+              <div class="small text-secondary mb-1">Reponse de l'etudiant</div>
               <div>{{ answer.answerText || '-' }}</div>
             </div>
             <div *ngIf="!answer.correct" class="bg-white rounded p-3 mb-2">
-              <div class="small text-secondary mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.BONNE_REPONSE' | translate }}</div>
+              <div class="small text-secondary mb-1">Bonne reponse</div>
               <div>{{ answer.expectedAnswer }}</div>
             </div>
-            <div class="small text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.FEEDBACK' | translate }}</div>
+            <div class="small text-secondary">Feedback</div>
             <div>{{ answer.feedback }}</div>
           </article>
         </div>

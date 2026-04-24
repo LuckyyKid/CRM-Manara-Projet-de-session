@@ -1,14 +1,14 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'NAV.NOTIFICATIONS' | translate }}</span>
-      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_NOTIFICATIONS.ANIMATEUR_NOTIFICATIONS.MES_NOTIFICATIONS' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_NOTIFICATIONS.ANIMATEUR_NOTIFICATIONS.MESSAGES_ET_ALERTES_LIES_A_VOS_SEANCES' | translate }}</p>
+      <span class="mm-page-eyebrow">Notifications</span>
+      <h1 class="mm-page-title fs-1">Mes notifications</h1>
+      <p class="mm-page-subtitle">Messages et alertes liés à vos séances.</p>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
@@ -24,7 +24,7 @@
           {{ markingAll() ? 'Mise a jour...' : 'Tout marquer comme lu' }}
         </button>
       </div>
-      <div *ngIf="!notifications().length" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.AUCUNE_NOTIFICATION' | translate }}</div>
+      <div *ngIf="!notifications().length" class="text-secondary">Aucune notification.</div>
       <div class="vstack gap-2">
         <div *ngFor="let n of visibleNotifications()"
           class="border rounded-3 p-3"
@@ -33,7 +33,7 @@
             <div>
               <div class="mm-page-eyebrow mb-1">
                 {{ n.category }}
-                <span *ngIf="!n.readStatus" class="badge bg-primary ms-2">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_NOTIFICATIONS.ANIMATEUR_NOTIFICATIONS.NOUVEAU' | translate }}</span>
+                <span *ngIf="!n.readStatus" class="badge bg-primary ms-2">Nouveau</span>
               </div>
               <div class="fw-semibold">{{ n.title }}</div>
               <div class="text-secondary small mt-1">{{ n.message }}</div>
@@ -45,7 +45,7 @@
                 type="button"
                 class="btn btn-sm btn-outline-primary"
                 (click)="markAsRead(n.id)">
-                {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_NOTIFICATIONS.ANIMATEUR_NOTIFICATIONS.MARQUER_COMME_LU' | translate }}
+                Marquer comme lu
               </button>
             </div>
           </div>

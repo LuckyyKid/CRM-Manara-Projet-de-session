@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -13,7 +12,7 @@ import {
 
 @Component({
   selector: 'app-animateur-quiz-history',
-  imports: [CommonModule, DatePipe, RouterLink, ListPageComponent, ListFiltersDirective, ListHeadDirective, ListRowDirective, TranslatePipe],
+  imports: [CommonModule, DatePipe, RouterLink, ListPageComponent, ListFiltersDirective, ListHeadDirective, ListRowDirective],
   templateUrl: './animateur-quiz-history.component.html',
 })
 export class AnimateurQuizHistoryComponent implements OnInit {

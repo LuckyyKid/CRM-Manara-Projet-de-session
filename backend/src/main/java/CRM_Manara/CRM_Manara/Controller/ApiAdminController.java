@@ -85,9 +85,7 @@ public class ApiAdminController {
         validateActivityRequest(request);
         return apiDtoMapper.toActivityDto(adminService.createActivity(
                 request.name().trim(),
-                normalizeOptionalText(request.nameEn()),
                 request.description().trim(),
-                normalizeOptionalText(request.descriptionEn()),
                 normalizeImageUrl(request.imageUrl()),
                 request.ageMin(),
                 request.ageMax(),
@@ -103,9 +101,7 @@ public class ApiAdminController {
         return apiDtoMapper.toActivityDto(adminService.updateActivity(
                 id,
                 request.name().trim(),
-                normalizeOptionalText(request.nameEn()),
                 request.description().trim(),
-                normalizeOptionalText(request.descriptionEn()),
                 normalizeImageUrl(request.imageUrl()),
                 request.ageMin(),
                 request.ageMax(),
@@ -460,10 +456,6 @@ public class ApiAdminController {
 
     private String normalizeImageUrl(String imageUrl) {
         return imageUrl == null || imageUrl.isBlank() ? null : imageUrl.trim();
-    }
-
-    private String normalizeOptionalText(String value) {
-        return value == null || value.isBlank() ? null : value.trim();
     }
 
     private void validateAnimationRequest(AnimationRequestDto request) {

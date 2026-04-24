@@ -27,11 +27,6 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "src/assets",
-                "output": "/assets"
-              },
-              {
-                "glob": "**/*",
                 "input": "public"
               },
               {
@@ -57,7 +52,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1.2MB"
+                  "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",

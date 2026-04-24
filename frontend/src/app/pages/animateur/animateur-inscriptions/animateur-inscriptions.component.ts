@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -10,7 +9,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 
 @Component({
   selector: 'app-animateur-inscriptions',
-  imports: [CommonModule, RouterLink, DatePipe, PaginationComponent, TranslatePipe],
+  imports: [CommonModule, RouterLink, DatePipe, PaginationComponent],
   templateUrl: './animateur-inscriptions.component.html',
 })
 export class AnimateurInscriptionsComponent implements OnInit, OnDestroy {

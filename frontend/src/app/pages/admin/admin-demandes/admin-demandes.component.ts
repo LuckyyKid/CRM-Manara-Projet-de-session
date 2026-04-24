@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin, Subject, debounceTime, switchMap, takeUntil } from 'rxjs';
@@ -16,7 +15,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 
 @Component({
   selector: 'app-admin-demandes',
-  imports: [CommonModule, PaginationComponent, TranslatePipe],
+  imports: [CommonModule, PaginationComponent],
   templateUrl: './admin-demandes.component.html',
 })
 export class AdminDemandesComponent implements OnInit, OnDestroy {

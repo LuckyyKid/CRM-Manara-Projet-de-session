@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { ChatConversationDetailDto } from '../../../../core/models/api.models';
@@ -6,7 +5,7 @@ import { ChatConversationDetailDto } from '../../../../core/models/api.models';
 @Component({
   selector: 'app-chat-header',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule],
   templateUrl: './chat-header.component.html',
   styleUrl: './chat-header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

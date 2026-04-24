@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +7,7 @@ import { ActivityRequestDto, AdminOptionsDto } from '../../../core/models/api.mo
 
 @Component({
   selector: 'app-admin-activity-form',
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-activity-form.component.html',
 })
 export class AdminActivityFormComponent implements OnInit {
@@ -18,9 +17,7 @@ export class AdminActivityFormComponent implements OnInit {
 
   id: number | null = null;
   name = '';
-  nameEn = '';
   description = '';
-  descriptionEn = '';
   imageUrl: string | null = null;
   ageMin = 0;
   ageMax = 12;
@@ -56,9 +53,7 @@ export class AdminActivityFormComponent implements OnInit {
         this.adminService.getActivity(this.id).subscribe({
           next: (activity) => {
             this.name = activity.name;
-            this.nameEn = activity.nameEn ?? '';
             this.description = activity.description;
-            this.descriptionEn = activity.descriptionEn ?? '';
             this.imageUrl = activity.imageUrl;
             this.imagePreview.set(activity.imageUrl);
             this.ageMin = activity.ageMin;
@@ -167,9 +162,7 @@ export class AdminActivityFormComponent implements OnInit {
 
     return {
       name: this.name.trim(),
-      nameEn: this.nameEn.trim() || null,
       description: this.description.trim(),
-      descriptionEn: this.descriptionEn.trim() || null,
       imageUrl: this.imageUrl,
       ageMin: Number(this.ageMin),
       ageMax: Number(this.ageMax),

@@ -1,18 +1,18 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ADMIN.ADMIN_NOTIFICATIONS.ADMIN_NOTIFICATIONS.SYSTEME' | translate }}</span>
-      <h1 class="mm-page-title fs-1">{{ 'NAV.NOTIFICATIONS' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_NOTIFICATIONS.ADMIN_NOTIFICATIONS.HISTORIQUE_DES_NOTIFICATIONS_DU_SYSTEME' | translate }}</p>
+      <span class="mm-page-eyebrow">Système</span>
+      <h1 class="mm-page-title fs-1">Notifications</h1>
+      <p class="mm-page-subtitle">Historique des notifications du système.</p>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
-      <div *ngIf="!notifications().length" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.AUCUNE_NOTIFICATION' | translate }}</div>
+      <div *ngIf="!notifications().length" class="text-secondary">Aucune notification.</div>
       <div class="vstack gap-2">
         <div *ngFor="let n of visibleNotifications()" class="border rounded-3 p-3">
           <div class="d-flex justify-content-between gap-3 flex-wrap">

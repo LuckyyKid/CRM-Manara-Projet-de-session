@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +7,7 @@ import { AdminService } from '../../../core/services/admin.service';
 
 @Component({
   selector: 'app-admin-animateur-form',
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-animateur-form.component.html',
 })
 export class AdminAnimateurFormComponent implements OnInit {

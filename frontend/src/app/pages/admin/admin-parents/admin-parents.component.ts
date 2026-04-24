@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
@@ -8,7 +7,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 
 @Component({
   selector: 'app-admin-parents',
-  imports: [CommonModule, PaginationComponent, TranslatePipe],
+  imports: [CommonModule, PaginationComponent],
   templateUrl: './admin-parents.component.html',
 })
 export class AdminParentsComponent implements OnInit {

@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -9,7 +8,7 @@ import { animationTimeStatus, animationTimeStatusLabel } from '../../../core/uti
 
 @Component({
   selector: 'app-animateur-animations',
-  imports: [CommonModule, DatePipe, RouterLink, TranslatePipe],
+  imports: [CommonModule, DatePipe, RouterLink],
   templateUrl: './animateur-animations.component.html',
 })
 export class AnimateurAnimationsComponent implements OnInit {

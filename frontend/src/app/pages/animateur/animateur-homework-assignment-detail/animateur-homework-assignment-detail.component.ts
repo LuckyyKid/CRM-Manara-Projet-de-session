@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
@@ -8,7 +7,7 @@ import { AnimateurService } from '../../../core/services/animateur.service';
 
 @Component({
   selector: 'app-animateur-homework-assignment-detail',
-  imports: [CommonModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, RouterLink],
   templateUrl: './animateur-homework-assignment-detail.component.html',
 })
 export class AnimateurHomeworkAssignmentDetailComponent implements OnInit {

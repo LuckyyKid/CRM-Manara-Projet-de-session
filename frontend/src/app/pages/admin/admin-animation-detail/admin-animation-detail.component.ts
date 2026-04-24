@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,7 +9,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 
 @Component({
   selector: 'app-admin-animation-detail',
-  imports: [CommonModule, DatePipe, PaginationComponent, TranslatePipe],
+  imports: [CommonModule, DatePipe, PaginationComponent],
   templateUrl: './admin-animation-detail.component.html',
 })
 export class AdminAnimationDetailComponent implements OnInit {

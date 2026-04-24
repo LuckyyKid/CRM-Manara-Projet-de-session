@@ -1,61 +1,61 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.ADMINISTRATION' | translate }}</span>
-      <h1 class="mm-page-title">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.TABLEAU_DE_BORD_ADMINISTRATEUR' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.GESTION_DES_ACTIVITES_ANIMATIONS_ANIMATEURS_ET_DEMANDES_D_IN' | translate }}</p>
+      <span class="mm-page-eyebrow">Administration</span>
+      <h1 class="mm-page-title">Tableau de bord administrateur</h1>
+      <p class="mm-page-subtitle">Gestion des activités, animations, animateurs et demandes d'inscription.</p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" routerLink="/admin/activities">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.CATALOGUE' | translate }}</a>
-      <a class="btn btn-outline-primary" routerLink="/admin/demandes">{{ 'NAV.REQUESTS' | translate }}</a>
-      <a class="btn btn-outline-primary" routerLink="/admin/notifications">{{ 'NAV.NOTIFICATIONS' | translate }}</a>
-      <a class="btn btn-primary" routerLink="/admin/animations/new">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.NOUVELLE_ANIMATION' | translate }}</a>
+      <a class="btn btn-outline-primary" routerLink="/admin/activities">Catalogue</a>
+      <a class="btn btn-outline-primary" routerLink="/admin/demandes">Demandes</a>
+      <a class="btn btn-outline-primary" routerLink="/admin/notifications">Notifications</a>
+      <a class="btn btn-primary" routerLink="/admin/animations/new">Nouvelle animation</a>
     </div>
   </div>
 
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()">
     <!-- KPI cards -->
     <div class="row g-3">
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'HOME.SHORTCUTS.ACTIVITIES_TITLE' | translate }}</span>
+          <span class="mm-kpi-label">Activités</span>
           <span class="mm-kpi-value">{{ countActivities() }}</span>
           <span class="mm-kpi-meta">Ouvertes: {{ countOpenActivities() }}</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'NAV.ANIMATIONS' | translate }}</span>
+          <span class="mm-kpi-label">Animations</span>
           <span class="mm-kpi-value">{{ countAnimations() }}</span>
-          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.ANIMATIONS_PLANIFIEES' | translate }}</span>
+          <span class="mm-kpi-meta">Animations planifiées</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'NAV.ANIMATEURS' | translate }}</span>
+          <span class="mm-kpi-label">Animateurs</span>
           <span class="mm-kpi-value">{{ countAnimateurs() }}</span>
-          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.EQUIPE_ACTIVE' | translate }}</span>
+          <span class="mm-kpi-meta">Équipe active</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'NAV.REQUESTS' | translate }}</span>
+          <span class="mm-kpi-label">Demandes</span>
           <span class="mm-kpi-value">{{ countPendingRequests() }}</span>
           <span class="mm-kpi-meta">Parents: {{ countPendingParents() }} - inscriptions: {{ countPendingInscriptions() }}</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.REMPLISSAGE_MOYEN' | translate }}</span>
+          <span class="mm-kpi-label">Remplissage moyen</span>
           <span class="mm-kpi-value">{{ averageFillRate() }}%</span>
-          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.TAUX_CONFIRME_DES_ANIMATIONS' | translate }}</span>
+          <span class="mm-kpi-meta">Taux confirmé des animations</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.PARENTS_EN_ATTENTE' | translate }}</span>
+          <span class="mm-kpi-label">Parents en attente</span>
           <span class="mm-kpi-value">{{ countPendingParents() }}</span>
           <span class="mm-kpi-meta">Enfants en attente: {{ countPendingChildren() }}</span>
         </div>
@@ -68,13 +68,13 @@
       <div class="col-12 col-lg-6">
         <div class="card mm-card-shadow h-100">
           <div class="card-body">
-            <h2 class="mm-panel-title mb-3">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.DEMANDES_RECENTES' | translate }}</h2>
+            <h2 class="mm-panel-title mb-3">Demandes récentes</h2>
             <div class="table-responsive">
               <table class="table table-sm align-middle">
-                <thead><tr><th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th><th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.ACTIVITE' | translate }}</th></tr></thead>
+                <thead><tr><th>Enfant</th><th>Activité</th></tr></thead>
                 <tbody>
                   <tr *ngIf="!recentPendingInscriptions().length">
-                    <td colspan="2" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.AUCUNE_DEMANDE' | translate }}</td>
+                    <td colspan="2" class="text-secondary">Aucune demande.</td>
                   </tr>
                   <tr *ngFor="let review of recentPendingInscriptions()">
                     <td>{{ review.inscription.enfant.prenom }} {{ review.inscription.enfant.nom }}</td>
@@ -91,13 +91,13 @@
       <div class="col-12 col-lg-6">
         <div class="card mm-card-shadow h-100">
           <div class="card-body">
-            <h2 class="mm-panel-title mb-3">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.ANIMATIONS_A_VENIR' | translate }}</h2>
+            <h2 class="mm-panel-title mb-3">Animations à venir</h2>
             <div class="table-responsive">
               <table class="table table-sm align-middle">
-                <thead><tr><th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.ACTIVITE' | translate }}</th><th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.DEBUT' | translate }}</th><th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ANIMATEUR' | translate }}</th></tr></thead>
+                <thead><tr><th>Activité</th><th>Début</th><th>Animateur</th></tr></thead>
                 <tbody>
                   <tr *ngIf="!upcomingAnimations().length">
-                    <td colspan="3" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.AUCUNE_ANIMATION_A_VENIR' | translate }}</td>
+                    <td colspan="3" class="text-secondary">Aucune animation à venir.</td>
                   </tr>
                   <tr *ngFor="let row of upcomingAnimations()">
                     <td>{{ row.animation.activity.name }}</td>
@@ -116,10 +116,10 @@
         <div class="card mm-card-shadow">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h2 class="mm-panel-title mb-0">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.NOTIFICATIONS_RECENTES' | translate }}</h2>
-              <a class="btn btn-outline-primary btn-sm" routerLink="/admin/notifications">{{ 'HOME.FILTERS.ALL' | translate }}</a>
+              <h2 class="mm-panel-title mb-0">Notifications récentes</h2>
+              <a class="btn btn-outline-primary btn-sm" routerLink="/admin/notifications">Tout voir</a>
             </div>
-            <div *ngIf="!recentNotifications().length" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_DASHBOARD.ADMIN_DASHBOARD.AUCUNE_NOTIFICATION' | translate }}</div>
+            <div *ngIf="!recentNotifications().length" class="text-secondary">Aucune notification.</div>
             <div class="vstack gap-2">
               <div *ngFor="let n of recentNotifications()" class="border rounded-3 p-3">
                 <div class="d-flex justify-content-between gap-3 flex-wrap">

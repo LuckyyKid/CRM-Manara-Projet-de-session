@@ -1,27 +1,27 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.FAMILLES' | translate }}</span>
-      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.PARENTS_ENFANTS' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.RECHERCHE_GLOBALE_PAR_PARENT_ENFANT_OU_EMAIL' | translate }}</p>
+      <span class="mm-page-eyebrow">Familles</span>
+      <h1 class="mm-page-title fs-1">Parents & Enfants</h1>
+      <p class="mm-page-subtitle">Recherche globale par parent, enfant ou email.</p>
     </div>
   </div>
 
   <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()">
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
         <div class="row g-2 align-items-end">
           <div class="col-12 col-lg-8">
-            <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE' | translate }}</label>
+            <label class="form-label">Recherche</label>
             <input
               #searchInput
               type="search"
               class="form-control"
-              placeholder="{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.NOM_DU_PARENT_NOM_DE_L_ENFANT_OU_EMAIL' | translate }}"
+              placeholder="Nom du parent, nom de l'enfant ou email"
               [value]="search()"
               (input)="setSearch(searchInput.value)"
             />
@@ -36,24 +36,24 @@
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.PARENTS' | translate }}</h2>
+          <h2 class="mm-panel-title">Parents</h2>
           <p class="mm-panel-subtitle">{{ pendingParents().length }} parent(s) en attente d'activation.</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>{{ 'COMMON.LAST_NAME' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEUR_FORM.ADMIN_ANIMATEUR_FORM.PRENOM' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEUR_FORM.ADMIN_ANIMATEUR_FORM.EMAIL' | translate }}</th>
-                <th>{{ 'NAV.CHILDREN' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Email</th>
+                <th>Enfants</th>
+                <th>Statut</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visibleParents().length">
-                <td colspan="6" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.AUCUN_PARENT_TROUVE' | translate }}</td>
+                <td colspan="6" class="text-secondary">Aucun parent trouve.</td>
               </tr>
               <tr *ngFor="let parent of visibleParents()">
                 <td>{{ parent.nom }}</td>
@@ -70,7 +70,7 @@
                     <button class="btn btn-sm btn-outline-secondary" (click)="toggleParentStatus(parent.id, !!parent.user?.enabled)">
                       {{ parent.user?.enabled ? 'Desactiver' : 'Activer' }}
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" (click)="deleteParent(parent.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.SUPPRIMER' | translate }}</button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteParent(parent.id)">Supprimer</button>
                   </div>
                 </td>
               </tr>
@@ -91,24 +91,24 @@
     <div class="card mm-card-shadow">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">{{ 'NAV.CHILDREN' | translate }}</h2>
+          <h2 class="mm-panel-title">Enfants</h2>
           <p class="mm-panel-subtitle">{{ pendingEnfants().length }} enfant(s) en attente de validation.</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>{{ 'COMMON.LAST_NAME' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEUR_FORM.ADMIN_ANIMATEUR_FORM.PRENOM' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PARENT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.DATE_DE_NAISSANCE' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
-                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Parent</th>
+                <th>Date de naissance</th>
+                <th>Statut</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visibleEnfants().length">
-                <td colspan="6" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.AUCUN_ENFANT_TROUVE' | translate }}</td>
+                <td colspan="6" class="text-secondary">Aucun enfant trouve.</td>
               </tr>
               <tr *ngFor="let enfant of visibleEnfants()">
                 <td>{{ enfant.nom }}</td>
@@ -125,7 +125,7 @@
                     <button class="btn btn-sm btn-outline-secondary" (click)="toggleEnfantStatus(enfant.id, enfant.active)">
                       {{ enfant.active ? 'Desactiver' : 'Activer' }}
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" (click)="deleteEnfant(enfant.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.SUPPRIMER' | translate }}</button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="deleteEnfant(enfant.id)">Supprimer</button>
                   </div>
                 </td>
               </tr>

@@ -1,8 +1,8 @@
     <div class="container py-4">
-      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
       <div *ngIf="!loading() && !activity()" class="alert alert-warning">
-        {{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_DETAIL.ACTIVITE_INTROUVABLE' | translate }}
+        Activite introuvable.
       </div>
 
       <ng-container *ngIf="activity() as activityView">
@@ -12,7 +12,7 @@
               <img class="mm-activity-detail-image" [src]="activityView.imageUrl" [alt]="activityView.imageAlt">
             </div>
             <div class="col-12 col-lg-6">
-              <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_DETAIL.TROUVER_UNE_ACTIVITE' | translate }}</span>
+              <span class="mm-page-eyebrow">Trouver une activite</span>
               <h1 class="mm-page-title fs-1 mt-2">{{ activityView.title }}</h1>
               <p class="mm-page-subtitle mb-3">
                 Une activite adaptee aux jeunes de {{ ageLabel(activityView) }}.
@@ -20,15 +20,15 @@
               <span class="mm-activity-badge mb-3">{{ ageLabel(activityView) }}</span>
               <p class="mm-activity-detail-copy">{{ activityView.description }}</p>
               <div class="d-flex flex-wrap gap-2 mt-4">
-                <a routerLink="/signup" class="btn btn-primary">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_DETAIL.S_INSCRIRE' | translate }}</a>
-                <a routerLink="/login" class="btn btn-outline-primary">{{ 'LOGIN.SUBMIT' | translate }}</a>
+                <a routerLink="/signup" class="btn btn-primary">S'inscrire</a>
+                <a routerLink="/login" class="btn btn-outline-primary">Se connecter</a>
               </div>
             </div>
           </div>
         </section>
 
         <section class="mm-panel">
-          <h2 class="mm-panel-title mb-3">{{ 'AUTO.PAGES.HOME.HOME_ACTIVITY_DETAIL.A_PROPOS_DE_CETTE_ACTIVITE' | translate }}</h2>
+          <h2 class="mm-panel-title mb-3">A propos de cette activite</h2>
           <p class="mb-0 text-secondary" style="line-height: 1.8;">
             {{ activityView.description }}
           </p>

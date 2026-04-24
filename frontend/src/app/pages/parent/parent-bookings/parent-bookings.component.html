@@ -1,15 +1,15 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'NAV.PARENT_SPACE' | translate }}</span>
-      <h1 class="mm-page-title fs-1">{{ 'NAV.APPOINTMENTS' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_BOOKINGS.PARENT_BOOKINGS.CONSULTEZ_VOS_RESERVATIONS_AVEC_LES_ANIMATEURS_ET_ANNULEZ_LE' | translate }}</p>
+      <span class="mm-page-eyebrow">Espace parent</span>
+      <h1 class="mm-page-title fs-1">Rendez-vous</h1>
+      <p class="mm-page-subtitle">Consultez vos reservations avec les animateurs et annulez-les si necessaire.</p>
     </div>
   </div>
 
   <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_BOOKINGS.ANIMATEUR_BOOKINGS.CHARGEMENT_DES_RENDEZ_VOUS' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement des rendez-vous...</div>
 
   <app-list-page
     *ngIf="!loading()"
@@ -28,11 +28,11 @@
     (previous)="previousPage()"
     (next)="nextPage()">
     <ng-template appListHead>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ANIMATEUR' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_BOOKINGS.ANIMATEUR_BOOKINGS.MAJ' | translate }}</th>
-      <th class="text-end">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_BOOKINGS.ANIMATEUR_BOOKINGS.ACTION' | translate }}</th>
+      <th>Animateur</th>
+      <th>Date</th>
+      <th>Statut</th>
+      <th>Maj</th>
+      <th class="text-end">Action</th>
     </ng-template>
 
     <ng-template appListRow let-booking>
@@ -58,7 +58,7 @@
             type="button"
             class="btn btn-sm btn-outline-primary"
             (click)="openRescheduleModal(booking)">
-            {{ 'AUTO.PAGES.PARENT.PARENT_BOOKINGS.PARENT_BOOKINGS.DEPLACER' | translate }}
+            Deplacer
           </button>
           <button
             *ngIf="booking.status === 'CONFIRMED'"
@@ -77,10 +77,10 @@
     <section class="mm-modal-card" (click)="$event.stopPropagation()">
       <div class="mm-modal-head">
         <div>
-          <div class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_BOOKINGS.PARENT_BOOKINGS.DEPLACER_LE_RENDEZ_VOUS' | translate }}</div>
-          <h2 class="mm-modal-title">{{ 'AUTO.PAGES.PARENT.PARENT_BOOKINGS.PARENT_BOOKINGS.CHOISISSEZ_UN_NOUVEAU_CRENEAU' | translate }}</h2>
+          <div class="mm-page-eyebrow">Deplacer le rendez-vous</div>
+          <h2 class="mm-modal-title">Choisissez un nouveau creneau</h2>
         </div>
-        <button type="button" class="btn-close" aria-label="{{ 'COMMON.CLOSE' | translate }}" (click)="closeRescheduleModal()"></button>
+        <button type="button" class="btn-close" aria-label="Fermer" (click)="closeRescheduleModal()"></button>
       </div>
 
       <p class="text-secondary mb-3" *ngIf="rescheduleBooking()">
@@ -89,7 +89,7 @@
         a {{ rescheduleBooking()!.startTime | date:'HH:mm' }}.
       </p>
 
-      <div *ngIf="rescheduleLoading()" class="text-secondary py-2">{{ 'AUTO.PAGES.PARENT.PARENT_BOOKINGS.PARENT_BOOKINGS.CHARGEMENT_DES_CRENEAUX_DISPONIBLES' | translate }}</div>
+      <div *ngIf="rescheduleLoading()" class="text-secondary py-2">Chargement des creneaux disponibles...</div>
 
       <div class="mm-reschedule-list" *ngIf="!rescheduleLoading() && availableRescheduleSlots().length; else noRescheduleSlots">
         <article class="mm-reschedule-card" *ngFor="let slot of availableRescheduleSlots(); trackBy: trackSlot">
@@ -109,7 +109,7 @@
 
       <ng-template #noRescheduleSlots>
         <div class="text-secondary" *ngIf="!rescheduleLoading()">
-          {{ 'AUTO.PAGES.PARENT.PARENT_BOOKINGS.PARENT_BOOKINGS.AUCUN_AUTRE_CRENEAU_DISPONIBLE_POUR_LE_MOMENT' | translate }}
+          Aucun autre creneau disponible pour le moment.
         </div>
       </ng-template>
     </section>

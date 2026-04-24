@@ -11,8 +11,6 @@ import CRM_Manara.CRM_Manara.Model.Entity.Inscription;
 import CRM_Manara.CRM_Manara.Model.Entity.Parent;
 import CRM_Manara.CRM_Manara.Model.Entity.ParentNotification;
 import CRM_Manara.CRM_Manara.Model.Entity.User;
-import CRM_Manara.CRM_Manara.service.NotificationLocalizationService;
-import CRM_Manara.CRM_Manara.service.RequestLanguageService;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -25,19 +23,6 @@ import java.util.Map;
 
 @Component
 public class ApiDtoMapper {
-
-    private final RequestLanguageService requestLanguageService;
-    private final NotificationLocalizationService notificationLocalizationService;
-
-    public ApiDtoMapper() {
-        this(new RequestLanguageService(), new NotificationLocalizationService(new RequestLanguageService()));
-    }
-
-    public ApiDtoMapper(RequestLanguageService requestLanguageService,
-                        NotificationLocalizationService notificationLocalizationService) {
-        this.requestLanguageService = requestLanguageService;
-        this.notificationLocalizationService = notificationLocalizationService;
-    }
 
     public UserDto toUserDto(User user) {
         if (user == null) {
@@ -158,7 +143,7 @@ public class ApiDtoMapper {
         }
         return new ActivitySummaryDto(
                 activity.getId(),
-                localizedActivityName(activity),
+                activity.getActivyName(),
                 activity.getAgeMin(),
                 activity.getAgeMax(),
                 activity.getCapacity(),
@@ -173,10 +158,8 @@ public class ApiDtoMapper {
         }
         return new ActivityDto(
                 activity.getId(),
-                localizedActivityName(activity),
-                blankToNull(activity.getActivyNameEn()),
-                localizedActivityDescription(activity),
-                blankToNull(activity.getDescriptionEn()),
+                activity.getActivyName(),
+                activity.getDescription(),
                 activity.getImageUrl(),
                 activity.getAgeMin(),
                 activity.getAgeMax(),
@@ -254,8 +237,8 @@ public class ApiDtoMapper {
         return new ParentNotificationDto(
                 notification.getId(),
                 notification.getCategory(),
-                notificationLocalizationService.localize(notification.getTitle()),
-                notificationLocalizationService.localize(notification.getMessage()),
+                notification.getTitle(),
+                notification.getMessage(),
                 notification.getCreatedAt(),
                 notification.isReadStatus(),
                 notification.isArchivedStatus()
@@ -269,8 +252,8 @@ public class ApiDtoMapper {
         return new AnimateurNotificationDto(
                 notification.getId(),
                 notification.getCategory(),
-                notificationLocalizationService.localize(notification.getTitle()),
-                notificationLocalizationService.localize(notification.getMessage()),
+                notification.getTitle(),
+                notification.getMessage(),
                 notification.getCreatedAt(),
                 notification.isReadStatus(),
                 notification.isArchivedStatus()
@@ -285,29 +268,9 @@ public class ApiDtoMapper {
                 notification.getId(),
                 notification.getSource(),
                 notification.getType(),
-                notificationLocalizationService.localize(notification.getMessage()),
+                notification.getMessage(),
                 notification.getCreatedAt()
         );
-    }
-
-    public String localizedActivityName(Activity activity) {
-        if (activity == null) {
-            return null;
-        }
-        if (requestLanguageService.isEnglish() && hasText(activity.getActivyNameEn())) {
-            return activity.getActivyNameEn().trim();
-        }
-        return blankToNull(activity.getActivyName());
-    }
-
-    public String localizedActivityDescription(Activity activity) {
-        if (activity == null) {
-            return null;
-        }
-        if (requestLanguageService.isEnglish() && hasText(activity.getDescriptionEn())) {
-            return activity.getDescriptionEn().trim();
-        }
-        return blankToNull(activity.getDescription());
     }
 
     private int asInt(Object value) {
@@ -316,14 +279,6 @@ public class ApiDtoMapper {
 
     private boolean asBoolean(Object value) {
         return value instanceof Boolean bool && bool;
-    }
-
-    private boolean hasText(String value) {
-        return value != null && !value.isBlank();
-    }
-
-    private String blankToNull(String value) {
-        return hasText(value) ? value.trim() : null;
     }
 
     private LocalDate toLocalDate(Date date) {

@@ -1,15 +1,15 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'NAV.ANIMATEUR_SPACE' | translate }}</span>
-      <h1 class="mm-page-title fs-1">{{ 'NAV.APPOINTMENTS' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_BOOKINGS.ANIMATEUR_BOOKINGS.RETROUVEZ_VOS_APPELS_RESERVES_AVEC_ANNULATION_POSSIBLE_TANT_' | translate }}</p>
+      <span class="mm-page-eyebrow">Espace animateur</span>
+      <h1 class="mm-page-title fs-1">Rendez-vous</h1>
+      <p class="mm-page-subtitle">Retrouvez vos appels reserves, avec annulation possible tant que le rendez-vous est confirme.</p>
     </div>
   </div>
 
   <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_BOOKINGS.ANIMATEUR_BOOKINGS.CHARGEMENT_DES_RENDEZ_VOUS' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement des rendez-vous...</div>
 
   <app-list-page
     *ngIf="!loading()"
@@ -28,12 +28,12 @@
     (previous)="previousPage()"
     (next)="nextPage()">
     <ng-template appListHead>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PARENT' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
-      <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_BOOKINGS.ANIMATEUR_BOOKINGS.MAJ' | translate }}</th>
-      <th class="text-end">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_BOOKINGS.ANIMATEUR_BOOKINGS.ACTION' | translate }}</th>
+      <th>Parent</th>
+      <th>Enfant</th>
+      <th>Date</th>
+      <th>Statut</th>
+      <th>Maj</th>
+      <th class="text-end">Action</th>
     </ng-template>
 
     <ng-template appListRow let-booking>
@@ -60,7 +60,7 @@
             type="button"
             class="btn btn-sm btn-outline-primary"
             (click)="openRescheduleModal(booking)">
-            {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_BOOKINGS.ANIMATEUR_BOOKINGS.REPORTER' | translate }}
+            Reporter
           </button>
           <button
             *ngIf="booking.status === 'CONFIRMED'"

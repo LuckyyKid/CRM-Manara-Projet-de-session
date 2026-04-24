@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -8,7 +7,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 
 @Component({
   selector: 'app-parent-enfants',
-  imports: [CommonModule, PaginationComponent, TranslatePipe],
+  imports: [CommonModule, PaginationComponent],
   templateUrl: './parent-enfants.component.html',
 })
 export class ParentEnfantsComponent implements OnInit {

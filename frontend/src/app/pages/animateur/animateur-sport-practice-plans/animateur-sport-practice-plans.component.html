@@ -1,36 +1,36 @@
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.SUIVI_SPORT' | translate }}</span>
-          <h1 class="mm-page-title fs-1">{{ 'NAV.HOME_PRACTICE' | translate }}</h1>
-          <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLANS.ANIMATEUR_SPORT_PRACTICE_PLANS.GENEREZ_UNE_CHECKLIST_SIMPLE_QUE_LE_PARENT_POURRA_REFAIRE_AV' | translate }}</p>
+          <span class="mm-page-eyebrow">Suivi sport</span>
+          <h1 class="mm-page-title fs-1">Pratique maison</h1>
+          <p class="mm-page-subtitle">Generez une checklist simple que le parent pourra refaire avec son enfant a la maison ou au parc.</p>
         </div>
         <div class="mm-page-actions">
-          <a class="btn btn-outline-primary" routerLink="/animateur/sport-practice-plans/history">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.HISTORIQUE' | translate }}</a>
+          <a class="btn btn-outline-primary" routerLink="/animateur/sport-practice-plans/history">Historique</a>
         </div>
       </div>
 
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
       <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
       <div *ngIf="!loading() && canAccessSportPracticeTools()" class="row g-4">
         <div class="col-12 col-xl-7">
           <div class="card mm-card-shadow">
             <div class="card-body">
-              <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.NOUVELLE_FICHE' | translate }}</h2>
-              <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLANS.ANIMATEUR_SPORT_PRACTICE_PLANS.BASEZ_VOUS_SUR_LES_POINTS_VUS_PENDANT_LA_SEANCE_POUR_PRODUIR' | translate }}</p>
+              <h2 class="mm-panel-title">Nouvelle fiche</h2>
+              <p class="mm-panel-subtitle">Basez-vous sur les points vus pendant la seance pour produire une pratique maison exploitable par le parent.</p>
 
               <form class="d-grid gap-3" (ngSubmit)="createPlan()">
                 <div>
-                  <label class="form-label" for="planTitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_HISTORY.ANIMATEUR_QUIZ_HISTORY.TITRE' | translate }}</label>
-                  <input id="planTitle" class="form-control" name="title" [(ngModel)]="form.title" placeholder="{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLANS.ANIMATEUR_SPORT_PRACTICE_PLANS.PRATIQUE_MAISON_SOCCER' | translate }}">
+                  <label class="form-label" for="planTitle">Titre</label>
+                  <input id="planTitle" class="form-control" name="title" [(ngModel)]="form.title" placeholder="Pratique maison - Soccer">
                 </div>
 
                 <div>
-                  <label class="form-label" for="animationId">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.SEANCE_LIEE' | translate }}</label>
+                  <label class="form-label" for="animationId">Seance liee</label>
                   <select id="animationId" class="form-select" name="animationId" [(ngModel)]="form.animationId" (ngModelChange)="onAnimationChange()">
-                    <option [ngValue]="null">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLANS.ANIMATEUR_SPORT_PRACTICE_PLANS.CHOISIR_UNE_ANIMATION_SPORTIVE' | translate }}</option>
+                    <option [ngValue]="null">Choisir une animation sportive</option>
                     <option *ngFor="let animation of animations()" [ngValue]="animation.id">
                       {{ animation.activity.name }} - {{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}
                     </option>
@@ -38,7 +38,7 @@
                 </div>
 
                 <div>
-                  <label class="form-label" for="sourceNotes">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.NOTES_DE_SEANCE' | translate }}</label>
+                  <label class="form-label" for="sourceNotes">Notes de seance</label>
                   <textarea id="sourceNotes" class="form-control" rows="12" name="sourceNotes" [(ngModel)]="form.sourceNotes" placeholder="Ex.: conduite de balle, controle interieur, passes courtes, placement du corps, coordination, rythme..."></textarea>
                 </div>
 
@@ -47,13 +47,13 @@
                 </button>
 
                 <div *ngIf="saving()" class="border rounded p-3 bg-light">
-                  <div class="fw-semibold mb-2">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLANS.ANIMATEUR_SPORT_PRACTICE_PLANS.GENERATION_EN_COURS' | translate }}</div>
-                  <div class="progress" role="progressbar" aria-label="{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLANS.ANIMATEUR_SPORT_PRACTICE_PLANS.PROGRESSION_GENERATION_PRATIQUE_MAISON' | translate }}" [attr.aria-valuenow]="generationProgress()" aria-valuemin="0" aria-valuemax="100">
+                  <div class="fw-semibold mb-2">Generation en cours</div>
+                  <div class="progress" role="progressbar" aria-label="Progression generation pratique maison" [attr.aria-valuenow]="generationProgress()" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" [style.width.%]="generationProgress()">
                       {{ generationProgress() }}%
                     </div>
                   </div>
-                  <div class="text-secondary small mt-2">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLANS.ANIMATEUR_SPORT_PRACTICE_PLANS.L_IA_STRUCTURE_LA_FICHE_EN_CONSIGNES_SIMPLES_ET_UTILISABLES_' | translate }}</div>
+                  <div class="text-secondary small mt-2">L'IA structure la fiche en consignes simples et utilisables par le parent.</div>
                 </div>
               </form>
             </div>

@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
@@ -15,12 +14,14 @@ import { MessageInputComponent } from './components/message-input/message-input.
 @Component({
   selector: 'app-messages-page',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     ChatLayoutComponent,
     ChatSidebarComponent,
     ChatHeaderComponent,
     ChatWindowComponent,
-    MessageInputComponent, TranslatePipe],
+    MessageInputComponent,
+  ],
   templateUrl: './messages-page.component.html',
   styleUrl: './messages-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

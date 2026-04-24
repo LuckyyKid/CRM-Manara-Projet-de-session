@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
@@ -13,7 +12,7 @@ import {
 
 @Component({
   selector: 'app-parent-homeworks',
-  imports: [CommonModule, DatePipe, RouterLink, ListPageComponent, ListHeadDirective, ListRowDirective, TranslatePipe],
+  imports: [CommonModule, DatePipe, RouterLink, ListPageComponent, ListHeadDirective, ListRowDirective],
   templateUrl: './parent-homeworks.component.html',
 })
 export class ParentHomeworksComponent implements OnInit {

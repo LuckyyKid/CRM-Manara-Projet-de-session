@@ -1,28 +1,28 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">{{ 'NAV.ANIMATEUR_SPACE' | translate }}</span>
-      <h1 class="mm-page-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSIONS.ANIMATEUR_SUBMISSIONS.SOUMISSIONS_DE_QUIZ' | translate }}</h1>
-      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSIONS.ANIMATEUR_SUBMISSIONS.CONSULTEZ_LES_REPONSES_SCORES_ET_TEMPS_DE_CHAQUE_ENFANT' | translate }}</p>
+      <span class="mm-page-eyebrow">Espace animateur</span>
+      <h1 class="mm-page-title">Soumissions de quiz</h1>
+      <p class="mm-page-subtitle">Consultez les réponses, scores et temps de chaque enfant.</p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" routerLink="/animateur/dashboard">{{ 'NAV.DASHBOARD' | translate }}</a>
-      <a class="btn btn-primary" routerLink="/animateur/quizzes">{{ 'NAV.QUIZZES' | translate }}</a>
+      <a class="btn btn-outline-primary" routerLink="/animateur/dashboard">Tableau de bord</a>
+      <a class="btn btn-primary" routerLink="/animateur/quizzes">Quiz</a>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
+  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()" class="row g-4">
     <div class="col-12 col-xl-4">
       <div class="card mm-card-shadow h-100">
         <div class="card-body">
-          <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.SOUMISSIONS' | translate }}</h2>
+          <h2 class="mm-panel-title">Soumissions</h2>
           <p class="mm-panel-subtitle">{{ submissions().length }} tentative(s) recueillie(s).</p>
 
           <div *ngIf="!submissions().length" class="text-secondary py-3">
-            {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSIONS.ANIMATEUR_SUBMISSIONS.AUCUNE_SOUMISSION_POUR_L_INSTANT' | translate }}
+            Aucune soumission pour l'instant.
           </div>
 
           <div class="list-group list-group-flush">
@@ -65,23 +65,23 @@
           <div class="row g-3 mb-4">
             <div class="col-12 col-md-4">
               <div class="mm-kpi-card h-100">
-                <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.SCORE' | translate }}</span>
+                <span class="mm-kpi-label">Score</span>
                 <span class="mm-kpi-value">{{ formatMetric(submission.scorePercent, '%') }}</span>
-                <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.CORRECTION_AUTOMATIQUE' | translate }}</span>
+                <span class="mm-kpi-meta">Correction automatique</span>
               </div>
             </div>
             <div class="col-12 col-md-4">
               <div class="mm-kpi-card h-100">
-                <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.TEMPS' | translate }}</span>
+                <span class="mm-kpi-label">Temps</span>
                 <span class="mm-kpi-value">{{ formatMetric(submission.elapsedSeconds, 's') }}</span>
-                <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSIONS.ANIMATEUR_SUBMISSIONS.TEMPS_DE_REPONSE' | translate }}</span>
+                <span class="mm-kpi-meta">Temps de réponse</span>
               </div>
             </div>
             <div class="col-12 col-md-4">
               <div class="mm-kpi-card h-100">
-                <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSIONS.ANIMATEUR_SUBMISSIONS.REPONSES' | translate }}</span>
+                <span class="mm-kpi-label">Réponses</span>
                 <span class="mm-kpi-value">{{ submission.answers.length }}</span>
-                <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSIONS.ANIMATEUR_SUBMISSIONS.QUESTIONS_SOUMISES' | translate }}</span>
+                <span class="mm-kpi-meta">Questions soumises</span>
               </div>
             </div>
           </div>
@@ -99,14 +99,14 @@
               </div>
               <p class="mb-2">{{ answer.questionText }}</p>
               <div class="bg-white rounded p-3 mb-2">
-                <div class="small text-secondary mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSIONS.ANIMATEUR_SUBMISSIONS.REPONSE_DE_L_ENFANT' | translate }}</div>
+                <div class="small text-secondary mb-1">Réponse de l'enfant</div>
                 <div>{{ answer.answerText }}</div>
               </div>
               <div *ngIf="!answer.correct" class="bg-white rounded p-3 mb-2">
-                <div class="small text-secondary mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.BONNE_REPONSE' | translate }}</div>
+                <div class="small text-secondary mb-1">Bonne reponse</div>
                 <div>{{ answer.expectedAnswer }}</div>
               </div>
-              <div class="small text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.FEEDBACK' | translate }}</div>
+              <div class="small text-secondary">Feedback</div>
               <div>{{ answer.feedback }}</div>
             </article>
           </div>
@@ -114,7 +114,7 @@
       </div>
 
       <div class="card mm-card-shadow h-100" *ngIf="!selectedSubmission()">
-        <div class="card-body text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSIONS.ANIMATEUR_SUBMISSIONS.SELECTIONNEZ_UNE_SOUMISSION' | translate }}</div>
+        <div class="card-body text-secondary">Sélectionnez une soumission.</div>
       </div>
     </div>
   </div>

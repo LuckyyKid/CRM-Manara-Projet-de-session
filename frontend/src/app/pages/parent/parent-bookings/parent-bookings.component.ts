@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
@@ -15,7 +14,7 @@ import {
 @Component({
   selector: 'app-parent-bookings',
   standalone: true,
-  imports: [CommonModule, DatePipe, ListPageComponent, ListHeadDirective, ListRowDirective, TranslatePipe],
+  imports: [CommonModule, DatePipe, ListPageComponent, ListHeadDirective, ListRowDirective],
   templateUrl: './parent-bookings.component.html',
   styleUrl: './parent-bookings.component.scss',
 })

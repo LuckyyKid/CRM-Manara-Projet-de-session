@@ -113,9 +113,9 @@ public class AdminService {
     @Caching(evict = {
             @CacheEvict(value = "activities", allEntries = true)
     })
-    public Activity createActivity(String name, String nameEn, String description, String descriptionEn, String imageUrl,
-                                   int ageMin, int ageMax, int capacity, status status, typeActivity type) {
-        Activity activity = new Activity(name, nameEn, description, descriptionEn, imageUrl, ageMin, ageMax, capacity, status, type);
+    public Activity createActivity(String name, String description, String imageUrl, int ageMin, int ageMax, int capacity,
+                                   status status, typeActivity type) {
+        Activity activity = new Activity(name, description, imageUrl, ageMin, ageMax, capacity, status, type);
         return activityRepo.save(activity);
     }
 
@@ -123,13 +123,11 @@ public class AdminService {
     @Caching(evict = {
             @CacheEvict(value = "activities", allEntries = true)
     })
-    public Activity updateActivity(Long id, String name, String nameEn, String description, String descriptionEn, String imageUrl,
-                                   int ageMin, int ageMax, int capacity, status status, typeActivity type) {
+    public Activity updateActivity(Long id, String name, String description, String imageUrl, int ageMin, int ageMax, int capacity,
+                                   status status, typeActivity type) {
         Activity activity = getActivityById(id);
         activity.setActivyName(name);
-        activity.setActivyNameEn(nameEn);
         activity.setDescription(description);
-        activity.setDescriptionEn(descriptionEn);
         activity.setImageUrl(imageUrl);
         activity.setAgeMin(ageMin);
         activity.setAgeMax(ageMax);

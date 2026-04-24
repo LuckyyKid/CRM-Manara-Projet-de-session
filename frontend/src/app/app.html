@@ -1,78 +1,68 @@
-<div appLegacyTranslate>
+<!-- ================================================================
+     NAVBAR — affichée uniquement pour les visiteurs non connectés
+     Équivalent Thymeleaf : sec:authorize="isAnonymous()"
+     ================================================================ -->
 <nav class="navbar navbar-expand-lg" *ngIf="!authService.isAuthenticated()">
   <div class="container">
+
+    <!-- Logo -->
     <a class="navbar-brand d-flex align-items-center" routerLink="/home">
       <span class="mm-brand-mark">
-        <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="{{ 'AUTO.APP.LOGO_MANARA' | translate }}" />
+        <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="Logo Manara">
       </span>
       <span class="mm-brand-meta">
-        <span>{{ 'AUTO.APP.MANARA_CRM' | translate }}</span>
+        <span>Manara CRM</span>
       </span>
     </a>
 
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#mainNavbar"
-      aria-controls="mainNavbar"
-      aria-expanded="false"
-      [attr.aria-label]="'NAV.MENU' | translate"
-    >
+    <!-- Bouton menu responsive -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar" aria-expanded="false" aria-label="Menu">
       <span class="navbar-toggler-icon"></span>
     </button>
 
+    <!-- Liens de navigation -->
     <div class="collapse navbar-collapse" id="mainNavbar">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a
-            class="nav-link"
-            routerLink="/home"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            >{{ 'NAV.HOME' | translate }}</a
-          >
+          <a class="nav-link" routerLink="/home" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/about" routerLinkActive="active">{{
-            'NAV.FAQ' | translate
-          }}</a>
+          <a class="nav-link" routerLink="/about" routerLinkActive="active">FAQ</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/activity-finder" routerLinkActive="active">{{
-            'NAV.FIND_ACTIVITY' | translate
-          }}</a>
+          <a class="nav-link" routerLink="/activity-finder" routerLinkActive="active">Trouver une activite</a>
         </li>
       </ul>
 
+      <!-- Boutons connexion / inscription -->
       <div class="d-flex gap-2">
-        <app-language-switcher />
-        <a class="btn btn-outline-primary" routerLink="/login">{{ 'AUTH.LOGIN' | translate }}</a>
-        <a class="btn btn-primary" routerLink="/signup">{{ 'AUTH.SIGNUP' | translate }}</a>
+        <a class="btn btn-outline-primary" routerLink="/login">Connexion</a>
+        <a class="btn btn-primary" routerLink="/signup">Créer un compte</a>
       </div>
     </div>
+
   </div>
 </nav>
 
+
+<!-- ================================================================
+     SIDEBAR — affichée uniquement pour les utilisateurs connectés
+     Équivalent Thymeleaf : sec:authorize="isAuthenticated()"
+     ================================================================ -->
 <header class="mm-auth-mobile-bar" *ngIf="authService.isAuthenticated()">
-  <button
-    type="button"
-    class="btn btn-light mm-mobile-nav-toggle"
-    (click)="toggleMobileNav()"
-    [attr.aria-label]="'NAV.OPEN_MENU' | translate"
-  >
+  <button type="button" class="btn btn-light mm-mobile-nav-toggle" (click)="toggleMobileNav()" aria-label="Ouvrir le menu">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <a
-    class="navbar-brand d-flex align-items-center text-decoration-none"
-    [routerLink]="authService.dashboardPath()"
-  >
+  <a class="navbar-brand d-flex align-items-center text-decoration-none" [routerLink]="authService.dashboardPath()">
     <span class="mm-brand-mark">
-      <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="{{ 'AUTO.APP.LOGO_MANARA' | translate }}" />
+      <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="Logo Manara">
     </span>
     <span class="mm-brand-meta">
-      <span>{{ 'AUTO.APP.MANARA_CRM' | translate }}</span>
+      <span>Manara CRM</span>
     </span>
   </a>
 </header>
@@ -84,242 +74,149 @@
   (click)="closeMobileNav()"
 ></div>
 
-<aside
-  class="mm-app-sidebar"
-  *ngIf="authService.isAuthenticated()"
-  [class.mm-app-sidebar-open]="mobileNavOpen()"
->
+<aside class="mm-app-sidebar" *ngIf="authService.isAuthenticated()" [class.mm-app-sidebar-open]="mobileNavOpen()">
   <div class="mm-app-sidebar-inner">
     <div class="mm-app-sidebar-mobile-head">
-      <span class="fw-semibold">{{ 'NAV.TITLE' | translate }}</span>
-      <div class="d-flex align-items-center gap-2">
-        <app-language-switcher />
-        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="closeMobileNav()">
-          {{ 'COMMON.CLOSE' | translate }}
-        </button>
-      </div>
+      <span class="fw-semibold">Navigation</span>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="closeMobileNav()">Fermer</button>
     </div>
 
+    <!-- Logo qui pointe vers le dashboard du rôle -->
     <a class="navbar-brand d-flex align-items-center mb-4" [routerLink]="authService.dashboardPath()">
       <span class="mm-brand-mark">
-        <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="{{ 'AUTO.APP.LOGO_MANARA' | translate }}" />
+        <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="Logo Manara">
       </span>
       <span class="mm-brand-meta">
-        <span>{{ 'AUTO.APP.MANARA_CRM' | translate }}</span>
+        <span>Manara CRM</span>
       </span>
     </a>
 
+    <!-- Navigation principale -->
     <nav class="mm-side-nav">
+
+      <!-- Liens ADMIN — sec:authorize="hasRole('ADMIN')" -->
       <ng-container *ngIf="isAdmin()">
-        <a class="mm-side-link" routerLink="/admin/dashboard" routerLinkActive="mm-side-link-active">{{
-          'NAV.DASHBOARD' | translate
-        }}</a>
-        <a class="mm-side-link" routerLink="/admin/activities" routerLinkActive="mm-side-link-active">{{
-          'NAV.ACTIVITIES' | translate
-        }}</a>
-        <a class="mm-side-link" routerLink="/admin/animations" routerLinkActive="mm-side-link-active">{{
-          'NAV.ANIMATIONS' | translate
-        }}</a>
-        <a class="mm-side-link" routerLink="/admin/animateurs" routerLinkActive="mm-side-link-active">{{
-          'NAV.ANIMATEURS' | translate
-        }}</a>
-        <a class="mm-side-link" routerLink="/admin/parents" routerLinkActive="mm-side-link-active">{{
-          'NAV.PARENTS_CHILDREN' | translate
-        }}</a>
-        <a class="mm-side-link" routerLink="/admin/demandes" routerLinkActive="mm-side-link-active">{{
-          'NAV.REQUESTS' | translate
-        }}</a>
-        <a
-          class="mm-side-link mm-side-link-with-badge"
-          routerLink="/admin/messages"
-          routerLinkActive="mm-side-link-active"
-        >
-          <span>{{ 'NAV.MESSAGES' | translate }}</span>
-          <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{
-            sidebarCounts().messages
-          }}</span>
+        <a class="mm-side-link" routerLink="/admin/dashboard"
+           routerLinkActive="mm-side-link-active">Tableau de bord</a>
+        <a class="mm-side-link" routerLink="/admin/activities"
+           routerLinkActive="mm-side-link-active">Activités</a>
+        <a class="mm-side-link" routerLink="/admin/animations"
+           routerLinkActive="mm-side-link-active">Animations</a>
+        <a class="mm-side-link" routerLink="/admin/animateurs"
+           routerLinkActive="mm-side-link-active">Animateurs</a>
+        <a class="mm-side-link" routerLink="/admin/parents"
+           routerLinkActive="mm-side-link-active">Parents / Enfants</a>
+        <a class="mm-side-link" routerLink="/admin/demandes"
+           routerLinkActive="mm-side-link-active">Demandes</a>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/admin/messages"
+           routerLinkActive="mm-side-link-active">
+          <span>Messages</span>
+          <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{ sidebarCounts().messages }}</span>
         </a>
-        <a class="mm-side-link" routerLink="/admin/notifications" routerLinkActive="mm-side-link-active">
-          <span>{{ 'NAV.NOTIFICATIONS' | translate }}</span>
-          <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{
-            sidebarCounts().notifications
-          }}</span>
+        <a class="mm-side-link" routerLink="/admin/notifications"
+           routerLinkActive="mm-side-link-active">
+          <span>Notifications</span>
+          <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{ sidebarCounts().notifications }}</span>
         </a>
       </ng-container>
 
+      <!-- Liens PARENT — sec:authorize="hasRole('PARENT')" -->
       <ng-container *ngIf="isParent()">
-        <a
-          class="mm-side-link"
-          routerLink="/parent/dashboard"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-dashboard"
-          >{{ 'NAV.PARENT_SPACE' | translate }}</a
-        >
-        <a
-          class="mm-side-link"
-          routerLink="/parent/enfants"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-enfants"
-          >{{ 'NAV.CHILDREN' | translate }}</a
-        >
-        <a
-          class="mm-side-link"
-          routerLink="/parent/activities"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-activities"
-          >{{ 'NAV.ACTIVITIES' | translate }}</a
-        >
-        <a
-          class="mm-side-link"
-          routerLink="/parent/planning"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-planning"
-          >{{ 'NAV.CALENDAR' | translate }}</a
-        >
-        <a
-          *ngIf="canAccessTutoringTools()"
-          class="mm-side-link"
-          routerLink="/parent/quizzes"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-quizzes"
-          >{{ 'NAV.QUIZZES' | translate }}</a
-        >
-        <a
-          *ngIf="canAccessTutoringTools()"
-          class="mm-side-link"
-          routerLink="/parent/homeworks"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-homeworks"
-          >{{ 'NAV.HOMEWORKS' | translate }}</a
-        >
-        <a
-          *ngIf="canAccessSportPracticeTools()"
-          class="mm-side-link"
-          routerLink="/parent/sport-practice-plans"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-practice"
-          >{{ 'NAV.HOME_PRACTICE' | translate }}</a
-        >
-        <a
-          class="mm-side-link"
-          routerLink="/parent/appointments"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-appointments"
-          >{{ 'NAV.BOOK_APPOINTMENT' | translate }}</a
-        >
-        <a
-          class="mm-side-link"
-          routerLink="/parent/bookings"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-bookings"
-          >{{ 'NAV.APPOINTMENTS' | translate }}</a
-        >
-        <a
-          class="mm-side-link mm-side-link-with-badge"
-          routerLink="/parent/messages"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-messages"
-        >
-          <span>{{ 'NAV.MESSAGES' | translate }}</span>
-          <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{
-            sidebarCounts().messages
-          }}</span>
+        <a class="mm-side-link" routerLink="/parent/dashboard"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-dashboard">Espace parent</a>
+        <a class="mm-side-link" routerLink="/parent/enfants"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-enfants">Enfants</a>
+        <a class="mm-side-link" routerLink="/parent/activities"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-activities">Activités</a>
+        <a class="mm-side-link" routerLink="/parent/planning"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-planning">Calendrier</a>
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/parent/quizzes"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-quizzes">Quiz</a>
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/parent/homeworks"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-homeworks">Devoirs</a>
+        <a *ngIf="canAccessSportPracticeTools()" class="mm-side-link" routerLink="/parent/sport-practice-plans"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-practice">Pratique maison</a>
+        <a class="mm-side-link" routerLink="/parent/appointments"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-appointments">Prendre un rendez-vous</a>
+        <a class="mm-side-link" routerLink="/parent/bookings"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-bookings">Rendez-vous</a>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/parent/messages"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-messages">
+          <span>Messages</span>
+          <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{ sidebarCounts().messages }}</span>
         </a>
-        <a
-          class="mm-side-link mm-side-link-with-badge"
-          routerLink="/parent/notifications"
-          routerLinkActive="mm-side-link-active"
-          id="tour-parent-sidebar-notifications"
-        >
-          <span>{{ 'NAV.NOTIFICATIONS' | translate }}</span>
-          <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{
-            sidebarCounts().notifications
-          }}</span>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/parent/notifications"
+           routerLinkActive="mm-side-link-active" id="tour-parent-sidebar-notifications">
+          <span>Notifications</span>
+          <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{ sidebarCounts().notifications }}</span>
         </a>
       </ng-container>
 
+      <!-- Liens ANIMATEUR — sec:authorize="hasRole('ANIMATEUR')" -->
       <ng-container *ngIf="isAnimateur()">
-        <a class="mm-side-link" routerLink="/animateur/dashboard" routerLinkActive="mm-side-link-active">{{
-          'NAV.ANIMATEUR_SPACE' | translate
-        }}</a>
-        <a class="mm-side-link" routerLink="/animateur/inscriptions" routerLinkActive="mm-side-link-active">{{
-          'NAV.PRESENCES' | translate
-        }}</a>
-        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/animateur/quizzes" routerLinkActive="mm-side-link-active">{{
-          'NAV.QUIZZES' | translate
-        }}</a>
-        <a
-          *ngIf="canAccessTutoringTools()"
-          class="mm-side-link"
-          routerLink="/animateur/quizzes/history"
-          routerLinkActive="mm-side-link-active"
-          >{{ 'NAV.GENERATED_QUIZZES' | translate }}</a
-        >
-        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/animateur/homeworks" routerLinkActive="mm-side-link-active">{{
-          'NAV.HOMEWORKS' | translate
-        }}</a>
-        <a
-          *ngIf="canAccessSportPracticeTools()"
-          class="mm-side-link"
-          routerLink="/animateur/sport-practice-plans/history"
-          routerLinkActive="mm-side-link-active"
-          >{{ 'NAV.HOME_PRACTICE' | translate }}</a
-        >
-        <a class="mm-side-link" routerLink="/animateur/appointments" routerLinkActive="mm-side-link-active">{{
-          'NAV.AVAILABILITIES' | translate
-        }}</a>
-        <a class="mm-side-link" routerLink="/animateur/bookings" routerLinkActive="mm-side-link-active">{{
-          'NAV.APPOINTMENTS' | translate
-        }}</a>
-        <a
-          class="mm-side-link mm-side-link-with-badge"
-          routerLink="/animateur/messages"
-          routerLinkActive="mm-side-link-active"
-        >
-          <span>{{ 'NAV.MESSAGES' | translate }}</span>
-          <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{
-            sidebarCounts().messages
-          }}</span>
+        <a class="mm-side-link" routerLink="/animateur/dashboard"
+           routerLinkActive="mm-side-link-active">Espace animateur</a>
+        <a class="mm-side-link" routerLink="/animateur/inscriptions"
+           routerLinkActive="mm-side-link-active">Présences</a>
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/animateur/quizzes"
+           routerLinkActive="mm-side-link-active">Quiz</a>
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/animateur/quizzes/history"
+           routerLinkActive="mm-side-link-active">Quiz generes</a>
+        <a *ngIf="canAccessTutoringTools()" class="mm-side-link" routerLink="/animateur/homeworks"
+           routerLinkActive="mm-side-link-active">Devoirs</a>
+        <a *ngIf="canAccessSportPracticeTools()" class="mm-side-link" routerLink="/animateur/sport-practice-plans/history"
+           routerLinkActive="mm-side-link-active">Pratique maison</a>
+        <a class="mm-side-link" routerLink="/animateur/appointments"
+           routerLinkActive="mm-side-link-active">Disponibilites</a>
+        <a class="mm-side-link" routerLink="/animateur/bookings"
+           routerLinkActive="mm-side-link-active">Rendez-vous</a>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/animateur/messages"
+           routerLinkActive="mm-side-link-active">
+          <span>Messages</span>
+          <span *ngIf="sidebarCounts().messages" class="badge text-bg-danger">{{ sidebarCounts().messages }}</span>
         </a>
-        <a
-          class="mm-side-link mm-side-link-with-badge"
-          routerLink="/animateur/notifications"
-          routerLinkActive="mm-side-link-active"
-        >
-          <span>{{ 'NAV.NOTIFICATIONS' | translate }}</span>
-          <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{
-            sidebarCounts().notifications
-          }}</span>
+        <a class="mm-side-link mm-side-link-with-badge" routerLink="/animateur/notifications"
+           routerLinkActive="mm-side-link-active">
+          <span>Notifications</span>
+          <span *ngIf="sidebarCounts().notifications" class="badge text-bg-danger">{{ sidebarCounts().notifications }}</span>
         </a>
       </ng-container>
+
     </nav>
 
+    <!-- Liens secondaires (FAQ) poussés vers le bas -->
     <div class="mm-side-nav mm-side-nav-secondary mt-auto">
-      <a class="mm-side-link mm-side-link-muted" routerLink="/about" routerLinkActive="mm-side-link-active">{{
-        'NAV.FAQ' | translate
-      }}</a>
+      <a class="mm-side-link mm-side-link-muted" routerLink="/about"
+         routerLinkActive="mm-side-link-active">FAQ</a>
     </div>
 
+    <!-- Carte utilisateur — clique pour aller aux settings -->
     <a class="mm-user-card mt-3 text-decoration-none" routerLink="/settings">
-      <img
-        *ngIf="avatarUrl()"
-        [src]="avatarUrl()"
-        [alt]="authService.displayName() ?? ('COMMON.USER_PROFILE' | translate)"
-        class="mm-user-avatar"
-      />
+      <img *ngIf="avatarUrl()"
+           [src]="avatarUrl()"
+           [alt]="authService.displayName() ?? 'Profil utilisateur'"
+           class="mm-user-avatar">
       <div class="mm-user-meta">
         <span class="mm-user-name">
-          {{ authService.displayName() ?? ('COMMON.USER' | translate) }}
+          {{ authService.displayName() ?? 'Utilisateur' }}
         </span>
       </div>
     </a>
 
+    <!-- Bouton déconnexion -->
     <button type="button" class="btn btn-primary w-100 mt-3" (click)="logout()">
-      {{ 'AUTH.LOGOUT' | translate }}
+      Déconnexion
     </button>
+
   </div>
 </aside>
 
+
+<!-- ================================================================
+     CONTENU DES PAGES — router-outlet injecte la page active
+     La classe mm-page-with-sidebar ajoute la marge gauche quand
+     la sidebar est présente.
+     ================================================================ -->
 <div class="mm-page" [class.mm-page-with-sidebar]="authService.isAuthenticated()">
   <main class="mm-main">
     <router-outlet />
@@ -327,4 +224,3 @@
 </div>
 
 <app-chatbot-widget />
-</div>

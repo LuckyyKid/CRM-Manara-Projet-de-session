@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +6,7 @@ import { ChatConversationSummaryDto, ChatParticipantDto } from '../../../../core
 @Component({
   selector: 'app-chat-sidebar',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, TranslatePipe],
+  imports: [CommonModule, FormsModule, DatePipe],
   templateUrl: './chat-sidebar.component.html',
   styleUrl: './chat-sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

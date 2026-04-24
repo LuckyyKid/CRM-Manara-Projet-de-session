@@ -1,7 +1,7 @@
 <div class="mm-chat-sidebar">
   <header class="mm-chat-sidebar-top">
     <div>
-      <div class="mm-chat-sidebar-title">{{ 'NAV.MESSAGES' | translate }}</div>
+      <div class="mm-chat-sidebar-title">Messages</div>
       <div class="mm-chat-sidebar-meta">
         {{ connected ? 'Temps reel actif' : 'Connexion en cours' }}
       </div>
@@ -16,19 +16,19 @@
       class="form-control"
       [ngModel]="search"
       (ngModelChange)="searchChange.emit($event)"
-      placeholder="{{ 'AUTO.PAGES.MESSAGES.COMPONENTS.CHAT_SIDEBAR.CHAT_SIDEBAR.RECHERCHER_UNE_CONVERSATION' | translate }}"
+      placeholder="Rechercher une conversation"
     />
   </div>
 
   <div class="mm-chat-sidebar-body">
     <section class="mm-chat-sidebar-section">
       <div class="mm-chat-sidebar-section-head">
-        <span>{{ 'AUTO.PAGES.MESSAGES.COMPONENTS.CHAT_SIDEBAR.CHAT_SIDEBAR.CONVERSATIONS' | translate }}</span>
+        <span>Conversations</span>
         <span>{{ conversations.length }}</span>
       </div>
 
       <div *ngIf="!conversations.length" class="mm-chat-empty-copy">
-        {{ 'AUTO.PAGES.MESSAGES.COMPONENTS.CHAT_SIDEBAR.CHAT_SIDEBAR.AUCUNE_CONVERSATION_ACTIVE' | translate }}
+        Aucune conversation active.
       </div>
 
       <button
@@ -62,12 +62,12 @@
 
     <section class="mm-chat-sidebar-section">
       <div class="mm-chat-sidebar-section-head">
-        <span>{{ 'AUTO.PAGES.MESSAGES.COMPONENTS.CHAT_SIDEBAR.CHAT_SIDEBAR.NOUVEAUX_CONTACTS' | translate }}</span>
+        <span>Nouveaux contacts</span>
         <span>{{ contacts.length }}</span>
       </div>
 
       <div *ngIf="!contacts.length" class="mm-chat-empty-copy">
-        {{ 'AUTO.PAGES.MESSAGES.COMPONENTS.CHAT_SIDEBAR.CHAT_SIDEBAR.AUCUN_NOUVEAU_CONTACT_DISPONIBLE' | translate }}
+        Aucun nouveau contact disponible.
       </div>
 
       <button

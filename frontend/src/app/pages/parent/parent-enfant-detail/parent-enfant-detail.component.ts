@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -23,7 +22,7 @@ interface ChildActivitySummary {
 
 @Component({
   selector: 'app-parent-enfant-detail',
-  imports: [CommonModule, DatePipe, RouterLink, PaginationComponent, TranslatePipe],
+  imports: [CommonModule, DatePipe, RouterLink, PaginationComponent],
   templateUrl: './parent-enfant-detail.component.html',
 })
 export class ParentEnfantDetailComponent implements OnInit {

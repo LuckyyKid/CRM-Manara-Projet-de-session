@@ -1,4 +1,3 @@
-import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
@@ -15,7 +14,7 @@ import {
 @Component({
   selector: 'app-animateur-appointments',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, AvailabilityCalendarComponent, TranslatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, AvailabilityCalendarComponent],
   templateUrl: './animateur-appointments.component.html',
   styleUrl: './animateur-appointments.component.scss',
 })
