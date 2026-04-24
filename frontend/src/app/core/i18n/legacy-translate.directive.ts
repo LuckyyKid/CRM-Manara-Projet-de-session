@@ -22,11 +22,17 @@ export class LegacyTranslateDirective implements AfterViewInit, OnDestroy {
   private readonly subscriptions = new Subscription();
   private observer?: MutationObserver;
   private animationFrameId?: number;
+  private isApplying = false;
 
   ngAfterViewInit(): void {
     this.subscriptions.add(this.languageService.languageChanges().subscribe(() => this.queueApply()));
 
-    this.observer = new MutationObserver(() => this.queueApply());
+    this.observer = new MutationObserver(() => {
+      if (this.isApplying) {
+        return;
+      }
+      this.queueApply();
+    });
     this.observer.observe(this.host.nativeElement, {
       subtree: true,
       childList: true,
@@ -57,37 +63,44 @@ export class LegacyTranslateDirective implements AfterViewInit, OnDestroy {
   }
 
   private applyTranslations(): void {
+    this.isApplying = true;
     const currentLanguage = this.languageService.getCurrentLanguage();
-    const walker = document.createTreeWalker(
-      this.host.nativeElement,
-      NodeFilter.SHOW_TEXT,
-      {
-        acceptNode: (node) => {
-          const parent = node.parentElement;
-          if (!parent) {
-            return NodeFilter.FILTER_REJECT;
-          }
-          if (parent.closest('[data-i18n-ignore]')) {
-            return NodeFilter.FILTER_REJECT;
-          }
-          if (['SCRIPT', 'STYLE'].includes(parent.tagName)) {
-            return NodeFilter.FILTER_REJECT;
-          }
-          return /\S/.test(node.textContent ?? '') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    try {
+      const walker = document.createTreeWalker(
+        this.host.nativeElement,
+        NodeFilter.SHOW_TEXT,
+        {
+          acceptNode: (node) => {
+            const parent = node.parentElement;
+            if (!parent) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            if (parent.closest('[data-i18n-ignore]')) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            if (['SCRIPT', 'STYLE'].includes(parent.tagName)) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            return /\S/.test(node.textContent ?? '')
+              ? NodeFilter.FILTER_ACCEPT
+              : NodeFilter.FILTER_REJECT;
+          },
         },
-      },
-    );
+      );
 
-    let currentNode = walker.nextNode();
-    while (currentNode) {
-      const textNode = currentNode as Text;
-      const sourceText = this.captureOriginalText(textNode, currentLanguage);
-      textNode.textContent = this.translatePreservingWhitespace(sourceText, currentLanguage);
-      currentNode = walker.nextNode();
+      let currentNode = walker.nextNode();
+      while (currentNode) {
+        const textNode = currentNode as Text;
+        const sourceText = this.captureOriginalText(textNode, currentLanguage);
+        textNode.textContent = this.translatePreservingWhitespace(sourceText, currentLanguage);
+        currentNode = walker.nextNode();
+      }
+
+      const elements = this.host.nativeElement.querySelectorAll<HTMLElement>('*');
+      elements.forEach((element) => this.translateElementAttributes(element, currentLanguage));
+    } finally {
+      this.isApplying = false;
     }
-
-    const elements = this.host.nativeElement.querySelectorAll<HTMLElement>('*');
-    elements.forEach((element) => this.translateElementAttributes(element, currentLanguage));
   }
 
   private captureOriginalText(textNode: Text, currentLanguage: string): string {
