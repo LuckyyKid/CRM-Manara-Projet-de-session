@@ -38,6 +38,7 @@ public class AuthSchemaInitializer implements CommandLineRunner {
 
         ensureActivityDateDefaults(isPostgres, isMysql);
         ensureActivityDescriptionColumn(isPostgres, isMysql);
+        ensureActivityTranslationColumns(isPostgres, isMysql);
 
         if (isPostgres) {
             return;
@@ -140,6 +141,27 @@ public class AuthSchemaInitializer implements CommandLineRunner {
 
         if (isMysql && tableExists("Activity") && columnExists("Activity", "Description")) {
             jdbcTemplate.execute("ALTER TABLE Activity MODIFY COLUMN Description TEXT");
+        }
+    }
+
+    private void ensureActivityTranslationColumns(boolean isPostgres, boolean isMysql) {
+        if (isPostgres && tableExists("activity")) {
+            if (!columnExists("activity", "activynameen")) {
+                jdbcTemplate.execute("ALTER TABLE activity ADD COLUMN activynameen VARCHAR(255)");
+            }
+            if (!columnExists("activity", "descriptionen")) {
+                jdbcTemplate.execute("ALTER TABLE activity ADD COLUMN descriptionen TEXT");
+            }
+            return;
+        }
+
+        if (isMysql && tableExists("Activity")) {
+            if (!columnExists("Activity", "ActivyNameEn")) {
+                jdbcTemplate.execute("ALTER TABLE Activity ADD COLUMN ActivyNameEn VARCHAR(255) NULL");
+            }
+            if (!columnExists("Activity", "DescriptionEn")) {
+                jdbcTemplate.execute("ALTER TABLE Activity ADD COLUMN DescriptionEn TEXT NULL");
+            }
         }
     }
 

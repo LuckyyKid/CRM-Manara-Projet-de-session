@@ -5,7 +5,9 @@
 export interface ActivityDto {
   id: number;
   name: string;
+  nameEn?: string | null;
   description: string;
+  descriptionEn?: string | null;
   imageUrl: string | null;
   ageMin: number;
   ageMax: number;
@@ -16,7 +18,9 @@ export interface ActivityDto {
 
 export interface ActivityRequestDto {
   name: string;
+  nameEn?: string | null;
   description: string;
+  descriptionEn?: string | null;
   imageUrl: string | null;
   ageMin: number;
   ageMax: number;

@@ -16,8 +16,18 @@
             </div>
 
             <div class="mb-3">
+              <label class="form-label">Nom (anglais)</label>
+              <input type="text" class="form-control" [(ngModel)]="nameEn" name="nameEn">
+            </div>
+
+            <div class="mb-3">
               <label class="form-label">Description</label>
               <textarea rows="3" class="form-control" [(ngModel)]="description" name="description" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Description (anglais)</label>
+              <textarea rows="3" class="form-control" [(ngModel)]="descriptionEn" name="descriptionEn"></textarea>
             </div>
 
             <div class="mb-3">

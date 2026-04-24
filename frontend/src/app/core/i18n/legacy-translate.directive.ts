@@ -129,7 +129,24 @@ export class LegacyTranslateDirective implements AfterViewInit, OnDestroy {
       }
 
       const source = sourceMap.get(attribute) ?? value;
-      element.setAttribute(attribute, this.translatePreservingWhitespace(source, currentLanguage));
+      const translated = this.translatePreservingWhitespace(source, currentLanguage);
+      element.setAttribute(attribute, translated);
+
+      if (attribute === 'placeholder' && element instanceof HTMLInputElement) {
+        element.placeholder = translated;
+      }
+      if (attribute === 'placeholder' && element instanceof HTMLTextAreaElement) {
+        element.placeholder = translated;
+      }
+      if (attribute === 'title' && element instanceof HTMLElement) {
+        element.title = translated;
+      }
+      if (attribute === 'aria-label' && element instanceof HTMLElement) {
+        element.setAttribute('aria-label', translated);
+      }
+      if (attribute === 'value' && element instanceof HTMLInputElement && element.type !== 'hidden') {
+        element.value = translated;
+      }
     }
   }
 
