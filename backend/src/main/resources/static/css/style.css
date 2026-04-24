@@ -563,6 +563,23 @@ li {
     border-radius: 1rem;
 }
 
+.mm-pagination .pagination {
+    gap: 0.35rem;
+}
+
+.mm-pagination .page-link {
+    min-width: 2.65rem;
+    border-radius: 0.85rem !important;
+    border: 1px solid rgba(117, 139, 173, 0.18);
+    color: var(--mm-primary-strong);
+}
+
+.mm-pagination .page-item.active .page-link {
+    background: var(--mm-primary);
+    border-color: var(--mm-primary);
+    color: #fff;
+}
+
 .table {
     --bs-table-bg: transparent;
     --bs-table-striped-bg: transparent;
@@ -1616,6 +1633,11 @@ textarea.form-control:focus {
 }
 
 @media (max-width: 767.98px) {
+    .container {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+    }
+
     .navbar {
         padding: 0.75rem 0;
     }
@@ -1638,8 +1660,32 @@ textarea.form-control:focus {
         padding: 1.15rem;
     }
 
+    .mm-page-subtitle,
+    .mm-panel-subtitle {
+        line-height: 1.55;
+    }
+
     .table > :not(caption) > * > * {
         padding: 0.8rem 0.65rem;
+    }
+
+    .table-responsive {
+        margin: 0 -0.2rem;
+        padding: 0 0.2rem 0.35rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-responsive .table {
+        min-width: 38rem;
+    }
+
+    .table th {
+        white-space: nowrap;
+    }
+
+    .table td {
+        min-width: 7rem;
     }
 
     .btn {
@@ -1649,6 +1695,30 @@ textarea.form-control:focus {
 
     .mm-page-actions {
         width: 100%;
+    }
+
+    .mm-page-actions > * {
+        flex: 1 1 100%;
+    }
+
+    .badge {
+        max-width: 100%;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .form-control,
+    .form-select,
+    textarea.form-control {
+        font-size: 16px;
+    }
+
+    .mm-pagination .pagination {
+        justify-content: center;
+    }
+
+    .mm-pagination .page-item {
+        flex: 0 0 auto;
     }
 
     .mm-weekly-toolbar {

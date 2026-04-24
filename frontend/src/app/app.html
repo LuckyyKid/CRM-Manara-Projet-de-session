@@ -52,8 +52,34 @@
      SIDEBAR — affichée uniquement pour les utilisateurs connectés
      Équivalent Thymeleaf : sec:authorize="isAuthenticated()"
      ================================================================ -->
-<aside class="mm-app-sidebar" *ngIf="authService.isAuthenticated()">
+<header class="mm-auth-mobile-bar" *ngIf="authService.isAuthenticated()">
+  <button type="button" class="btn btn-light mm-mobile-nav-toggle" (click)="toggleMobileNav()" aria-label="Ouvrir le menu">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <a class="navbar-brand d-flex align-items-center text-decoration-none" [routerLink]="authService.dashboardPath()">
+    <span class="mm-brand-mark">
+      <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="Logo Manara">
+    </span>
+    <span class="mm-brand-meta">
+      <span>Manara CRM</span>
+    </span>
+  </a>
+</header>
+
+<div
+  *ngIf="authService.isAuthenticated()"
+  class="mm-app-sidebar-backdrop"
+  [class.mm-app-sidebar-backdrop-visible]="mobileNavOpen()"
+  (click)="closeMobileNav()"
+></div>
+
+<aside class="mm-app-sidebar" *ngIf="authService.isAuthenticated()" [class.mm-app-sidebar-open]="mobileNavOpen()">
   <div class="mm-app-sidebar-inner">
+    <div class="mm-app-sidebar-mobile-head">
+      <span class="fw-semibold">Navigation</span>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="closeMobileNav()">Fermer</button>
+    </div>
 
     <!-- Logo qui pointe vers le dashboard du rôle -->
     <a class="navbar-brand d-flex align-items-center mb-4" [routerLink]="authService.dashboardPath()">
