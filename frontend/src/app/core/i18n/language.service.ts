@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injectable, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 export type AppLanguage = 'fr' | 'en';
 
@@ -16,7 +16,7 @@ export class LanguageService {
 
   initialize(): Promise<void> {
     this.translate.addLangs(SUPPORTED_LANGUAGES);
-    this.translate.setFallbackLang('fr');
+    this.translate.setFallbackLang('en');
 
     const initialLanguage = this.resolveInitialLanguage();
     return this.applyLanguage(initialLanguage);
@@ -46,7 +46,7 @@ export class LanguageService {
     this.currentLanguageSignal.set(language);
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
     this.document.documentElement.lang = language;
-    await Promise.resolve(this.translate.use(language));
+    await firstValueFrom(this.translate.use(language));
   }
 
   private resolveInitialLanguage(): AppLanguage {

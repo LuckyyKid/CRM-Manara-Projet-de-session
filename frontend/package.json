@@ -5,6 +5,7 @@
     "ng": "ng",
     "i18n:auto": "node ./scripts/auto-i18n.mjs",
     "i18n:add-pipe": "node ./scripts/add-translate-pipe.mjs",
+    "i18n:fix-encoding": "node ./scripts/fix-i18n-encoding.mjs",
     "start": "NG_CLI_ANALYTICS=false ng serve --proxy-config proxy.conf.json",
     "build": "NG_CLI_ANALYTICS=false ng build",
     "watch": "NG_CLI_ANALYTICS=false ng build --watch --configuration development",
