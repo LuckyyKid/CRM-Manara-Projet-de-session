@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CurrentUserModel } from '../models/current-user.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -55,7 +56,12 @@ export class AuthService {
     this.loadingSignal.set(true);
     try {
       const currentUser = await firstValueFrom(
-        this.http.get<CurrentUserModel>('/api/me').pipe(catchError(() => of(null))),
+        this.http.get<CurrentUserModel>('/api/me').pipe(
+          catchError((error) => {
+            console.error('API ERROR /api/me', error);
+            return of(null);
+          }),
+        ),
       );
       this.currentUserSignal.set(currentUser);
       this.initializedSignal.set(true);
@@ -96,5 +102,9 @@ export class AuthService {
       sessionStorage.clear();
       window.location.href = '/login';
     }
+  }
+
+  googleLoginUrl(): string {
+    return `${environment.apiUrl.replace(/\/+$/, '')}/oauth2/authorization/google`;
   }
 }

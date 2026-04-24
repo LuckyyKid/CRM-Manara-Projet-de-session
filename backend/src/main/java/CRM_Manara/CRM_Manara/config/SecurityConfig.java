@@ -39,6 +39,9 @@ public class SecurityConfig {
     @Value("${app.frontend.base-url:http://localhost:4200}")
     private String frontendBaseUrl;
 
+    @Value("${app.cors.allowed-origin-patterns:http://localhost:4200,http://127.0.0.1:4200,https://*.vercel.app}")
+    private String allowedOriginPatterns;
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userService);
@@ -54,7 +57,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(frontendBaseUrl));
+        configuration.setAllowedOriginPatterns(
+                List.of(allowedOriginPatterns.split(",")).stream()
+                        .map(String::trim)
+                        .filter(value -> !value.isBlank())
+                        .toList()
+        );
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
