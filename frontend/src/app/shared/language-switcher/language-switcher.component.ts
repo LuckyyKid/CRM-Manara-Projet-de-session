@@ -14,12 +14,9 @@ export class LanguageSwitcherComponent {
   readonly languageService = inject(LanguageService);
 
   readonly languages = this.languageService.getAvailableLanguages();
+  readonly currentLanguage = this.languageService.getCurrentLanguageSignal();
 
-  get currentLanguage(): AppLanguage {
-    return this.languageService.getCurrentLanguage();
-  }
-
-  set currentLanguage(language: AppLanguage) {
-    this.languageService.switchLanguage(language);
+  async onLanguageChange(language: AppLanguage): Promise<void> {
+    await this.languageService.switchLanguage(language);
   }
 }

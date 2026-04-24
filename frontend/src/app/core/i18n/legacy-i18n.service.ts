@@ -96,7 +96,6 @@ const LEGACY_EN_TRANSLATIONS: Record<string, string> = {
   'Aucune inscription en attente.': 'No pending registration.',
   'Aucune inscription traitee.': 'No processed registration.',
   'Aucune inscription.': 'No registration.',
-  'Aucune notification.': 'No notification.',
   'Aucune pratique maison sportive disponible pour le moment.':
     'No home sports practice is available right now.',
   'Aucune question disponible pour ce quiz.': 'No question available for this quiz.',
@@ -143,6 +142,8 @@ const LEGACY_EN_TRANSLATIONS: Record<string, string> = {
   'Chargement du calendrier...': 'Loading calendar...',
   'Chargement...': 'Loading...',
   'Choisir une animation sportive': 'Choose a sports session',
+  'Choisissez un animateur pour afficher ses creneaux.':
+    'Choose a coach to display available time slots.',
   'Choisissez votre contact': 'Choose your contact',
   'Choisissez une conversation': 'Choose a conversation',
   'Choisissez un contact pour afficher la conversation.':
@@ -233,6 +234,7 @@ const LEGACY_EN_TRANSLATIONS: Record<string, string> = {
   "Envoyez-lui un message pour convenir d'une date ou lui demander d'ajouter des creneaux de rendez-vous.":
     'Send a message to agree on a date or ask them to add appointment slots.',
   Equipe: 'Team',
+  'Erreur lors du chargement des notifications.': 'Error while loading notifications.',
   'Espace animateur': 'Coach area',
   'Espace parent': 'Parent area',
   Etat: 'Status',
@@ -251,6 +253,20 @@ const LEGACY_EN_TRANSLATIONS: Record<string, string> = {
   "Filtrez par animation et recherchez un enfant ou un parent.":
     'Filter by session and search for a child or parent.',
   'Filtrez par nom et filtre actif/inactif.': 'Filter by name and active/inactive filter.',
+  'Nom ou description': 'Name or description',
+  'Nom ou prenom de l\'enfant': 'Child first or last name',
+  "Nom du parent, nom de l'enfant ou email": "Parent's name, child's name, or email",
+  'Exemple : energique, curieux, aime dessiner, prefere les petits groupes':
+    'Example: energetic, curious, likes drawing, prefers small groups',
+  "Exemple : reprendre confiance, canaliser son energie, besoin d'aide en mathematiques":
+    'Example: build confidence, channel energy, needs help in mathematics',
+  'Ex.: soccer, passes, coordination...': 'Ex.: soccer, passing, coordination...',
+  'Ex.: derivees, regle du produit, erreurs de signe, interpretation graphique...':
+    'Ex.: derivatives, product rule, sign errors, graph reading...',
+  'Ex.: conduite de balle, controle interieur, passes courtes, placement du corps, coordination, rythme...':
+    'Ex.: dribbling, inside control, short passes, body position, coordination, rhythm...',
+  'Posez votre question...': 'Ask your question...',
+  'Note...': 'Note...',
   'Recherche, filtres et pagination du catalogue.': 'Search, filters, and catalog pagination.',
   'Formats image acceptés, maximum 2 Mo.': 'Accepted image formats, maximum 2 MB.',
   'Generation du quiz par l\'IA': 'AI quiz generation',
@@ -337,8 +353,6 @@ const LEGACY_EN_TRANSLATIONS: Record<string, string> = {
   Nom: 'Last name',
   "Nom de l'enfant ou du parent": "Child's or parent's name",
   "Nom de l'etudiant": "Student name",
-  'Nom du parent, nom de l\'enfant ou email': "Parent's name, child's name, or email",
-  'Nom ou prenom de l\'enfant': "Child's last or first name",
   'Nom, prenom ou email': 'Last name, first name, or email',
   'Non applicable': 'Not applicable',
   'Non precise': 'Not specified',
@@ -370,6 +384,11 @@ const LEGACY_EN_TRANSLATIONS: Record<string, string> = {
   'Personnalite et interets': 'Personality and interests',
   "Photo de l'activite": 'Activity image',
   'Photo de profil': 'Profile picture',
+  'Aucune notification.': 'No notification.',
+  'Impossible de marquer cette notification comme lue.':
+    'Unable to mark this notification as read.',
+  'Impossible de marquer toutes les notifications comme lues.':
+    'Unable to mark all notifications as read.',
   'Pilotage animateur': 'Coach control',
   Places: 'Places',
   Planning: 'Schedule',

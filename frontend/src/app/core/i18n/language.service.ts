@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
@@ -12,24 +12,26 @@ const SUPPORTED_LANGUAGES: AppLanguage[] = ['fr', 'en'];
 export class LanguageService {
   private readonly translate = inject(TranslateService);
   private readonly document = inject(DOCUMENT);
+  private readonly currentLanguageSignal = signal<AppLanguage>('fr');
 
   initialize(): Promise<void> {
     this.translate.addLangs(SUPPORTED_LANGUAGES);
     this.translate.setFallbackLang('fr');
 
     const initialLanguage = this.resolveInitialLanguage();
-    this.applyLanguage(initialLanguage);
-
-    return Promise.resolve();
+    return this.applyLanguage(initialLanguage);
   }
 
-  switchLanguage(language: AppLanguage): void {
-    this.applyLanguage(language);
+  switchLanguage(language: AppLanguage): Promise<void> {
+    return this.applyLanguage(language);
   }
 
   getCurrentLanguage(): AppLanguage {
-    const current = this.translate.currentLang;
-    return this.isSupportedLanguage(current) ? current : 'fr';
+    return this.currentLanguageSignal();
+  }
+
+  getCurrentLanguageSignal() {
+    return this.currentLanguageSignal.asReadonly();
   }
 
   getAvailableLanguages(): AppLanguage[] {
@@ -40,10 +42,11 @@ export class LanguageService {
     return this.translate.onLangChange;
   }
 
-  private applyLanguage(language: AppLanguage): void {
-    this.translate.use(language);
+  private async applyLanguage(language: AppLanguage): Promise<void> {
+    this.currentLanguageSignal.set(language);
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
     this.document.documentElement.lang = language;
+    await Promise.resolve(this.translate.use(language));
   }
 
   private resolveInitialLanguage(): AppLanguage {

@@ -2,8 +2,8 @@
   <span class="visually-hidden">{{ 'LANGUAGE.SWITCH' | translate }}</span>
   <select
     class="form-select form-select-sm"
-    [ngModel]="currentLanguage"
-    (ngModelChange)="currentLanguage = $event"
+    [ngModel]="currentLanguage()"
+    (ngModelChange)="onLanguageChange($event)"
     aria-label="Language switcher"
   >
     <option *ngFor="let language of languages" [ngValue]="language">
