@@ -13,7 +13,7 @@
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement de la messagerie...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'AUTO.PAGES.MESSAGES.MESSAGES_PAGE.CHARGEMENT_DE_LA_MESSAGERIE' | translate }}</div>
 
   <app-chat-layout *ngIf="!loading()">
     <app-chat-sidebar

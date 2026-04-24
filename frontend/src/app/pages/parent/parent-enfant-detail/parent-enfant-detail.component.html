@@ -1,65 +1,65 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Detail enfant</span>
+      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.DETAIL_ENFANT' | translate }}</span>
       <h1 class="mm-page-title fs-1">{{ enfant()?.prenom }} {{ enfant()?.nom }}</h1>
-      <p class="mm-page-subtitle">Activites, inscriptions et resultats de quiz disponibles.</p>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.ACTIVITES_INSCRIPTIONS_ET_RESULTATS_DE_QUIZ_DISPONIBLES' | translate }}</p>
     </div>
     <div class="mm-page-actions">
-      <button class="btn btn-outline-secondary" type="button" (click)="goBack()">Retour</button>
-      <a class="btn btn-primary" [routerLink]="['/parent/enfants', enfant()?.id, 'edit']">Modifier</a>
+      <button class="btn btn-outline-secondary" type="button" (click)="goBack()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.RETOUR' | translate }}</button>
+      <a class="btn btn-primary" [routerLink]="['/parent/enfants', enfant()?.id, 'edit']">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.MODIFIER' | translate }}</a>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <ng-container *ngIf="!loading() && enfant()">
     <div class="row g-3 mb-4">
       <div class="col-12 col-md-4">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Activites suivies</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.ACTIVITES_SUIVIES' | translate }}</span>
           <span class="mm-kpi-value">{{ activitySummaries().length }}</span>
-          <span class="mm-kpi-meta">Activites avec inscription</span>
+          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.ACTIVITES_AVEC_INSCRIPTION' | translate }}</span>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Seances inscrites</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.SEANCES_INSCRITES' | translate }}</span>
           <span class="mm-kpi-value">{{ childInscriptions().length }}</span>
-          <span class="mm-kpi-meta">Toutes activites confondues</span>
+          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.TOUTES_ACTIVITES_CONFONDUES' | translate }}</span>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Quiz remis</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.QUIZ_REMIS' | translate }}</span>
           <span class="mm-kpi-value">{{ childAttempts().length }}</span>
-          <span class="mm-kpi-meta">Tentatives soumises</span>
+          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.TENTATIVES_SOUMISES' | translate }}</span>
         </div>
       </div>
     </div>
 
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
-        <h2 class="mm-panel-title">Activites inscrites</h2>
-        <p class="mm-panel-subtitle">Synthese par activite.</p>
+        <h2 class="mm-panel-title">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.ACTIVITES_INSCRITES' | translate }}</h2>
+        <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.SYNTHESE_PAR_ACTIVITE' | translate }}</p>
 
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>Activite</th>
-                <th>Type</th>
-                <th>Seances</th>
-                <th>A venir</th>
-                <th>Terminees</th>
-                <th>Quiz remis</th>
-                <th>Notes</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TYPE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.SEANCES' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.A_VENIR' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.TERMINEES' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.QUIZ_REMIS' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.NOTES' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visibleActivitySummaries().length">
-                <td colspan="7" class="text-secondary">Aucune activite inscrite pour cet enfant.</td>
+                <td colspan="7" class="text-secondary">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.AUCUNE_ACTIVITE_INSCRITE_POUR_CET_ENFANT' | translate }}</td>
               </tr>
               <tr *ngFor="let activity of visibleActivitySummaries()">
                 <td>{{ activity.activityName }}</td>
@@ -75,7 +75,7 @@
                       Derniere note: {{ formatScore(activity.latestScore) }} le {{ activity.latestSubmittedAt | date:'dd/MM/yyyy' }}
                     </span>
                   </span>
-                  <ng-template #noGrades><span class="text-secondary">Non applicable</span></ng-template>
+                  <ng-template #noGrades><span class="text-secondary">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.NON_APPLICABLE' | translate }}</span></ng-template>
                 </td>
               </tr>
             </tbody>
@@ -94,24 +94,24 @@
 
     <div class="card mm-card-shadow">
       <div class="card-body">
-        <h2 class="mm-panel-title">Animations liees</h2>
-        <p class="mm-panel-subtitle">Liste detaillee des animations auxquelles l'enfant est inscrit.</p>
+        <h2 class="mm-panel-title">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.ANIMATIONS_LIEES' | translate }}</h2>
+        <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.LISTE_DETAILLEE_DES_ANIMATIONS_AUXQUELLES_L_ENFANT_EST_INSCR' | translate }}</p>
 
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>Activite</th>
-                <th>Date</th>
-                <th>Animateur</th>
-                <th>Inscription</th>
-                <th>Situation</th>
-                <th>Presence</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ANIMATEUR' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.INSCRIPTION' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.SITUATION' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PRESENCE' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visibleChildInscriptions().length">
-                <td colspan="6" class="text-secondary">Aucune animation trouvee.</td>
+                <td colspan="6" class="text-secondary">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_DETAIL.PARENT_ENFANT_DETAIL.AUCUNE_ANIMATION_TROUVEE' | translate }}</td>
               </tr>
               <tr *ngFor="let inscription of visibleChildInscriptions()">
                 <td>{{ inscription.animation.activity.name }}</td>

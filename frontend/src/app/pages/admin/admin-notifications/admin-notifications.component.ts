@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { AdminService } from '../../../core/services/admin.service';
@@ -7,7 +8,7 @@ import { CommunicationService } from '../../../core/services/communication.servi
 
 @Component({
   selector: 'app-admin-notifications',
-  imports: [CommonModule, DatePipe, PaginationComponent],
+  imports: [CommonModule, DatePipe, PaginationComponent, TranslatePipe],
   templateUrl: './admin-notifications.component.html',
 })
 export class AdminNotificationsComponent implements OnInit {

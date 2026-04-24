@@ -4,7 +4,7 @@
     class="form-select form-select-sm"
     [ngModel]="currentLanguage()"
     (ngModelChange)="onLanguageChange($event)"
-    aria-label="Language switcher"
+    aria-label="{{ 'AUTO.SHARED.LANGUAGE_SWITCHER.LANGUAGE_SWITCHER.LANGUAGE_SWITCHER' | translate }}"
   >
     <option *ngFor="let language of languages" [ngValue]="language">
       {{ ('LANGUAGE.' + language.toUpperCase()) | translate }}

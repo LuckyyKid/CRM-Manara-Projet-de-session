@@ -1,27 +1,27 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Planning</span>
-      <h1 class="mm-page-title fs-1">Mon planning</h1>
-      <p class="mm-page-subtitle">Toutes les seances inscrites de vos enfants, en attente ou confirmees.</p>
+      <span class="mm-page-eyebrow">{{ 'HOME.SHORTCUTS.PLANNING_TITLE' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.MON_PLANNING' | translate }}</h1>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.TOUTES_LES_SEANCES_INSCRITES_DE_VOS_ENFANTS_EN_ATTENTE_OU_CO' | translate }}</p>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <div *ngIf="!loading()">
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
         <div class="row g-2 align-items-end mb-4">
           <div class="col-12 col-lg-7">
-            <label class="form-label" for="planningSearch">Recherche</label>
+            <label class="form-label" for="planningSearch">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE' | translate }}</label>
             <input
               id="planningSearch"
               #searchInput
               type="search"
               class="form-control"
-              placeholder="Enfant, activite ou animateur"
+              placeholder="{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.ENFANT_ACTIVITE_OU_ANIMATEUR' | translate }}"
               [value]="search()"
               (input)="setSearch(searchInput.value)"
             />
@@ -34,15 +34,15 @@
         <div class="mm-weekly-shell" id="tour-parent-planning-calendar">
           <div class="mm-weekly-toolbar">
             <div>
-              <div class="mm-weekly-title">Calendrier de la semaine</div>
+              <div class="mm-weekly-title">{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.CALENDRIER_DE_LA_SEMAINE' | translate }}</div>
               <div class="mm-weekly-range">
                 {{ weekStart() | date:'d MMMM' }} au {{ weekEnd() | date:'d MMMM yyyy' }}
               </div>
             </div>
             <div class="mm-weekly-nav">
-              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="previousWeek()">Semaine precedente</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="currentWeek()">Cette semaine</button>
-              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="nextWeek()">Semaine suivante</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="previousWeek()">{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.SEMAINE_PRECEDENTE' | translate }}</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="currentWeek()">{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.CETTE_SEMAINE' | translate }}</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="nextWeek()">{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.SEMAINE_SUIVANTE' | translate }}</button>
             </div>
           </div>
 
@@ -53,7 +53,7 @@
               </div>
 
               <div *ngIf="!day.inscriptions.length" class="mm-schedule-empty position-static">
-                Aucun cours
+                {{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.AUCUN_COURS' | translate }}
               </div>
 
               <article *ngFor="let insc of day.inscriptions" class="mm-cal-event">
@@ -74,25 +74,25 @@
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">Seances a venir</h2>
+          <h2 class="mm-panel-title">{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.SEANCES_A_VENIR' | translate }}</h2>
           <p class="mm-panel-subtitle">{{ upcomingInscriptions().length }} seance(s) planifiee(s).</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>Enfant</th>
-                <th>Activite</th>
-                <th>Date</th>
-                <th>Animateur</th>
-                <th>Statut</th>
-                <th>Situation</th>
-                <th>Presence</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ANIMATEUR' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.SITUATION' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PRESENCE' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visibleUpcomingInscriptions().length">
-                <td colspan="7" class="text-secondary">Aucune seance a venir.</td>
+                <td colspan="7" class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AUCUNE_SEANCE_A_VENIR' | translate }}</td>
               </tr>
               <tr *ngFor="let insc of visibleUpcomingInscriptions()">
                 <td>{{ insc.enfant.prenom }} {{ insc.enfant.nom }}</td>
@@ -136,25 +136,25 @@
     <div class="card mm-card-shadow">
       <div class="card-body">
         <div class="mb-3">
-          <h2 class="mm-panel-title">Historique</h2>
-          <p class="mm-panel-subtitle">Seances terminees.</p>
+          <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.HISTORIQUE' | translate }}</h2>
+          <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.SEANCES_TERMINEES' | translate }}</p>
         </div>
         <div class="table-responsive">
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>Enfant</th>
-                <th>Activite</th>
-                <th>Date</th>
-                <th>Statut</th>
-                <th>Situation</th>
-                <th>Presence</th>
-                <th>Incident</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.SITUATION' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PRESENCE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.INCIDENT' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visiblePastInscriptions().length">
-                <td colspan="7" class="text-secondary">Aucune seance passee.</td>
+                <td colspan="7" class="text-secondary">{{ 'AUTO.PAGES.PARENT.PARENT_PLANNING.PARENT_PLANNING.AUCUNE_SEANCE_PASSEE' | translate }}</td>
               </tr>
               <tr *ngFor="let insc of visiblePastInscriptions()">
                 <td>{{ insc.enfant.prenom }} {{ insc.enfant.nom }}</td>

@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +17,7 @@ interface PresenceRow {
 
 @Component({
   selector: 'app-animateur-presence',
-  imports: [CommonModule, FormsModule, PaginationComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent, TranslatePipe],
   templateUrl: './animateur-presence.component.html',
 })
 export class AnimateurPresenceComponent implements OnInit {

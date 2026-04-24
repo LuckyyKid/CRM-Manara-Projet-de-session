@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
@@ -15,7 +16,7 @@ import {
 @Component({
   selector: 'app-animateur-bookings',
   standalone: true,
-  imports: [CommonModule, DatePipe, ListPageComponent, ListHeadDirective, ListRowDirective],
+  imports: [CommonModule, DatePipe, ListPageComponent, ListHeadDirective, ListRowDirective, TranslatePipe],
   templateUrl: './animateur-bookings.component.html',
   styleUrl: './animateur-bookings.component.scss',
 })

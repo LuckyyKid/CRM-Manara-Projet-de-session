@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "i18n:auto": "node ./scripts/auto-i18n.mjs",
+    "i18n:add-pipe": "node ./scripts/add-translate-pipe.mjs",
     "start": "NG_CLI_ANALYTICS=false ng serve --proxy-config proxy.conf.json",
     "build": "NG_CLI_ANALYTICS=false ng build",
     "watch": "NG_CLI_ANALYTICS=false ng build --watch --configuration development",

@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { AnimateurService } from '../../../core/services/animateur.service';
@@ -8,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-animateur-notifications',
-  imports: [CommonModule, DatePipe, PaginationComponent],
+  imports: [CommonModule, DatePipe, PaginationComponent, TranslatePipe],
   templateUrl: './animateur-notifications.component.html',
 })
 export class AnimateurNotificationsComponent implements OnInit {

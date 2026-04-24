@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ParentService } from '../../../core/services/parent.service';
@@ -8,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-parent-notifications',
-  imports: [CommonModule, DatePipe, PaginationComponent],
+  imports: [CommonModule, DatePipe, PaginationComponent, TranslatePipe],
   templateUrl: './parent-notifications.component.html',
 })
 export class ParentNotificationsComponent implements OnInit {

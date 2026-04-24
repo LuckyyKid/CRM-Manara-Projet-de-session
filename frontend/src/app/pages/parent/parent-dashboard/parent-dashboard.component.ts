@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -8,7 +9,7 @@ import { EnfantDto, InscriptionDto } from '../../../core/models/api.models';
 
 @Component({
   selector: 'app-parent-dashboard',
-  imports: [CommonModule, RouterLink, DatePipe],
+  imports: [CommonModule, RouterLink, DatePipe, TranslatePipe],
   templateUrl: './parent-dashboard.component.html',
 })
 export class ParentDashboardComponent implements OnInit {

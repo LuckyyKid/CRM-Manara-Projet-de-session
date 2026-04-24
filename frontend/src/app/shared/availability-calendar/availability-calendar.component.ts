@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
@@ -21,7 +22,7 @@ type CalendarDay = {
 @Component({
   selector: 'app-availability-calendar',
   standalone: true,
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule, DatePipe, TranslatePipe],
   templateUrl: './availability-calendar.component.html',
   styleUrl: './availability-calendar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,14 +1,14 @@
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">Espace parent</span>
-          <h1 class="mm-page-title fs-1">Pratique maison</h1>
-          <p class="mm-page-subtitle">Retrouvez l'historique des fiches sportives a refaire avec votre enfant entre deux seances.</p>
+          <span class="mm-page-eyebrow">{{ 'NAV.PARENT_SPACE' | translate }}</span>
+          <h1 class="mm-page-title fs-1">{{ 'NAV.HOME_PRACTICE' | translate }}</h1>
+          <p class="mm-page-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_SPORT_PRACTICE_PLANS.PARENT_SPORT_PRACTICE_PLANS.RETROUVEZ_L_HISTORIQUE_DES_FICHES_SPORTIVES_A_REFAIRE_AVEC_V' | translate }}</p>
         </div>
       </div>
 
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
       <div *ngIf="!loading() && canAccessSportPracticeTools()" class="row g-4" id="tour-parent-practice-list">
         <div class="col-12">
@@ -16,7 +16,7 @@
             <div class="card-body">
               <div class="row g-3 align-items-end">
                 <div class="col-12 col-lg-8">
-                  <label class="form-label" for="planSearch">Rechercher</label>
+                  <label class="form-label" for="planSearch">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.RECHERCHER' | translate }}</label>
                   <input
                     id="planSearch"
                     class="form-control"
@@ -45,20 +45,20 @@
                 <span class="badge text-bg-light">{{ plan.items.length }} etape(s)</span>
               </div>
               <p>{{ plan.summary }}</p>
-              <a class="btn btn-primary" [routerLink]="['/parent/sport-practice-plans', plan.id]">Details</a>
+              <a class="btn btn-primary" [routerLink]="['/parent/sport-practice-plans', plan.id]">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.DETAILS' | translate }}</a>
             </div>
           </div>
         </div>
 
         <div *ngIf="!filteredPlans().length && plans().length" class="col-12">
           <div class="card mm-card-shadow">
-            <div class="card-body text-secondary">Aucune fiche ne correspond a votre recherche.</div>
+            <div class="card-body text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.AUCUNE_FICHE_NE_CORRESPOND_A_VOTRE_RECHERCHE' | translate }}</div>
           </div>
         </div>
 
         <div *ngIf="!plans().length" class="col-12">
           <div class="card mm-card-shadow">
-            <div class="card-body text-secondary">Aucune pratique maison sportive disponible pour le moment.</div>
+            <div class="card-body text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.AUCUNE_PRATIQUE_MAISON_SPORTIVE_DISPONIBLE_POUR_LE_MOMENT' | translate }}</div>
           </div>
         </div>
       </div>

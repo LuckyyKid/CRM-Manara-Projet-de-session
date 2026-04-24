@@ -1,31 +1,31 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Présences</span>
-      <h1 class="mm-page-title fs-1">Gestion des présences</h1>
+      <span class="mm-page-eyebrow">{{ 'NAV.PRESENCES' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_PRESENCE.ANIMATEUR_PRESENCE.GESTION_DES_PRESENCES' | translate }}</h1>
       <p class="mm-page-subtitle">Séance #{{ animationId() }}</p>
     </div>
   </div>
 
   <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
       <div class="mb-3">
-        <h2 class="mm-panel-title">Liste des inscrits</h2>
+        <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_PRESENCE.ANIMATEUR_PRESENCE.LISTE_DES_INSCRITS' | translate }}</h2>
         <p class="mm-panel-subtitle">{{ rows().length }} enfant(s) inscrit(s).</p>
       </div>
-      <div *ngIf="!rows().length" class="text-secondary">Aucun inscrit pour cette séance.</div>
+      <div *ngIf="!rows().length" class="text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_PRESENCE.ANIMATEUR_PRESENCE.AUCUN_INSCRIT_POUR_CETTE_SEANCE' | translate }}</div>
       <div class="table-responsive" *ngIf="rows().length">
         <table class="table table-sm align-middle">
           <thead>
             <tr>
-              <th>Enfant</th>
-              <th>Présence</th>
-              <th>Note d'incident</th>
-              <th>Actions</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_PRESENCE.ANIMATEUR_PRESENCE.PRESENCE' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_PRESENCE.ANIMATEUR_PRESENCE.NOTE_D_INCIDENT' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody>

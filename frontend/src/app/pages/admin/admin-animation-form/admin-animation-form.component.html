@@ -7,25 +7,25 @@
           <h1 class="mm-page-title fs-2 mb-3">{{ isEdit ? 'Modifier une animation' : 'Creer une animation' }}</h1>
 
           <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-          <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+          <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
           <form *ngIf="!loading()" (ngSubmit)="onSubmit()" #f="ngForm">
             <div *ngIf="!activities().length" class="alert alert-warning">
-              Creez une activite avant de planifier une animation.
+              {{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.CREEZ_UNE_ACTIVITE_AVANT_DE_PLANIFIER_UNE_ANIMATION' | translate }}
             </div>
             <div *ngIf="!animateurs().length" class="alert alert-warning">
-              Ajoutez un animateur avant de planifier une animation.
+              {{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.AJOUTEZ_UN_ANIMATEUR_AVANT_DE_PLANIFIER_UNE_ANIMATION' | translate }}
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Activite</label>
+              <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</label>
               <select class="form-select" [(ngModel)]="activityId" name="activityId" required>
                 <option *ngFor="let activity of activities()" [ngValue]="activity.id">{{ activityName(activity) }}</option>
               </select>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Animateur</label>
+              <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ANIMATEUR' | translate }}</label>
               <select class="form-select" [(ngModel)]="animateurId" name="animateurId" required>
                 <option *ngFor="let animateur of animateurs()" [ngValue]="animateur.id">
                   {{ animateur.prenom }} {{ animateur.nom }}
@@ -35,13 +35,13 @@
 
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label">Role</label>
+                <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ROLE' | translate }}</label>
                 <select class="form-select" [(ngModel)]="role" name="role" required>
                   <option *ngFor="let item of options()?.animationRoles" [value]="item">{{ label(item) }}</option>
                 </select>
               </div>
               <div class="col-md-6">
-                <label class="form-label">Statut</label>
+                <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</label>
                 <select class="form-select" [(ngModel)]="status" name="status" required>
                   <option *ngFor="let item of options()?.animationStatuses" [value]="item">{{ label(item) }}</option>
                 </select>
@@ -50,11 +50,11 @@
 
             <div class="row g-3 mt-1">
               <div class="col-md-6">
-                <label class="form-label">Debut</label>
+                <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.DEBUT' | translate }}</label>
                 <input type="datetime-local" class="form-control" [(ngModel)]="startTime" name="startTime" required>
               </div>
               <div class="col-md-6">
-                <label class="form-label">Fin</label>
+                <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.FIN' | translate }}</label>
                 <input type="datetime-local" class="form-control" [(ngModel)]="endTime" name="endTime" required>
               </div>
             </div>
@@ -63,7 +63,7 @@
               <button type="submit" class="btn btn-primary" [disabled]="saving() || !activities().length || !animateurs().length">
                 {{ saving() ? 'Enregistrement...' : (isEdit ? 'Enregistrer' : 'Creer') }}
               </button>
-              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">Annuler</button>
+              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITY_FORM.ADMIN_ACTIVITY_FORM.ANNULER' | translate }}</button>
             </div>
           </form>
         </div>

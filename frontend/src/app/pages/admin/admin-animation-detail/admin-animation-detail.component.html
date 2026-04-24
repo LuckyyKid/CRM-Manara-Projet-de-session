@@ -1,47 +1,47 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Animation</span>
+      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ANIMATION' | translate }}</span>
       <h1 class="mm-page-title fs-1">{{ animation()?.activity?.name || 'Detail animation' }}</h1>
       <p class="mm-page-subtitle" *ngIf="animation() as item">
         {{ item.startTime | date:'dd/MM/yyyy HH:mm' }} - {{ item.animateur.prenom }} {{ item.animateur.nom }}
       </p>
     </div>
     <div class="mm-page-actions">
-      <button class="btn btn-outline-secondary" (click)="goBack()">Retour</button>
-      <button class="btn btn-primary" (click)="goToEdit()">Modifier</button>
+      <button class="btn btn-outline-secondary" (click)="goBack()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.RETOUR' | translate }}</button>
+      <button class="btn btn-primary" (click)="goToEdit()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.MODIFIER' | translate }}</button>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <ng-container *ngIf="!loading() && animation() as item">
     <div class="row g-3 mb-4">
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Inscrits approuves</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.INSCRITS_APPROUVES' | translate }}</span>
           <span class="mm-kpi-value">{{ approvedInscriptions().length }}</span>
           <span class="mm-kpi-meta">{{ pendingInscriptions().length }} demande(s) en attente</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Remplissage</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.REMPLISSAGE' | translate }}</span>
           <span class="mm-kpi-value">{{ fillRate() }}%</span>
           <span class="mm-kpi-meta">Capacite: {{ item.activity.capacity }}</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Presence</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PRESENCE' | translate }}</span>
           <span class="mm-kpi-value">{{ presentCount() }}</span>
           <span class="mm-kpi-meta">{{ absentCount() }} absent(s), {{ unmarkedPresenceCount() }} non saisi(s)</span>
         </div>
       </div>
       <div class="col-12 col-md-3">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Situation</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.SITUATION' | translate }}</span>
           <span class="mm-kpi-value">{{ timeStatusLabel() }}</span>
           <span class="mm-kpi-meta">{{ quizzes().length }} quiz lie(s)</span>
         </div>
@@ -53,23 +53,23 @@
         <div class="card mm-card-shadow h-100">
           <div class="card-body">
             <div class="mb-3">
-              <h2 class="mm-panel-title">Etudiants</h2>
-              <p class="mm-panel-subtitle">Liste des enfants associes a cette animation.</p>
+              <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ETUDIANTS' | translate }}</h2>
+              <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.LISTE_DES_ENFANTS_ASSOCIES_A_CETTE_ANIMATION' | translate }}</p>
             </div>
             <div class="table-responsive">
               <table class="table table-sm align-middle">
                 <thead>
                   <tr>
-                    <th>Enfant</th>
-                    <th>Parent</th>
-                    <th>Inscription</th>
-                    <th>Presence</th>
-                    <th>Note incident</th>
+                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
+                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PARENT' | translate }}</th>
+                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.INSCRIPTION' | translate }}</th>
+                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.PRESENCE' | translate }}</th>
+                    <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.NOTE_INCIDENT' | translate }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngIf="!visibleInscriptions().length">
-                    <td colspan="5" class="text-secondary">Aucun enfant inscrit.</td>
+                    <td colspan="5" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.AUCUN_ENFANT_INSCRIT' | translate }}</td>
                   </tr>
                   <tr *ngFor="let row of visibleInscriptions()">
                     <td>{{ row.inscription.enfant.prenom }} {{ row.inscription.enfant.nom }}</td>
@@ -97,10 +97,10 @@
         <div class="card mm-card-shadow h-100">
           <div class="card-body">
             <div class="mb-3">
-              <h2 class="mm-panel-title">Quiz / devoirs</h2>
-              <p class="mm-panel-subtitle">Contenus rattaches a cette animation.</p>
+              <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.QUIZ_DEVOIRS' | translate }}</h2>
+              <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.CONTENUS_RATTACHES_A_CETTE_ANIMATION' | translate }}</p>
             </div>
-            <div *ngIf="!quizzes().length" class="text-secondary">Aucun quiz lie.</div>
+            <div *ngIf="!quizzes().length" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.AUCUN_QUIZ_LIE' | translate }}</div>
             <div class="vstack gap-2">
               <div *ngFor="let quiz of visibleQuizzes()" class="border rounded-3 p-3">
                 <div class="fw-semibold">{{ quiz.title }}</div>

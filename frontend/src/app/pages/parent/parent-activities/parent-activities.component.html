@@ -1,22 +1,22 @@
 <div class="container py-4" id="tour-parent-activities-page">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Catalogue</span>
-      <h1 class="mm-page-title fs-1">Activites</h1>
-      <p class="mm-page-subtitle">Inscrivez vos enfants aux activites disponibles.</p>
+      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.CATALOGUE' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIVITES' | translate }}</h1>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_ACTIVITIES.PARENT_ACTIVITIES.INSCRIVEZ_VOS_ENFANTS_AUX_ACTIVITES_DISPONIBLES' | translate }}</p>
     </div>
   </div>
 
   <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <div *ngIf="!loading()">
     <div class="card mm-card-shadow mb-4" *ngIf="enfants.length > 0">
       <div class="card-body">
         <div class="row g-2 align-items-end">
           <div class="col-12 col-lg-4">
-            <label class="form-label fw-semibold">Inscrire pour</label>
+            <label class="form-label fw-semibold">{{ 'AUTO.PAGES.PARENT.PARENT_ACTIVITIES.PARENT_ACTIVITIES.INSCRIRE_POUR' | translate }}</label>
             <select class="form-select" [(ngModel)]="selectedEnfantId" name="selectedEnfant" id="tour-parent-activities-child-select">
               <option *ngFor="let enfant of enfants" [ngValue]="enfant.id">
                 {{ enfant.prenom }} {{ enfant.nom }}
@@ -24,12 +24,12 @@
             </select>
           </div>
           <div class="col-12 col-lg-5">
-            <label class="form-label">Recherche</label>
+            <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE' | translate }}</label>
             <input
               #searchInput
               type="search"
               class="form-control"
-              placeholder="Activite, description ou animateur"
+              placeholder="{{ 'AUTO.PAGES.PARENT.PARENT_ACTIVITIES.PARENT_ACTIVITIES.ACTIVITE_DESCRIPTION_OU_ANIMATEUR' | translate }}"
               [value]="search()"
               (input)="setSearch(searchInput.value)"
             />
@@ -42,11 +42,11 @@
     </div>
 
     <div *ngIf="enfants.length === 0" class="alert alert-info">
-      Vous devez d'abord ajouter un enfant approuve avant de pouvoir vous inscrire a une activite.
+      {{ 'AUTO.PAGES.PARENT.PARENT_ACTIVITIES.PARENT_ACTIVITIES.VOUS_DEVEZ_D_ABORD_AJOUTER_UN_ENFANT_APPROUVE_AVANT_DE_POUVO' | translate }}
     </div>
 
     <div *ngIf="filteredActivityViews().length === 0" class="alert alert-info">
-      Aucune activite disponible pour le moment.
+      {{ 'AUTO.PAGES.PARENT.PARENT_ACTIVITIES.PARENT_ACTIVITIES.AUCUNE_ACTIVITE_DISPONIBLE_POUR_LE_MOMENT' | translate }}
     </div>
 
     <div *ngFor="let view of visibleActivityViews()" class="card mm-card-shadow mb-4" id="tour-parent-activities-list">
@@ -63,15 +63,15 @@
           <table class="table table-sm align-middle">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Animateur</th>
-                <th>Places</th>
-                <th>Actions</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.DATE' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ANIMATEUR' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.PARENT.PARENT_ACTIVITIES.PARENT_ACTIVITIES.PLACES' | translate }}</th>
+                <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!view.animations.length">
-                <td colspan="4" class="text-secondary">Aucune seance disponible.</td>
+                <td colspan="4" class="text-secondary">{{ 'AUTO.PAGES.PARENT.PARENT_ACTIVITIES.PARENT_ACTIVITIES.AUCUNE_SEANCE_DISPONIBLE' | translate }}</td>
               </tr>
               <tr *ngFor="let row of view.animations">
                 <td>{{ row.animation.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
@@ -79,11 +79,11 @@
                 <td>
                   <span *ngIf="row.capacity">
                     {{ row.capacity.remaining }} restante(s)
-                    <span class="badge bg-danger ms-1" *ngIf="row.capacity.full">Complet</span>
+                    <span class="badge bg-danger ms-1" *ngIf="row.capacity.full">{{ 'AUTO.PAGES.ADMIN.ADMIN_DEMANDES.ADMIN_DEMANDES.COMPLET' | translate }}</span>
                   </span>
                 </td>
                 <td>
-                  <span *ngIf="isInscrit(row.animation.id)" class="badge bg-success">Inscrit</span>
+                  <span *ngIf="isInscrit(row.animation.id)" class="badge bg-success">{{ 'AUTO.PAGES.PARENT.PARENT_ACTIVITIES.PARENT_ACTIVITIES.INSCRIT' | translate }}</span>
                   <button
                     *ngIf="!isInscrit(row.animation.id)"
                     class="btn btn-sm btn-primary"

@@ -1,39 +1,39 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Equipe</span>
-      <h1 class="mm-page-title fs-1">Animateurs</h1>
-      <p class="mm-page-subtitle">Recherche par nom et filtre actif/inactif.</p>
+      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.EQUIPE' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'NAV.ANIMATEURS' | translate }}</h1>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE_PAR_NOM_ET_FILTRE_ACTIF_INACTIF' | translate }}</p>
     </div>
     <div class="mm-page-actions">
-      <button class="btn btn-primary" (click)="goToNew()">Ajouter un animateur</button>
+      <button class="btn btn-primary" (click)="goToNew()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.AJOUTER_UN_ANIMATEUR' | translate }}</button>
     </div>
   </div>
 
   <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
       <div class="row g-2 align-items-end mb-3">
         <div class="col-12 col-lg-6">
-          <label class="form-label">Recherche</label>
+          <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE' | translate }}</label>
           <input
             #searchInput
             type="search"
             class="form-control"
-            placeholder="Nom, prenom ou email"
+            placeholder="{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.NOM_PRENOM_OU_EMAIL' | translate }}"
             [value]="search()"
             (input)="setSearch(searchInput.value)"
           />
         </div>
         <div class="col-12 col-lg-3">
-          <label class="form-label">Statut</label>
+          <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</label>
           <select #statusSelect class="form-select" [value]="statusFilter()" (change)="setStatus(statusSelect.value)">
-            <option value="">Tous</option>
-            <option value="ACTIVE">Actifs</option>
-            <option value="INACTIVE">Inactifs</option>
+            <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUS' | translate }}</option>
+            <option value="ACTIVE">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.ACTIFS' | translate }}</option>
+            <option value="INACTIVE">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.INACTIFS' | translate }}</option>
           </select>
         </div>
         <div class="col-12 col-lg-3 text-lg-end text-secondary small">
@@ -45,16 +45,16 @@
         <table class="table table-sm align-middle">
           <thead>
             <tr>
-              <th>Nom</th>
-              <th>Prenom</th>
-              <th>Email</th>
-              <th>Statut</th>
-              <th>Actions</th>
+              <th>{{ 'COMMON.LAST_NAME' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEUR_FORM.ADMIN_ANIMATEUR_FORM.PRENOM' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEUR_FORM.ADMIN_ANIMATEUR_FORM.EMAIL' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="!visibleAnimateurs().length">
-              <td colspan="5" class="text-secondary">Aucun animateur trouve.</td>
+              <td colspan="5" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.AUCUN_ANIMATEUR_TROUVE' | translate }}</td>
             </tr>
             <tr *ngFor="let animateur of visibleAnimateurs()">
               <td>{{ animateur.nom }}</td>
@@ -67,11 +67,11 @@
               </td>
               <td>
                 <div class="d-flex gap-2 flex-wrap">
-                  <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(animateur.id)">Modifier</button>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(animateur.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.MODIFIER' | translate }}</button>
                   <button class="btn btn-sm btn-outline-primary" (click)="toggleStatus(animateur.id, !!animateur.user?.enabled)">
                     {{ animateur.user?.enabled ? 'Desactiver' : 'Activer' }}
                   </button>
-                  <button class="btn btn-sm btn-outline-danger" (click)="deleteAnimateur(animateur.id)">Supprimer</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteAnimateur(animateur.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.SUPPRIMER' | translate }}</button>
                 </div>
               </td>
             </tr>

@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -11,7 +12,7 @@ import {
 
 @Component({
   selector: 'app-animateur-homework-overview',
-  imports: [CommonModule, DatePipe, RouterLink, ListPageComponent, ListHeadDirective, ListRowDirective],
+  imports: [CommonModule, DatePipe, RouterLink, ListPageComponent, ListHeadDirective, ListRowDirective, TranslatePipe],
   templateUrl: './animateur-homework-overview.component.html',
 })
 export class AnimateurHomeworkOverviewComponent implements OnInit {

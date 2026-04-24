@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +14,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 
 @Component({
   selector: 'app-parent-activities',
-  imports: [CommonModule, FormsModule, DatePipe, PaginationComponent],
+  imports: [CommonModule, FormsModule, DatePipe, PaginationComponent, TranslatePipe],
   templateUrl: './parent-activities.component.html',
 })
 export class ParentActivitiesComponent implements OnInit {

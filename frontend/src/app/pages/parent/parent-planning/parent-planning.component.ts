@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { InscriptionDto } from '../../../core/models/api.models';
@@ -17,7 +18,7 @@ interface PlanningDay {
 
 @Component({
   selector: 'app-parent-planning',
-  imports: [CommonModule, DatePipe, PaginationComponent],
+  imports: [CommonModule, DatePipe, PaginationComponent, TranslatePipe],
   templateUrl: './parent-planning.component.html',
 })
 export class ParentPlanningComponent implements OnInit {

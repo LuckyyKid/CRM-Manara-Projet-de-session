@@ -1,24 +1,24 @@
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">Suivi sport</span>
-          <h1 class="mm-page-title fs-1">Historique pratique maison</h1>
-          <p class="mm-page-subtitle">Consultez, recherchez et ouvrez les details des fiches deja generees.</p>
+          <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.SUIVI_SPORT' | translate }}</span>
+          <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.HISTORIQUE_PRATIQUE_MAISON' | translate }}</h1>
+          <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.CONSULTEZ_RECHERCHEZ_ET_OUVREZ_LES_DETAILS_DES_FICHES_DEJA_G' | translate }}</p>
         </div>
         <div class="mm-page-actions">
-          <a class="btn btn-primary" routerLink="/animateur/sport-practice-plans">Nouvelle fiche</a>
+          <a class="btn btn-primary" routerLink="/animateur/sport-practice-plans">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.NOUVELLE_FICHE' | translate }}</a>
         </div>
       </div>
 
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
       <div *ngIf="!loading() && canAccessSportPracticeTools()">
         <div class="card mm-card-shadow">
           <div class="card-body">
             <div class="row g-3 align-items-end">
               <div class="col-12 col-lg-8">
-                <label class="form-label" for="historySearch">Rechercher</label>
+                <label class="form-label" for="historySearch">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.RECHERCHER' | translate }}</label>
                 <input
                   id="historySearch"
                   class="form-control"
@@ -47,20 +47,20 @@
                   <span class="badge text-bg-light">{{ plan.items.length }} etape(s)</span>
                 </div>
                 <p>{{ plan.summary }}</p>
-                <a class="btn btn-outline-primary" [routerLink]="['/animateur/sport-practice-plans', plan.id]">Details</a>
+                <a class="btn btn-outline-primary" [routerLink]="['/animateur/sport-practice-plans', plan.id]">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.DETAILS' | translate }}</a>
               </div>
             </div>
           </div>
 
           <div *ngIf="!filteredPlans().length && plans().length" class="col-12">
             <div class="card mm-card-shadow">
-              <div class="card-body text-secondary">Aucune fiche ne correspond a votre recherche.</div>
+              <div class="card-body text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.AUCUNE_FICHE_NE_CORRESPOND_A_VOTRE_RECHERCHE' | translate }}</div>
             </div>
           </div>
 
           <div *ngIf="!plans().length" class="col-12">
             <div class="card mm-card-shadow">
-              <div class="card-body text-secondary">Aucune pratique maison sportive disponible pour le moment.</div>
+              <div class="card-body text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.ANIMATEUR_SPORT_PRACTICE_PLAN_HISTORY.AUCUNE_PRATIQUE_MAISON_SPORTIVE_DISPONIBLE_POUR_LE_MOMENT' | translate }}</div>
             </div>
           </div>
         </div>

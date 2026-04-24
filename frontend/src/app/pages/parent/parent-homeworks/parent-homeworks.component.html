@@ -1,17 +1,17 @@
     <div class="container py-4" id="tour-parent-homeworks-list">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">Espace parent</span>
-          <h1 class="mm-page-title fs-1">Historique des devoirs</h1>
-          <p class="mm-page-subtitle">Devoirs personnalises separes des quiz, avec acces direct au detail et aux soumissions deja corrigees.</p>
+          <span class="mm-page-eyebrow">{{ 'NAV.PARENT_SPACE' | translate }}</span>
+          <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.PARENT.PARENT_DASHBOARD.PARENT_DASHBOARD.HISTORIQUE_DES_DEVOIRS' | translate }}</h1>
+          <p class="mm-page-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORKS.PARENT_HOMEWORKS.DEVOIRS_PERSONNALISES_SEPARES_DES_QUIZ_AVEC_ACCES_DIRECT_AU_' | translate }}</p>
         </div>
         <div class="mm-page-actions">
-          <a class="btn btn-outline-primary" routerLink="/parent/quizzes">Retour aux quiz</a>
+          <a class="btn btn-outline-primary" routerLink="/parent/quizzes">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORKS.PARENT_HOMEWORKS.RETOUR_AUX_QUIZ' | translate }}</a>
         </div>
       </div>
 
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
       <app-list-page
         *ngIf="!loading()"
@@ -31,12 +31,12 @@
         (previous)="previousPage()"
         (next)="nextPage()">
         <ng-template appListHead>
-          <th>Devoir</th>
-          <th>Enfant</th>
-          <th>Activite</th>
-          <th>Statut</th>
-          <th>Derniere soumission</th>
-          <th>Actions</th>
+          <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.DEVOIR' | translate }}</th>
+          <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.ENFANT' | translate }}</th>
+          <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
+          <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
+          <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.DERNIERE_SOUMISSION' | translate }}</th>
+          <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
         </ng-template>
         <ng-template appListRow let-homework>
           <td>
@@ -56,14 +56,14 @@
           <td>
             <div class="d-flex gap-2 flex-wrap">
               <button class="btn btn-sm btn-outline-primary" type="button" (click)="openHomework(homework)">
-                Faire le devoir
+                {{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_RESPOND.PARENT_HOMEWORK_RESPOND.FAIRE_LE_DEVOIR' | translate }}
               </button>
               <button
                 class="btn btn-sm btn-primary"
                 type="button"
                 [disabled]="!latestAttemptForHomework(homework)"
                 (click)="openAttemptDetails(homework)">
-                Details
+                {{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.DETAILS' | translate }}
               </button>
             </div>
             <div *ngIf="latestAttemptForHomework(homework) as attempt" class="text-secondary small mt-1">

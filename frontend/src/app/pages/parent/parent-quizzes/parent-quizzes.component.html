@@ -1,17 +1,17 @@
 <div class="container py-4" id="tour-parent-quizzes-list">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Espace parent</span>
-      <h1 class="mm-page-title fs-1">Quiz disponibles</h1>
-      <p class="mm-page-subtitle">Choisissez un quiz lie a une animation, puis selectionnez l'enfant admissible.</p>
+      <span class="mm-page-eyebrow">{{ 'NAV.PARENT_SPACE' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZZES.PARENT_QUIZZES.QUIZ_DISPONIBLES' | translate }}</h1>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZZES.PARENT_QUIZZES.CHOISISSEZ_UN_QUIZ_LIE_A_UNE_ANIMATION_PUIS_SELECTIONNEZ_L_E' | translate }}</p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" routerLink="/parent/homeworks">Voir les devoirs</a>
+      <a class="btn btn-outline-primary" routerLink="/parent/homeworks">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.VOIR_LES_DEVOIRS' | translate }}</a>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <div *ngIf="!loading()" class="row g-4">
     <div class="col-12">
@@ -32,11 +32,11 @@
         (previous)="previousQuizPage()"
         (next)="nextQuizPage()">
         <ng-template appListHead>
-          <th>Quiz</th>
-          <th>Animation / activite</th>
-          <th>Enfants admissibles</th>
-          <th>Statut</th>
-          <th>Actions</th>
+          <th>{{ 'NAV.QUIZZES' | translate }}</th>
+          <th>{{ 'AUTO.PAGES.PARENT.PARENT_QUIZZES.PARENT_QUIZZES.ANIMATION_ACTIVITE' | translate }}</th>
+          <th>{{ 'AUTO.PAGES.PARENT.PARENT_QUIZZES.PARENT_QUIZZES.ENFANTS_ADMISSIBLES' | translate }}</th>
+          <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
+          <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
         </ng-template>
         <ng-template appListRow let-parentQuiz>
           <td>
@@ -57,14 +57,14 @@
           <td>
             <div class="d-flex gap-2 flex-wrap">
               <button class="btn btn-sm btn-outline-primary" type="button" (click)="openQuiz(parentQuiz)">
-                Repondre
+                {{ 'AUTO.PAGES.PARENT.PARENT_QUIZZES.PARENT_QUIZZES.REPONDRE' | translate }}
               </button>
               <button
                 class="btn btn-sm btn-primary"
                 type="button"
                 [disabled]="!latestAttemptForQuiz(parentQuiz)"
                 (click)="openQuizDetails(parentQuiz)">
-                Details
+                {{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.DETAILS' | translate }}
               </button>
             </div>
             <div *ngIf="latestAttemptForQuiz(parentQuiz) as attempt" class="text-secondary small mt-1">

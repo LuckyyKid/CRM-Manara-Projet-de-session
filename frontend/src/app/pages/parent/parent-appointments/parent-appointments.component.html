@@ -1,21 +1,21 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Espace parent</span>
-      <h1 class="mm-page-title fs-1">Prendre un rendez-vous</h1>
-      <p class="mm-page-subtitle">Une experience de reservation proche de Calendly: choisissez un animateur, un jour, puis un creneau.</p>
+      <span class="mm-page-eyebrow">{{ 'NAV.PARENT_SPACE' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'NAV.BOOK_APPOINTMENT' | translate }}</h1>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.UNE_EXPERIENCE_DE_RESERVATION_PROCHE_DE_CALENDLY_CHOISISSEZ_' | translate }}</p>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement du calendrier...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_APPOINTMENTS.ANIMATEUR_APPOINTMENTS.CHARGEMENT_DU_CALENDRIER' | translate }}</div>
 
   <div *ngIf="!loading()" class="row g-4">
     <div class="col-12 col-xxl-3">
       <section class="mm-booking-panel">
-        <div class="mm-page-eyebrow">Animateurs</div>
-        <h2 class="mm-booking-panel-title">Choisissez votre contact</h2>
-        <p class="mm-booking-panel-copy">Le calendrier se recharge automatiquement selon l'animateur selectionne.</p>
+        <div class="mm-page-eyebrow">{{ 'NAV.ANIMATEURS' | translate }}</div>
+        <h2 class="mm-booking-panel-title">{{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.CHOISISSEZ_VOTRE_CONTACT' | translate }}</h2>
+        <p class="mm-booking-panel-copy">{{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.LE_CALENDRIER_SE_RECHARGE_AUTOMATIQUEMENT_SELON_L_ANIMATEUR_' | translate }}</p>
 
         <div class="mm-animateur-list" *ngIf="animateurs().length; else noAnimateurs">
           <button
@@ -30,7 +30,7 @@
         </div>
 
         <ng-template #noAnimateurs>
-          <div class="text-secondary">Aucun animateur disponible.</div>
+          <div class="text-secondary">{{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.AUCUN_ANIMATEUR_DISPONIBLE' | translate }}</div>
         </ng-template>
       </section>
     </div>
@@ -40,7 +40,7 @@
         [monthAnchor]="monthAnchor()"
         [selectedDate]="selectedDate()"
         [entries]="calendarEntries()"
-        title="Calendrier de reservation"
+        title="{{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.CALENDRIER_DE_RESERVATION' | translate }}"
         [subtitle]="selectedAnimateur() ? ('Disponibilites de ' + selectedAnimateur()!.displayName) : 'Choisissez un animateur pour afficher ses creneaux.'"
         (previousMonth)="previousMonth()"
         (nextMonth)="nextMonth()"
@@ -54,14 +54,14 @@
     <section class="mm-modal-card" (click)="$event.stopPropagation()">
       <div class="mm-modal-head">
         <div>
-          <div class="mm-page-eyebrow">Confirmation</div>
-          <h2 class="mm-modal-title">Confirmer la reservation</h2>
+          <div class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.CONFIRMATION' | translate }}</div>
+          <h2 class="mm-modal-title">{{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.CONFIRMER_LA_RESERVATION' | translate }}</h2>
         </div>
-        <button type="button" class="btn-close" aria-label="Fermer" (click)="closeBookingModal()"></button>
+        <button type="button" class="btn-close" aria-label="{{ 'COMMON.CLOSE' | translate }}" (click)="closeBookingModal()"></button>
       </div>
 
       <p class="mb-2">
-        Vous allez reserver un rendez-vous avec
+        {{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.VOUS_ALLEZ_RESERVER_UN_RENDEZ_VOUS_AVEC' | translate }}
         <strong>{{ selectedAnimateur()?.displayName }}</strong>.
       </p>
       <p class="text-secondary mb-0" *ngIf="selectedSlot()">
@@ -70,7 +70,7 @@
       </p>
 
       <div class="mm-modal-actions">
-        <button type="button" class="btn btn-light" (click)="closeBookingModal()">Annuler</button>
+        <button type="button" class="btn btn-light" (click)="closeBookingModal()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITY_FORM.ADMIN_ACTIVITY_FORM.ANNULER' | translate }}</button>
         <button type="button" class="btn btn-primary" [disabled]="booking()" (click)="confirmBooking()">
           {{ booking() ? 'Reservation...' : 'Confirmer' }}
         </button>
@@ -82,22 +82,22 @@
     <section class="mm-modal-card" (click)="$event.stopPropagation()">
       <div class="mm-modal-head">
         <div>
-          <div class="mm-page-eyebrow">Aucune disponibilite</div>
+          <div class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.AUCUNE_DISPONIBILITE' | translate }}</div>
           <h2 class="mm-modal-title">{{ selectedAnimateur()?.displayName || 'Animateur selectionne' }}</h2>
         </div>
-        <button type="button" class="btn-close" aria-label="Fermer" (click)="closeNoAvailabilityModal()"></button>
+        <button type="button" class="btn-close" aria-label="{{ 'COMMON.CLOSE' | translate }}" (click)="closeNoAvailabilityModal()"></button>
       </div>
 
       <p class="mb-2">
-        Cet animateur n'a aucune disponibilite actuellement.
+        {{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.CET_ANIMATEUR_N_A_AUCUNE_DISPONIBILITE_ACTUELLEMENT' | translate }}
       </p>
       <p class="text-secondary mb-0">
-        Envoyez-lui un message pour convenir d'une date ou lui demander d'ajouter des creneaux de rendez-vous.
+        {{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.ENVOYEZ_LUI_UN_MESSAGE_POUR_CONVENIR_D_UNE_DATE_OU_LUI_DEMAN' | translate }}
       </p>
 
       <div class="mm-modal-actions">
-        <button type="button" class="btn btn-light" (click)="closeNoAvailabilityModal()">Fermer</button>
-        <button type="button" class="btn btn-primary" (click)="contactSelectedAnimateur()">Envoyer un message</button>
+        <button type="button" class="btn btn-light" (click)="closeNoAvailabilityModal()">{{ 'COMMON.CLOSE' | translate }}</button>
+        <button type="button" class="btn btn-primary" (click)="contactSelectedAnimateur()">{{ 'AUTO.PAGES.PARENT.PARENT_APPOINTMENTS.PARENT_APPOINTMENTS.ENVOYER_UN_MESSAGE' | translate }}</button>
       </div>
     </section>
   </div>

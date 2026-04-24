@@ -1,58 +1,58 @@
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">Resultat du devoir</span>
+          <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_ATTEMPT_DETAIL.PARENT_HOMEWORK_ATTEMPT_DETAIL.RESULTAT_DU_DEVOIR' | translate }}</span>
           <h1 class="mm-page-title fs-1">{{ attempt()?.assignmentTitle || 'Detail du devoir' }}</h1>
           <p class="mm-page-subtitle" *ngIf="attempt() as item">
             {{ item.enfantName }} - soumis le {{ item.submittedAt | date:'dd/MM/yyyy HH:mm' }}
           </p>
         </div>
         <div class="mm-page-actions">
-          <a class="btn btn-outline-primary" routerLink="/parent/homeworks">Retour aux devoirs</a>
+          <a class="btn btn-outline-primary" routerLink="/parent/homeworks">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.ANIMATEUR_HOMEWORK_STUDENT_DETAIL.RETOUR_AUX_DEVOIRS' | translate }}</a>
         </div>
       </div>
 
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
       <ng-container *ngIf="!loading() && attempt() as item">
         <div class="row g-3 mb-4">
           <div class="col-12 col-md-4">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Note</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_ATTEMPT_DETAIL.PARENT_HOMEWORK_ATTEMPT_DETAIL.NOTE' | translate }}</span>
               <span class="mm-kpi-value">{{ scoreLabel() }}</span>
               <span class="mm-kpi-meta">{{ statusLabel(item.status) }}</span>
             </div>
           </div>
           <div class="col-12 col-md-4">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Temps pris</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_ATTEMPT_DETAIL.PARENT_HOMEWORK_ATTEMPT_DETAIL.TEMPS_PRIS' | translate }}</span>
               <span class="mm-kpi-value">{{ formatTime(item.elapsedSeconds) }}</span>
-              <span class="mm-kpi-meta">Temps de reponse</span>
+              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.TEMPS_DE_REPONSE' | translate }}</span>
             </div>
           </div>
           <div class="col-12 col-md-4">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Exercices</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.EXERCICES' | translate }}</span>
               <span class="mm-kpi-value">{{ item.answers.length }}</span>
-              <span class="mm-kpi-meta">Reponses soumises</span>
+              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_ATTEMPT_DETAIL.PARENT_HOMEWORK_ATTEMPT_DETAIL.REPONSES_SOUMISES' | translate }}</span>
             </div>
           </div>
         </div>
 
         <div class="card mm-card-shadow">
           <div class="card-body">
-            <h2 class="mm-panel-title">Reponses detaillees</h2>
+            <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.REPONSES_DETAILLEES' | translate }}</h2>
             <div class="vstack gap-3">
               <article class="border rounded p-3" *ngFor="let answer of item.answers">
                 <div class="fw-semibold">{{ answer.axisTitle }}</div>
                 <div class="text-secondary small mb-2">{{ answer.angle }}</div>
                 <p class="mb-2">{{ answer.questionText }}</p>
                 <div class="bg-light rounded p-3 mb-2">
-                  <div class="small text-secondary mb-1">Reponse de l'etudiant</div>
+                  <div class="small text-secondary mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.REPONSE_DE_L_ETUDIANT' | translate }}</div>
                   <div>{{ answer.answerText || '-' }}</div>
                 </div>
-                <div class="small text-secondary">Reponse attendue</div>
+                <div class="small text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.REPONSE_ATTENDUE' | translate }}</div>
                 <div>{{ answer.expectedAnswer }}</div>
               </article>
             </div>

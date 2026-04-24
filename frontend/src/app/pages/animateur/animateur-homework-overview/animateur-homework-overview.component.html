@@ -1,47 +1,47 @@
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">Espace animateur</span>
-          <h1 class="mm-page-title fs-1">Suivi des devoirs</h1>
-          <p class="mm-page-subtitle">Vue globale des devoirs attribues, remis et encore attendus par etudiant.</p>
+          <span class="mm-page-eyebrow">{{ 'NAV.ANIMATEUR_SPACE' | translate }}</span>
+          <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.SUIVI_DES_DEVOIRS' | translate }}</h1>
+          <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.VUE_GLOBALE_DES_DEVOIRS_ATTRIBUES_REMIS_ET_ENCORE_ATTENDUS_P' | translate }}</p>
         </div>
         <div class="mm-page-actions">
-          <a class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">Quiz generes</a>
-          <a class="btn btn-primary" routerLink="/animateur/quizzes">Creer un quiz</a>
+          <a class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.QUIZ_GENERES' | translate }}</a>
+          <a class="btn btn-primary" routerLink="/animateur/quizzes">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.CREER_UN_QUIZ' | translate }}</a>
         </div>
       </div>
 
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
       <ng-container *ngIf="!loading() && overview() as item">
         <div class="row g-3 mb-4">
           <div class="col-12 col-md-3">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Devoirs attribues</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.DEVOIRS_ATTRIBUES' | translate }}</span>
               <span class="mm-kpi-value">{{ item.assignedCount }}</span>
-              <span class="mm-kpi-meta">Total cumule</span>
+              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.TOTAL_CUMULE' | translate }}</span>
             </div>
           </div>
           <div class="col-12 col-md-3">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Devoirs remis</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.DEVOIRS_REMIS' | translate }}</span>
               <span class="mm-kpi-value">{{ item.submittedCount }}</span>
-              <span class="mm-kpi-meta">Avec soumission</span>
+              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.AVEC_SOUMISSION' | translate }}</span>
             </div>
           </div>
           <div class="col-12 col-md-3">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Restants</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.RESTANTS' | translate }}</span>
               <span class="mm-kpi-value">{{ item.remainingCount }}</span>
-              <span class="mm-kpi-meta">Encore a rendre</span>
+              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.ENCORE_A_RENDRE' | translate }}</span>
             </div>
           </div>
           <div class="col-12 col-md-3">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Etudiants suivis</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.ETUDIANTS_SUIVIS' | translate }}</span>
               <span class="mm-kpi-value">{{ item.studentCount }}</span>
-              <span class="mm-kpi-meta">Avec au moins un devoir</span>
+              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.AVEC_AU_MOINS_UN_DEVOIR' | translate }}</span>
             </div>
           </div>
         </div>
@@ -49,21 +49,21 @@
         <div class="row g-3 mb-4">
           <div class="col-12 col-lg-4">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Eleves en difficulte</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.ELEVES_EN_DIFFICULTE' | translate }}</span>
               <span class="mm-kpi-value">{{ item.strugglingStudentCount }}</span>
-              <span class="mm-kpi-meta">Badge rouge dans la liste</span>
+              <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.BADGE_ROUGE_DANS_LA_LISTE' | translate }}</span>
             </div>
           </div>
           <div class="col-12 col-lg-4">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Axe le plus faible</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.AXE_LE_PLUS_FAIBLE' | translate }}</span>
               <span class="mm-kpi-value fs-4">{{ item.weakestAxisTitle || 'Aucun' }}</span>
               <span class="mm-kpi-meta">{{ item.weakestAxisScorePercent === null ? 'En attente' : formatScore(item.weakestAxisScorePercent) }}</span>
             </div>
           </div>
           <div class="col-12 col-lg-4">
             <div class="mm-kpi-card h-100">
-              <span class="mm-kpi-label">Question la plus ratee</span>
+              <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.QUESTION_LA_PLUS_RATEE' | translate }}</span>
               <span class="mm-kpi-value fs-6">{{ item.mostFailedQuestionText || 'Aucune question ratee' }}</span>
               <span class="mm-kpi-meta">{{ item.mostFailedQuestionCount }} erreur(s)</span>
             </div>
@@ -87,14 +87,14 @@
           (previous)="previousPage()"
           (next)="nextPage()">
           <ng-template appListHead>
-            <th>Etudiant</th>
-            <th>Difficulte</th>
-            <th>Axe faible</th>
-            <th>Remis</th>
-            <th>Restants</th>
-            <th>Moyenne</th>
-            <th>Derniere remise</th>
-            <th>Actions</th>
+            <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.ETUDIANT' | translate }}</th>
+            <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.DIFFICULTE' | translate }}</th>
+            <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.AXE_FAIBLE' | translate }}</th>
+            <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.REMIS' | translate }}</th>
+            <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.RESTANTS' | translate }}</th>
+            <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.MOYENNE' | translate }}</th>
+            <th>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_OVERVIEW.ANIMATEUR_HOMEWORK_OVERVIEW.DERNIERE_REMISE' | translate }}</th>
+            <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
           </ng-template>
           <ng-template appListRow let-student>
             <td>{{ student.enfantName }}</td>
@@ -110,7 +110,7 @@
             <td>{{ student.latestSubmittedAt ? (student.latestSubmittedAt | date:'dd/MM/yyyy HH:mm') : 'Aucune' }}</td>
             <td>
               <button class="btn btn-sm btn-outline-primary" type="button" (click)="openStudentDetail(student.enfantId)">
-                Details
+                {{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.DETAILS' | translate }}
               </button>
             </td>
           </ng-template>

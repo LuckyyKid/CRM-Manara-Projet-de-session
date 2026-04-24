@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -6,7 +7,7 @@ import { HomeActivityCard } from './home-activities.mock';
 
 @Component({
   selector: 'app-home-activity-detail',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './home-activity-detail.component.html',
 })
 export class HomeActivityDetailComponent implements OnInit {

@@ -1,9 +1,9 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Compte</span>
-      <h1 class="mm-page-title fs-1">Paramètres</h1>
-      <p class="mm-page-subtitle">Personnalisez votre profil et vos préférences.</p>
+      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.COMPTE' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.PARAMETRES' | translate }}</h1>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.PERSONNALISEZ_VOTRE_PROFIL_ET_VOS_PREFERENCES' | translate }}</p>
     </div>
   </div>
 
@@ -12,7 +12,7 @@
 
   <div class="card mm-card-shadow" style="max-width: 520px;">
     <div class="card-body">
-      <h2 class="mm-panel-title mb-4">Photo de profil</h2>
+      <h2 class="mm-panel-title mb-4">{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.PHOTO_DE_PROFIL' | translate }}</h2>
 
       <form (ngSubmit)="onSubmit()" novalidate>
         <!-- Avatar preview -->
@@ -20,7 +20,7 @@
           <div class="mm-avatar mm-avatar-lg">
             <img *ngIf="avatarPreview() || currentUser()?.user?.avatarUrl"
               [src]="avatarPreview() ?? currentUser()?.user?.avatarUrl"
-              alt="Avatar"
+              alt="{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.AVATAR' | translate }}"
               class="rounded-circle"
               style="width: 64px; height: 64px; object-fit: cover;">
             <div *ngIf="!avatarPreview() && !currentUser()?.user?.avatarUrl"
@@ -30,20 +30,20 @@
             </div>
           </div>
           <div>
-            <label class="form-label mb-1">Changer la photo</label>
+            <label class="form-label mb-1">{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.CHANGER_LA_PHOTO' | translate }}</label>
             <input type="file" class="form-control form-control-sm" accept="image/png,image/jpeg,image/gif,image/webp" (change)="onFileChange($event)">
-            <div class="form-text">Formats image acceptés, maximum 2 Mo.</div>
+            <div class="form-text">{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.FORMATS_IMAGE_ACCEPTES_MAXIMUM_2_MO' | translate }}</div>
             <div *ngIf="errors()['avatarFile']" class="small text-danger mt-1">{{ errors()['avatarFile'] }}</div>
           </div>
         </div>
 
         <!-- User info (read-only) -->
         <div class="mb-3">
-          <label class="form-label">Email</label>
+          <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEUR_FORM.ADMIN_ANIMATEUR_FORM.EMAIL' | translate }}</label>
           <input type="email" class="form-control" [value]="currentUser()?.user?.email ?? ''" readonly>
         </div>
         <div class="mb-3">
-          <label class="form-label">Rôle</label>
+          <label class="form-label">{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.ROLE' | translate }}</label>
           <input type="text" class="form-control" [value]="currentUser()?.accountType ?? ''" readonly>
         </div>
 
@@ -56,17 +56,17 @@
 
   <div class="card mm-card-shadow mt-4" style="max-width: 520px;">
     <div class="card-body">
-      <h2 class="mm-panel-title mb-3">Guides interactifs</h2>
-      <p class="text-secondary mb-3">Relancez un guide si vous voulez revoir le fonctionnement de la plateforme.</p>
+      <h2 class="mm-panel-title mb-3">{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.GUIDES_INTERACTIFS' | translate }}</h2>
+      <p class="text-secondary mb-3">{{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.RELANCEZ_UN_GUIDE_SI_VOUS_VOULEZ_REVOIR_LE_FONCTIONNEMENT_DE' | translate }}</p>
       <div class="d-flex flex-column gap-2">
         <button type="button" class="btn btn-outline-primary" (click)="replayGlobalGuide()">
-          Revoir le guide general
+          {{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.REVOIR_LE_GUIDE_GENERAL' | translate }}
         </button>
         <button *ngIf="canReplayTutoringTour()" type="button" class="btn btn-outline-primary" (click)="replayTutoringGuide()">
-          Revoir le guide tutorat
+          {{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.REVOIR_LE_GUIDE_TUTORAT' | translate }}
         </button>
         <button *ngIf="canReplaySportTour()" type="button" class="btn btn-outline-primary" (click)="replaySportGuide()">
-          Revoir le guide sport
+          {{ 'AUTO.PAGES.SETTINGS.SETTINGS_PAGE.REVOIR_LE_GUIDE_SPORT' | translate }}
         </button>
       </div>
     </div>

@@ -1,14 +1,14 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Repondre au quiz</span>
+      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.REPONDRE_AU_QUIZ' | translate }}</span>
       <h1 class="mm-page-title fs-1">{{ parentQuiz()?.quiz?.title || 'Quiz' }}</h1>
       <p class="mm-page-subtitle" *ngIf="parentQuiz() as item">
         {{ item.quiz.activityName || 'Activite' }} - {{ item.quiz.axes.length }} axe(s), {{ quizQuestionCount() }} question(s)
       </p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" routerLink="/parent/quizzes">Retour aux quiz</a>
+      <a class="btn btn-outline-primary" routerLink="/parent/quizzes">{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORKS.PARENT_HOMEWORKS.RETOUR_AUX_QUIZ' | translate }}</a>
     </div>
   </div>
 
@@ -18,23 +18,23 @@
     <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
     <div>{{ submissionMessage() }}</div>
   </div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
       <ng-container *ngIf="parentQuiz() as item">
         <div class="mb-4">
-          <label class="form-label" for="childSelect">Enfant admissible</label>
+          <label class="form-label" for="childSelect">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.ENFANT_ADMISSIBLE' | translate }}</label>
           <select id="childSelect" class="form-select" [ngModel]="selectedChildId()" (ngModelChange)="selectedChildId.set($event)">
             <option *ngFor="let child of item.eligibleChildren" [ngValue]="child.id">
               {{ child.prenom }} {{ child.nom }}
             </option>
           </select>
-          <div class="form-text">Seuls les enfants inscrits a cette animation peuvent repondre a ce quiz.</div>
+          <div class="form-text">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.SEULS_LES_ENFANTS_INSCRITS_A_CETTE_ANIMATION_PEUVENT_REPONDR' | translate }}</div>
         </div>
 
         <div *ngIf="!item.eligibleChildren.length" class="alert alert-warning">
-          Aucun enfant de votre compte n'est admissible a ce quiz.
+          {{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.AUCUN_ENFANT_DE_VOTRE_COMPTE_N_EST_ADMISSIBLE_A_CE_QUIZ' | translate }}
         </div>
 
         <ng-container *ngIf="currentCarouselQuestion() as current; else noQuestions">
@@ -49,7 +49,7 @@
               <span class="badge text-bg-light">{{ answeredCount() }} reponse(s)</span>
             </div>
 
-            <div class="progress mb-4" role="progressbar" aria-label="Progression du quiz" [attr.aria-valuenow]="answeredCount()" aria-valuemin="0" [attr.aria-valuemax]="quizQuestionCount()">
+            <div class="progress mb-4" role="progressbar" aria-label="{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.PROGRESSION_DU_QUIZ' | translate }}" [attr.aria-valuenow]="answeredCount()" aria-valuemin="0" [attr.aria-valuemax]="quizQuestionCount()">
               <div class="progress-bar" [style.width.%]="quizQuestionCount() ? (answeredCount() / quizQuestionCount()) * 100 : 0"></div>
             </div>
 
@@ -76,7 +76,7 @@
                     </div>
                   </label>
                 </div>
-                <div class="form-text">Choisissez la formule correcte apres avoir fait votre calcul.</div>
+                <div class="form-text">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.CHOISISSEZ_LA_FORMULE_CORRECTE_APRES_AVOIR_FAIT_VOTRE_CALCUL' | translate }}</div>
               </ng-container>
               <ng-template #openAnswer>
                 <textarea class="form-control"
@@ -85,11 +85,11 @@
                           [ngModel]="answers()[current.question.id] || ''"
                           [disabled]="saving()"
                           (ngModelChange)="setAnswer(current.question.id, $event)"
-                          placeholder="Votre reponse"></textarea>
+                          placeholder="{{ 'AUTO.PAGES.PARENT.PARENT_HOMEWORK_RESPOND.PARENT_HOMEWORK_RESPOND.VOTRE_REPONSE' | translate }}"></textarea>
               </ng-template>
             </div>
 
-            <div class="quiz-carousel-dots" aria-label="Questions du quiz">
+            <div class="quiz-carousel-dots" aria-label="{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.QUESTIONS_DU_QUIZ' | translate }}">
               <button type="button"
                       class="quiz-carousel-dot"
                       *ngFor="let question of carouselQuestions(); let i = index"
@@ -98,27 +98,28 @@
                       [attr.aria-label]="'Aller a la question ' + (i + 1)"
                       [disabled]="saving()"
                       (click)="currentQuestionIndex.set(i)">
+                {{ i + 1 }}
               </button>
             </div>
           </div>
 
           <div class="d-flex justify-content-between align-items-center gap-3 mt-4">
             <button class="btn btn-outline-secondary" type="button" [disabled]="saving() || isFirstQuestion()" (click)="previousQuestion()">
-              Precedent
+              {{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.PRECEDENT' | translate }}
             </button>
 
             <button *ngIf="!isLastQuestion()" class="btn btn-primary" type="button" [disabled]="saving() || !currentQuestionAnswered()" (click)="nextQuestion()">
-              Question suivante
+              {{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.QUESTION_SUIVANTE' | translate }}
             </button>
 
             <button *ngIf="isLastQuestion()" class="btn btn-primary" type="button" [disabled]="!canSubmit()" (click)="submit()">
-              {{ saving() ? 'Soumission...' : 'Soumettre le quiz' }}
+              {{ saving() ? 'Soumission...' : ('AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.REPONDRE_AU_QUIZ' | translate) }}
             </button>
           </div>
         </ng-container>
 
         <ng-template #noQuestions>
-          <div class="text-secondary py-4">Aucune question disponible pour ce quiz.</div>
+          <div class="text-secondary py-4">{{ 'AUTO.PAGES.PARENT.PARENT_QUIZ_RESPOND.PARENT_QUIZ_RESPOND.AUCUNE_QUESTION_DISPONIBLE_POUR_CE_QUIZ' | translate }}</div>
         </ng-template>
       </ng-container>
     </div>

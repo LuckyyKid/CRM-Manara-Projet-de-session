@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 
 @Component({
   selector: 'app-parent-sport-practice-plans',
-  imports: [CommonModule, FormsModule, DatePipe, RouterLink, PaginationComponent],
+  imports: [CommonModule, FormsModule, DatePipe, RouterLink, PaginationComponent, TranslatePipe],
   templateUrl: './parent-sport-practice-plans.component.html',
 })
 export class ParentSportPracticePlansComponent implements OnInit {

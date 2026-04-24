@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,7 @@ import { ActivityRequestDto, AdminOptionsDto } from '../../../core/models/api.mo
 
 @Component({
   selector: 'app-admin-activity-form',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './admin-activity-form.component.html',
 })
 export class AdminActivityFormComponent implements OnInit {

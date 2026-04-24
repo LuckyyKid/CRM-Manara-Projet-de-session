@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -14,7 +15,7 @@ type FinderResult = HomeActivityCard & { score: number; reason: string };
 
 @Component({
   selector: 'app-home-activity-finder',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   templateUrl: './home-activity-finder.component.html',
 })
 export class HomeActivityFinderComponent {

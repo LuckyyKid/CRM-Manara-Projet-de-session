@@ -1,36 +1,36 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Micro-diagnostic</span>
-      <h1 class="mm-page-title fs-1">Creer un quiz</h1>
-      <p class="mm-page-subtitle">Transformez les notes d'une seance en axes pedagogiques et questions.</p>
+      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.MICRO_DIAGNOSTIC' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_ANIMATIONS.ANIMATEUR_ANIMATIONS.CREER_UN_QUIZ' | translate }}</h1>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.TRANSFORMEZ_LES_NOTES_D_UNE_SEANCE_EN_AXES_PEDAGOGIQUES_ET_Q' | translate }}</p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">Voir les quiz generes</a>
+      <a class="btn btn-outline-primary" routerLink="/animateur/quizzes/history">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.VOIR_LES_QUIZ_GENERES' | translate }}</a>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
   <div *ngIf="success()" class="alert alert-success">{{ success() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <div *ngIf="!loading() && canAccessTutoringTools()" class="row g-4">
     <div class="col-12 col-xl-7">
       <div class="card mm-card-shadow">
         <div class="card-body">
-          <h2 class="mm-panel-title">Nouveau quiz</h2>
-          <p class="mm-panel-subtitle">La creation est l'action principale de cette section.</p>
+          <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.NOUVEAU_QUIZ' | translate }}</h2>
+          <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.LA_CREATION_EST_L_ACTION_PRINCIPALE_DE_CETTE_SECTION' | translate }}</p>
 
           <form class="d-grid gap-3" (ngSubmit)="createQuiz()">
             <div>
-              <label class="form-label" for="quizTitle">Titre</label>
-              <input id="quizTitle" class="form-control" name="title" [(ngModel)]="form.title" placeholder="Quiz - Calcul differentiel">
+              <label class="form-label" for="quizTitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_HISTORY.ANIMATEUR_QUIZ_HISTORY.TITRE' | translate }}</label>
+              <input id="quizTitle" class="form-control" name="title" [(ngModel)]="form.title" placeholder="{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.QUIZ_CALCUL_DIFFERENTIEL' | translate }}">
             </div>
 
             <div>
-              <label class="form-label" for="animationId">Seance liee</label>
+              <label class="form-label" for="animationId">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.SEANCE_LIEE' | translate }}</label>
               <select id="animationId" class="form-select" name="animationId" [(ngModel)]="form.animationId" (ngModelChange)="onAnimationChange()">
-                <option [ngValue]="null">Aucune seance precise</option>
+                <option [ngValue]="null">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.AUCUNE_SEANCE_PRECISE' | translate }}</option>
                 <option *ngFor="let animation of animations()" [ngValue]="animation.id">
                   {{ animation.activity.name }} - {{ animation.startTime | date:'dd/MM/yyyy HH:mm' }}
                 </option>
@@ -38,7 +38,7 @@
             </div>
 
             <div>
-              <label class="form-label" for="sourceNotes">Notes de seance</label>
+              <label class="form-label" for="sourceNotes">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.NOTES_DE_SEANCE' | translate }}</label>
               <textarea id="sourceNotes" class="form-control" rows="14" name="sourceNotes" [(ngModel)]="form.sourceNotes" placeholder="Ex.: derivees, regle du produit, erreurs de signe, interpretation graphique..."></textarea>
             </div>
 
@@ -48,18 +48,18 @@
 
             <div *ngIf="saving()" class="border rounded p-3 bg-light">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <div class="fw-semibold">Generation du quiz par l'IA</div>
+                <div class="fw-semibold">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.GENERATION_DU_QUIZ_PAR_L_IA' | translate }}</div>
                 <div class="text-secondary small">
                   Environ {{ generationRemainingSeconds() }}s restantes
                 </div>
               </div>
-              <div class="progress" role="progressbar" aria-label="Progression generation IA" [attr.aria-valuenow]="generationProgress()" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress" role="progressbar" aria-label="{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.PROGRESSION_GENERATION_IA' | translate }}" [attr.aria-valuenow]="generationProgress()" aria-valuemin="0" aria-valuemax="100">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" [style.width.%]="generationProgress()">
                   {{ generationProgress() }}%
                 </div>
               </div>
               <div class="text-secondary small mt-2">
-                L'estimation peut varier selon la longueur des notes et le temps de reponse de l'IA.
+                {{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.L_ESTIMATION_PEUT_VARIER_SELON_LA_LONGUEUR_DES_NOTES_ET_LE_T' | translate }}
               </div>
             </div>
           </form>

@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
@@ -8,7 +9,7 @@ import { ParentService } from '../../../core/services/parent.service';
 
 @Component({
   selector: 'app-parent-homework-respond',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   templateUrl: './parent-homework-respond.component.html',
 })
 export class ParentHomeworkRespondComponent implements OnInit {

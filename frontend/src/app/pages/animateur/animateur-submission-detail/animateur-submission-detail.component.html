@@ -1,7 +1,7 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Soumission</span>
+      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.SOUMISSION' | translate }}</span>
       <h1 class="mm-page-title fs-1">{{ submissionName() }}</h1>
       <p class="mm-page-subtitle" *ngIf="quiz() as item">
         {{ item.title }}
@@ -9,33 +9,33 @@
       </p>
     </div>
     <div class="mm-page-actions">
-      <a class="btn btn-outline-primary" [routerLink]="['/animateur/quizzes', quiz()?.id, 'detail']">Retour au quiz</a>
-      <a class="btn btn-primary" routerLink="/animateur/quizzes/history">Historique</a>
+      <a class="btn btn-outline-primary" [routerLink]="['/animateur/quizzes', quiz()?.id, 'detail']">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.RETOUR_AU_QUIZ' | translate }}</a>
+      <a class="btn btn-primary" routerLink="/animateur/quizzes/history">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZ_DETAIL.ANIMATEUR_QUIZ_DETAIL.HISTORIQUE' | translate }}</a>
     </div>
   </div>
 
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <ng-container *ngIf="!loading() && submission() as submitted">
     <div class="row g-3 mb-4">
       <div class="col-12 col-md-4">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Score</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_DASHBOARD.ANIMATEUR_DASHBOARD.SCORE' | translate }}</span>
           <span class="mm-kpi-value">{{ formatMetric(submitted.scorePercent, '%') }}</span>
-          <span class="mm-kpi-meta">Correction automatique</span>
+          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.CORRECTION_AUTOMATIQUE' | translate }}</span>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Temps de reponse</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.TEMPS_DE_REPONSE' | translate }}</span>
           <span class="mm-kpi-value">{{ formatMetric(submitted.elapsedSeconds, 's') }}</span>
-          <span class="mm-kpi-meta">Temps soumis</span>
+          <span class="mm-kpi-meta">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.TEMPS_SOUMIS' | translate }}</span>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="mm-kpi-card h-100">
-          <span class="mm-kpi-label">Reponses</span>
+          <span class="mm-kpi-label">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.REPONSES' | translate }}</span>
           <span class="mm-kpi-value">{{ submitted.answers.length }}</span>
           <span class="mm-kpi-meta">{{ submitted.status }}</span>
         </div>
@@ -44,15 +44,15 @@
 
     <div class="card mm-card-shadow mb-4">
       <div class="card-body">
-        <h2 class="mm-panel-title">Analyse</h2>
+        <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.ANALYSE' | translate }}</h2>
         <p class="mb-0">{{ analysis() }}</p>
       </div>
     </div>
 
     <div class="card mm-card-shadow">
       <div class="card-body">
-        <h2 class="mm-panel-title">Reponses detaillees</h2>
-        <p class="mm-panel-subtitle">Comparaison entre les reponses de l'etudiant et les reponses attendues.</p>
+        <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.REPONSES_DETAILLEES' | translate }}</h2>
+        <p class="mm-panel-subtitle">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.COMPARAISON_ENTRE_LES_REPONSES_DE_L_ETUDIANT_ET_LES_REPONSES' | translate }}</p>
 
         <div class="vstack gap-3">
           <article class="border rounded p-3" *ngFor="let answer of submitted.answers">
@@ -60,10 +60,10 @@
             <div class="text-secondary small mb-2">{{ answer.angle }}</div>
             <p class="mb-2">{{ answer.questionText }}</p>
             <div class="bg-light rounded p-3 mb-2">
-              <div class="small text-secondary mb-1">Reponse de l'etudiant</div>
+              <div class="small text-secondary mb-1">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.ANIMATEUR_HOMEWORK_ASSIGNMENT_DETAIL.REPONSE_DE_L_ETUDIANT' | translate }}</div>
               <div>{{ answer.answerText || '-' }}</div>
             </div>
-            <div class="small text-secondary">Attendu</div>
+            <div class="small text-secondary">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SUBMISSION_DETAIL.ANIMATEUR_SUBMISSION_DETAIL.ATTENDU' | translate }}</div>
             <div>{{ answer.expectedAnswer }}</div>
           </article>
         </div>

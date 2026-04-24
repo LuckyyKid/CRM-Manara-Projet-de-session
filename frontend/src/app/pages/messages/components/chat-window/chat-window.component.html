@@ -1,7 +1,7 @@
 <div class="mm-chat-window" #threadContainer>
   <ng-container *ngIf="conversation; else emptyState">
     <div *ngIf="!messageGroups.length" class="mm-chat-window-empty">
-      <div class="mm-chat-window-empty-title">Aucun message pour le moment</div>
+      <div class="mm-chat-window-empty-title">{{ 'AUTO.PAGES.MESSAGES.COMPONENTS.CHAT_WINDOW.CHAT_WINDOW.AUCUN_MESSAGE_POUR_LE_MOMENT' | translate }}</div>
       <div class="mm-chat-window-empty-copy">
         Lancez la conversation avec {{ conversation.participant.displayName }}.
       </div>
@@ -34,9 +34,9 @@
 
 <ng-template #emptyState>
   <div class="mm-chat-window-empty">
-    <div class="mm-chat-window-empty-title">Choisissez une conversation</div>
+    <div class="mm-chat-window-empty-title">{{ 'AUTO.PAGES.MESSAGES.COMPONENTS.CHAT_WINDOW.CHAT_WINDOW.CHOISISSEZ_UNE_CONVERSATION' | translate }}</div>
     <div class="mm-chat-window-empty-copy">
-      La conversation active apparaitra ici avec un affichage continu type messagerie.
+      {{ 'AUTO.PAGES.MESSAGES.COMPONENTS.CHAT_WINDOW.CHAT_WINDOW.LA_CONVERSATION_ACTIVE_APPARAITRA_ICI_AVEC_UN_AFFICHAGE_CONT' | translate }}
     </div>
   </div>
 </ng-template>

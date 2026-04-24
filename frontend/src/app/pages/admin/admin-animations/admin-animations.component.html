@@ -1,54 +1,54 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Planning</span>
-      <h1 class="mm-page-title fs-1">Animations</h1>
-      <p class="mm-page-subtitle">Recherche et filtres sur les seances planifiees.</p>
+      <span class="mm-page-eyebrow">{{ 'HOME.SHORTCUTS.PLANNING_TITLE' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'NAV.ANIMATIONS' | translate }}</h1>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.RECHERCHE_ET_FILTRES_SUR_LES_SEANCES_PLANIFIEES' | translate }}</p>
     </div>
     <div class="mm-page-actions">
-      <button class="btn btn-primary" (click)="goToNew()">Nouvelle animation</button>
+      <button class="btn btn-primary" (click)="goToNew()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.NOUVELLE_ANIMATION' | translate }}</button>
     </div>
   </div>
 
   <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <div *ngIf="!loading()" class="card mm-card-shadow">
     <div class="card-body">
       <div class="row g-2 align-items-end mb-3">
         <div class="col-12 col-lg-4">
-          <label class="form-label">Recherche</label>
+          <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATEURS.ADMIN_ANIMATEURS.RECHERCHE' | translate }}</label>
           <input
             #searchInput
             type="search"
             class="form-control"
-            placeholder="Activite, animateur ou statut"
+            placeholder="{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.ACTIVITE_ANIMATEUR_OU_STATUT' | translate }}"
             [value]="search()"
             (input)="setSearch(searchInput.value)"
           />
         </div>
         <div class="col-12 col-md-6 col-lg-2">
-          <label class="form-label">Activite</label>
+          <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</label>
           <select #activitySelect class="form-select" [value]="activityFilter()" (change)="setActivity(activitySelect.value)">
-            <option value="">Toutes</option>
+            <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUTES' | translate }}</option>
             <option *ngFor="let activity of activities()" [value]="activity">{{ activity }}</option>
           </select>
         </div>
         <div class="col-12 col-md-6 col-lg-2">
-          <label class="form-label">Statut</label>
+          <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</label>
           <select #statusSelect class="form-select" [value]="statusFilter()" (change)="setStatus(statusSelect.value)">
-            <option value="">Tous</option>
+            <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUS' | translate }}</option>
             <option *ngFor="let status of statuses()" [value]="status">{{ status }}</option>
           </select>
         </div>
         <div class="col-12 col-md-6 col-lg-2">
-          <label class="form-label">Situation</label>
+          <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.SITUATION' | translate }}</label>
           <select #timeSelect class="form-select" [value]="timeFilter()" (change)="setTimeFilter(timeSelect.value)">
-            <option value="">Toutes</option>
-            <option value="UPCOMING">A venir</option>
-            <option value="ONGOING">En cours</option>
-            <option value="COMPLETED">Terminees</option>
+            <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUTES' | translate }}</option>
+            <option value="UPCOMING">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.A_VENIR' | translate }}</option>
+            <option value="ONGOING">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.EN_COURS' | translate }}</option>
+            <option value="COMPLETED">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.TERMINEES' | translate }}</option>
           </select>
         </div>
         <div class="col-12 col-lg-2 text-lg-end text-secondary small">
@@ -60,19 +60,19 @@
         <table class="table table-sm align-middle">
           <thead>
             <tr>
-              <th>Activite</th>
-              <th>Debut</th>
-              <th>Fin</th>
-              <th>Animateur</th>
-              <th>Statut</th>
-              <th>Situation</th>
-              <th>Remplissage</th>
-              <th>Actions</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ACTIVITE' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.DEBUT' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.FIN' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_FORM.ADMIN_ANIMATION_FORM.ANIMATEUR' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.SITUATION' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATION_DETAIL.ADMIN_ANIMATION_DETAIL.REMPLISSAGE' | translate }}</th>
+              <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngIf="!visibleAnimations().length">
-              <td colspan="8" class="text-secondary">Aucune animation ne correspond aux filtres.</td>
+              <td colspan="8" class="text-secondary">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.AUCUNE_ANIMATION_NE_CORRESPOND_AUX_FILTRES' | translate }}</td>
             </tr>
             <tr *ngFor="let row of visibleAnimations()">
               <td>{{ row.animation.activity.name }}</td>
@@ -89,9 +89,9 @@
               </td>
               <td>
                 <div class="d-flex gap-2 flex-wrap">
-                  <button class="btn btn-sm btn-outline-primary" (click)="goToDetail(row.animation.id)">Details</button>
-                  <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(row.animation.id)">Modifier</button>
-                  <button class="btn btn-sm btn-outline-danger" (click)="deleteAnimation(row.animation.id)">Supprimer</button>
+                  <button class="btn btn-sm btn-outline-primary" (click)="goToDetail(row.animation.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ANIMATIONS.ADMIN_ANIMATIONS.DETAILS' | translate }}</button>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(row.animation.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.MODIFIER' | translate }}</button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteAnimation(row.animation.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.SUPPRIMER' | translate }}</button>
                 </div>
               </td>
             </tr>

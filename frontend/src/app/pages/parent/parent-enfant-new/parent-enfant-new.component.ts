@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +7,7 @@ import { ParentService } from '../../../core/services/parent.service';
 
 @Component({
   selector: 'app-parent-enfant-new',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './parent-enfant-new.component.html',
 })
 export class ParentEnfantNewComponent {

@@ -3,22 +3,22 @@
     <div class="col-12 col-md-8 col-lg-6">
       <div class="card mm-card-shadow mm-form-card">
         <div class="card-body p-4">
-          <span class="mm-page-eyebrow">Nouveau profil</span>
-          <h1 class="mm-page-title fs-2 mb-3">Ajouter un enfant</h1>
+          <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_NEW.PARENT_ENFANT_NEW.NOUVEAU_PROFIL' | translate }}</span>
+          <h1 class="mm-page-title fs-2 mb-3">{{ 'AUTO.PAGES.PARENT.PARENT_ENFANT_NEW.PARENT_ENFANT_NEW.AJOUTER_UN_ENFANT' | translate }}</h1>
 
           <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
 
           <form (ngSubmit)="onSubmit()" #f="ngForm">
             <div class="mb-3">
-              <label class="form-label">Nom</label>
+              <label class="form-label">{{ 'COMMON.LAST_NAME' | translate }}</label>
               <input type="text" class="form-control" [(ngModel)]="nom" name="nom" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Prénom</label>
+              <label class="form-label">{{ 'COMMON.FIRST_NAME' | translate }}</label>
               <input type="text" class="form-control" [(ngModel)]="prenom" name="prenom" required>
             </div>
             <div class="mb-3">
-              <label class="form-label">Date de naissance</label>
+              <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_PARENTS.ADMIN_PARENTS.DATE_DE_NAISSANCE' | translate }}</label>
               <input type="date" class="form-control" [(ngModel)]="dateDeNaissance" name="dateDeNaissance" required>
             </div>
 
@@ -26,7 +26,7 @@
               <button type="submit" class="btn btn-primary" [disabled]="loading()">
                 {{ loading() ? 'Enregistrement...' : 'Créer' }}
               </button>
-              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">Annuler</button>
+              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITY_FORM.ADMIN_ACTIVITY_FORM.ANNULER' | translate }}</button>
             </div>
           </form>
         </div>

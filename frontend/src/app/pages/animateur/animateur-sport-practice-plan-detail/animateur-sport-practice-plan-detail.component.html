@@ -1,31 +1,31 @@
     <div class="container py-4">
       <div class="mm-page-head">
         <div>
-          <span class="mm-page-eyebrow">Pratique maison</span>
+          <span class="mm-page-eyebrow">{{ 'NAV.HOME_PRACTICE' | translate }}</span>
           <h1 class="mm-page-title fs-1">{{ plan()?.title || 'Fiche sportive' }}</h1>
           <p class="mm-page-subtitle" *ngIf="plan() as item">
             {{ item.activityName || 'Sport' }} • {{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}
           </p>
         </div>
         <div class="mm-page-actions">
-          <a class="btn btn-outline-primary" routerLink="/animateur/sport-practice-plans">Voir les fiches</a>
+          <a class="btn btn-outline-primary" routerLink="/animateur/sport-practice-plans">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_DETAIL.ANIMATEUR_SPORT_PRACTICE_PLAN_DETAIL.VOIR_LES_FICHES' | translate }}</a>
         </div>
       </div>
 
       <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-      <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+      <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
       <ng-container *ngIf="!loading() && plan() as item">
         <div class="card mm-card-shadow">
           <div class="card-body">
-            <h2 class="mm-panel-title">Resume parent</h2>
+            <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_DETAIL.ANIMATEUR_SPORT_PRACTICE_PLAN_DETAIL.RESUME_PARENT' | translate }}</h2>
             <p class="mb-0">{{ item.summary }}</p>
           </div>
         </div>
 
         <div class="card mm-card-shadow mt-4" *ngIf="item.sourceNotes">
           <div class="card-body">
-            <h2 class="mm-panel-title">Notes de seance</h2>
+            <h2 class="mm-panel-title">{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_QUIZZES.ANIMATEUR_QUIZZES.NOTES_DE_SEANCE' | translate }}</h2>
             <p class="mb-0" style="white-space: pre-wrap;">{{ item.sourceNotes }}</p>
           </div>
         </div>
@@ -42,8 +42,8 @@
                   <span *ngIf="practiceItem.durationLabel" class="badge text-bg-light">{{ practiceItem.durationLabel }}</span>
                 </div>
                 <p class="mb-2">{{ practiceItem.instructions }}</p>
-                <div class="text-secondary"><strong>Objectif :</strong> {{ practiceItem.purpose }}</div>
-                <div class="text-secondary mt-2" *ngIf="practiceItem.safetyTip"><strong>Securite :</strong> {{ practiceItem.safetyTip }}</div>
+                <div class="text-secondary"><strong>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_DETAIL.ANIMATEUR_SPORT_PRACTICE_PLAN_DETAIL.OBJECTIF' | translate }}</strong> {{ practiceItem.purpose }}</div>
+                <div class="text-secondary mt-2" *ngIf="practiceItem.safetyTip"><strong>{{ 'AUTO.PAGES.ANIMATEUR.ANIMATEUR_SPORT_PRACTICE_PLAN_DETAIL.ANIMATEUR_SPORT_PRACTICE_PLAN_DETAIL.SECURITE' | translate }}</strong> {{ practiceItem.safetyTip }}</div>
               </div>
             </div>
           </div>

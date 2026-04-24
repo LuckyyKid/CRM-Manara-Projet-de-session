@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
@@ -12,7 +13,7 @@ import {
 
 @Component({
   selector: 'app-admin-activities',
-  imports: [CommonModule, ListPageComponent, ListFiltersDirective, ListHeadDirective, ListRowDirective],
+  imports: [CommonModule, ListPageComponent, ListFiltersDirective, ListHeadDirective, ListRowDirective, TranslatePipe],
   templateUrl: './admin-activities.component.html',
 })
 export class AdminActivitiesComponent implements OnInit {

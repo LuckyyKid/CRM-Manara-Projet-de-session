@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
@@ -7,7 +8,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination.compo
 
 @Component({
   selector: 'app-admin-animateurs',
-  imports: [CommonModule, PaginationComponent],
+  imports: [CommonModule, PaginationComponent, TranslatePipe],
   templateUrl: './admin-animateurs.component.html',
 })
 export class AdminAnimateursComponent implements OnInit {

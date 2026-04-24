@@ -1,18 +1,18 @@
 <div class="container py-4">
   <div class="mm-page-head">
     <div>
-      <span class="mm-page-eyebrow">Catalogue</span>
-      <h1 class="mm-page-title fs-1">Activites</h1>
-      <p class="mm-page-subtitle">Recherche, filtres et pagination du catalogue.</p>
+      <span class="mm-page-eyebrow">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.CATALOGUE' | translate }}</span>
+      <h1 class="mm-page-title fs-1">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIVITES' | translate }}</h1>
+      <p class="mm-page-subtitle">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.RECHERCHE_FILTRES_ET_PAGINATION_DU_CATALOGUE' | translate }}</p>
     </div>
     <div class="mm-page-actions">
-      <button class="btn btn-primary" (click)="goToNew()">Creer une activite</button>
+      <button class="btn btn-primary" (click)="goToNew()">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.CREER_UNE_ACTIVITE' | translate }}</button>
     </div>
   </div>
 
   <div *ngIf="message()" class="alert alert-success">{{ message() }}</div>
   <div *ngIf="error()" class="alert alert-danger">{{ error() }}</div>
-  <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
+  <div *ngIf="loading()" class="text-secondary py-4">{{ 'COMMON.LOADING' | translate }}</div>
 
   <app-list-page
     *ngIf="!loading()"
@@ -32,42 +32,42 @@
     (next)="nextPage()">
     <ng-template appListFilters>
       <div class="col-12 col-md-4 col-lg-2">
-        <label class="form-label">Statut</label>
+        <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</label>
         <select #statusSelect class="form-select" [value]="statusFilter()" (change)="setStatus(statusSelect.value)">
-          <option value="">Tous</option>
+          <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUS' | translate }}</option>
           <option *ngFor="let status of statuses()" [value]="status">{{ status }}</option>
         </select>
       </div>
       <div class="col-12 col-md-4 col-lg-2">
-        <label class="form-label">Age</label>
+        <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.AGE' | translate }}</label>
         <input
           #ageInput
           type="number"
           min="0"
           class="form-control"
-          placeholder="Age"
+          placeholder="{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.AGE' | translate }}"
           [value]="ageFilter() ?? ''"
           (input)="setAge(ageInput.value)"
         />
       </div>
       <div class="col-12 col-md-4 col-lg-2">
-        <label class="form-label">Capacite</label>
+        <label class="form-label">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.CAPACITE' | translate }}</label>
         <select #capacitySelect class="form-select" [value]="capacityFilter()" (change)="setCapacity(capacitySelect.value)">
-          <option value="">Toutes</option>
-          <option value="LOW">10 et moins</option>
-          <option value="MEDIUM">11 a 25</option>
-          <option value="HIGH">Plus de 25</option>
+          <option value="">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TOUTES' | translate }}</option>
+          <option value="LOW">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.10_ET_MOINS' | translate }}</option>
+          <option value="MEDIUM">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.11_A_25' | translate }}</option>
+          <option value="HIGH">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.PLUS_DE_25' | translate }}</option>
         </select>
       </div>
     </ng-template>
     <ng-template appListHead>
-      <th>Nom</th>
-      <th>Description</th>
-      <th>Age</th>
-      <th>Capacite</th>
-      <th>Statut</th>
-      <th>Type</th>
-      <th>Actions</th>
+      <th>{{ 'COMMON.LAST_NAME' | translate }}</th>
+      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.DESCRIPTION' | translate }}</th>
+      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.AGE' | translate }}</th>
+      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.CAPACITE' | translate }}</th>
+      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.STATUT' | translate }}</th>
+      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.TYPE' | translate }}</th>
+      <th>{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.ACTIONS' | translate }}</th>
     </ng-template>
     <ng-template appListRow let-activity>
       <td>{{ activity.name }}</td>
@@ -78,8 +78,8 @@
       <td>{{ activity.type }}</td>
       <td>
         <div class="d-flex gap-2 flex-wrap">
-          <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(activity.id)">Modifier</button>
-          <button class="btn btn-sm btn-outline-danger" (click)="deleteActivity(activity.id)">Supprimer</button>
+          <button class="btn btn-sm btn-outline-secondary" (click)="goToEdit(activity.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.MODIFIER' | translate }}</button>
+          <button class="btn btn-sm btn-outline-danger" (click)="deleteActivity(activity.id)">{{ 'AUTO.PAGES.ADMIN.ADMIN_ACTIVITIES.ADMIN_ACTIVITIES.SUPPRIMER' | translate }}</button>
         </div>
       </td>
     </ng-template>

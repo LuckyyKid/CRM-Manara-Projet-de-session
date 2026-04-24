@@ -1,3 +1,4 @@
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -7,7 +8,7 @@ import { AnimateurService } from '../../../core/services/animateur.service';
 
 @Component({
   selector: 'app-animateur-submission-detail',
-  imports: [CommonModule, DatePipe, RouterLink],
+  imports: [CommonModule, DatePipe, RouterLink, TranslatePipe],
   templateUrl: './animateur-submission-detail.component.html',
 })
 export class AnimateurSubmissionDetailComponent implements OnInit {
