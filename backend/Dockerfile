@@ -5,13 +5,13 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-RUN mvn clean package -DskipTests && cp target/*jar target/app.jar
+RUN mvn clean package -DskipTests
 
 # Étape 2 : run avec Java
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
-COPY --from=build /app/target/app.jar app.jar
+COPY --from=build /app/target/*.war app.war
 
 EXPOSE 8080
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.war"]
