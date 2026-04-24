@@ -3,12 +3,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../core/auth/auth.service';
 import { OnboardingService } from '../../core/services/onboarding.service';
 
 @Component({
   selector: 'app-login-page',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './login-page.component.html',
 })
 export class LoginPageComponent implements OnInit {
@@ -20,18 +21,18 @@ export class LoginPageComponent implements OnInit {
   email = '';
   password = '';
   errors = signal<Record<string, string>>({});
-  serverMessage = signal('');
+  serverMessageKey = signal('');
 
   ngOnInit(): void {
     const params = this.route.snapshot.queryParamMap;
     if (params.has('error')) {
-      this.serverMessage.set('Identifiants incorrects. Verifiez votre courriel et mot de passe.');
+      this.serverMessageKey.set('LOGIN.ERROR.INVALID_CREDENTIALS');
     } else if (params.has('pending')) {
-      this.serverMessage.set("Votre compte est en attente d'approbation par l'administration.");
+      this.serverMessageKey.set('LOGIN.ERROR.PENDING');
     } else if (params.has('oauthError')) {
-      this.serverMessage.set('Erreur lors de la connexion Google. Reessayez.');
+      this.serverMessageKey.set('LOGIN.ERROR.OAUTH');
     } else if (params.has('forbidden')) {
-      this.serverMessage.set("Vous n'avez pas acces a cette page.");
+      this.serverMessageKey.set('LOGIN.ERROR.FORBIDDEN');
     }
   }
 
@@ -39,16 +40,16 @@ export class LoginPageComponent implements OnInit {
     const errors: Record<string, string> = {};
     const email = this.email.trim();
     const password = this.password;
-    this.serverMessage.set('');
+    this.serverMessageKey.set('');
 
     if (!email) {
-      errors['email'] = 'Le courriel est obligatoire.';
+      errors['email'] = 'LOGIN.VALIDATION.EMAIL_REQUIRED';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors['email'] = 'Entrez une adresse courriel valide.';
+      errors['email'] = 'LOGIN.VALIDATION.EMAIL_INVALID';
     }
 
     if (!password) {
-      errors['password'] = 'Le mot de passe est obligatoire.';
+      errors['password'] = 'LOGIN.VALIDATION.PASSWORD_REQUIRED';
     }
 
     this.errors.set(errors);
@@ -63,16 +64,16 @@ export class LoginPageComponent implements OnInit {
       this.onboardingService.handlePostLogin();
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 403) {
-        this.serverMessage.set("Votre compte est en attente d'approbation par l'administration.");
+        this.serverMessageKey.set('LOGIN.ERROR.PENDING');
         return;
       }
 
       if (error instanceof HttpErrorResponse && error.status === 401) {
-        this.serverMessage.set('Identifiants incorrects. Verifiez votre courriel et mot de passe.');
+        this.serverMessageKey.set('LOGIN.ERROR.INVALID_CREDENTIALS');
         return;
       }
 
-      this.serverMessage.set('Connexion impossible pour le moment. Reessayez.');
+      this.serverMessageKey.set('LOGIN.ERROR.UNAVAILABLE');
     }
   }
 

@@ -2,15 +2,27 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterOutlet, RouterLink, RouterLinkActive, NavigationEnd, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './core/auth/auth.service';
 import { ChatbotWidgetComponent } from './shared/chatbot/chatbot-widget.component';
 import { CommunicationService } from './core/services/communication.service';
+import { LegacyTranslateDirective } from './core/i18n/legacy-translate.directive';
 import { OnboardingService } from './core/services/onboarding.service';
+import { LanguageSwitcherComponent } from './shared/language-switcher/language-switcher.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, ChatbotWidgetComponent],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    CommonModule,
+    ChatbotWidgetComponent,
+    LanguageSwitcherComponent,
+    LegacyTranslateDirective,
+    TranslatePipe,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

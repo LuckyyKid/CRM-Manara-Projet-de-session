@@ -1,0 +1,194 @@
+{
+  "LANGUAGE": {
+    "SWITCH": "Changer la langue",
+    "FR": "FR",
+    "EN": "EN"
+  },
+  "COMMON": {
+    "CLOSE": "Fermer",
+    "LOADING": "Chargement...",
+    "OR": "ou",
+    "EMAIL": "Courriel",
+    "PASSWORD": "Mot de passe",
+    "LAST_NAME": "Nom",
+    "FIRST_NAME": "Prénom",
+    "ADDRESS": "Adresse",
+    "LEARN_MORE": "En savoir plus",
+    "USER": "Utilisateur",
+    "USER_PROFILE": "Profil utilisateur"
+  },
+  "AUTH": {
+    "LOGIN": "Connexion",
+    "SIGNUP": "Créer un compte",
+    "LOGOUT": "Déconnexion"
+  },
+  "NAV": {
+    "MENU": "Menu",
+    "OPEN_MENU": "Ouvrir le menu",
+    "TITLE": "Navigation",
+    "HOME": "Accueil",
+    "FAQ": "FAQ",
+    "FIND_ACTIVITY": "Trouver une activité",
+    "DASHBOARD": "Tableau de bord",
+    "ACTIVITIES": "Activités",
+    "ANIMATIONS": "Animations",
+    "ANIMATEURS": "Animateurs",
+    "PARENTS_CHILDREN": "Parents / Enfants",
+    "REQUESTS": "Demandes",
+    "MESSAGES": "Messages",
+    "NOTIFICATIONS": "Notifications",
+    "PARENT_SPACE": "Espace parent",
+    "CHILDREN": "Enfants",
+    "CALENDAR": "Calendrier",
+    "QUIZZES": "Quiz",
+    "HOMEWORKS": "Devoirs",
+    "HOME_PRACTICE": "Pratique maison",
+    "BOOK_APPOINTMENT": "Prendre un rendez-vous",
+    "APPOINTMENTS": "Rendez-vous",
+    "ANIMATEUR_SPACE": "Espace animateur",
+    "PRESENCES": "Présences",
+    "GENERATED_QUIZZES": "Quiz générés",
+    "AVAILABILITIES": "Disponibilités"
+  },
+  "LOGIN": {
+    "EYEBROW": "Connexion",
+    "HERO_TITLE": "Accédez à votre espace Manara.",
+    "HERO_SUBTITLE": "Connectez-vous pour retrouver votre tableau de bord, vos activités et vos notifications.",
+    "TITLE": "Se connecter",
+    "SUBTITLE": "Entrez vos identifiants pour accéder au portail CRM Manara.",
+    "SUBMIT": "Se connecter",
+    "SUBMIT_LOADING": "Connexion...",
+    "GOOGLE": "Se connecter avec Google",
+    "NO_ACCOUNT": "Pas encore de compte ?",
+    "FEATURES": {
+      "SECURE": "Connexion sécurisée",
+      "SCHEDULE": "Planning et inscriptions",
+      "NOTIFICATIONS": "Notifications à jour"
+    },
+    "VALIDATION": {
+      "EMAIL_REQUIRED": "Le courriel est obligatoire.",
+      "EMAIL_INVALID": "Entrez une adresse courriel valide.",
+      "PASSWORD_REQUIRED": "Le mot de passe est obligatoire."
+    },
+    "ERROR": {
+      "INVALID_CREDENTIALS": "Identifiants incorrects. Vérifiez votre courriel et mot de passe.",
+      "PENDING": "Votre compte est en attente d'approbation par l'administration.",
+      "OAUTH": "Erreur lors de la connexion Google. Réessayez.",
+      "FORBIDDEN": "Vous n'avez pas accès à cette page.",
+      "UNAVAILABLE": "Connexion impossible pour le moment. Réessayez."
+    }
+  },
+  "SIGNUP": {
+    "EYEBROW": "Nouveau compte",
+    "HERO_TITLE": "Rejoignez l'espace Manara.",
+    "HERO_SUBTITLE": "Créez votre compte parent pour gérer vos enfants, consulter le planning et finaliser les inscriptions en ligne.",
+    "SUBTITLE": "Inscrivez-vous pour accéder au portail CRM Manara.",
+    "PARENT_SECTION": "Informations du parent",
+    "ACCESS_SECTION": "Informations de connexion",
+    "SUBMIT": "Créer mon compte",
+    "SUBMIT_LOADING": "Envoi...",
+    "GOOGLE": "S'inscrire avec Google",
+    "ALREADY_ACCOUNT": "Déjà un compte ?",
+    "FEATURES": {
+      "PROFILE": "Profil parent centralisé",
+      "REGISTRATIONS": "Inscriptions et statuts visibles",
+      "VALIDATION": "Validation et suivi simplifiés"
+    },
+    "VALIDATION": {
+      "LAST_NAME_REQUIRED": "Le nom est obligatoire.",
+      "FIRST_NAME_REQUIRED": "Le prénom est obligatoire.",
+      "ADDRESS_REQUIRED": "L'adresse est obligatoire.",
+      "EMAIL_REQUIRED": "L'email est obligatoire.",
+      "EMAIL_INVALID": "Entrez une adresse email valide.",
+      "PASSWORD_REQUIRED": "Le mot de passe est obligatoire.",
+      "PASSWORD_MIN": "Le mot de passe doit contenir au moins 6 caractères."
+    },
+    "ERROR": {
+      "UNAVAILABLE": "L'inscription est impossible pour le moment."
+    }
+  },
+  "HOME": {
+    "HERO": {
+      "BADGE": "Portail famille & administration",
+      "TITLE_LINE_1": "Bienvenue sur",
+      "SUBTITLE": "Consultez les activités, gérez les inscriptions et suivez le planning de vos enfants en toute simplicité.",
+      "CTA": "Trouver l'activité parfaite pour votre enfant"
+    },
+    "FINDER": {
+      "EYEBROW": "Recherche personnalisée",
+      "TITLE": "Trouvez rapidement l'activité adaptée à votre enfant",
+      "SUBTITLE": "En quelques secondes, renseignez son âge, ses intérêts et ses besoins. Manara vous propose les activités les plus pertinentes pour éviter de parcourir tout le catalogue.",
+      "CTA": "Essayer la recherche personnalisée"
+    },
+    "SHORTCUTS": {
+      "TITLE": "Accès rapide",
+      "SUBTITLE": "Retrouvez toutes vos actions en un clic",
+      "CHILDREN_TITLE": "Mes enfants",
+      "CHILDREN_DESC": "Accéder aux dossiers et informations.",
+      "ACTIVITIES_TITLE": "Activités",
+      "ACTIVITIES_DESC": "Choisir une activité disponible.",
+      "PLANNING_TITLE": "Planning",
+      "PLANNING_DESC": "Consulter les horaires et séances.",
+      "REGISTRATIONS_TITLE": "Mes inscriptions",
+      "REGISTRATIONS_DESC": "Suivi des inscriptions et statuts."
+    },
+    "CATALOG": {
+      "TITLE": "Trouver une activité",
+      "SUBTITLE": "Explorez les activités disponibles et filtrez par tranche d'âge.",
+      "LOADING": "Chargement des activités...",
+      "EMPTY_FILTER": "Aucune activité ne correspond à cette tranche d'âge."
+    },
+    "FILTERS": {
+      "ALL": "Tout voir",
+      "AGE_6_12": "6 à 12 ans",
+      "AGE_12_17": "12 à 17 ans",
+      "AGE_17_29": "17 à 29 ans"
+    },
+    "ERROR": {
+      "LOAD": "Impossible de charger les activités du moment."
+    },
+    "HELP": {
+      "TITLE": "Besoin d'aide ?",
+      "TEXT": "Consultez la ",
+      "TEXT_SUFFIX": " ou contactez l'équipe Manara."
+    }
+  },
+  "ABOUT": {
+    "EYEBROW": "À propos",
+    "TITLE": "Le portail du centre Manara.",
+    "SUBTITLE": "CRM Manara aide le centre communautaire à gérer les activités, inscriptions et communications avec les parents.",
+    "CARDS": {
+      "PARENTS": {
+        "TITLE": "Pour les parents",
+        "TEXT": "Création de profil, gestion des enfants, inscription aux activités et consultation des plannings."
+      },
+      "ADMIN": {
+        "TITLE": "Pour l'administration",
+        "TEXT": "Gestion des animateurs, des activités, suivi des inscriptions et tableaux de bord."
+      },
+      "ANIMATEURS": {
+        "TITLE": "Pour les animateurs",
+        "TEXT": "Suivi des inscriptions en temps réel et gestion des animations sous validation de l'administration."
+      }
+    },
+    "FAQ": {
+      "TITLE": "FAQ",
+      "SUBTITLE": "Questions fréquentes",
+      "Q1": "Comment inscrire un enfant à une activité ?",
+      "A1": "Connectez-vous au portail parent, choisissez une activité disponible puis confirmez l'inscription.",
+      "Q2": "Puis-je modifier les informations de mon enfant ?",
+      "A2": "Oui. Dans la section enfants, vous pouvez modifier le profil de chaque enfant.",
+      "Q3": "Que faire si une activité est complète ?",
+      "A3": "Si une activité est complète, elle restera visible mais l'inscription ira en liste d'attente.",
+      "Q4": "Comment signaler un problème ?",
+      "A4": "Utilisez les contacts fournis par l'administration ou signalez votre demande via l'équipe sur place."
+    },
+    "FEATURES": {
+      "TITLE": "Fonctionnalités principales",
+      "ITEM_1": "Création et gestion de comptes parents.",
+      "ITEM_2": "Gestion des profils enfants et inscriptions aux activités.",
+      "ITEM_3": "Consultation du planning et suivi des inscriptions.",
+      "ITEM_4": "Gestion admin des activités, animateurs et statistiques."
+    }
+  }
+}

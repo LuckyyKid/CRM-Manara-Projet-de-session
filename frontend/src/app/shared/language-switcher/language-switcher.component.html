@@ -1,0 +1,13 @@
+<label class="mm-language-switcher">
+  <span class="visually-hidden">{{ 'LANGUAGE.SWITCH' | translate }}</span>
+  <select
+    class="form-select form-select-sm"
+    [ngModel]="currentLanguage"
+    (ngModelChange)="currentLanguage = $event"
+    aria-label="Language switcher"
+  >
+    <option *ngFor="let language of languages" [ngValue]="language">
+      {{ ('LANGUAGE.' + language.toUpperCase()) | translate }}
+    </option>
+  </select>
+</label>

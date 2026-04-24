@@ -1,27 +1,28 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { HomeActivityCatalogService } from './home-activity-catalog.service';
 import { HomeActivityCard, HomeAgeFilter } from './home-activities.mock';
 
 type ActivityFilterOption = {
   id: HomeAgeFilter;
-  label: string;
+  labelKey: string;
 };
 
 @Component({
   selector: 'app-home-page',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './home-page.component.html',
 })
 export class HomePageComponent implements OnInit {
   private readonly activityCatalogService = inject(HomeActivityCatalogService);
 
   readonly filters: ActivityFilterOption[] = [
-    { id: 'all', label: 'Tout voir' },
-    { id: '6-12', label: '6 a 12 ans' },
-    { id: '12-17', label: '12 a 17 ans' },
-    { id: '17-29', label: '17 a 29 ans' },
+    { id: 'all', labelKey: 'HOME.FILTERS.ALL' },
+    { id: '6-12', labelKey: 'HOME.FILTERS.AGE_6_12' },
+    { id: '12-17', labelKey: 'HOME.FILTERS.AGE_12_17' },
+    { id: '17-29', labelKey: 'HOME.FILTERS.AGE_17_29' },
   ];
 
   readonly loading = signal(true);
@@ -43,7 +44,7 @@ export class HomePageComponent implements OnInit {
       },
       error: (error) => {
         console.error('HOME PAGE LOAD ERROR', error);
-        this.error.set("Impossible de charger les activites du moment.");
+        this.error.set('HOME.ERROR.LOAD');
         this.loading.set(false);
       },
     });

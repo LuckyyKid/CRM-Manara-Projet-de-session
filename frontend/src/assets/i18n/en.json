@@ -1,0 +1,194 @@
+{
+  "LANGUAGE": {
+    "SWITCH": "Switch language",
+    "FR": "FR",
+    "EN": "EN"
+  },
+  "COMMON": {
+    "CLOSE": "Close",
+    "LOADING": "Loading...",
+    "OR": "or",
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "LAST_NAME": "Last name",
+    "FIRST_NAME": "First name",
+    "ADDRESS": "Address",
+    "LEARN_MORE": "Learn more",
+    "USER": "User",
+    "USER_PROFILE": "User profile"
+  },
+  "AUTH": {
+    "LOGIN": "Login",
+    "SIGNUP": "Create account",
+    "LOGOUT": "Logout"
+  },
+  "NAV": {
+    "MENU": "Menu",
+    "OPEN_MENU": "Open menu",
+    "TITLE": "Navigation",
+    "HOME": "Home",
+    "FAQ": "FAQ",
+    "FIND_ACTIVITY": "Find an activity",
+    "DASHBOARD": "Dashboard",
+    "ACTIVITIES": "Activities",
+    "ANIMATIONS": "Sessions",
+    "ANIMATEURS": "Coaches",
+    "PARENTS_CHILDREN": "Parents / Children",
+    "REQUESTS": "Requests",
+    "MESSAGES": "Messages",
+    "NOTIFICATIONS": "Notifications",
+    "PARENT_SPACE": "Parent area",
+    "CHILDREN": "Children",
+    "CALENDAR": "Calendar",
+    "QUIZZES": "Quizzes",
+    "HOMEWORKS": "Homework",
+    "HOME_PRACTICE": "Home practice",
+    "BOOK_APPOINTMENT": "Book an appointment",
+    "APPOINTMENTS": "Appointments",
+    "ANIMATEUR_SPACE": "Coach area",
+    "PRESENCES": "Attendance",
+    "GENERATED_QUIZZES": "Generated quizzes",
+    "AVAILABILITIES": "Availability"
+  },
+  "LOGIN": {
+    "EYEBROW": "Login",
+    "HERO_TITLE": "Access your Manara space.",
+    "HERO_SUBTITLE": "Sign in to access your dashboard, activities, and notifications.",
+    "TITLE": "Sign in",
+    "SUBTITLE": "Enter your credentials to access the CRM Manara portal.",
+    "SUBMIT": "Sign in",
+    "SUBMIT_LOADING": "Signing in...",
+    "GOOGLE": "Sign in with Google",
+    "NO_ACCOUNT": "No account yet?",
+    "FEATURES": {
+      "SECURE": "Secure sign-in",
+      "SCHEDULE": "Schedule and registrations",
+      "NOTIFICATIONS": "Up-to-date notifications"
+    },
+    "VALIDATION": {
+      "EMAIL_REQUIRED": "Email is required.",
+      "EMAIL_INVALID": "Enter a valid email address.",
+      "PASSWORD_REQUIRED": "Password is required."
+    },
+    "ERROR": {
+      "INVALID_CREDENTIALS": "Incorrect credentials. Check your email and password.",
+      "PENDING": "Your account is awaiting approval from the administration.",
+      "OAUTH": "Google sign-in failed. Please try again.",
+      "FORBIDDEN": "You do not have access to this page.",
+      "UNAVAILABLE": "Login is temporarily unavailable. Please try again."
+    }
+  },
+  "SIGNUP": {
+    "EYEBROW": "New account",
+    "HERO_TITLE": "Join the Manara space.",
+    "HERO_SUBTITLE": "Create your parent account to manage your children, view schedules, and complete registrations online.",
+    "SUBTITLE": "Sign up to access the CRM Manara portal.",
+    "PARENT_SECTION": "Parent information",
+    "ACCESS_SECTION": "Login information",
+    "SUBMIT": "Create my account",
+    "SUBMIT_LOADING": "Sending...",
+    "GOOGLE": "Sign up with Google",
+    "ALREADY_ACCOUNT": "Already have an account?",
+    "FEATURES": {
+      "PROFILE": "Centralized parent profile",
+      "REGISTRATIONS": "Visible registrations and statuses",
+      "VALIDATION": "Simplified validation and follow-up"
+    },
+    "VALIDATION": {
+      "LAST_NAME_REQUIRED": "Last name is required.",
+      "FIRST_NAME_REQUIRED": "First name is required.",
+      "ADDRESS_REQUIRED": "Address is required.",
+      "EMAIL_REQUIRED": "Email is required.",
+      "EMAIL_INVALID": "Enter a valid email address.",
+      "PASSWORD_REQUIRED": "Password is required.",
+      "PASSWORD_MIN": "Password must be at least 6 characters long."
+    },
+    "ERROR": {
+      "UNAVAILABLE": "Sign-up is temporarily unavailable."
+    }
+  },
+  "HOME": {
+    "HERO": {
+      "BADGE": "Family & administration portal",
+      "TITLE_LINE_1": "Welcome to",
+      "SUBTITLE": "Browse activities, manage registrations, and follow your children's schedules with ease.",
+      "CTA": "Find the perfect activity for your child"
+    },
+    "FINDER": {
+      "EYEBROW": "Personalized search",
+      "TITLE": "Quickly find the right activity for your child",
+      "SUBTITLE": "In just a few seconds, enter their age, interests, and needs. Manara suggests the most relevant activities so you do not have to browse the full catalog.",
+      "CTA": "Try personalized search"
+    },
+    "SHORTCUTS": {
+      "TITLE": "Quick access",
+      "SUBTITLE": "Find all your actions in one click",
+      "CHILDREN_TITLE": "My children",
+      "CHILDREN_DESC": "Access records and information.",
+      "ACTIVITIES_TITLE": "Activities",
+      "ACTIVITIES_DESC": "Choose an available activity.",
+      "PLANNING_TITLE": "Schedule",
+      "PLANNING_DESC": "View timetables and sessions.",
+      "REGISTRATIONS_TITLE": "My registrations",
+      "REGISTRATIONS_DESC": "Track registrations and statuses."
+    },
+    "CATALOG": {
+      "TITLE": "Find an activity",
+      "SUBTITLE": "Explore available activities and filter by age group.",
+      "LOADING": "Loading activities...",
+      "EMPTY_FILTER": "No activity matches this age range."
+    },
+    "FILTERS": {
+      "ALL": "View all",
+      "AGE_6_12": "Ages 6 to 12",
+      "AGE_12_17": "Ages 12 to 17",
+      "AGE_17_29": "Ages 17 to 29"
+    },
+    "ERROR": {
+      "LOAD": "Unable to load current activities."
+    },
+    "HELP": {
+      "TITLE": "Need help?",
+      "TEXT": "Check the ",
+      "TEXT_SUFFIX": " or contact the Manara team."
+    }
+  },
+  "ABOUT": {
+    "EYEBROW": "About",
+    "TITLE": "The Manara center portal.",
+    "SUBTITLE": "CRM Manara helps the community center manage activities, registrations, and communication with parents.",
+    "CARDS": {
+      "PARENTS": {
+        "TITLE": "For parents",
+        "TEXT": "Profile creation, child management, activity registration, and schedule viewing."
+      },
+      "ADMIN": {
+        "TITLE": "For administration",
+        "TEXT": "Manage coaches, activities, registrations, and dashboards."
+      },
+      "ANIMATEURS": {
+        "TITLE": "For coaches",
+        "TEXT": "Track registrations in real time and manage sessions under administrative approval."
+      }
+    },
+    "FAQ": {
+      "TITLE": "FAQ",
+      "SUBTITLE": "Frequently asked questions",
+      "Q1": "How do I register a child for an activity?",
+      "A1": "Log in to the parent portal, choose an available activity, then confirm the registration.",
+      "Q2": "Can I update my child's information?",
+      "A2": "Yes. In the children section, you can update each child's profile.",
+      "Q3": "What happens if an activity is full?",
+      "A3": "If an activity is full, it remains visible but the registration goes to the waiting list.",
+      "Q4": "How do I report a problem?",
+      "A4": "Use the contacts provided by the administration or report your request through the on-site team."
+    },
+    "FEATURES": {
+      "TITLE": "Main features",
+      "ITEM_1": "Create and manage parent accounts.",
+      "ITEM_2": "Manage child profiles and activity registrations.",
+      "ITEM_3": "View schedules and follow registrations.",
+      "ITEM_4": "Admin management for activities, coaches, and statistics."
+    }
+  }
+}
