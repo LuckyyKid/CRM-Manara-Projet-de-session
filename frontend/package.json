@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "NG_CLI_ANALYTICS=false ng serve --proxy-config proxy.conf.json",
-    "build": "NG_CLI_ANALYTICS=false ng build",
-    "watch": "NG_CLI_ANALYTICS=false ng build --watch --configuration development",
-    "test": "NG_CLI_ANALYTICS=false ng test"
+    "start": "ng serve --proxy-config proxy.conf.json",
+    "build": "ng build --configuration production",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
   },
   "prettier": {
     "printWidth": 100,

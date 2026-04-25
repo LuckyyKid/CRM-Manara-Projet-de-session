@@ -14,6 +14,7 @@ import {
 import { AuthService } from '../auth/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 type RealtimeEnvelope = {
   type: string;
@@ -170,8 +171,15 @@ export class CommunicationService {
       this.reconnectTimer = null;
     }
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    this.socket = new WebSocket(`${protocol}//${window.location.host}/ws/realtime`);
+    try {
+      this.socket = new WebSocket(environment.wsUrl);
+    } catch (error) {
+      console.error('REALTIME CONNECTION INIT ERROR', error);
+      this.socket = null;
+      this.isRealtimeConnected.set(false);
+      this.scheduleReconnect();
+      return;
+    }
 
     this.socket.onopen = () => {
       this.ngZone.run(() => {
@@ -218,7 +226,14 @@ export class CommunicationService {
   }
 
   private handleRealtimeEvent(rawData: string): void {
-    const envelope = JSON.parse(rawData) as RealtimeEnvelope;
+    let envelope: RealtimeEnvelope;
+    try {
+      envelope = JSON.parse(rawData) as RealtimeEnvelope;
+    } catch (error) {
+      console.error('REALTIME MESSAGE PARSE ERROR', error, rawData);
+      return;
+    }
+
     if (envelope.type === 'sidebar-counts') {
       this.sidebarCounts.set(envelope.payload as SidebarCountsDto);
       return;
