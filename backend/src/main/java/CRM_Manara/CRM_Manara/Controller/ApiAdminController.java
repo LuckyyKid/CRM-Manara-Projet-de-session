@@ -15,6 +15,7 @@ import CRM_Manara.CRM_Manara.dto.AdminDemandesDto;
 import CRM_Manara.CRM_Manara.dto.AdminInscriptionReviewDto;
 import CRM_Manara.CRM_Manara.dto.AdminNotificationDto;
 import CRM_Manara.CRM_Manara.dto.AdminOptionsDto;
+import CRM_Manara.CRM_Manara.dto.AdminSubscriptionRowDto;
 import CRM_Manara.CRM_Manara.dto.AnimateurDto;
 import CRM_Manara.CRM_Manara.dto.AnimateurRequestDto;
 import CRM_Manara.CRM_Manara.dto.AnimationDto;
@@ -27,6 +28,7 @@ import CRM_Manara.CRM_Manara.dto.QuizDto;
 import CRM_Manara.CRM_Manara.dto.QuizQuestionDto;
 import CRM_Manara.CRM_Manara.service.AdminNotificationService;
 import CRM_Manara.CRM_Manara.service.AdminService;
+import CRM_Manara.CRM_Manara.service.BillingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,15 +56,18 @@ public class ApiAdminController {
     private final AdminNotificationService adminNotificationService;
     private final ApiDtoMapper apiDtoMapper;
     private final QuizRepo quizRepo;
+    private final BillingService billingService;
 
     public ApiAdminController(AdminService adminService,
                               AdminNotificationService adminNotificationService,
                               ApiDtoMapper apiDtoMapper,
-                              QuizRepo quizRepo) {
+                              QuizRepo quizRepo,
+                              BillingService billingService) {
         this.adminService = adminService;
         this.adminNotificationService = adminNotificationService;
         this.apiDtoMapper = apiDtoMapper;
         this.quizRepo = quizRepo;
+        this.billingService = billingService;
     }
 
     @GetMapping("/activities")
@@ -201,6 +206,12 @@ public class ApiAdminController {
         return adminService.getAllParents().stream()
                 .map(apiDtoMapper::toParentDto)
                 .toList();
+    }
+
+    @GetMapping("/subscriptions")
+    @Transactional(readOnly = true)
+    public List<AdminSubscriptionRowDto> subscriptions() {
+        return billingService.listAdminSubscriptions();
     }
 
     @GetMapping("/enfants")

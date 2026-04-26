@@ -273,6 +273,42 @@ export interface ActionResponseDto {
   id: number | null;
 }
 
+export interface SubscriptionDto {
+  status: string;
+  active: boolean;
+  currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
+  provider: string;
+  coveredChildrenCount: number;
+  pendingCoveredChildrenCount: number;
+  firstChildMonthlyAmountCents: number;
+  additionalChildMonthlyAmountCents: number;
+}
+
+export interface CheckoutSessionDto {
+  url: string;
+}
+
+export interface BillingChildCoverageDto {
+  enfantId: number;
+  nom: string;
+  prenom: string;
+  active: boolean;
+  covered: boolean;
+}
+
+export interface AdminSubscriptionRowDto {
+  parentId: number;
+  parentName: string;
+  email: string;
+  status: string;
+  active: boolean;
+  currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
+  coveredChildrenCount: number;
+  coveredChildren: string[];
+}
+
 export interface QuizCreateRequestDto {
   title: string;
   sourceNotes: string;

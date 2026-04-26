@@ -80,6 +80,9 @@ public class parentService {
     @Autowired
     AdminNotificationService adminNotificationService;
 
+    @Autowired
+    BillingService billingService;
+
     @Transactional(readOnly = true)
     public boolean isEmailAvailable(String email) {
         if (email == null) {
@@ -313,6 +316,12 @@ public class parentService {
                 .orElseThrow(() -> new IllegalArgumentException("Enfant introuvable pour ce parent"));
         if (!enfant.isActive()) {
             throw new IllegalArgumentException("Cet enfant doit être approuvé par l'administration avant toute inscription.");
+        }
+        if (!billingService.hasActiveSubscription(email)) {
+            throw new IllegalStateException("Un abonnement actif est requis pour inscrire un enfant à une activité.");
+        }
+        if (!billingService.hasAvailableChildSlot(email, parent.getId(), enfantId)) {
+            throw new IllegalStateException("Votre abonnement ne couvre pas encore cet enfant. Ajoutez une place enfant mensuelle pour l'inscrire.");
         }
         Animation animation = animationRepo.findById(animationId)
                 .orElseThrow(() -> new IllegalArgumentException("Animation introuvable"));

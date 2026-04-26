@@ -1,26 +1,33 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ParentService } from '../../../core/services/parent.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
+import { BillingService } from '../../../core/services/billing.service';
 import {
   ParentActivitiesResponseDto,
   ParentActivityViewDto,
+  BillingChildCoverageDto,
   EnfantSummaryDto,
   InscriptionDto,
+  SubscriptionDto,
 } from '../../../core/models/api.models';
 import { PaginationComponent } from '../../../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-parent-activities',
-  imports: [CommonModule, FormsModule, DatePipe, PaginationComponent],
+  imports: [CommonModule, FormsModule, RouterLink, DatePipe, PaginationComponent],
   templateUrl: './parent-activities.component.html',
 })
 export class ParentActivitiesComponent implements OnInit {
   private parentService = inject(ParentService);
   private onboardingService = inject(OnboardingService);
+  private billingService = inject(BillingService);
 
   data = signal<ParentActivitiesResponseDto | null>(null);
+  subscription = signal<SubscriptionDto | null>(null);
+  coveredChildren = signal<BillingChildCoverageDto[]>([]);
   search = signal('');
   page = signal(1);
   pageSize = 6;
@@ -61,6 +68,14 @@ export class ParentActivitiesComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.billingService.getSubscription().subscribe({
+      next: (subscription) => this.subscription.set(subscription),
+      error: () => this.error.set("Impossible de charger le statut d'abonnement."),
+    });
+    this.billingService.getCoveredChildren().subscribe({
+      next: (children) => this.coveredChildren.set(children),
+      error: () => this.error.set("Impossible de charger les enfants couverts."),
+    });
     this.load();
   }
 
@@ -91,6 +106,14 @@ export class ParentActivitiesComponent implements OnInit {
 
   inscrire(animationId: number, activityType: string | null) {
     if (!this.selectedEnfantId) return;
+    if (!this.subscription()?.active) {
+      this.error.set('Un abonnement actif est requis pour inscrire un enfant à une activité.');
+      return;
+    }
+    if (!this.hasAvailableChildSlot()) {
+      this.error.set("Votre abonnement ne couvre pas encore cet enfant. Ajoutez une place enfant mensuelle pour l'inscrire.");
+      return;
+    }
     this.inscribing.set(true);
     this.message.set('');
     this.error.set('');
@@ -115,6 +138,10 @@ export class ParentActivitiesComponent implements OnInit {
 
   previousPage(): void { this.page.set(Math.max(1, this.page() - 1)); }
   nextPage(): void { this.page.set(Math.min(this.totalPages(), this.page() + 1)); }
+
+  hasAvailableChildSlot(): boolean {
+    return this.coveredChildren().some((child) => child.enfantId === this.selectedEnfantId && child.covered);
+  }
 
   private normalize(value: string): string {
     return value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();

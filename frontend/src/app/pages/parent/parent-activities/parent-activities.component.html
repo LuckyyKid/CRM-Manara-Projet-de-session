@@ -12,6 +12,15 @@
   <div *ngIf="loading()" class="text-secondary py-4">Chargement...</div>
 
   <div *ngIf="!loading()">
+    <div *ngIf="subscription() && !subscription()?.active" class="alert alert-warning d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+      <span>Un abonnement actif est requis pour inscrire un enfant a une activite.</span>
+      <a class="btn btn-sm btn-primary" routerLink="/parent/billing">Activer l'abonnement</a>
+    </div>
+    <div *ngIf="subscription()?.active && selectedEnfantId && !hasAvailableChildSlot()" class="alert alert-warning d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+      <span>Votre forfait ne couvre pas encore cet enfant. Ajoutez une place enfant mensuelle pour l'inscrire.</span>
+      <a class="btn btn-sm btn-primary" routerLink="/parent/billing">Ajouter une place</a>
+    </div>
+
     <div class="card mm-card-shadow mb-4" *ngIf="enfants.length > 0">
       <div class="card-body">
         <div class="row g-2 align-items-end">
@@ -87,7 +96,7 @@
                   <button
                     *ngIf="!isInscrit(row.animation.id)"
                     class="btn btn-sm btn-primary"
-                    [disabled]="inscribing() || !selectedEnfantId"
+                    [disabled]="inscribing() || !selectedEnfantId || !subscription()?.active || !hasAvailableChildSlot()"
                     (click)="inscrire(row.animation.id, view.activity.type)">
                     {{ row.capacity.full ? "Liste d'attente" : "S'inscrire" }}
                   </button>

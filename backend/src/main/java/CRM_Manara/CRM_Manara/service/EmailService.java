@@ -98,6 +98,55 @@ public class EmailService {
         sendEmail(to, title + " - CRM Manara", message + "\n\nCette notification a ete envoyee par l'equipe CRM Manara.");
     }
 
+    public void sendChatMessageNotificationEmail(String to) {
+        sendEmail(
+                to,
+                "Nouveau message - CRM Manara",
+                "Bonjour,\n\n"
+                        + "Vous avez recu un nouveau message dans CRM Manara.\n\n"
+                        + "Connectez-vous a la plateforme pour le consulter.\n\n"
+                        + "Cordialement,\nCRM Manara"
+        );
+    }
+
+    public void sendSubscriptionActivatedEmail(String to) {
+        sendEmail(
+                to,
+                "Abonnement active - CRM Manara",
+                "Bonjour,\n\n"
+                        + "Votre paiement a ete recu et votre abonnement mensuel Manara est maintenant actif.\n\n"
+                        + "Vous pouvez desormais inscrire vos enfants aux activites disponibles.\n\n"
+                        + "Cordialement,\nCRM Manara"
+        );
+    }
+
+    public void sendCoveredChildrenReducedEmail(String to, List<String> removedChildrenNames) {
+        String names = removedChildrenNames.isEmpty() ? "un ou plusieurs enfants" : String.join(", ", removedChildrenNames);
+        sendEmail(
+                to,
+                "Couverture d'enfants mise a jour - CRM Manara",
+                "Bonjour,\n\n"
+                        + "Suite a une reduction de votre forfait Manara, la couverture des enfants suivants a ete retiree automatiquement :\n\n"
+                        + names + "\n\n"
+                        + "Ces enfants ne pourront plus etre inscrits a de nouvelles activites tant qu'ils ne sont pas couverts par un forfait actif.\n\n"
+                        + "Pour modifier votre forfait ou reconfigurer les enfants couverts, connectez-vous a la plateforme dans la section Abonnement.\n\n"
+                        + "Cordialement,\nCRM Manara"
+        );
+    }
+
+    public void sendPaymentFailedEmail(String to) {
+        sendEmail(
+                to,
+                "Echec de paiement - CRM Manara",
+                "Bonjour,\n\n"
+                        + "Nous n'avons pas pu traiter le paiement de votre abonnement mensuel Manara.\n\n"
+                        + "Votre abonnement est maintenant en retard de paiement. "
+                        + "Veuillez mettre a jour vos informations de paiement dans votre espace Stripe pour eviter toute interruption de service.\n\n"
+                        + "Connectez-vous a la plateforme et acces a la section Abonnement pour gerer votre paiement.\n\n"
+                        + "Cordialement,\nCRM Manara"
+        );
+    }
+
     public void sendHomeworkAvailableEmail(String to, String enfantName, String title, String activityName) {
         String body = "Bonjour,\n\n"
                 + "Un nouveau devoir est disponible pour " + enfantName + ".\n\n"

@@ -8,6 +8,7 @@ import CRM_Manara.CRM_Manara.Repository.QuizRepo;
 import CRM_Manara.CRM_Manara.dto.ApiDtoMapper;
 import CRM_Manara.CRM_Manara.service.AdminNotificationService;
 import CRM_Manara.CRM_Manara.service.AdminService;
+import CRM_Manara.CRM_Manara.service.BillingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -30,13 +31,15 @@ class ApiAdminControllerTest {
     private AdminService adminService;
     private AdminNotificationService adminNotificationService;
     private QuizRepo quizRepo;
+    private BillingService billingService;
 
     @BeforeEach
     void setUp() {
         adminService = mock(AdminService.class);
         adminNotificationService = mock(AdminNotificationService.class);
         quizRepo = mock(QuizRepo.class);
-        mockMvc = MockMvcBuilders.standaloneSetup(new ApiAdminController(adminService, adminNotificationService, new ApiDtoMapper(), quizRepo)).build();
+        billingService = mock(BillingService.class);
+        mockMvc = MockMvcBuilders.standaloneSetup(new ApiAdminController(adminService, adminNotificationService, new ApiDtoMapper(), quizRepo, billingService)).build();
     }
 
     @Test

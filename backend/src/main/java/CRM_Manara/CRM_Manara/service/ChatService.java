@@ -20,6 +20,8 @@ import CRM_Manara.CRM_Manara.dto.ChatConversationSummaryDto;
 import CRM_Manara.CRM_Manara.dto.ChatMessageDto;
 import CRM_Manara.CRM_Manara.dto.ChatParticipantDto;
 import CRM_Manara.CRM_Manara.dto.SendChatMessageRequestDto;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -28,12 +30,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ChatService {
+
+    private static final long CHAT_EMAIL_COOLDOWN_MINUTES = 15;
 
     private final UserRepo userRepo;
     private final ParentRepo parentRepo;
@@ -43,6 +48,8 @@ public class ChatService {
     private final ChatConversationRepo chatConversationRepo;
     private final ChatMessageRepo chatMessageRepo;
     private final RealtimeService realtimeService;
+    private final EmailService emailService;
+    private final ConcurrentHashMap<String, Instant> chatEmailCooldowns = new ConcurrentHashMap<>();
 
     public ChatService(UserRepo userRepo,
                        ParentRepo parentRepo,
@@ -51,7 +58,8 @@ public class ChatService {
                        InscriptionRepo inscriptionRepo,
                        ChatConversationRepo chatConversationRepo,
                        ChatMessageRepo chatMessageRepo,
-                       RealtimeService realtimeService) {
+                       RealtimeService realtimeService,
+                       EmailService emailService) {
         this.userRepo = userRepo;
         this.parentRepo = parentRepo;
         this.animateurRepo = animateurRepo;
@@ -60,6 +68,7 @@ public class ChatService {
         this.chatConversationRepo = chatConversationRepo;
         this.chatMessageRepo = chatMessageRepo;
         this.realtimeService = realtimeService;
+        this.emailService = emailService;
     }
 
     @Transactional(readOnly = true)
@@ -145,6 +154,12 @@ public class ChatService {
         realtimeService.sendToUser(actualRecipient.getEmail(), "chat-message", recipientDto);
         realtimeService.sendSidebarCounts(sender.getEmail());
         realtimeService.sendSidebarCounts(actualRecipient.getEmail());
+        String recipientEmail = actualRecipient.getEmail();
+        Instant lastSent = chatEmailCooldowns.get(recipientEmail);
+        if (lastSent == null || lastSent.isBefore(Instant.now().minus(CHAT_EMAIL_COOLDOWN_MINUTES, ChronoUnit.MINUTES))) {
+            emailService.sendChatMessageNotificationEmail(recipientEmail);
+            chatEmailCooldowns.put(recipientEmail, Instant.now());
+        }
 
         return senderDto;
     }
