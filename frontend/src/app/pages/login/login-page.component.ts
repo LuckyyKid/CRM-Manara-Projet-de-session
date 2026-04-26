@@ -22,8 +22,23 @@ export class LoginPageComponent implements OnInit {
   errors = signal<Record<string, string>>({});
   serverMessage = signal('');
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const params = this.route.snapshot.queryParamMap;
+    if (params.has('oauthSuccess')) {
+      console.log('OAUTH RETURN DETECTED', { redirectTo: params.get('redirectTo') });
+      this.serverMessage.set('Connexion Google en cours...');
+      const currentUser = await this.authService.loadSession(true);
+      console.log('OAUTH USER FETCH RESULT', currentUser);
+      if (currentUser) {
+        const redirectTo = params.get('redirectTo');
+        await this.router.navigateByUrl(redirectTo || this.authService.dashboardPath());
+        this.onboardingService.handlePostLogin();
+        return;
+      }
+      this.serverMessage.set('Connexion Google incomplete. Reessayez.');
+      return;
+    }
+
     if (params.has('error')) {
       this.serverMessage.set('Identifiants incorrects. Verifiez votre courriel et mot de passe.');
     } else if (params.has('pending')) {

@@ -161,10 +161,12 @@ export class OnboardingService {
 
   handlePostLogin(): void {
     const currentUser = this.authService.currentUser();
+    console.log('ONBOARDING POST LOGIN CHECK', currentUser);
     if (currentUser?.accountType !== 'ROLE_PARENT') {
       return;
     }
     if (!this.isDone('global') && !this.pendingTour()) {
+      console.log('ONBOARDING START GLOBAL TOUR');
       this.startTour('global');
     }
   }

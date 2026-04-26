@@ -28,7 +28,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication) throws IOException {
-        String redirectUrl = frontendBaseUrl + dashboardPath(authentication);
+        String dashboardPath = dashboardPath(authentication);
+        String redirectUrl = frontendBaseUrl + "/login?oauthSuccess&redirectTo=" + dashboardPath;
         logger.info("OAuth success for {} -> {}", authentication == null ? "anonymous" : authentication.getName(), redirectUrl);
         response.sendRedirect(redirectUrl);
     }

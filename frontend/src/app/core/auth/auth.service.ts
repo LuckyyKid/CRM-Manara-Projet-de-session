@@ -50,9 +50,11 @@ export class AuthService {
 
   async loadSession(force = false): Promise<CurrentUserModel | null> {
     if (this.initializedSignal() && !force) {
+      console.log('AUTH LOAD SESSION SKIPPED', { initialized: true, user: this.currentUserSignal() });
       return this.currentUserSignal();
     }
 
+    console.log('AUTH LOAD SESSION START', { force });
     this.loadingSignal.set(true);
     try {
       const currentUser = await firstValueFrom(
@@ -65,6 +67,7 @@ export class AuthService {
       );
       this.currentUserSignal.set(currentUser);
       this.initializedSignal.set(true);
+      console.log('AUTH LOAD SESSION RESULT', currentUser);
       return currentUser;
     } finally {
       this.loadingSignal.set(false);
@@ -77,6 +80,7 @@ export class AuthService {
       const currentUser = await firstValueFrom(
         this.http.post<CurrentUserModel>('/api/login', { email, password }),
       );
+      console.log('AUTH LOGIN SUCCESS', currentUser);
       this.currentUserSignal.set(currentUser);
       this.initializedSignal.set(false);
 
@@ -100,6 +104,7 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
+    console.log('AUTH LOGOUT REDIRECT', `${this.backendBaseUrl()}/logout`);
     this.currentUserSignal.set(null);
     this.initializedSignal.set(true);
     sessionStorage.clear();
