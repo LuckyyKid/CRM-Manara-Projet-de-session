@@ -29,6 +29,9 @@ public class Enfant {
     @OneToMany(mappedBy = "enfant",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Inscription> inscriptions = new ArrayList<>();
 
+    @OneToMany(mappedBy = "enfant", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ParentSubscriptionChild> subscriptionCoverages = new ArrayList<>();
+
 
 
     @ManyToOne
