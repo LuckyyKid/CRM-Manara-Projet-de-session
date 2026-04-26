@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
-import { AdminDemandesDto, EnfantDto, ParentDto } from '../../../core/models/api.models';
+import { AdminDemandesDto, AdminSubscriptionRowDto, EnfantDto, ParentDto } from '../../../core/models/api.models';
 import { AdminService } from '../../../core/services/admin.service';
 import { PaginationComponent } from '../../../shared/pagination/pagination.component';
 
@@ -16,6 +16,7 @@ export class AdminParentsComponent implements OnInit {
   demandes = signal<AdminDemandesDto | null>(null);
   parents = signal<ParentDto[]>([]);
   enfants = signal<EnfantDto[]>([]);
+  subscriptions = signal<AdminSubscriptionRowDto[]>([]);
   search = signal('');
   parentPage = signal(1);
   childPage = signal(1);
@@ -63,11 +64,13 @@ export class AdminParentsComponent implements OnInit {
       demandes: this.adminService.getDemandes(),
       parents: this.adminService.getParents(),
       enfants: this.adminService.getEnfants(),
+      subscriptions: this.adminService.getSubscriptions(),
     }).subscribe({
       next: (data) => {
         this.demandes.set(data.demandes);
         this.parents.set(data.parents);
         this.enfants.set(data.enfants);
+        this.subscriptions.set(data.subscriptions);
         this.loading.set(false);
       },
       error: () => {
@@ -143,6 +146,25 @@ export class AdminParentsComponent implements OnInit {
       },
       error: () => this.error.set('Erreur lors de la suppression de l enfant.'),
     });
+  }
+
+  subscriptionFor(parentId: number): AdminSubscriptionRowDto | null {
+    return this.subscriptions().find((subscription) => subscription.parentId === parentId) ?? null;
+  }
+
+  subscriptionLabel(status: string | null | undefined): string {
+    switch (status) {
+      case 'ACTIVE':
+        return 'Actif';
+      case 'CHECKOUT_PENDING':
+        return 'Paiement en attente';
+      case 'PAST_DUE':
+        return 'Paiement en retard';
+      case 'CANCELED':
+        return 'Annule';
+      default:
+        return 'Inactif';
+    }
   }
 
   private normalize(value: string): string {

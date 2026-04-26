@@ -40,6 +40,7 @@ import { ParentSportPracticePlansComponent } from './pages/parent/parent-sport-p
 import { ParentSportPracticePlanDetailComponent } from './pages/parent/parent-sport-practice-plan-detail/parent-sport-practice-plan-detail.component';
 import { ParentAppointmentsComponent } from './pages/parent/parent-appointments/parent-appointments.component';
 import { ParentBookingsComponent } from './pages/parent/parent-bookings/parent-bookings.component';
+import { ParentBillingComponent } from './pages/parent/parent-billing/parent-billing.component';
 
 import { AnimateurDashboardComponent } from './pages/animateur/animateur-dashboard/animateur-dashboard.component';
 import { AnimateurAnimationsComponent } from './pages/animateur/animateur-animations/animateur-animations.component';
@@ -105,6 +106,7 @@ export const routes: Routes = [
   { path: 'parent/sport-practice-plans/:id', component: ParentSportPracticePlanDetailComponent, canActivate: [parentGuard] },
   { path: 'parent/appointments', component: ParentAppointmentsComponent, canActivate: [parentGuard] },
   { path: 'parent/bookings', component: ParentBookingsComponent, canActivate: [parentGuard] },
+  { path: 'parent/billing', component: ParentBillingComponent, canActivate: [parentGuard] },
   { path: 'parent/notifications', component: ParentNotificationsComponent, canActivate: [parentGuard] },
   { path: 'parent/messages', component: MessagesPageComponent, canActivate: [parentGuard] },
 

@@ -4,7 +4,8 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ParentService } from '../../../core/services/parent.service';
 import { OnboardingService } from '../../../core/services/onboarding.service';
-import { EnfantDto, InscriptionDto } from '../../../core/models/api.models';
+import { EnfantDto, InscriptionDto, SubscriptionDto } from '../../../core/models/api.models';
+import { BillingService } from '../../../core/services/billing.service';
 
 @Component({
   selector: 'app-parent-dashboard',
@@ -15,9 +16,11 @@ export class ParentDashboardComponent implements OnInit {
   readonly authService = inject(AuthService);
   readonly onboardingService = inject(OnboardingService);
   private parentService = inject(ParentService);
+  private billingService = inject(BillingService);
 
   enfants = signal<EnfantDto[]>([]);
   inscriptions = signal<InscriptionDto[]>([]);
+  subscription = signal<SubscriptionDto | null>(null);
   loading = signal(true);
 
   countEnfants = computed(() => this.enfants().length);
@@ -31,6 +34,7 @@ export class ParentDashboardComponent implements OnInit {
   showOnboardingLauncher = computed(() => !this.onboardingService.hasCompletedGlobalTour());
 
   ngOnInit() {
+    this.billingService.getSubscription().subscribe((data) => this.subscription.set(data));
     this.parentService.getEnfants().subscribe((data) => this.enfants.set(data));
     this.parentService.getInscriptions().subscribe((data) => {
       this.inscriptions.set(data);
@@ -53,6 +57,21 @@ export class ParentDashboardComponent implements OnInit {
         return 'Annulée';
       default:
         return status ?? 'Statut inconnu';
+    }
+  }
+
+  subscriptionLabel(status: string | null | undefined): string {
+    switch (status) {
+      case 'ACTIVE':
+        return 'Actif';
+      case 'CHECKOUT_PENDING':
+        return 'Paiement en attente';
+      case 'PAST_DUE':
+        return 'Paiement en retard';
+      case 'CANCELED':
+        return 'Annule';
+      default:
+        return 'Inactif';
     }
   }
 

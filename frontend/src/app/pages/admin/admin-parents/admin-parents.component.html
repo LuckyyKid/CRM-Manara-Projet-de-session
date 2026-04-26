@@ -47,19 +47,40 @@
                 <th>Prenom</th>
                 <th>Email</th>
                 <th>Enfants</th>
+                <th>Abonnement</th>
                 <th>Statut</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngIf="!visibleParents().length">
-                <td colspan="6" class="text-secondary">Aucun parent trouve.</td>
+                <td colspan="7" class="text-secondary">Aucun parent trouve.</td>
               </tr>
               <tr *ngFor="let parent of visibleParents()">
                 <td>{{ parent.nom }}</td>
                 <td>{{ parent.prenom }}</td>
                 <td>{{ parent.user?.email }}</td>
                 <td>{{ parent.enfants.length }}</td>
+                <td>
+                  <ng-container *ngIf="subscriptionFor(parent.id) as subscription; else inactiveSubscription">
+                    <span
+                      class="badge"
+                      [class.bg-success]="subscription.active"
+                      [class.bg-warning]="subscription.status === 'CHECKOUT_PENDING' || subscription.status === 'PAST_DUE'"
+                      [class.text-dark]="subscription.status === 'CHECKOUT_PENDING' || subscription.status === 'PAST_DUE'"
+                      [class.bg-secondary]="!subscription.active && subscription.status !== 'CHECKOUT_PENDING' && subscription.status !== 'PAST_DUE'"
+                    >
+                      {{ subscriptionLabel(subscription.status) }}
+                    </span>
+                    <span class="text-secondary small ms-1">{{ subscription.coveredChildrenCount }} enfant(s)</span>
+                    <div *ngIf="subscription.coveredChildren.length" class="text-secondary small mt-1">
+                      {{ subscription.coveredChildren.join(', ') }}
+                    </div>
+                  </ng-container>
+                  <ng-template #inactiveSubscription>
+                    <span class="badge bg-secondary">Inactif</span>
+                  </ng-template>
+                </td>
                 <td>
                   <span class="badge" [class.bg-success]="parent.user?.enabled" [class.bg-warning]="!parent.user?.enabled" [class.text-dark]="!parent.user?.enabled">
                     {{ parent.user?.enabled ? 'Actif' : 'En attente' }}

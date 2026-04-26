@@ -11,6 +11,7 @@ import {
   AdminInscriptionReviewDto,
   AdminNotificationDto,
   AdminOptionsDto,
+  AdminSubscriptionRowDto,
   AnimateurDto,
   AnimateurRequestDto,
   AnimationDto,
@@ -32,6 +33,7 @@ export class AdminService {
   private options$?: Observable<AdminOptionsDto>;
   private demandes$?: Observable<AdminDemandesDto>;
   private notifications$?: Observable<AdminNotificationDto[]>;
+  private subscriptions$?: Observable<AdminSubscriptionRowDto[]>;
 
   getActivities(forceRefresh = false): Observable<ActivityDto[]> {
     if (!this.activities$ || forceRefresh) {
@@ -177,6 +179,13 @@ export class AdminService {
     return this.notifications$;
   }
 
+  getSubscriptions(forceRefresh = false): Observable<AdminSubscriptionRowDto[]> {
+    if (!this.subscriptions$ || forceRefresh) {
+      this.subscriptions$ = this.http.get<AdminSubscriptionRowDto[]>('/api/admin/subscriptions').pipe(shareReplay(1));
+    }
+    return this.subscriptions$;
+  }
+
   updateParentStatus(id: number, enabled: boolean): Observable<ActionResponseDto> {
     return this.http.post<ActionResponseDto>(`/api/admin/parents/${id}/status?enabled=${enabled}`, {}).pipe(
       tap(() => this.invalidateAdminLists()),
@@ -247,6 +256,10 @@ export class AdminService {
     this.notifications$ = undefined;
   }
 
+  invalidateSubscriptions(): void {
+    this.subscriptions$ = undefined;
+  }
+
   invalidateAdminLists(): void {
     this.invalidateActivities();
     this.invalidateAnimations();
@@ -255,5 +268,6 @@ export class AdminService {
     this.invalidateEnfants();
     this.invalidateDemandes();
     this.invalidateNotifications();
+    this.invalidateSubscriptions();
   }
 }
