@@ -25,13 +25,20 @@ export const apiDebugInterceptor: HttpInterceptorFn = (
           return;
         }
 
-        console.log('API RESPONSE', request.method, request.url, event.status, event.body);
+        console.log('API RESPONSE', request.method, request.url, {
+          status: event.status,
+          withCredentials: request.withCredentials,
+          body: event.body,
+        });
         if (isEmptyBody(event.body)) {
           console.warn('API EMPTY RESPONSE', request.method, request.url, event.status);
         }
       },
       error: (error) => {
-        console.error('API ERROR', request.method, request.url, error);
+        console.error('API ERROR', request.method, request.url, {
+          withCredentials: request.withCredentials,
+          error,
+        });
       },
     }),
   );
