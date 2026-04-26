@@ -12,7 +12,7 @@ public class AngularRedirectController {
 
     private final String frontendBaseUrl;
 
-    public AngularRedirectController(@Value("${app.frontend.base-url:http://localhost:4200}") String frontendBaseUrl) {
+    public AngularRedirectController(@Value("${app.frontend.base-url}") String frontendBaseUrl) {
         this.frontendBaseUrl = frontendBaseUrl;
     }
 

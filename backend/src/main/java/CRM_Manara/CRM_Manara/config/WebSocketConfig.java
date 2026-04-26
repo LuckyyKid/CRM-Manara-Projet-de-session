@@ -17,10 +17,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private final RealtimeWebSocketHandler realtimeWebSocketHandler;
 
-    @Value("${app.frontend.base-url:http://localhost:4200}")
+    @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
 
-    @Value("${app.cors.allowed-origins:http://localhost:4200,https://crm-manara-projet-de-session.vercel.app,https://*.netlify.app}")
+    @Value("${app.cors.allowed-origins:https://manaracrm.netlify.app,https://crm-manara-projet-de-session.vercel.app,https://*.netlify.app}")
     private String allowedOrigins;
 
     public WebSocketConfig(RealtimeWebSocketHandler realtimeWebSocketHandler) {

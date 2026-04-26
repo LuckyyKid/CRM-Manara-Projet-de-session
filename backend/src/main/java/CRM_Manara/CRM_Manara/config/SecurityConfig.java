@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 public class SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+    private static final String DEFAULT_ALLOWED_ORIGINS = "https://manaracrm.netlify.app,https://crm-manara-projet-de-session.vercel.app,https://*.netlify.app";
 
     @Autowired
     private userService userService;
@@ -42,10 +43,10 @@ public class SecurityConfig {
     @Autowired
     private CustomAuthenticationSuccessHandler successHandler;
 
-    @Value("${app.frontend.base-url:http://localhost:4200}")
+    @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
 
-    @Value("${app.cors.allowed-origins:https://crm-manara-projet-de-session.vercel.app}")
+    @Value("${app.cors.allowed-origins:" + DEFAULT_ALLOWED_ORIGINS + "}")
     private String allowedOrigins;
 
     @Bean
@@ -165,12 +166,22 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo.userService(userService))
                         .successHandler(successHandler)
                         .failureHandler((request, response, exception) -> {
+                            String redirectUrl;
                             if (exception.getMessage() != null
                                     && exception.getMessage().toLowerCase().contains("approbation")) {
-                                response.sendRedirect(frontendBaseUrl + "/login?pending");
+                                redirectUrl = frontendBaseUrl + "/login?pending";
+                                logger.warn("OAuth failure pending approval for {} -> {}",
+                                        request.getRequestURI(),
+                                        redirectUrl);
+                                response.sendRedirect(redirectUrl);
                                 return;
                             }
-                            response.sendRedirect(frontendBaseUrl + "/login?oauthError");
+                            redirectUrl = frontendBaseUrl + "/login?oauthError";
+                            logger.warn("OAuth failure on {} -> {} ({})",
+                                    request.getRequestURI(),
+                                    redirectUrl,
+                                    exception.getMessage());
+                            response.sendRedirect(redirectUrl);
                         })
                 )
                 .logout(logout -> logout

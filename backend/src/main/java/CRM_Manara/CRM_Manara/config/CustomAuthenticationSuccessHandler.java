@@ -19,7 +19,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     private final String frontendBaseUrl;
 
-    public CustomAuthenticationSuccessHandler(@Value("${app.frontend.base-url:http://localhost:4200}") String frontendBaseUrl) {
+    public CustomAuthenticationSuccessHandler(@Value("${app.frontend.base-url}") String frontendBaseUrl) {
         this.frontendBaseUrl = frontendBaseUrl.replaceAll("/+$", "");
     }
 

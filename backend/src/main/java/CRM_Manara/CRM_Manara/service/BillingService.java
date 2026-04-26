@@ -70,7 +70,7 @@ public class BillingService {
                           @Value("${stripe.additional-child-price-id:}") String stripeAdditionalChildPriceId,
                           @Value("${stripe.first-child-monthly-amount-cents:6000}") long defaultFirstChildMonthlyAmountCents,
                           @Value("${stripe.additional-child-monthly-amount-cents:4000}") long defaultAdditionalChildMonthlyAmountCents,
-                          @Value("${app.frontend.base-url:http://localhost:4200}") String frontendBaseUrl) {
+                          @Value("${app.frontend.base-url}") String frontendBaseUrl) {
         this.parentRepo = parentRepo;
         this.subscriptionRepo = subscriptionRepo;
         this.subscriptionChildRepo = subscriptionChildRepo;
