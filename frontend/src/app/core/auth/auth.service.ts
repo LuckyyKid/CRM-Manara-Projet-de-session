@@ -100,17 +100,22 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    try {
-      await firstValueFrom(this.http.post('/api/logout', {}).pipe(catchError(() => of(null))));
-    } finally {
-      this.currentUserSignal.set(null);
-      this.initializedSignal.set(true);
-      sessionStorage.clear();
-      window.location.href = '/login';
-    }
+    this.currentUserSignal.set(null);
+    this.initializedSignal.set(true);
+    sessionStorage.clear();
+    window.location.href = `${this.backendBaseUrl()}/logout`;
   }
 
   googleLoginUrl(): string {
-    return `${environment.apiUrl.replace(/\/+$/, '')}/oauth2/authorization/google`;
+    return `${this.backendBaseUrl()}/oauth2/authorization/google`;
+  }
+
+  private backendBaseUrl(): string {
+    const configuredBaseUrl = environment.apiUrl.replace(/\/+$/, '');
+    if (configuredBaseUrl) {
+      return configuredBaseUrl;
+    }
+
+    return 'http://localhost:8080';
   }
 }

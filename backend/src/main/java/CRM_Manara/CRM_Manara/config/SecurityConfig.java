@@ -174,8 +174,8 @@ public class SecurityConfig {
                         })
                 )
                 .logout(logout -> logout
-                        .logoutRequestMatcher(request -> "POST".equals(request.getMethod())
-                                && "/logout".equals(request.getServletPath()))
+                        .logoutRequestMatcher(request -> "/logout".equals(request.getServletPath())
+                                && ("POST".equals(request.getMethod()) || "GET".equals(request.getMethod())))
                         .logoutSuccessHandler((request, response, authentication) -> {
                             if (!request.getServletPath().startsWith("/api/")) {
                                 response.sendRedirect(frontendBaseUrl + "/login?logout");
