@@ -78,8 +78,14 @@ export class AuthService {
         this.http.post<CurrentUserModel>('/api/login', { email, password }),
       );
       this.currentUserSignal.set(currentUser);
-      this.initializedSignal.set(true);
-      return currentUser;
+      this.initializedSignal.set(false);
+
+      const persistedSessionUser = await this.loadSession(true);
+      if (!persistedSessionUser) {
+        throw new Error('Authenticated session was not persisted after login.');
+      }
+
+      return persistedSessionUser;
     } finally {
       this.loadingSignal.set(false);
     }

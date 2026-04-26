@@ -1,6 +1,10 @@
 package CRM_Manara.CRM_Manara.config;
 
 import CRM_Manara.CRM_Manara.service.userService;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,12 +24,14 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Autowired
     private userService userService;
@@ -57,12 +63,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(
-                List.of(allowedOrigins.split(",")).stream()
-                        .map(String::trim)
-                        .filter(value -> !value.isBlank())
-                        .toList()
-        );
+        configuration.setAllowedOriginPatterns(resolveAllowedOriginPatterns());
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Set-Cookie"));
@@ -106,8 +107,22 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                 )
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> response.sendError(401))
-                        .accessDeniedHandler((request, response, accessDeniedException) -> response.sendError(403))
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            logger.warn("Unauthorized API request: method={} path={} origin={} session={}",
+                                    request.getMethod(),
+                                    request.getRequestURI(),
+                                    request.getHeader("Origin"),
+                                    request.getRequestedSessionId());
+                            response.sendError(401);
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            logger.warn("Forbidden API request: method={} path={} user={} session={}",
+                                    request.getMethod(),
+                                    request.getRequestURI(),
+                                    request.getUserPrincipal() == null ? null : request.getUserPrincipal().getName(),
+                                    request.getRequestedSessionId());
+                            response.sendError(403);
+                        })
                 );
 
         return http.build();
@@ -176,10 +191,44 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> response.sendError(401))
-                        .accessDeniedHandler((request, response, accessDeniedException) -> response.sendError(403))
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            logger.warn("Unauthorized web request: method={} path={} origin={} session={}",
+                                    request.getMethod(),
+                                    request.getRequestURI(),
+                                    request.getHeader("Origin"),
+                                    request.getRequestedSessionId());
+                            response.sendError(401);
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            logger.warn("Forbidden web request: method={} path={} user={} session={}",
+                                    request.getMethod(),
+                                    request.getRequestURI(),
+                                    request.getUserPrincipal() == null ? null : request.getUserPrincipal().getName(),
+                                    request.getRequestedSessionId());
+                            response.sendError(403);
+                        })
                 );
 
         return http.build();
+    }
+
+    private List<String> resolveAllowedOriginPatterns() {
+        Set<String> patterns = new LinkedHashSet<>();
+        addOrigins(patterns, allowedOrigins);
+        addOrigins(patterns, frontendBaseUrl);
+        return new ArrayList<>(patterns);
+    }
+
+    private void addOrigins(Set<String> patterns, String source) {
+        if (source == null || source.isBlank()) {
+            return;
+        }
+
+        for (String value : source.split(",")) {
+            String normalized = value.trim();
+            if (!normalized.isBlank()) {
+                patterns.add(normalized);
+            }
+        }
     }
 }
