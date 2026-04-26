@@ -15,6 +15,7 @@ import CRM_Manara.CRM_Manara.service.ParentNotificationService;
 import CRM_Manara.CRM_Manara.service.AdminNotificationService;
 import CRM_Manara.CRM_Manara.service.AnimateurNotificationService;
 import CRM_Manara.CRM_Manara.service.AvatarService;
+import CRM_Manara.CRM_Manara.service.BillingService;
 import CRM_Manara.CRM_Manara.service.parentService;
 import CRM_Manara.CRM_Manara.Model.Entity.User;
 import CRM_Manara.CRM_Manara.Repository.ActivityRepo;
@@ -74,6 +75,8 @@ class ParentServiceTest {
     AnimateurNotificationService animateurNotificationService;
     @Mock
     AdminNotificationService adminNotificationService;
+    @Mock
+    BillingService billingService;
 
     @InjectMocks
     parentService parentService;
@@ -116,6 +119,8 @@ class ParentServiceTest {
         existing.setStatusInscription(statusInscription.EN_ATTENTE);
 
         when(parentRepo.findByUserEmail("parent@test.local")).thenReturn(Optional.of(parent));
+        when(billingService.hasActiveSubscription("parent@test.local")).thenReturn(true);
+        when(billingService.hasAvailableChildSlot("parent@test.local", 10L, 21L)).thenReturn(true);
         when(enfantRepo.findByIdAndParentId(21L, 10L)).thenReturn(Optional.of(enfant));
         when(animationRepo.findById(41L)).thenReturn(Optional.of(animation));
         when(inscriptionRepo.findByEnfantIdAndActivityId(21L, 31L)).thenReturn(List.of(existing));
@@ -144,6 +149,8 @@ class ParentServiceTest {
         ReflectionTestUtils.setField(animation, "id", 41L);
 
         when(parentRepo.findByUserEmail("parent@test.local")).thenReturn(Optional.of(parent));
+        when(billingService.hasActiveSubscription("parent@test.local")).thenReturn(true);
+        when(billingService.hasAvailableChildSlot("parent@test.local", 10L, 21L)).thenReturn(true);
         when(enfantRepo.findByIdAndParentId(21L, 10L)).thenReturn(Optional.of(enfant));
         when(animationRepo.findById(41L)).thenReturn(Optional.of(animation));
 
@@ -154,6 +161,66 @@ class ParentServiceTest {
 
         assertEquals("L'age de Lina ne correspond pas a cette activite. Age requis: 8 a 12 ans.", exception.getMessage());
         verify(inscriptionRepo, never()).save(any(Inscription.class));
+    }
+
+    @Test
+    void inscrireEnfant_rejectsWhenSubscriptionIsInactive() {
+        Parent parent = buildParent(10L, "parent@test.local");
+        Enfant enfant = buildEnfant(21L, parent, true, "Lina");
+        when(parentRepo.findByUserEmail("parent@test.local")).thenReturn(Optional.of(parent));
+        when(enfantRepo.findByIdAndParentId(21L, 10L)).thenReturn(Optional.of(enfant));
+        when(billingService.hasActiveSubscription("parent@test.local")).thenReturn(false);
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> parentService.inscrireEnfant(21L, 41L, "parent@test.local")
+        );
+
+        assertEquals("Un abonnement actif est requis pour inscrire un enfant à une activité.", exception.getMessage());
+        verify(inscriptionRepo, never()).save(any(Inscription.class));
+    }
+
+    @Test
+    void inscrireEnfant_rejectsWhenNoPaidChildSlotIsAvailable() {
+        Parent parent = buildParent(10L, "parent@test.local");
+        Enfant enfant = buildEnfant(21L, parent, true, "Lina");
+        when(parentRepo.findByUserEmail("parent@test.local")).thenReturn(Optional.of(parent));
+        when(enfantRepo.findByIdAndParentId(21L, 10L)).thenReturn(Optional.of(enfant));
+        when(billingService.hasActiveSubscription("parent@test.local")).thenReturn(true);
+        when(billingService.hasAvailableChildSlot("parent@test.local", 10L, 21L)).thenReturn(false);
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> parentService.inscrireEnfant(21L, 41L, "parent@test.local")
+        );
+
+        assertEquals("Votre abonnement ne couvre pas encore cet enfant. Ajoutez une place enfant mensuelle pour l'inscrire.", exception.getMessage());
+        verify(inscriptionRepo, never()).save(any(Inscription.class));
+    }
+
+    @Test
+    void inscrireEnfant_createsRequestWhenSubscriptionIsActive() {
+        Parent parent = buildParent(10L, "parent@test.local");
+        Enfant enfant = buildEnfant(21L, parent, true, "Lina");
+        Activity activity = buildActivity(31L, 8);
+        Animation animation = buildAnimation(41L, activity);
+        Inscription saved = new Inscription(enfant, animation);
+        ReflectionTestUtils.setField(saved, "id", 99L);
+
+        when(parentRepo.findByUserEmail("parent@test.local")).thenReturn(Optional.of(parent));
+        when(billingService.hasActiveSubscription("parent@test.local")).thenReturn(true);
+        when(billingService.hasAvailableChildSlot("parent@test.local", 10L, 21L)).thenReturn(true);
+        when(enfantRepo.findByIdAndParentId(21L, 10L)).thenReturn(Optional.of(enfant));
+        when(animationRepo.findById(41L)).thenReturn(Optional.of(animation));
+        when(inscriptionRepo.findByEnfantIdAndActivityId(21L, 31L)).thenReturn(List.of());
+        when(inscriptionRepo.findByEnfantIdAndAnimationId(21L, 41L)).thenReturn(Optional.empty());
+        when(inscriptionRepo.save(any(Inscription.class))).thenReturn(saved);
+        when(inscriptionRepo.findByAnimationId(41L)).thenReturn(List.of());
+
+        Inscription result = parentService.inscrireEnfant(21L, 41L, "parent@test.local");
+
+        assertEquals(99L, result.getId());
+        verify(inscriptionRepo).save(any(Inscription.class));
     }
 
     @Test
