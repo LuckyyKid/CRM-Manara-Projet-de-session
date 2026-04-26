@@ -5,11 +5,12 @@ import { routes } from './app.routes';
 import { apiBaseInterceptor } from './core/auth/api-base.interceptor';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { AuthService } from './core/auth/auth.service';
+import { apiDebugInterceptor } from './core/http/api-debug.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptors([apiBaseInterceptor, authInterceptor])),
+    provideHttpClient(withInterceptors([apiBaseInterceptor, apiDebugInterceptor, authInterceptor])),
     provideRouter(routes),
     provideAppInitializer(() => inject(AuthService).loadSession()),
   ],

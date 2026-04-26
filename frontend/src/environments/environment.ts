@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080',
-  wsUrl: 'ws://localhost:8080/ws/realtime',
+  apiUrl: 'https://crm-manara-projet-de-session.onrender.com',
+  wsUrl: 'wss://crm-manara-projet-de-session.onrender.com/ws/realtime',
 };

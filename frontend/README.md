@@ -1,6 +1,6 @@
 # Frontend Angular Manara
 
-Ce dossier contient le nouveau frontend Angular de la V2.
+Ce dossier contient le frontend Angular de la V2.
 
 ## Commandes
 
@@ -9,14 +9,12 @@ npm install
 npm start
 ```
 
-Le serveur Angular démarre par défaut sur:
+Le serveur Angular de developpement demarre sur l'URL locale affichee par `npm start`.
 
-- `http://localhost:4200`
+Le proxy `proxy.conf.json` redirige les appels `/api` vers :
 
-Le proxy `proxy.conf.json` redirige les appels `/api` vers:
-
-- `http://localhost:8080`
+- `https://crm-manara-projet-de-session.onrender.com`
 
 ## Objectif
 
-Le frontend Angular remplacera progressivement les vues Thymeleaf tout en conservant le backend Spring Boot existant.
+Le frontend Angular remplace progressivement les vues Thymeleaf tout en conservant le backend Spring Boot existant.

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom, of, Subject } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
+import { AuthService } from '../../core/auth/auth.service';
 import { SignupService } from '../../core/services/signup.service';
 
 @Component({
@@ -13,6 +14,7 @@ import { SignupService } from '../../core/services/signup.service';
   templateUrl: './signup-page.component.html',
 })
 export class SignupPageComponent implements OnDestroy {
+  readonly authService = inject(AuthService);
   private readonly signupService = inject(SignupService);
   private readonly router = inject(Router);
   private readonly emailChanges$ = new Subject<string>();

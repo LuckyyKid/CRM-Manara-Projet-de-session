@@ -1,41 +1,41 @@
 {
   "/api": {
-    "target": "http://localhost:8080",
+    "target": "https://crm-manara-projet-de-session.onrender.com",
     "secure": false,
     "changeOrigin": true
   },
   "/logout": {
-    "target": "http://localhost:8080",
+    "target": "https://crm-manara-projet-de-session.onrender.com",
     "secure": false,
     "changeOrigin": true
   },
   "/oauth2": {
-    "target": "http://localhost:8080",
+    "target": "https://crm-manara-projet-de-session.onrender.com",
     "secure": false,
     "changeOrigin": true
   },
   "/login/oauth2": {
-    "target": "http://localhost:8080",
+    "target": "https://crm-manara-projet-de-session.onrender.com",
     "secure": false,
     "changeOrigin": true
   },
   "/images": {
-    "target": "http://localhost:8080",
+    "target": "https://crm-manara-projet-de-session.onrender.com",
     "secure": false,
     "changeOrigin": true
   },
   "/avatars": {
-    "target": "http://localhost:8080",
+    "target": "https://crm-manara-projet-de-session.onrender.com",
     "secure": false,
     "changeOrigin": true
   },
   "/css": {
-    "target": "http://localhost:8080",
+    "target": "https://crm-manara-projet-de-session.onrender.com",
     "secure": false,
     "changeOrigin": true
   },
   "/ws": {
-    "target": "http://localhost:8080",
+    "target": "https://crm-manara-projet-de-session.onrender.com",
     "secure": false,
     "changeOrigin": true,
     "ws": true

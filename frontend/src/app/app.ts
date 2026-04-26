@@ -40,7 +40,9 @@ export class App {
     effect(() => {
       if (this.authService.isAuthenticated()) {
         this.communicationService.connect();
-        void this.communicationService.loadSidebarCounts();
+        void this.communicationService.loadSidebarCounts().catch((error) => {
+          console.error('SIDEBAR_COUNTS_LOAD_ERROR', error);
+        });
         this.onboardingService.handlePostLogin();
         return;
       }
