@@ -88,7 +88,7 @@ public class SecurityConfig {
                 .oauth2Login(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/api/signUp/**", "/api/chatbot/**", "/api/public/**").permitAll()
+                        .requestMatchers("/api/login", "/api/signUp/**", "/api/chatbot/**", "/api/public/**", "/api/stripe/webhook").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/parent/**").hasRole("PARENT")
@@ -135,6 +135,7 @@ public class SecurityConfig {
                                 "/api/login",
                                 "/api/signUp/**",
                                 "/api/chatbot/**",
+                                "/api/stripe/webhook",
                                 "/ws/**",
                                 "/oauth2/**",
                                 "/login/oauth2/**"
