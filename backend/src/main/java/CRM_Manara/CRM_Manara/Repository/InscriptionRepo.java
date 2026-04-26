@@ -78,6 +78,26 @@ public interface InscriptionRepo extends JpaRepository<Inscription, Long> {
 
     long countByEnfantParentId(Long parentId);
 
+    @Query("""
+            SELECT COUNT(DISTINCT i.enfant.id)
+            FROM Inscription i
+            WHERE i.enfant.parent.id = :parentId
+              AND i.statusInscription NOT IN :excludedStatuses
+            """)
+    long countDistinctCoveredChildrenByParentId(@Param("parentId") Long parentId,
+                                                @Param("excludedStatuses") List<statusInscription> excludedStatuses);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END
+            FROM Inscription i
+            WHERE i.enfant.parent.id = :parentId
+              AND i.enfant.id = :enfantId
+              AND i.statusInscription NOT IN :excludedStatuses
+            """)
+    boolean existsCoveredInscriptionForChild(@Param("parentId") Long parentId,
+                                             @Param("enfantId") Long enfantId,
+                                             @Param("excludedStatuses") List<statusInscription> excludedStatuses);
+
     long countByStatusInscription(statusInscription status);
 
     @Query("SELECT COUNT(i) FROM Inscription i WHERE i.animation.activity.id = :activityId")
