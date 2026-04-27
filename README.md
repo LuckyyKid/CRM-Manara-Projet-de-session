@@ -1,123 +1,28 @@
 # CRM Manara
 
-## Vue d'ensemble
+Application de gestion pour centre de loisirs jeunesse. Backend Spring Boot, frontend Angular, paiements Stripe.
 
-CRM Manara est maintenant organisé en mono-repo avec une V1 figée et une V2 en cours de migration.
+---
 
-- `version-1` : version Spring MVC / Thymeleaf figée pour les sprints 1 et 2
-- `main` : branche d'intégration de la V2
-- V2 : backend Spring Boot conservé, frontend Angular ajouté progressivement
+## Demarrage rapide
 
-## Structure du repo
+### Prerequis
 
-- `backend/` : application Spring Boot, logique métier, sécurité, API REST, vues Thymeleaf héritées de la V1, tests Maven
-- `frontend/` : frontend Angular V2
-- `docs/` : diagrammes, maquettes et guide du chatbot
+- Java 21+
+- Node.js 20+
+- PostgreSQL 15+ avec une base `manara`
+- (optionnel) Stripe CLI pour tester les paiements
 
-## Ce qui est déjà fait en V2
-
-### Architecture
-
-- repo restructuré en mono-repo clair `backend/ + frontend/ + docs/`
-- couche DTO ajoutée côté Spring
-- premiers endpoints REST `/api` ajoutés pour Angular
-- coexistence temporaire API + écrans Thymeleaf hérités
-
-### Backend Spring
-
-- backend déplacé dans `backend/`
-- sécurité adaptée pour Angular sur `http://localhost:4200`
-- CORS actif sur `/api/**`
-- gestion de session Spring conservée
-- `/api/me` disponible pour récupérer l'utilisateur connecté
-- endpoints API déjà disponibles pour:
-  - `/api/me`
-  - `/api/parent/**`
-  - `/api/admin/**`
-  - `/api/animateur/**`
-
-### Frontend Angular
-
-- projet Angular créé dans `frontend/`
-- proxy Angular configuré vers `http://localhost:8080`
-- auth/session Angular branchée avec session Spring
-- garde d'auth pour les routes protégées
-- garde invité pour la page de login Angular
-- page de base `me/dashboard` branchée sur `/api/me`
-
-### Validation déjà faite
-
-- `cd backend && ./mvnw test` : OK
-- `cd frontend && npm run build` : OK
-- smoke test validé avec:
-  - backend sur `8080`
-  - frontend sur `4200`
-  - `/api/me` en `401` sans session
-  - login Spring redirige bien vers `http://localhost:4200/me/dashboard`
-  - `/api/me` retourne bien le profil après authentification
-
-## Ce qu'il reste à faire en V2
-
-### Priorité immédiate
-
-- construire le layout Angular principal
-- remplacer progressivement les dashboards Thymeleaf par des pages Angular
-- créer les services Angular par domaine:
-  - auth
-  - parent
-  - admin
-  - animateur
-- brancher les écrans Angular sur les endpoints `/api`
-
-### Parent
-
-- dashboard Angular parent
-- liste des enfants
-- activités et planning
-- notifications
-- paramètres
-
-### Admin
-
-- dashboard Angular admin
-- gestion des activités
-- gestion des animations
-- gestion des animateurs
-- gestion des parents / enfants
-- page des demandes
-- notifications admin
-
-### Animateur
-
-- dashboard Angular animateur
-- planning / inscriptions
-- gestion des présences
-- notifications animateur
-
-### Backend à compléter pour Angular
-
-- standardiser davantage les réponses JSON
-- ajouter les endpoints manquants pour les formulaires complets CRUD
-- vérifier la cohérence finale DTO / contrôleurs / services
-- réduire progressivement la dépendance aux templates Thymeleaf côté V2
-
-## Lancer le backend
+### 1 — Backend
 
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
 
-- backend local: `http://localhost:8080`
+Disponible sur `http://localhost:8080`.
 
-## Tester le backend
-
-```bash
-cd backend
-./mvnw test
-```
-
-## Lancer le frontend Angular
+### 2 — Frontend
 
 ```bash
 cd frontend
@@ -125,117 +30,160 @@ npm install
 npm start
 ```
 
-- frontend local: `http://localhost:4200`
-- proxy Angular vers Spring: `/api` -> `http://localhost:8080`
+Disponible sur `http://localhost:4200`. Le proxy Angular redirige `/api` vers `http://localhost:8080`.
 
-## Abonnement mensuel Stripe
+### 3 — Stripe (paiements)
 
-Le paiement parent utilise Stripe Checkout en mode `subscription`. Un forfait couvre un enfant a 60$/mois; chaque enfant additionnel ajoute une place mensuelle a 40$/mois. Le backend reste la source de verite: le retour `success_url` ne valide pas le paiement, seul le webhook Stripe met l'abonnement en `ACTIVE`.
+```bash
+stripe listen --forward-to localhost:8080/api/stripe/webhook
+```
 
-### Variables locales
+Laisser ce terminal ouvert pendant les tests de paiement.
 
-Ajouter les valeurs en variables d'environnement ou dans `backend/src/main/resources/application-secret.properties`:
+---
+
+## Configuration locale
+
+Creer le fichier `backend/src/main/resources/application-secret.properties` (jamais commite) :
 
 ```properties
+# Base de donnees (si differente des defaults)
+spring.datasource.url=jdbc:postgresql://localhost:5432/manara
+spring.datasource.username=postgres
+spring.datasource.password=TON_MOT_DE_PASSE
+
+# Email (optionnel — les emails echouent silencieusement sans ca)
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=ton@gmail.com
+spring.mail.password=app_password_gmail
+
+# Stripe
 stripe.secret-key=sk_test_...
 stripe.webhook-secret=whsec_...
 stripe.first-child-price-id=price_...
 stripe.additional-child-price-id=price_...
 stripe.first-child-monthly-amount-cents=6000
 stripe.additional-child-monthly-amount-cents=4000
+
+# Google OAuth (optionnel)
+spring.security.oauth2.client.registration.google.client-id=...
+spring.security.oauth2.client.registration.google.client-secret=...
 ```
 
-Les equivalents environnement sont:
+### Obtenir le webhook-secret Stripe
 
 ```bash
-STRIPE_SECRET_KEY=sk_test_...
+stripe listen --forward-to localhost:8080/api/stripe/webhook
+```
+
+La ligne `> Ready! Your webhook signing secret is whsec_...` donne la valeur a mettre dans `stripe.webhook-secret`.
+
+---
+
+## Donnees de test
+
+Executer le script seed pour creer des comptes de test (idempotent, peut etre relance) :
+
+```bash
+psql -h localhost -U postgres -d manara -f backend/SQL/seed_test_data.sql
+```
+
+Comptes crees :
+
+| Role | Email | Mot de passe |
+|---|---|---|
+| Admin | `admin@manara.test` | `root` |
+| Parent (abonnement actif, 2 enfants) | `sarah.martin@test.com` | `root` |
+| Parent (sans abonnement) | `pierre.dupont@test.com` | `root` |
+| Animateur | `karim.benali@test.com` | `root` |
+| Animateur | `fatima.zahra@test.com` | `root` |
+
+---
+
+## Tests
+
+```bash
+cd backend
+./mvnw test
+```
+
+51 tests, 0 echecs.
+
+---
+
+## Structure du repo
+
+```
+backend/   Spring Boot — API REST, securite, services, tests Maven
+frontend/  Angular — SPA, proxy vers backend
+docs/      Diagrammes, maquettes
+backend/SQL/
+  schema_sprint1.sql          Schema initial
+  subscription_billing_upgrade.sql  Tables Stripe (si Hibernate ne les cree pas)
+  seed_test_data.sql          Donnees de test idempotentes
+```
+
+---
+
+## API REST
+
+| Prefixe | Role requis | Description |
+|---|---|---|
+| `/api/login` | public | Connexion email/mdp |
+| `/api/me` | authentifie | Profil utilisateur courant |
+| `/api/parent/**` | ROLE_PARENT | Espace parent |
+| `/api/admin/**` | ROLE_ADMIN | Espace admin |
+| `/api/animateur/**` | ROLE_ANIMATEUR | Espace animateur |
+| `/api/stripe/webhook` | public (signe) | Webhooks Stripe |
+
+---
+
+## Fonctionnalites
+
+### Roles
+
+- **Admin** : gestion des parents, animateurs, activites, animations, inscriptions, abonnements
+- **Parent** : tableau de bord, enfants, activites, rendez-vous, messagerie, abonnement Stripe
+- **Animateur** : planning, inscriptions, presences, devoirs, messagerie
+
+### Abonnement Stripe
+
+- Forfait mensuel : 60 $/mois pour le premier enfant, +40 $/mois par enfant additionnel
+- Flux : Stripe Checkout → webhook `invoice.paid` active l'abonnement (le retour `success_url` ne suffit pas)
+- Evenements geres : `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated`, `customer.subscription.deleted`
+- Cartes de test : `4242 4242 4242 4242` (succes), `4000 0000 0000 9995` (echec)
+- Une inscription est bloquee si le parent n'a pas d'abonnement actif ou si l'enfant n'est pas couvert
+
+### Messagerie
+
+- Chat en temps reel via SSE entre parents, animateurs et admins
+- Notification email avec cooldown de 15 min par destinataire
+
+### Notifications
+
+- Notifications en temps reel (SSE) pour parents et admins
+- Types : inscriptions, rendez-vous, messages, abonnement, compte
+
+---
+
+## Variables d'environnement (production)
+
+```bash
+SPRING_DATASOURCE_URL=jdbc:postgresql://host:5432/manara
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=...
+FRONTEND_BASE_URL=https://ton-domaine.com
+CORS_ALLOWED_ORIGINS=https://ton-domaine.com
+STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 STRIPE_FIRST_CHILD_PRICE_ID=price_...
 STRIPE_ADDITIONAL_CHILD_PRICE_ID=price_...
 STRIPE_FIRST_CHILD_MONTHLY_AMOUNT_CENTS=6000
 STRIPE_ADDITIONAL_CHILD_MONTHLY_AMOUNT_CENTS=4000
+SPRING_MAIL_USERNAME=...
+SPRING_MAIL_PASSWORD=...
+ANTHROPIC_API_KEY=...
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
 ```
-
-Ne jamais exposer `STRIPE_SECRET_KEY` cote frontend. Angular recoit seulement l'URL Stripe Checkout ou Stripe Customer Portal retournee par le backend.
-
-### Creer les prix mensuels en mode test
-
-1. Ouvrir Stripe Dashboard en mode test.
-2. Creer un produit, par exemple `Abonnement mensuel Manara`.
-3. Ajouter un prix recurring mensuel a 60$ pour le premier enfant.
-4. Ajouter un deuxieme prix recurring mensuel a 40$ pour chaque enfant additionnel.
-5. Copier les identifiants `price_...` dans `STRIPE_FIRST_CHILD_PRICE_ID` et `STRIPE_ADDITIONAL_CHILD_PRICE_ID`.
-
-### Webhook local
-
-Installer Stripe CLI, se connecter, puis forwarder les evenements vers le backend:
-
-```bash
-stripe login
-stripe listen --forward-to localhost:8080/api/stripe/webhook
-```
-
-Copier la valeur `whsec_...` affichee par Stripe CLI dans `STRIPE_WEBHOOK_SECRET`, puis relancer le backend.
-
-Evenements geres:
-
-- `checkout.session.completed`
-- `customer.subscription.created`
-- `customer.subscription.updated`
-- `customer.subscription.deleted`
-- `invoice.paid`
-- `invoice.payment_failed`
-
-### Tester une carte
-
-Dans Stripe Checkout en mode test:
-
-- carte: `4242 4242 4242 4242`
-- date: une date future
-- CVC: n'importe quelles 3 chiffres
-
-Apres paiement, le parent retourne vers `/parent/billing?success=true`. Si le webhook local tourne, le statut devient `ACTIVE`; sinon il peut rester `CHECKOUT_PENDING`.
-
-### Gestion du forfait actif
-
-Une fois l'abonnement deja actif, le bouton de gestion ouvre Stripe Customer Portal au lieu de recreer un nouveau Checkout. Cela evite les doubles abonnements. Le parent revient ensuite sur `/parent/billing` pour choisir explicitement quels enfants utilisent les places payees.
-
-### Script SQL explicite
-
-Si votre base locale n'applique pas automatiquement les changements JPA, le script suivant cree les tables de facturation:
-
-- [backend/SQL/subscription_billing_upgrade.sql](/home/ahmed/Desktop/Web/Projet-Session/projet-de-session/backend/SQL/subscription_billing_upgrade.sql)
-
-## Parcours encore disponibles côté Thymeleaf
-
-Ces écrans existent encore pendant la migration et servent de référence fonctionnelle.
-
-### Parent
-
-- `/parent/dashboard`
-- `/parent/enfants`
-- `/parent/activities`
-- `/parent/planning`
-- `/parent/notifications`
-- `/settings`
-
-### Admin
-
-- `/admin/adminDashboard`
-- `/admin/activities`
-- `/admin/animations`
-- `/admin/animateurs`
-- `/admin/parents`
-- `/admin/demandes`
-- `/admin/notifications`
-
-### Animateur
-
-- `/animateur/dashboard`
-- `/animateur/notifications`
-- `/animateur/inscriptions`
-
-## Références
-
-- schéma SQL backend : [backend/SQL/schema_sprint1.sql](/home/ahmed/Desktop/Web/Projet-Session/projet-de-session/backend/SQL/schema_sprint1.sql)
-- documentation projet : [docs](/home/ahmed/Desktop/Web/Projet-Session/projet-de-session/docs)
