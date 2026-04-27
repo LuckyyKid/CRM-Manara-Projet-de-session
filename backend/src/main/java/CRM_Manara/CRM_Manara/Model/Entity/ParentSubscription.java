@@ -10,11 +10,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "parent_subscription")
@@ -24,13 +28,16 @@ public class ParentSubscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "parent_id", unique = true)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "parent_id", nullable = false)
     private Parent parent;
 
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", unique = true)
     private User user;
+
+    @OneToMany(mappedBy = "subscription", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    private List<ParentSubscriptionChild> coveredChildren = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -83,8 +90,16 @@ public class ParentSubscription {
         return parent;
     }
 
+    public void setParent(Parent parent) {
+        this.parent = parent;
+    }
+
     public User getUser() {
         return user;
+    }
+
+    public List<ParentSubscriptionChild> getCoveredChildren() {
+        return coveredChildren;
     }
 
     public SubscriptionStatus getStatus() {

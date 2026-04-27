@@ -22,8 +22,11 @@ import CRM_Manara.CRM_Manara.Repository.EnfantRepo;
 import CRM_Manara.CRM_Manara.Repository.InscriptionRepo;
 import CRM_Manara.CRM_Manara.Repository.ParentRepo;
 import CRM_Manara.CRM_Manara.Repository.ParentNotificationRepo;
+import CRM_Manara.CRM_Manara.Repository.ParentSubscriptionRepo;
 import CRM_Manara.CRM_Manara.Repository.UserRepo;
 import CRM_Manara.CRM_Manara.Repository.VerificationTokenRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -42,6 +45,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdminService.class);
 
     @Autowired
     ActivityRepo activityRepo;
@@ -66,6 +71,9 @@ public class AdminService {
 
     @Autowired
     ParentNotificationRepo parentNotificationRepo;
+
+    @Autowired
+    ParentSubscriptionRepo parentSubscriptionRepo;
 
     @Autowired
     VerificationTokenRepository verificationTokenRepository;
@@ -538,6 +546,13 @@ public class AdminService {
     public void deleteParent(Long id) {
         Parent parent = getParentById(id);
         User user = parent.getUser();
+        List<CRM_Manara.CRM_Manara.Model.Entity.ParentSubscription> subscriptions =
+                parentSubscriptionRepo.findAllByParentId(id);
+        logger.info("Deleting parent id={} with {} subscriptions", parent.getId(), subscriptions.size());
+        parent.getSubscriptions().clear();
+        if (!subscriptions.isEmpty()) {
+            parentSubscriptionRepo.deleteAll(subscriptions);
+        }
         parentNotificationRepo.deleteByParentId(parent.getId());
         parentRepo.delete(parent);
         if (user != null) {

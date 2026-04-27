@@ -36,6 +36,9 @@ public class Parent  {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private List<Enfant> enfants = new ArrayList<>();
 
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParentSubscription> subscriptions = new ArrayList<>();
+
     protected Parent() {
 
     }
@@ -88,6 +91,20 @@ public class Parent  {
     }
     public User getUser() {
         return user;
+    }
+
+    public List<ParentSubscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void addSubscription(ParentSubscription subscription) {
+        subscriptions.add(subscription);
+        subscription.setParent(this);
+    }
+
+    public void removeSubscription(ParentSubscription subscription) {
+        subscriptions.remove(subscription);
+        subscription.setParent(null);
     }
 
 
