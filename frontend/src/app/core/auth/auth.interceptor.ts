@@ -1,9 +1,21 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { AuthService } from './auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
-  const requestWithCredentials = request.clone({ withCredentials: true });
-  console.log('AUTH REQUEST', requestWithCredentials.method, requestWithCredentials.url, {
-    withCredentials: requestWithCredentials.withCredentials,
+  const authService = inject(AuthService);
+  const token = authService.getToken();
+  if (!token) {
+    return next(request);
+  }
+
+  const authenticatedRequest = request.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
   });
-  return next(requestWithCredentials);
+  console.log('AUTH REQUEST', authenticatedRequest.method, authenticatedRequest.url, {
+    authorization: authenticatedRequest.headers.get('Authorization'),
+  });
+  return next(authenticatedRequest);
 };

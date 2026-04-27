@@ -18,8 +18,10 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -42,6 +44,9 @@ public class SecurityConfig {
 
     @Autowired
     private CustomAuthenticationSuccessHandler successHandler;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Value("${app.frontend.base-url}")
     private String frontendBaseUrl;
@@ -86,11 +91,13 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .oauth2Login(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/api/signUp/**", "/api/chatbot/**", "/api/public/**", "/api/stripe/webhook").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/signUp/**", "/api/chatbot/**", "/api/public/**", "/api/stripe/webhook").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/parent/**").hasRole("PARENT")
@@ -148,7 +155,7 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/images/**",
                                 "/avatars/**",
-                                "/api/login",
+                                "/api/auth/**",
                                 "/api/signUp/**",
                                 "/api/chatbot/**",
                                 "/api/stripe/webhook",

@@ -8,6 +8,7 @@ import { HomeActivityFinderComponent } from './pages/home/home-activity-finder.c
 import { AboutPageComponent } from './pages/about/about-page.component';
 import { SignupPageComponent } from './pages/signup/signup-page.component';
 import { LoginPageComponent } from './pages/login/login-page.component';
+import { OAuthSuccessPageComponent } from './pages/oauth-success/oauth-success-page.component';
 import { DashboardPageComponent } from './pages/dashboard/dashboard-page.component';
 
 import { AdminDashboardComponent } from './pages/admin/admin-dashboard/admin-dashboard.component';
@@ -70,6 +71,7 @@ export const routes: Routes = [
   { path: 'about', component: AboutPageComponent },
   { path: 'signup', component: SignupPageComponent, canActivate: [guestGuard] },
   { path: 'login', component: LoginPageComponent, canActivate: [guestGuard] },
+  { path: 'oauth-success', component: OAuthSuccessPageComponent },
 
   { path: 'me/dashboard', component: DashboardPageComponent, canActivate: [authGuard] },
 

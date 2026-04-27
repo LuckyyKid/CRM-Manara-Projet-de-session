@@ -2,11 +2,12 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { CurrentUserModel } from '../models/current-user.model';
+import { AuthResponseModel, CurrentUserModel } from '../models/current-user.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private static readonly TOKEN_STORAGE_KEY = 'auth_token';
   private readonly http = inject(HttpClient);
 
   private readonly currentUserSignal = signal<CurrentUserModel | null>(null);
@@ -54,6 +55,13 @@ export class AuthService {
       return this.currentUserSignal();
     }
 
+    if (!this.getToken()) {
+      console.log('AUTH LOAD SESSION ABORTED: NO TOKEN');
+      this.currentUserSignal.set(null);
+      this.initializedSignal.set(true);
+      return null;
+    }
+
     console.log('AUTH LOAD SESSION START', { force });
     this.loadingSignal.set(true);
     try {
@@ -61,6 +69,7 @@ export class AuthService {
         this.http.get<CurrentUserModel>('/api/me').pipe(
           catchError((error) => {
             console.error('API ERROR /api/me', error);
+            this.clearToken();
             return of(null);
           }),
         ),
@@ -77,22 +86,22 @@ export class AuthService {
   async loginWithCredentials(email: string, password: string): Promise<CurrentUserModel> {
     this.loadingSignal.set(true);
     try {
-      const currentUser = await firstValueFrom(
-        this.http.post<CurrentUserModel>('/api/login', { email, password }),
+      const response = await firstValueFrom(
+        this.http.post<AuthResponseModel>('/api/auth/login', { email, password }),
       );
-      console.log('AUTH LOGIN SUCCESS', currentUser);
-      this.currentUserSignal.set(currentUser);
-      this.initializedSignal.set(false);
-
-      const persistedSessionUser = await this.loadSession(true);
-      if (!persistedSessionUser) {
-        throw new Error('Authenticated session was not persisted after login.');
-      }
-
-      return persistedSessionUser;
+      console.log('AUTH LOGIN SUCCESS', response.currentUser);
+      this.setToken(response.token);
+      this.currentUserSignal.set(response.currentUser);
+      this.initializedSignal.set(true);
+      return response.currentUser;
     } finally {
       this.loadingSignal.set(false);
     }
+  }
+
+  async completeOAuthLogin(token: string): Promise<CurrentUserModel | null> {
+    this.setToken(token);
+    return this.loadSession(true);
   }
 
   login(): void {
@@ -104,15 +113,29 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    console.log('AUTH LOGOUT REDIRECT', `${this.backendBaseUrl()}/logout`);
+    console.log('AUTH LOGOUT LOCAL CLEAR');
+    this.clearToken();
     this.currentUserSignal.set(null);
     this.initializedSignal.set(true);
     sessionStorage.clear();
-    window.location.href = `${this.backendBaseUrl()}/logout`;
+    window.location.href = '/login';
   }
 
   googleLoginUrl(): string {
     return `${this.backendBaseUrl()}/oauth2/authorization/google`;
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(AuthService.TOKEN_STORAGE_KEY);
+  }
+
+  private setToken(token: string): void {
+    localStorage.setItem(AuthService.TOKEN_STORAGE_KEY, token);
+    console.log('AUTH TOKEN STORED', token);
+  }
+
+  private clearToken(): void {
+    localStorage.removeItem(AuthService.TOKEN_STORAGE_KEY);
   }
 
   private backendBaseUrl(): string {

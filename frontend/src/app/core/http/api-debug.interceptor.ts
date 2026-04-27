@@ -27,7 +27,7 @@ export const apiDebugInterceptor: HttpInterceptorFn = (
 
         console.log('API RESPONSE', request.method, request.url, {
           status: event.status,
-          withCredentials: request.withCredentials,
+          authorizationHeaderPresent: request.headers.has('Authorization'),
           body: event.body,
         });
         if (isEmptyBody(event.body)) {
@@ -36,7 +36,7 @@ export const apiDebugInterceptor: HttpInterceptorFn = (
       },
       error: (error) => {
         console.error('API ERROR', request.method, request.url, {
-          withCredentials: request.withCredentials,
+          authorizationHeaderPresent: request.headers.has('Authorization'),
           error,
         });
       },

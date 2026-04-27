@@ -35,3 +35,8 @@ export interface CurrentUserModel {
   animateur: AnimateurProfileModel | null;
   admin: AdminProfileModel | null;
 }
+
+export interface AuthResponseModel {
+  token: string;
+  currentUser: CurrentUserModel;
+}
