@@ -215,6 +215,7 @@ L'API Angular utilise principalement JWT :
 - token recu par `/api/auth/login` ou OAuth;
 - stockage frontend dans `localStorage` sous `auth_token`;
 - envoi via header `Authorization: Bearer ...`.
+- envoi au WebSocket `/ws/realtime` via le parametre `?token=...`, valide cote backend par `RealtimeWebSocketHandler`.
 
 Le backend configure aussi les cookies de session :
 
@@ -274,6 +275,10 @@ Avant une demonstration :
 - Stripe en mode test configure si la demo inclut l'abonnement.
 - `ANTHROPIC_API_KEY` configure si la demo inclut quiz/devoirs/plans IA.
 - WebSocket `/ws/realtime` accessible.
+- Messagerie : le badge affiche `Temps reel actif` apres connexion.
+- Messagerie : cliquer entre plusieurs conversations ne doit pas bloquer l'interface.
+- Messagerie : envoyer un message et verifier qu'il apparait sans rechargement complet de la page.
+- Messagerie : rafraichir la page puis rouvrir une conversation.
 - CORS correctement configure pour le domaine Netlify.
 - Comptes de test disponibles.
 
@@ -344,9 +349,14 @@ Verifier :
 Verifier :
 
 - `wsUrl` frontend;
+- presence du token `auth_token` dans le navigateur apres connexion;
+- presence du parametre `token` dans l'URL WebSocket;
+- validite de `APP_JWT_SECRET` sur Render;
 - CORS WebSocket;
 - backend reveille;
 - proxy local si developpement.
+
+Symptome deja rencontre : la messagerie alternait entre `Connexion en cours` et `Temps reel actif`. La cause etait un WebSocket ouvert sans JWT exploitable par le backend. Le frontend transmet maintenant le token et le backend le valide dans `RealtimeWebSocketHandler`. Si ce symptome revient, verifier d'abord le token, l'URL `wsUrl`, la configuration CORS et les logs Render.
 
 ### IA indisponible
 

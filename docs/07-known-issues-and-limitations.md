@@ -103,7 +103,7 @@ Le temps reel utilise un WebSocket JSON custom, pas STOMP.
 Risque :
 
 - moins de conventions standard;
-- authentification/identification du handshake a surveiller;
+- authentification/identification du handshake a surveiller, avec JWT passe en query param `token`;
 - reconnexion cote frontend a maintenir.
 
 ### Logs debug frontend
@@ -188,6 +188,39 @@ Correction apportee dans le code :
 - logout robuste meme si backend lent.
 
 Test a refaire avant demo.
+
+### Messagerie lente ou clignotement temps reel
+
+Bug observe : dans la version deployee, la messagerie pouvait alterner entre `Connexion en cours` et `Temps reel actif`. Le clic sur une conversation pouvait aussi sembler lent, car l'interface attendait plusieurs appels reseau avant de stabiliser l'affichage.
+
+Cause identifiee :
+
+- le WebSocket etait ouvert sans JWT transmis explicitement au backend;
+- le backend pouvait refuser la session temps reel en production;
+- le frontend relancait ensuite la connexion periodiquement, ce qui provoquait un clignotement visible;
+- l'ouverture d'une conversation declenchait aussi des rafraichissements de compteurs et de liste avant de rendre l'experience fluide.
+
+Correction apportee dans le code :
+
+- `CommunicationService` ajoute le token JWT a l'URL WebSocket via `?token=...`;
+- `RealtimeWebSocketHandler` valide ce token avec `JwtService`;
+- la reconnexion WebSocket utilise un delai progressif;
+- la conversation selectionnee s'affiche immediatement pendant le chargement du detail;
+- les compteurs et la liste des conversations se rafraichissent en arriere-plan;
+- les messages temps reel sont ajoutes localement a la conversation active au lieu de recharger toute la conversation.
+
+Risque restant :
+
+- le cold start Render peut encore ralentir la premiere connexion REST ou WebSocket apres une periode d'inactivite.
+
+Test a refaire avant demo :
+
+- ouvrir la messagerie apres connexion;
+- verifier que le statut devient `Temps reel actif`;
+- cliquer entre plusieurs conversations;
+- envoyer un message;
+- rafraichir la page messagerie;
+- refaire le test apres reveil du backend Render.
 
 ### Render cold start pendant presentation
 

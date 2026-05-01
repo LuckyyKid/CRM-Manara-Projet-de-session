@@ -254,10 +254,16 @@ Les services Angular appellent les endpoints `/api/**`. En local, le proxy Angul
 
 Le backend expose `/ws/realtime`. Le frontend se connecte via `CommunicationService`.
 
+Depuis la correction du probleme de clignotement dans la messagerie, le frontend ajoute le JWT au WebSocket avec le parametre `?token=...`. Le backend valide ce token dans `RealtimeWebSocketHandler` avec `JwtService` et rattache ensuite la session WebSocket a l'utilisateur authentifie.
+
+Cette verification est importante en production Netlify/Render : contrairement aux appels REST, un WebSocket navigateur ne peut pas simplement ajouter le header `Authorization` comme une requete HTTP classique. Si le token n'est pas transmis ou invalide, le backend ferme la session temps reel et le frontend peut afficher un etat de reconnexion.
+
 Evenements connus :
 
 - `sidebar-counts`;
 - messages/notifications selon les payloads envoyes par `RealtimeService`, `ChatService` et les services de notifications.
+
+Pour limiter les lenteurs dans la messagerie, `CommunicationService` affiche immediatement le participant selectionne pendant le chargement du detail de conversation. Les compteurs et la liste des conversations sont ensuite rafraichis en arriere-plan. Les messages recus en temps reel sont ajoutes localement a la conversation active au lieu de forcer un rechargement complet de la conversation.
 
 ### Paiement Stripe
 
@@ -292,7 +298,7 @@ Le frontend utilise des signaux Angular pour afficher `loading`, `error`, `messa
 
 - `spring.thymeleaf.enabled=false` dans `application.properties`, mais les templates et controllers Thymeleaf existent encore.
 - Le projet contient des controllers web historiques et une SPA Angular moderne.
-- Le WebSocket n'est pas STOMP : il utilise un `TextWebSocketHandler` et des messages JSON.
+- Le WebSocket n'est pas STOMP : il utilise un `TextWebSocketHandler`, des messages JSON et un JWT passe en query param `token`.
 - Les routes Angular et backend ne sont pas toutes 1:1; le frontend consomme surtout `/api/**`.
 - Les donnees sensibles enfants/parents imposent une attention forte en production.
 - Les modules tutorat/sport sont conditionnels selon le type d'activite et les droits calcules.
