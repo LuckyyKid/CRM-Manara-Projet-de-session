@@ -2,7 +2,7 @@
      NAVBAR — affichée uniquement pour les visiteurs non connectés
      Équivalent Thymeleaf : sec:authorize="isAnonymous()"
      ================================================================ -->
-<nav class="navbar navbar-expand-lg" *ngIf="!authService.isAuthenticated()">
+<nav class="navbar navbar-expand-lg" *ngIf="!authService.hasAuthSession()">
   <div class="container">
 
     <!-- Logo -->
@@ -11,7 +11,7 @@
         <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="Logo Manara">
       </span>
       <span class="mm-brand-meta">
-        <span>Manara CRM</span>
+        <span>Manara</span>
       </span>
     </a>
 
@@ -52,7 +52,7 @@
      SIDEBAR — affichée uniquement pour les utilisateurs connectés
      Équivalent Thymeleaf : sec:authorize="isAuthenticated()"
      ================================================================ -->
-<header class="mm-auth-mobile-bar" *ngIf="authService.isAuthenticated()">
+<header class="mm-auth-mobile-bar" *ngIf="authService.hasAuthSession()">
   <button type="button" class="btn btn-light mm-mobile-nav-toggle" (click)="toggleMobileNav()" aria-label="Ouvrir le menu">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -62,19 +62,19 @@
       <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="Logo Manara">
     </span>
     <span class="mm-brand-meta">
-      <span>Manara CRM</span>
+      <span>Manara</span>
     </span>
   </a>
 </header>
 
 <div
-  *ngIf="authService.isAuthenticated()"
+  *ngIf="authService.hasAuthSession()"
   class="mm-app-sidebar-backdrop"
   [class.mm-app-sidebar-backdrop-visible]="mobileNavOpen()"
   (click)="closeMobileNav()"
 ></div>
 
-<aside class="mm-app-sidebar" *ngIf="authService.isAuthenticated()" [class.mm-app-sidebar-open]="mobileNavOpen()">
+<aside class="mm-app-sidebar" *ngIf="authService.hasAuthSession()" [class.mm-app-sidebar-open]="mobileNavOpen()">
   <div class="mm-app-sidebar-inner">
     <div class="mm-app-sidebar-mobile-head">
       <span class="fw-semibold">Navigation</span>
@@ -87,7 +87,7 @@
         <img class="mm-brand-logo" src="/images/manara-logo.svg" alt="Logo Manara">
       </span>
       <span class="mm-brand-meta">
-        <span>Manara CRM</span>
+        <span>Manara</span>
       </span>
     </a>
 
@@ -219,7 +219,7 @@
      La classe mm-page-with-sidebar ajoute la marge gauche quand
      la sidebar est présente.
      ================================================================ -->
-<div class="mm-page" [class.mm-page-with-sidebar]="authService.isAuthenticated()">
+<div class="mm-page" [class.mm-page-with-sidebar]="authService.hasAuthSession()">
   <main class="mm-main">
     <router-outlet />
   </main>
