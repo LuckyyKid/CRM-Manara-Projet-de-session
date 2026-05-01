@@ -150,7 +150,11 @@ export class MessagesPageComponent implements OnInit {
 
       this.draft.set('');
       if (message?.conversationId) {
-        await this.communicationService.openConversation(message.conversationId);
+        if (this.communicationService.activeConversationId() === message.conversationId) {
+          this.communicationService.addMessageToActiveConversation(message);
+        } else {
+          await this.communicationService.openConversation(message.conversationId);
+        }
       }
     } catch {
       this.error.set("L'envoi du message a echoue.");

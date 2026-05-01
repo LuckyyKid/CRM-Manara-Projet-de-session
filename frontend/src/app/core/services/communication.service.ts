@@ -31,6 +31,8 @@ export class CommunicationService {
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private contactsLoaded = false;
   private conversationsLoaded = false;
+  private conversationRequestSeq = 0;
+  private reconnectDelayMs = 2000;
 
   readonly conversations = signal<ChatConversationSummaryDto[]>([]);
   readonly contacts = signal<ChatParticipantDto[]>([]);
@@ -78,13 +80,32 @@ export class CommunicationService {
   }
 
   async openConversation(conversationId: number): Promise<void> {
+    const requestSeq = ++this.conversationRequestSeq;
     this.activeConversationId.set(conversationId);
+
+    const summary = this.conversations().find((conversation) => conversation.id === conversationId);
+    if (summary && this.activeConversation()?.id !== conversationId) {
+      this.activeConversation.set({
+        id: summary.id,
+        participant: summary.participant,
+        unreadCount: summary.unreadCount,
+        messages: [],
+      });
+    }
+
     const detail = await firstValueFrom(
       this.http.get<ChatConversationDetailDto>(`/api/communication/conversations/${conversationId}`),
     );
+
+    if (requestSeq !== this.conversationRequestSeq || this.activeConversationId() !== conversationId) {
+      return;
+    }
+
     this.activeConversation.set(detail);
-    await this.loadSidebarCounts();
-    await this.refreshConversations();
+    void Promise.allSettled([
+      this.loadSidebarCounts(),
+      this.refreshConversations(),
+    ]);
   }
 
   clearActiveConversation(): void {
@@ -111,6 +132,12 @@ export class CommunicationService {
 
   sendMessage(request: SendChatMessageRequestDto) {
     return this.http.post<ChatMessageDto>('/api/communication/messages', request);
+  }
+
+  addMessageToActiveConversation(message: ChatMessageDto): void {
+    this.applyIncomingMessage(message);
+    void this.refreshConversations();
+    void this.loadSidebarCounts();
   }
 
   getMyAppointmentSlots() {
@@ -171,8 +198,14 @@ export class CommunicationService {
       this.reconnectTimer = null;
     }
 
+    const token = this.authService.getToken();
+    if (!token) {
+      this.isRealtimeConnected.set(false);
+      return;
+    }
+
     try {
-      this.socket = new WebSocket(environment.wsUrl);
+      this.socket = new WebSocket(this.buildWebSocketUrl(token));
     } catch (error) {
       console.error('REALTIME CONNECTION INIT ERROR', error);
       this.socket = null;
@@ -183,6 +216,7 @@ export class CommunicationService {
 
     this.socket.onopen = () => {
       this.ngZone.run(() => {
+        this.reconnectDelayMs = 2000;
         this.isRealtimeConnected.set(true);
       });
     };
@@ -241,12 +275,29 @@ export class CommunicationService {
 
     if (envelope.type === 'chat-message') {
       const message = envelope.payload as ChatMessageDto;
+      this.applyIncomingMessage(message);
       void this.refreshConversations();
       void this.loadSidebarCounts();
-      if (this.activeConversationId() === message.conversationId) {
-        void this.openConversation(message.conversationId);
-      }
     }
+  }
+
+  private applyIncomingMessage(message: ChatMessageDto): void {
+    if (this.activeConversationId() !== message.conversationId) {
+      return;
+    }
+
+    this.activeConversation.update((conversation) => {
+      if (!conversation || conversation.id !== message.conversationId) {
+        return conversation;
+      }
+      if (conversation.messages.some((existing) => existing.id === message.id)) {
+        return conversation;
+      }
+      return {
+        ...conversation,
+        messages: [...conversation.messages, message],
+      };
+    });
   }
 
   private scheduleReconnect(): void {
@@ -256,6 +307,15 @@ export class CommunicationService {
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
       this.connect();
-    }, 2000);
+    }, this.reconnectDelayMs);
+    this.reconnectDelayMs = Math.min(this.reconnectDelayMs * 2, 15000);
+  }
+
+  private buildWebSocketUrl(token: string): string {
+    const baseUrl = environment.wsUrl.startsWith('ws://') || environment.wsUrl.startsWith('wss://')
+      ? new URL(environment.wsUrl)
+      : new URL(environment.wsUrl, window.location.origin.replace(/^http/, 'ws'));
+    baseUrl.searchParams.set('token', token);
+    return baseUrl.toString();
   }
 }
